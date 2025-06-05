@@ -13,6 +13,7 @@ import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import GoogleCallback from '@/pages/GoogleCallback';
+import OAuthDebugger from '@/components/auth/OAuthDebugger';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
 import UserProfile from '@/pages/UserProfile';
@@ -146,6 +147,10 @@ function App() {
               <Route
                 path="auth/callback/google"
                 element={<GoogleCallback />}
+              />
+              <Route
+                path="auth/debug"
+                element={<OAuthDebugger />}
               />
 
               {/* Protected Routes */}

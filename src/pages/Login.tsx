@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -29,6 +29,11 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { login, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check for OAuth errors in URL
+  const oauthError = searchParams.get('error');
+  const isOAuthError = oauthError === 'oauth_failed';
 
   // Clear errors when component mounts
   React.useEffect(() => {
@@ -90,6 +95,20 @@ const Login: React.FC = () => {
             {error && (
               <Alert variant="destructive" className="mb-6">
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {isOAuthError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>
+                  Google OAuth failed. This is usually caused by a redirect URI mismatch.{' '}
+                  <Link 
+                    to="/auth/debug" 
+                    className="underline hover:no-underline font-medium"
+                  >
+                    Use our debugger to fix this issue
+                  </Link>
+                </AlertDescription>
               </Alert>
             )}
 
