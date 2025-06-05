@@ -30,12 +30,17 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
       maxConversationsPerDay: 5,
       canSendMedia: false,
       canReceivePrioritySupport: false,
+      canSendBulkMessages: false,
+      maxFileSize: 5, // 5MB
+      allowedFileTypes: ['image/jpeg', 'image/png'],
     },
     contentAccess: {
       canViewPremiumContent: false,
       canViewExclusiveContent: false,
       downloadPermissions: false,
       earlyAccess: false,
+      canViewLiveStreams: true,
+      qualityLimits: 'sd',
     },
     isPopular: false,
     color: 'bg-blue-500',
@@ -69,12 +74,17 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
       maxConversationsPerDay: 15,
       canSendMedia: true,
       canReceivePrioritySupport: true,
+      canSendBulkMessages: false,
+      maxFileSize: 25, // 25MB
+      allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'video/mp4'],
     },
     contentAccess: {
       canViewPremiumContent: true,
       canViewExclusiveContent: false,
       downloadPermissions: true,
       earlyAccess: true,
+      canViewLiveStreams: true,
+      qualityLimits: 'hd',
     },
     isPopular: true,
     color: 'bg-purple-500',
@@ -106,12 +116,17 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
       maxConversationsPerDay: -1, // Unlimited
       canSendMedia: true,
       canReceivePrioritySupport: true,
+      canSendBulkMessages: true,
+      maxFileSize: 100, // 100MB
+      allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'],
     },
     contentAccess: {
       canViewPremiumContent: true,
       canViewExclusiveContent: true,
       downloadPermissions: true,
       earlyAccess: true,
+      canViewLiveStreams: true,
+      qualityLimits: 'uhd',
     },
     isPopular: false,
     color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
@@ -150,12 +165,17 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       maxConversationsPerDay: 20,
       canSendMedia: true,
       canReceivePrioritySupport: false,
+      canSendBulkMessages: false,
+      maxFileSize: 10, // 10MB
+      allowedFileTypes: ['image/jpeg', 'image/png', 'video/mp4'],
     },
     contentAccess: {
       canViewPremiumContent: false,
       canViewExclusiveContent: false,
       downloadPermissions: false,
       earlyAccess: false,
+      canViewLiveStreams: true,
+      qualityLimits: 'hd',
     },
     creatorFeatures: {
       maxUploadsPerDay: 10,
@@ -164,6 +184,12 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       customBranding: false,
       liveStreamingEnabled: false,
       bulkMessageLimit: 0,
+      platformFeePercentage: 20,
+      canSetContentTiers: false,
+      canCreateCollections: false,
+      maxStorageGB: 10,
+      advancedScheduling: false,
+      customPricing: false,
     },
     isPopular: false,
     color: 'bg-green-500',
@@ -198,12 +224,17 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       maxConversationsPerDay: 50,
       canSendMedia: true,
       canReceivePrioritySupport: true,
+      canSendBulkMessages: true,
+      maxFileSize: 50, // 50MB
+      allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'],
     },
     contentAccess: {
       canViewPremiumContent: true,
       canViewExclusiveContent: false,
       downloadPermissions: true,
       earlyAccess: true,
+      canViewLiveStreams: true,
+      qualityLimits: 'hd',
     },
     creatorFeatures: {
       maxUploadsPerDay: 25,
@@ -212,6 +243,12 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       customBranding: true,
       liveStreamingEnabled: true,
       bulkMessageLimit: 100,
+      platformFeePercentage: 15,
+      canSetContentTiers: true,
+      canCreateCollections: true,
+      maxStorageGB: 100,
+      advancedScheduling: true,
+      customPricing: true,
     },
     isPopular: true,
     color: 'bg-indigo-500',
@@ -245,12 +282,17 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       maxConversationsPerDay: -1, // Unlimited
       canSendMedia: true,
       canReceivePrioritySupport: true,
+      canSendBulkMessages: true,
+      maxFileSize: 200, // 200MB
+      allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm', 'video/mov'],
     },
     contentAccess: {
       canViewPremiumContent: true,
       canViewExclusiveContent: true,
       downloadPermissions: true,
       earlyAccess: true,
+      canViewLiveStreams: true,
+      qualityLimits: 'uhd',
     },
     creatorFeatures: {
       maxUploadsPerDay: -1, // Unlimited
@@ -259,6 +301,12 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       customBranding: true,
       liveStreamingEnabled: true,
       bulkMessageLimit: -1, // Unlimited
+      platformFeePercentage: 10,
+      canSetContentTiers: true,
+      canCreateCollections: true,
+      maxStorageGB: -1, // Unlimited
+      advancedScheduling: true,
+      customPricing: true,
     },
     isPopular: false,
     color: 'bg-gradient-to-r from-purple-600 to-pink-600',

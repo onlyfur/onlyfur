@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Search, 
   Filter, 
@@ -14,132 +16,234 @@ import {
   Video,
   Music,
   Palette,
-  Dumbbell,
-  BookOpen,
-  Utensils,
-  Heart
+  Heart,
+  Zap,
+  Crown,
+  Sparkles
 } from 'lucide-react';
 
 const Explore: React.FC = () => {
-  const categories = [
-    { name: 'Photography', icon: Camera, color: 'text-blue-500', count: 245 },
-    { name: 'Fitness', icon: Dumbbell, color: 'text-green-500', count: 189 },
-    { name: 'Art', icon: Palette, color: 'text-purple-500', count: 156 },
-    { name: 'Music', icon: Music, color: 'text-pink-500', count: 134 },
-    { name: 'Cooking', icon: Utensils, color: 'text-orange-500', count: 98 },
-    { name: 'Education', icon: BookOpen, color: 'text-indigo-500', count: 87 },
-    { name: 'Video', icon: Video, color: 'text-red-500', count: 203 },
-    { name: 'Lifestyle', icon: Heart, color: 'text-rose-500', count: 167 },
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedSpecies, setSelectedSpecies] = useState('all');
+  const [sortBy, setSortBy] = useState('popular');
+
+  const furryCategories = [
+    { name: 'Fursuit Photos', icon: Camera, color: 'text-blue-500', count: 342, tag: 'fursuit' },
+    { name: 'Digital Art', icon: Palette, color: 'text-purple-500', count: 567, tag: 'art' },
+    { name: 'Videos & Animations', icon: Video, color: 'text-red-500', count: 189, tag: 'video' },
+    { name: 'Tutorials & Tips', icon: Sparkles, color: 'text-green-500', count: 124, tag: 'tutorial' },
+    { name: 'Murrsuit Content', icon: Heart, color: 'text-pink-500', count: 98, tag: 'murrsuit' },
+    { name: 'Convention Coverage', icon: Users, color: 'text-orange-500', count: 76, tag: 'convention' },
+    { name: 'Character Stories', icon: Music, color: 'text-indigo-500', count: 156, tag: 'story' },
+    { name: 'Commissions', icon: Crown, color: 'text-yellow-500', count: 203, tag: 'commission' },
+  ];
+
+  const species = [
+    'All Species', 'Fox', 'Wolf', 'Dragon', 'Cat', 'Dog', 'Bear', 'Rabbit', 'Deer', 'Horse', 'Bird', 'Other'
+  ];
+
+  const tags = [
+    'fursuit', 'art', 'digital', 'traditional', 'commission', 'ych', 'anthro', 'feral',
+    'sfw', 'cute', 'cool', 'detailed', 'simple', 'colorful', 'monochrome', 'realistic',
+    'cartoon', 'anime', 'western', 'fantasy', 'scifi', 'modern', 'vintage', 'pride'
   ];
 
   const featuredCreators = [
     {
       id: 1,
-      name: 'Sarah Johnson',
-      username: 'sarahj_photo',
-      avatar: '👩‍💼',
-      category: 'Photography',
-      subscribers: '12.5K',
+      name: 'Luna Silverpaw',
+      username: 'luna_silverpaw',
+      avatar: '🦊',
+      category: 'Fursuit Photos',
+      species: 'Arctic Fox',
+      subscribers: '3.2K',
       rating: 4.9,
-      price: '$15/month',
+      price: '$19.99/month',
       isVerified: true,
-      description: 'Professional photographer sharing exclusive behind-the-scenes content',
+      description: 'Professional fursuit photographer capturing magical moments at conventions and in nature',
+      tags: ['fursuit', 'photography', 'convention', 'nature'],
     },
     {
       id: 2,
-      name: 'Mike Chen',
-      username: 'mikefit',
-      avatar: '🏋️‍♂️',
-      category: 'Fitness',
-      subscribers: '8.3K',
+      name: 'Rex Dragonheart',
+      username: 'rex_dragonheart',
+      avatar: '🐲',
+      category: 'Digital Art',
+      species: 'Dragon',
+      subscribers: '5.8K',
       rating: 4.8,
-      price: '$20/month',
+      price: '$14.99/month',
       isVerified: true,
-      description: 'Certified personal trainer with custom workout plans',
+      description: 'Fantasy dragon artist specializing in detailed character commissions and YCH',
+      tags: ['art', 'digital', 'dragon', 'commission', 'fantasy'],
     },
     {
       id: 3,
-      name: 'Emma Davis',
-      username: 'emma_arts',
-      avatar: '🎨',
-      category: 'Art',
-      subscribers: '15.2K',
+      name: 'Sage Moonwolf',
+      username: 'sage_moonwolf',
+      avatar: '🐺',
+      category: 'Tutorials & Tips',
+      species: 'Wolf',
+      subscribers: '2.1K',
       rating: 4.9,
-      price: '$12/month',
+      price: '$24.99/month',
       isVerified: false,
-      description: 'Digital artist creating stunning illustrations and tutorials',
+      description: 'Fursuit maker sharing detailed tutorials and behind-the-scenes crafting content',
+      tags: ['tutorial', 'fursuit', 'crafting', 'educational'],
     },
     {
       id: 4,
-      name: 'Alex Thompson',
-      username: 'alexmusic',
-      avatar: '🎵',
-      category: 'Music',
-      subscribers: '9.7K',
+      name: 'Zara Striped',
+      username: 'zara_striped',
+      avatar: '🦓',
+      category: 'Videos & Animations',
+      species: 'Zebra',
+      subscribers: '4.3K',
       rating: 4.7,
-      price: '$18/month',
+      price: '$16.99/month',
       isVerified: true,
-      description: 'Musician sharing exclusive tracks and music production tips',
+      description: 'Animator creating short furry films and character animations',
+      tags: ['animation', 'video', 'story', 'character'],
     },
     {
       id: 5,
-      name: 'Lisa Rodriguez',
-      username: 'lisa_cooks',
-      avatar: '👩‍🍳',
-      category: 'Cooking',
-      subscribers: '11.1K',
+      name: 'Copper Fennec',
+      username: 'copper_fennec',
+      avatar: '🦊',
+      category: 'Character Stories',
+      species: 'Fennec Fox',
+      subscribers: '1.9K',
       rating: 4.8,
-      price: '$14/month',
+      price: '$12.99/month',
       isVerified: true,
-      description: 'Professional chef with exclusive recipes and cooking classes',
+      description: 'Storyteller crafting immersive furry fiction and character development',
+      tags: ['story', 'writing', 'character', 'fiction'],
     },
     {
       id: 6,
-      name: 'David Kim',
-      username: 'david_learns',
-      avatar: '📚',
-      category: 'Education',
+      name: 'Nova Starcat',
+      username: 'nova_starcat',
+      avatar: '🐱',
+      category: 'Digital Art',
+      species: 'Space Cat',
       subscribers: '6.8K',
       rating: 4.9,
-      price: '$25/month',
-      isVerified: false,
-      description: 'Educational content on technology and programming',
+      price: '$18.99/month',
+      isVerified: true,
+      description: 'Sci-fi furry artist creating cosmic adventures and space-themed characters',
+      tags: ['art', 'scifi', 'space', 'digital', 'commission'],
     },
   ];
 
   const trendingCreators = featuredCreators.slice(0, 3);
 
+  const filteredCreators = featuredCreators.filter(creator => {
+    const matchesSearch = searchQuery === '' || 
+      creator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      creator.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      creator.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesCategory = selectedCategory === 'all' || creator.category === selectedCategory;
+    const matchesSpecies = selectedSpecies === 'all' || creator.species === selectedSpecies;
+    
+    return matchesSearch && matchesCategory && matchesSpecies;
+  });
+
   return (
     <div className="container mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Discover Amazing Creators</h1>
+        <div className="inline-flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium">Explore Furry Creators</span>
+        </div>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+          Discover Amazing Furry Content
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Explore exclusive content from talented creators across various categories
+          Find fursuit photographers, digital artists, animators, and storytellers in the furry community
         </p>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search creators, categories, or content..."
-            className="pl-10"
-          />
+      <div className="space-y-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search creators, species, or tags..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {furryCategories.map((category) => (
+                <SelectItem key={category.tag} value={category.name}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedSpecies} onValueChange={setSelectedSpecies}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Species" />
+            </SelectTrigger>
+            <SelectContent>
+              {species.map((species) => (
+                <SelectItem key={species} value={species === 'All Species' ? 'all' : species}>
+                  {species}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="popular">Most Popular</SelectItem>
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="rating">Highest Rated</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Button variant="outline">
-          <Filter className="w-4 h-4 mr-2" />
-          Filters
-        </Button>
+
+        {/* Popular Tags */}
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Popular Tags:</h3>
+          <div className="flex flex-wrap gap-2">
+            {tags.slice(0, 12).map((tag) => (
+              <Badge 
+                key={tag}
+                variant="outline" 
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                onClick={() => setSearchQuery(tag)}
+              >
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Categories */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Browse by Category</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          {categories.map((category, index) => (
-            <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+          {furryCategories.map((category, index) => (
+            <Card 
+              key={index} 
+              className="cursor-pointer hover:shadow-md transition-shadow hover:scale-105"
+              onClick={() => setSelectedCategory(category.name)}
+            >
               <CardContent className="p-4 text-center">
                 <category.icon className={`w-8 h-8 mx-auto mb-2 ${category.color}`} />
                 <p className="text-sm font-medium">{category.name}</p>
@@ -197,11 +301,30 @@ const Explore: React.FC = () => {
         </div>
       </div>
 
-      {/* Featured Creators */}
+      {/* Search Results */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Featured Creators</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">
+            {searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all' 
+              ? `Search Results (${filteredCreators.length})`
+              : 'Featured Creators'
+            }
+          </h2>
+          {(searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all') && (
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+                setSelectedSpecies('all');
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredCreators.map((creator) => (
+          {filteredCreators.map((creator) => (
             <Card key={creator.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center space-x-3">
@@ -229,7 +352,27 @@ const Explore: React.FC = () => {
                     <span>{creator.rating}</span>
                   </div>
                 </div>
+                {creator.species && (
+                  <div className="flex items-center space-x-1 text-sm">
+                    <span className="text-muted-foreground">Species:</span>
+                    <Badge variant="secondary">{creator.species}</Badge>
+                  </div>
+                )}
                 <p className="text-sm text-muted-foreground">{creator.description}</p>
+                {creator.tags && (
+                  <div className="flex flex-wrap gap-1">
+                    {creator.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        #{tag}
+                      </Badge>
+                    ))}
+                    {creator.tags.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{creator.tags.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                     <Users className="w-4 h-4" />
@@ -247,13 +390,22 @@ const Explore: React.FC = () => {
       {/* CTA Section */}
       <Card className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-none">
         <CardContent className="p-8 text-center">
-          <h3 className="text-2xl font-bold mb-2">Ready to Start Creating?</h3>
+          <div className="inline-flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
+            <Crown className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Join the Community</span>
+          </div>
+          <h3 className="text-2xl font-bold mb-2">Ready to Share Your Furry Art?</h3>
           <p className="text-muted-foreground mb-6">
-            Join thousands of creators earning from their passion
+            Join hundreds of furry creators earning from their passion. Share your fursuits, art, stories, and more with fans who appreciate your work.
           </p>
-          <div className="flex justify-center space-x-4">
-            <Button size="lg">Become a Creator</Button>
-            <Button variant="outline" size="lg">Learn More</Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+              <Crown className="mr-2 h-4 w-4" />
+              Become a Creator
+            </Button>
+            <Button variant="outline" size="lg">
+              Learn More About Creating
+            </Button>
           </div>
         </CardContent>
       </Card>

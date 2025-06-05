@@ -159,7 +159,7 @@ export interface SubscriptionTier {
   isActive: boolean;
 }
 
-// Platform Subscription Tiers
+// Enhanced Platform Subscription Tiers with Detailed Permissions
 export interface PlatformSubscriptionTier {
   id: string;
   name: string;
@@ -177,12 +177,17 @@ export interface PlatformSubscriptionTier {
     maxConversationsPerDay: number;
     canSendMedia: boolean;
     canReceivePrioritySupport: boolean;
+    canSendBulkMessages: boolean;
+    maxFileSize: number; // in MB
+    allowedFileTypes: string[];
   };
   contentAccess: {
     canViewPremiumContent: boolean;
     canViewExclusiveContent: boolean;
     downloadPermissions: boolean;
     earlyAccess: boolean;
+    canViewLiveStreams: boolean;
+    qualityLimits: 'sd' | 'hd' | 'uhd';
   };
   creatorFeatures?: {
     maxUploadsPerDay: number;
@@ -191,10 +196,76 @@ export interface PlatformSubscriptionTier {
     customBranding: boolean;
     liveStreamingEnabled: boolean;
     bulkMessageLimit: number;
+    platformFeePercentage: number;
+    canSetContentTiers: boolean;
+    canCreateCollections: boolean;
+    maxStorageGB: number;
+    advancedScheduling: boolean;
+    customPricing: boolean;
   };
   isPopular: boolean;
   color: string;
   badge?: string;
+}
+
+// Enhanced Content Access Permissions
+export interface ContentAccessLevel {
+  id: string;
+  name: string;
+  requiredTiers: string[]; // Array of tier IDs that can access this level
+  color: string;
+  icon: string;
+  description: string;
+}
+
+// Creator Content Settings
+export interface CreatorContentSettings {
+  id: string;
+  creatorId: string;
+  defaultPrivacyLevel: 'public' | 'subscribers' | 'premium' | 'private';
+  allowedMessagingTiers: string[];
+  customAccessLevels: ContentAccessLevel[];
+  subscriptionPrice?: number;
+  tipSettings: {
+    enabled: boolean;
+    minimumAmount: number;
+    suggestedAmounts: number[];
+  };
+  liveStreamSettings: {
+    enabled: boolean;
+    subscriberOnly: boolean;
+    requiredTier?: string;
+  };
+}
+
+// Permission Validation Results
+export interface PermissionCheck {
+  allowed: boolean;
+  reason?: string;
+  requiredTier?: string;
+  currentTier?: string;
+  upgradeUrl?: string;
+}
+
+// Tier Comparison Data
+export interface TierComparison {
+  feature: string;
+  basic: boolean | string | number;
+  pro: boolean | string | number;
+  premium?: boolean | string | number;
+  vip?: boolean | string | number;
+}
+
+// Registration with Role and Tier Selection
+export interface EnhancedRegistrationData {
+  email: string;
+  username: string;
+  displayName: string;
+  password: string;
+  role: 'creator' | 'subscriber';
+  selectedTier?: string; // Tier ID for immediate subscription
+  agreeToTerms: boolean;
+  newsletter?: boolean;
 }
 
 // Legacy Message Types (replaced by detailed messaging types below)

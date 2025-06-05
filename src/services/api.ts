@@ -59,7 +59,19 @@ export const authAPI = {
 // Subscription API
 export const subscriptionAPI = {
   getTiers: async () => {
-    return apiRequest('/subscription-tiers');
+    // For demo purposes, return mock data instead of API call
+    const { subscriberTiers, creatorTiers } = await import('@/data/subscriptionTiers');
+    
+    // Convert to the format expected by the frontend
+    const allTiers = [
+      ...subscriberTiers.map(tier => ({ ...tier, type: 'SUBSCRIBER' })),
+      ...creatorTiers.map(tier => ({ ...tier, type: 'CREATOR' }))
+    ];
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    return allTiers;
   },
 
   subscribe: async (tierId: string) => {

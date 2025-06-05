@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Lock, Eye, Crown, Star, Heart } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Lock, Eye, Crown, Star, Heart, Users, Sparkles, ArrowRight, Zap, Info } from 'lucide-react';
 import { Content, User, PlatformSubscriptionTier } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTierById } from '@/data/subscriptionTiers';
-import PricingModal from '../subscription/PricingModal';
+import { tierValidationService } from '@/services/tierValidationService';
+import EnhancedPricingModal from '../subscription/EnhancedPricingModal';
 
 interface ContentAccessControlProps {
   content: Content;
@@ -14,6 +16,8 @@ interface ContentAccessControlProps {
   isNewestPost?: boolean;
   className?: string;
   children: React.ReactNode;
+  showUpgradePrompt?: boolean;
+  compactMode?: boolean;
 }
 
 const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
@@ -21,226 +25,308 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
   creatorTier,
   isNewestPost = false,
   className = '',
-  children
+  children,
+  showUpgradePrompt = true,
+  compactMode = false
 }) => {
   const { user, isAuthenticated } = useAuth();
   const [showPricingModal, setShowPricingModal] = useState(false);
+  const [showFullPrompt, setShowFullPrompt] = useState(false);
 
-  // Determine if user can access this content
-  const canAccessContent = (): { canAccess: boolean; reason?: string } => {
-    // Always show newest post to everyone (not blurred)
-    if (isNewestPost) {
-      return { canAccess: true };
-    }
+  // Use enhanced tier validation service
+  const accessCheck = tierValidationService.validateContentAccess(
+    user, 
+    content, 
+    { isNewestPost }
+  );
 
-    // Public content is always accessible
-    if (content.privacyLevel === 'public') {
-      return { canAccess: true };
-    }
+  const { allowed: canAccess, reason, requiredTier, currentTier } = accessCheck;
 
-    // Must be authenticated for non-public content
-    if (!isAuthenticated || !user) {
-      return { 
-        canAccess: false, 
-        reason: 'Login required to view this content' 
-      };
-    }
-
-    // Admin can access everything
-    if (user.role === 'admin') {
-      return { canAccess: true };
-    }
-
-    // Creator can access their own content
-    if (user.id === content.creatorId) {
-      return { canAccess: true };
-    }
-
-    // Check subscription requirements
-    if (content.requiresSubscription) {
-      const userTier = user.subscriptionTier;
-      
-      if (!userTier || userTier.status !== 'active') {
-        return { 
-          canAccess: false, 
-          reason: 'Active subscription required' 
+  const getTierDisplayInfo = () => {
+    const tierName = requiredTier || getRequiredTierForPrivacy(content.privacyLevel);
+    
+    switch (content.privacyLevel) {
+      case 'premium':
+        return {
+          icon: Star,
+          name: tierName,
+          color: 'bg-purple-500',
+          gradient: 'from-purple-600 to-purple-400',
+          description: 'Premium content for Pro subscribers and above'
         };
-      }
-
-      // Check privacy level requirements
-      switch (content.privacyLevel) {
-        case 'subscribers':
-          // Basic subscriber access
-          return { canAccess: true };
-          
-        case 'premium':
-          // Requires pro subscriber or higher
-          if (!userTier.contentAccess.canViewPremiumContent) {
-            return { 
-              canAccess: false, 
-              reason: 'Pro Subscriber tier or higher required' 
-            };
-          }
-          return { canAccess: true };
-          
-        case 'private':
-          // Requires VIP subscriber access
-          if (!userTier.contentAccess.canViewExclusiveContent) {
-            return { 
-              canAccess: false, 
-              reason: 'VIP Subscriber tier required for exclusive content' 
-            };
-          }
-          return { canAccess: true };
-          
-        default:
-          return { canAccess: true };
-      }
-    }
-
-    return { canAccess: true };
-  };
-
-  const { canAccess, reason } = canAccessContent();
-
-  const getRequiredTierIcon = () => {
-    switch (content.privacyLevel) {
-      case 'premium':
-        return <Star className="w-5 h-5" />;
       case 'private':
-        return <Crown className="w-5 h-5" />;
-      default:
-        return <Heart className="w-5 h-5" />;
-    }
-  };
-
-  const getRequiredTierName = () => {
-    switch (content.privacyLevel) {
+        return {
+          icon: Crown,
+          name: tierName,
+          color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+          gradient: 'from-yellow-500 to-orange-400',
+          description: 'Exclusive VIP content'
+        };
       case 'subscribers':
-        return 'Basic Subscriber';
-      case 'premium':
-        return 'Pro Subscriber';
-      case 'private':
-        return 'VIP Subscriber';
+        return {
+          icon: Heart,
+          name: tierName,
+          color: 'bg-blue-500',
+          gradient: 'from-blue-600 to-blue-400',
+          description: 'Subscriber-only content'
+        };
       default:
-        return 'Subscription';
+        return {
+          icon: Users,
+          name: tierName,
+          color: 'bg-gray-500',
+          gradient: 'from-gray-600 to-gray-400',
+          description: 'Subscription required'
+        };
     }
   };
 
-  const getRequiredTierColor = () => {
-    switch (content.privacyLevel) {
-      case 'premium':
-        return 'bg-purple-500';
-      case 'private':
-        return 'bg-gradient-to-r from-yellow-400 to-orange-500';
-      default:
-        return 'bg-blue-500';
+  const getRequiredTierForPrivacy = (privacyLevel: string): string => {
+    switch (privacyLevel) {
+      case 'subscribers': return 'Basic Subscriber';
+      case 'premium': return 'Pro Subscriber';
+      case 'private': return 'VIP Subscriber';
+      default: return 'Subscription';
     }
   };
+
+  const getSubscriberCount = (): number => {
+    // Mock function - in real app, this would come from API
+    const counts: Record<string, number> = {
+      'public': 10000,
+      'subscribers': 2500,
+      'premium': 800,
+      'private': 150
+    };
+    return counts[content.privacyLevel] || 0;
+  };
+
+  const tierInfo = getTierDisplayInfo();
+  const TierIcon = tierInfo.icon;
 
   // If user can access content or it's the newest post, show normally
   if (canAccess) {
     return (
       <div className={className}>
         {isNewestPost && (
-          <Badge variant="secondary" className="mb-2">
-            <Eye className="w-4 h-4 mr-1" />
-            Latest Post - Free Preview
-          </Badge>
+          <div className="mb-3">
+            <Badge className="bg-green-500 text-white">
+              <Eye className="w-3 h-3 mr-1" />
+              Free Preview - Latest Post
+            </Badge>
+            <Alert className="mt-2 border-green-200 bg-green-50 dark:bg-green-900/10">
+              <Info className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-700 dark:text-green-300">
+                This is the newest public post from this creator. Subscribe to see all their amazing content!
+              </AlertDescription>
+            </Alert>
+          </div>
         )}
         {children}
       </div>
     );
   }
 
-  // Show blurred content with subscription prompt
+  // Show blurred content with enhanced subscription prompt
   return (
     <>
       <Card className={`relative overflow-hidden ${className}`}>
         <div className="relative">
-          {/* Blurred content */}
-          <div className="filter blur-xl scale-105 pointer-events-none">
-            {children}
+          {/* Blurred content with multiple blur layers for better effect */}
+          <div className="relative">
+            <div className="filter blur-lg scale-105 pointer-events-none opacity-30">
+              {children}
+            </div>
+            <div className="absolute inset-0 filter blur-md pointer-events-none opacity-20">
+              {children}
+            </div>
           </div>
           
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-            <div className="text-center p-6 max-w-sm">
-              <div className={`w-16 h-16 mx-auto rounded-full ${getRequiredTierColor()} flex items-center justify-center text-white mb-4`}>
-                <Lock className="w-8 h-8" />
+          {/* Enhanced overlay with gradient */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${tierInfo.gradient} bg-opacity-90 backdrop-blur-sm flex items-center justify-center`}>
+            <div className="text-center p-6 max-w-sm mx-4">
+              {/* Animated icon */}
+              <div className="relative mb-6">
+                <div className="w-20 h-20 mx-auto rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4 animate-pulse">
+                  <Lock className="w-10 h-10" />
+                </div>
+                <div className="absolute -top-2 -right-2">
+                  <div className={`w-8 h-8 rounded-full ${tierInfo.color} flex items-center justify-center text-white shadow-lg`}>
+                    <TierIcon className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2">
-                Subscription Required
+              <h3 className="text-2xl font-bold text-white mb-2">
+                {compactMode ? 'Locked Content' : 'Subscription Required'}
               </h3>
               
-              <p className="text-gray-200 mb-4">
-                {reason || 'Subscribe to see more amazing content from this creator'}
+              <p className="text-white/90 mb-3 text-sm leading-relaxed">
+                {reason || tierInfo.description}
               </p>
-              
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className={`p-2 rounded-full ${getRequiredTierColor()} text-white`}>
-                  {getRequiredTierIcon()}
+
+              {/* Tier requirement info */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 mb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <TierIcon className="w-5 h-5 text-white" />
+                  <span className="text-white font-semibold text-sm">
+                    {tierInfo.name} Required
+                  </span>
                 </div>
-                <span className="text-white font-medium">
-                  {getRequiredTierName()} Required
-                </span>
+                <div className="text-white/80 text-xs">
+                  Join {getSubscriberCount().toLocaleString()}+ subscribers enjoying this content
+                </div>
               </div>
+
+              {/* Current tier info for authenticated users */}
+              {isAuthenticated && currentTier && (
+                <div className="bg-orange-500/20 backdrop-blur-sm rounded-lg p-2 mb-4">
+                  <div className="text-white/90 text-xs">
+                    Current tier: <span className="font-medium">{currentTier}</span>
+                  </div>
+                </div>
+              )}
               
+              {/* Action buttons */}
               <div className="space-y-3">
-                <Button 
-                  onClick={() => setShowPricingModal(true)}
-                  className="w-full bg-primary hover:bg-primary/90"
-                >
-                  View Subscription Plans
-                </Button>
-                
-                {!isAuthenticated && (
+                {!compactMode ? (
+                  <>
+                    <Button 
+                      onClick={() => setShowPricingModal(true)}
+                      className="w-full bg-white text-gray-900 hover:bg-white/90 font-semibold"
+                      size="lg"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      {requiredTier ? `Upgrade to ${requiredTier}` : 'View Plans'}
+                    </Button>
+                    
+                    {!isAuthenticated && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full text-white border-white/30 hover:bg-white/20 backdrop-blur-sm"
+                        onClick={() => window.location.href = '/login'}
+                      >
+                        Login to Access
+                      </Button>
+                    )}
+
+                    {showUpgradePrompt && (
+                      <button
+                        onClick={() => setShowFullPrompt(!showFullPrompt)}
+                        className="text-white/80 text-xs hover:text-white transition-colors flex items-center mx-auto"
+                      >
+                        Learn more about benefits
+                        <ArrowRight className="w-3 h-3 ml-1" />
+                      </button>
+                    )}
+                  </>
+                ) : (
                   <Button 
-                    variant="outline" 
-                    className="w-full text-white border-white hover:bg-white hover:text-black"
-                    onClick={() => window.location.href = '/login'}
+                    onClick={() => setShowPricingModal(true)}
+                    size="sm"
+                    className="bg-white text-gray-900 hover:bg-white/90"
                   >
-                    Login to Access
+                    Unlock
                   </Button>
                 )}
               </div>
+
+              {/* Expanded benefits info */}
+              {showFullPrompt && !compactMode && (
+                <div className="mt-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 text-left">
+                  <h4 className="text-white font-medium text-sm mb-2">
+                    What you'll get with {tierInfo.name}:
+                  </h4>
+                  <ul className="text-white/80 text-xs space-y-1">
+                    {content.privacyLevel === 'subscribers' && (
+                      <>
+                        <li>• Access to all subscriber content</li>
+                        <li>• Direct messaging with creators</li>
+                        <li>• Community discussions</li>
+                        <li>• Early access to new posts</li>
+                      </>
+                    )}
+                    {content.privacyLevel === 'premium' && (
+                      <>
+                        <li>• All subscriber benefits</li>
+                        <li>• Premium HD content</li>
+                        <li>• Download content offline</li>
+                        <li>• Priority support</li>
+                      </>
+                    )}
+                    {content.privacyLevel === 'private' && (
+                      <>
+                        <li>• All premium benefits</li>
+                        <li>• VIP exclusive content</li>
+                        <li>• Unlimited messaging</li>
+                        <li>• Ultra HD streaming</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
         
-        {/* Content metadata that's always visible */}
-        <CardContent className="p-4 bg-background">
-          <div className="flex items-center justify-between">
+        {/* Enhanced content metadata */}
+        <CardContent className="p-4 bg-background border-t">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline">{content.type}</Badge>
-              {content.privacyLevel !== 'public' && (
-                <Badge className={getRequiredTierColor()}>
-                  {getRequiredTierName()}
-                </Badge>
-              )}
+              <Badge variant="outline" className="text-xs">
+                {content.type}
+              </Badge>
+              <Badge className={`text-white text-xs ${tierInfo.color}`}>
+                <TierIcon className="w-3 h-3 mr-1" />
+                {tierInfo.name}
+              </Badge>
             </div>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {content.createdAt?.toLocaleDateString()}
             </span>
           </div>
           
           {content.title && (
-            <h4 className="font-semibold mt-2">{content.title}</h4>
+            <h4 className="font-semibold text-sm mb-1 line-clamp-1">
+              {content.title}
+            </h4>
           )}
           
           {content.description && (
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
               {content.description}
             </p>
           )}
+
+          {/* Engagement preview */}
+          <div className="flex items-center justify-between mt-3 pt-3 border-t">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Heart className="w-3 h-3" />
+                {content.likesCount}
+              </span>
+              <span className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                {content.viewsCount}
+              </span>
+            </div>
+            <Button 
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowPricingModal(true)}
+              className="text-xs h-auto py-1 px-2"
+            >
+              View Plans
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
-      <PricingModal
+      <EnhancedPricingModal
         isOpen={showPricingModal}
         onClose={() => setShowPricingModal(false)}
         initialTab="subscriber"
+        showComparison={true}
       />
     </>
   );

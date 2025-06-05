@@ -78,7 +78,7 @@ const Landing: React.FC = () => {
               {/* Subscriber Badge */}
               <div className="inline-flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 px-4 py-2 rounded-full mb-8 shadow-lg backdrop-blur">
                 <Heart className="h-4 w-4 text-pink-500" />
-                <span className="text-sm font-medium">Join 50K+ Furry Fans</span>
+                <span className="text-sm font-medium">Join Our Growing Community</span>
                 <Heart className="h-4 w-4 text-pink-500" />
               </div>
               
@@ -112,11 +112,11 @@ const Landing: React.FC = () => {
               {/* Subscriber Stats */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">10K+</div>
+                  <div className="text-3xl font-bold text-primary mb-2">450+</div>
                   <div className="text-muted-foreground">Active Creators</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">1M+</div>
+                  <div className="text-3xl font-bold text-primary mb-2">15K+</div>
                   <div className="text-muted-foreground">Posts & Videos</div>
                 </div>
                 <div className="text-center">
@@ -168,7 +168,7 @@ const Landing: React.FC = () => {
                 What Our Community Says
               </h2>
               <p className="text-xl text-muted-foreground">
-                Join thousands of happy furry fans discovering amazing content daily
+                Join our growing community of furry fans discovering amazing content daily
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -256,7 +256,7 @@ const Landing: React.FC = () => {
                 Are You a Furry Creator?
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Turn your passion into profit. Join thousands of successful furry creators earning money from their art, photography, and content.
+                Turn your passion into profit. Join hundreds of successful furry creators already earning money from their art, photography, and content.
               </p>
             </div>
             

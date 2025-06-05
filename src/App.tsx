@@ -12,6 +12,7 @@ import MainLayout from '@/layouts/MainLayout';
 import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import GoogleCallback from '@/pages/GoogleCallback';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
 import Explore from '@/pages/Explore';
@@ -25,12 +26,46 @@ import Earnings from '@/pages/Earnings';
 import Messages from '@/pages/Messages';
 import CreatorDashboard from '@/pages/CreatorDashboard';
 
+// Footer Pages
+import About from '@/pages/About';
+import HowItWorks from '@/pages/HowItWorks';
+import CreatorProgram from '@/pages/CreatorProgram';
+import HelpCenter from '@/pages/HelpCenter';
+import Contact from '@/pages/Contact';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import TermsOfService from '@/pages/TermsOfService';
+
 // Admin Pages
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
 import ContentModeration from '@/pages/admin/ContentModeration';
 import PaymentManagement from '@/pages/admin/PaymentManagement';
 import TagManagement from '@/pages/admin/TagManagement';
+
+// Footer Pages
+// Platform
+import About from '@/pages/platform/About';
+import HowItWorks from '@/pages/platform/HowItWorks';
+import CreatorProgram from '@/pages/platform/CreatorProgram';
+import SuccessStories from '@/pages/platform/SuccessStories';
+
+// Support
+import HelpCenter from '@/pages/support/HelpCenter';
+import Safety from '@/pages/support/Safety';
+import CommunityGuidelines from '@/pages/support/CommunityGuidelines';
+import ContactUs from '@/pages/support/ContactUs';
+
+// Legal
+import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
+import TermsOfService from '@/pages/legal/TermsOfService';
+import CookiePolicy from '@/pages/legal/CookiePolicy';
+import DMCA from '@/pages/legal/DMCA';
+
+// Creator Resources
+import CreatorResources from '@/pages/creators/CreatorResources';
+import BestPractices from '@/pages/creators/BestPractices';
+import AnalyticsGuide from '@/pages/creators/AnalyticsGuide';
+import TaxInfo from '@/pages/creators/TaxInfo';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -112,6 +147,10 @@ function App() {
                     <Register />
                   </PublicRoute>
                 }
+              />
+              <Route
+                path="auth/callback/google"
+                element={<GoogleCallback />}
               />
 
               {/* Protected Routes */}
@@ -376,13 +415,29 @@ function App() {
                 }
               />
 
+              {/* Platform Pages */}
+              <Route path="about" element={<About />} />
+              <Route path="how-it-works" element={<HowItWorks />} />
+              <Route path="creator-program" element={<CreatorProgram />} />
+              <Route path="success-stories" element={<ComingSoon title="Success Stories" />} />
+
+              {/* Support Pages */}
+              <Route path="help" element={<HelpCenter />} />
+              <Route path="safety" element={<ComingSoon title="Safety Center" />} />
+              <Route path="guidelines" element={<ComingSoon title="Community Guidelines" />} />
+              <Route path="contact" element={<Contact />} />
+
               {/* Legal Pages */}
-              <Route path="about" element={<ComingSoon title="About Us" />} />
-              <Route path="how-it-works" element={<ComingSoon title="How It Works" />} />
-              <Route path="creator-program" element={<ComingSoon title="Creator Program" />} />
-              <Route path="terms" element={<ComingSoon title="Terms of Service" />} />
-              <Route path="privacy" element={<ComingSoon title="Privacy Policy" />} />
-              <Route path="contact" element={<ComingSoon title="Contact Us" />} />
+              <Route path="privacy" element={<PrivacyPolicy />} />
+              <Route path="terms" element={<TermsOfService />} />
+              <Route path="cookies" element={<ComingSoon title="Cookie Policy" />} />
+              <Route path="dmca" element={<ComingSoon title="DMCA Information" />} />
+
+              {/* Creator Resources */}
+              <Route path="creator-resources" element={<ComingSoon title="Creator Resources" />} />
+              <Route path="best-practices" element={<ComingSoon title="Best Practices" />} />
+              <Route path="analytics-guide" element={<ComingSoon title="Analytics Guide" />} />
+              <Route path="tax-info" element={<ComingSoon title="Tax Information" />} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />

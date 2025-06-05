@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import RoleSelector from '@/components/auth/RoleSelector';
+import EnhancedRoleSelector from '@/components/auth/EnhancedRoleSelector';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 
@@ -31,9 +32,11 @@ const registerSchema = z.object({
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   confirmPassword: z.string(),
   role: z.enum(['creator', 'subscriber']).default('subscriber'),
+  selectedTier: z.string().optional(),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions',
   }),
+  newsletter: z.boolean().default(false),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -44,6 +47,7 @@ type RegisterForm = z.infer<typeof registerSchema>;
 const Register: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState<'creator' | 'subscriber' | null>(null);
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,12 +71,18 @@ const Register: React.FC = () => {
 
   const agreeToTerms = watch('agreeToTerms');
 
-  // Update form role when role selector changes
+  // Update form role and tier when selectors change
   React.useEffect(() => {
     if (selectedRole) {
       setValue('role', selectedRole);
     }
   }, [selectedRole, setValue]);
+
+  React.useEffect(() => {
+    if (selectedTier) {
+      setValue('selectedTier', selectedTier);
+    }
+  }, [selectedTier, setValue]);
 
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
@@ -85,8 +95,18 @@ const Register: React.FC = () => {
         displayName: data.displayName,
         role: data.role,
         password: data.password,
+        selectedTier: data.selectedTier,
+        newsletter: data.newsletter,
       });
-      navigate('/dashboard');
+      
+      // If user selected a paid tier, redirect to payment
+      if (data.selectedTier && data.selectedTier !== 'basic-creator') {
+        navigate('/subscription/checkout', { 
+          state: { tierId: data.selectedTier } 
+        });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError('Registration failed. Please try again.');
     } finally {
@@ -154,9 +174,12 @@ const Register: React.FC = () => {
                   </Alert>
                 )}
 
-                <RoleSelector
+                <EnhancedRoleSelector
                   selectedRole={selectedRole}
+                  selectedTier={selectedTier}
                   onRoleSelect={setSelectedRole}
+                  onTierSelect={setSelectedTier}
+                  showTierSelection={true}
                 />
 
                 <div className="flex justify-between mt-8">
