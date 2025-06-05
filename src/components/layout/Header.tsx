@@ -99,7 +99,7 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <>
                 {/* Upload Button for Creators */}
-                {user?.role === 'creator' && (
+                {(user?.role === 'creator' || user?.role === 'CREATOR') && (
                   <Button size="sm" className="hidden sm:flex" asChild>
                     <Link to="/content/upload">
                       <Upload className="h-4 w-4 mr-2" />
@@ -151,9 +151,9 @@ const Header: React.FC = () => {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    {user?.role === 'creator' && (
+                    {(user?.role === 'creator' || user?.role === 'CREATOR') && (
                       <DropdownMenuItem asChild>
-                        <Link to="/creator/analytics" className="flex items-center">
+                        <Link to="/creator-dashboard" className="flex items-center">
                           <Crown className="mr-2 h-4 w-4" />
                           Creator Studio
                         </Link>

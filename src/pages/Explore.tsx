@@ -1,568 +1,262 @@
-import React, { useState, useEffect } from 'react';
-import { ContentStorage, FURRY_SPECIES, FURRY_CONTENT_TAGS, ADULT_CONTENT_TAGS } from '@/lib/storage';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { 
-  Search, Filter, Star, Users, TrendingUp, Camera, Video, Palette,
-  Heart, Play, Image, AlertTriangle, Flame, Crown, Zap
+  Search, 
+  Filter, 
+  Star, 
+  Users, 
+  TrendingUp,
+  Camera,
+  Video,
+  Music,
+  Palette,
+  Dumbbell,
+  BookOpen,
+  Utensils,
+  Heart
 } from 'lucide-react';
 
-interface FurryCreator {
-  id: string;
-  name: string;
-  username: string;
-  avatar: string;
-  species: string;
-  fursona: string;
-  category: string;
-  subscribers: string;
-  rating: number;
-  price: string;
-  isVerified: boolean;
-  description: string;
-  tags: string[];
-  isNSFW: boolean;
-  contentCount: number;
-  featured: boolean;
-}
-
 const Explore: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [showNSFW, setShowNSFW] = useState(false);
-  const [sortBy, setSortBy] = useState('trending');
-  const [priceRange, setPriceRange] = useState('all');
-  const [creators, setCreators] = useState<FurryCreator[]>([]);
-  const [filteredCreators, setFilteredCreators] = useState<FurryCreator[]>([]);
-
-  // Furry content categories
-  const furryCategories = [
-    { name: 'Fursuit Photos', icon: Camera, color: 'text-blue-500', count: 89, nsfw: false },
-    { name: 'Murrsuit Content', icon: Heart, color: 'text-red-500', count: 67, nsfw: true },
-    { name: 'Character Art', icon: Palette, color: 'text-purple-500', count: 156, nsfw: false },
-    { name: 'Transformation', icon: Zap, color: 'text-yellow-500', count: 45, nsfw: true },
-    { name: 'Furry Videos', icon: Video, color: 'text-green-500', count: 78, nsfw: false },
-    { name: 'Adult Art', icon: Flame, color: 'text-orange-500', count: 134, nsfw: true },
-    { name: 'Tutorials', icon: Play, color: 'text-indigo-500', count: 23, nsfw: false },
-    { name: 'Photography', icon: Image, color: 'text-pink-500', count: 92, nsfw: false },
+  const categories = [
+    { name: 'Photography', icon: Camera, color: 'text-blue-500', count: 245 },
+    { name: 'Fitness', icon: Dumbbell, color: 'text-green-500', count: 189 },
+    { name: 'Art', icon: Palette, color: 'text-purple-500', count: 156 },
+    { name: 'Music', icon: Music, color: 'text-pink-500', count: 134 },
+    { name: 'Cooking', icon: Utensils, color: 'text-orange-500', count: 98 },
+    { name: 'Education', icon: BookOpen, color: 'text-indigo-500', count: 87 },
+    { name: 'Video', icon: Video, color: 'text-red-500', count: 203 },
+    { name: 'Lifestyle', icon: Heart, color: 'text-rose-500', count: 167 },
   ];
 
-  // Mock furry creators data
-  useEffect(() => {
-    const mockCreators: FurryCreator[] = [
-      {
-        id: '1',
-        name: 'Arctic Paws',
-        username: 'arcticpaws',
-        avatar: '/images/branding/fox-mascot.webp',
-        species: 'Fox',
-        fursona: 'Arctic Fox',
-        category: 'Fursuit Photos',
-        subscribers: '18.5K',
-        rating: 4.9,
-        price: '$25/month',
-        isVerified: true,
-        description: 'Professional fursuit photographer specializing in outdoor and studio shoots',
-        tags: ['Fursuit', 'Photography', 'Outdoor', 'Professional'],
-        isNSFW: false,
-        contentCount: 156,
-        featured: true
-      },
-      {
-        id: '2',
-        name: 'Dragon Flames',
-        username: 'dragonflames',
-        avatar: '/images/branding/fursuit-icon.jpg',
-        species: 'Dragon',
-        fursona: 'Fire Dragon',
-        category: 'Character Art',
-        subscribers: '23.1K',
-        rating: 4.8,
-        price: '$30/month',
-        isVerified: true,
-        description: 'Digital artist creating stunning dragon artwork and commissions',
-        tags: ['Art', 'Dragon', 'Digital', 'Commission'],
-        isNSFW: false,
-        contentCount: 289,
-        featured: true
-      },
-      {
-        id: '3',
-        name: 'Wolf Pack Studios',
-        username: 'wolfpackstudios',
-        avatar: '/images/branding/paw-logo.jpg',
-        species: 'Wolf',
-        fursona: 'Alpha Wolf',
-        category: 'Murrsuit Content',
-        subscribers: '15.7K',
-        rating: 4.7,
-        price: '$35/month',
-        isVerified: true,
-        description: 'Adult fursuit content and intimate photoshoots (18+ only)',
-        tags: ['Murrsuit', 'Adult', 'Intimate', 'Studio'],
-        isNSFW: true,
-        contentCount: 178,
-        featured: true
-      },
-      {
-        id: '4',
-        name: 'Feline Fantasies',
-        username: 'felinefantasies',
-        avatar: '/images/branding/paw-favicon.png',
-        species: 'Cat',
-        fursona: 'Maine Coon',
-        category: 'Adult Art',
-        subscribers: '12.3K',
-        rating: 4.6,
-        price: '$20/month',
-        isVerified: false,
-        description: 'Erotic furry art and character development',
-        tags: ['Art', 'Erotic', 'NSFW', 'Character'],
-        isNSFW: true,
-        contentCount: 234,
-        featured: false
-      },
-      {
-        id: '5',
-        name: 'Tiger Stripes',
-        username: 'tigerstripes',
-        avatar: '/images/branding/fox-silhouette.jpg',
-        species: 'Tiger',
-        fursona: 'Siberian Tiger',
-        category: 'Fursuit Photos',
-        subscribers: '9.8K',
-        rating: 4.5,
-        price: '$18/month',
-        isVerified: true,
-        description: 'Fursuit modeling and cosplay photography',
-        tags: ['Fursuit', 'Cosplay', 'Modeling', 'Tiger'],
-        isNSFW: false,
-        contentCount: 123,
-        featured: false
-      },
-      {
-        id: '6',
-        name: 'Rabbit Hole',
-        username: 'rabbithole',
-        avatar: '/images/branding/paw-logo.jpg',
-        species: 'Rabbit',
-        fursona: 'Lop Bunny',
-        category: 'Transformation',
-        subscribers: '14.2K',
-        rating: 4.8,
-        price: '$28/month',
-        isVerified: true,
-        description: 'Transformation sequences and magical furry content',
-        tags: ['Transformation', 'Magic', 'Sequence', 'Fantasy'],
-        isNSFW: true,
-        contentCount: 167,
-        featured: true
-      }
-    ];
+  const featuredCreators = [
+    {
+      id: 1,
+      name: 'Sarah Johnson',
+      username: 'sarahj_photo',
+      avatar: '👩‍💼',
+      category: 'Photography',
+      subscribers: '12.5K',
+      rating: 4.9,
+      price: '$15/month',
+      isVerified: true,
+      description: 'Professional photographer sharing exclusive behind-the-scenes content',
+    },
+    {
+      id: 2,
+      name: 'Mike Chen',
+      username: 'mikefit',
+      avatar: '🏋️‍♂️',
+      category: 'Fitness',
+      subscribers: '8.3K',
+      rating: 4.8,
+      price: '$20/month',
+      isVerified: true,
+      description: 'Certified personal trainer with custom workout plans',
+    },
+    {
+      id: 3,
+      name: 'Emma Davis',
+      username: 'emma_arts',
+      avatar: '🎨',
+      category: 'Art',
+      subscribers: '15.2K',
+      rating: 4.9,
+      price: '$12/month',
+      isVerified: false,
+      description: 'Digital artist creating stunning illustrations and tutorials',
+    },
+    {
+      id: 4,
+      name: 'Alex Thompson',
+      username: 'alexmusic',
+      avatar: '🎵',
+      category: 'Music',
+      subscribers: '9.7K',
+      rating: 4.7,
+      price: '$18/month',
+      isVerified: true,
+      description: 'Musician sharing exclusive tracks and music production tips',
+    },
+    {
+      id: 5,
+      name: 'Lisa Rodriguez',
+      username: 'lisa_cooks',
+      avatar: '👩‍🍳',
+      category: 'Cooking',
+      subscribers: '11.1K',
+      rating: 4.8,
+      price: '$14/month',
+      isVerified: true,
+      description: 'Professional chef with exclusive recipes and cooking classes',
+    },
+    {
+      id: 6,
+      name: 'David Kim',
+      username: 'david_learns',
+      avatar: '📚',
+      category: 'Education',
+      subscribers: '6.8K',
+      rating: 4.9,
+      price: '$25/month',
+      isVerified: false,
+      description: 'Educational content on technology and programming',
+    },
+  ];
 
-    setCreators(mockCreators);
-    setFilteredCreators(mockCreators);
-  }, []);
-
-  // Filter creators based on search and filters
-  useEffect(() => {
-    let filtered = creators.filter(creator => {
-      // Search filter
-      const matchesSearch = creator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           creator.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           creator.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           creator.fursona.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // Species filter
-      const matchesSpecies = selectedSpecies.length === 0 || selectedSpecies.includes(creator.species);
-
-      // Tags filter
-      const matchesTags = selectedTags.length === 0 || selectedTags.some(tag => creator.tags.includes(tag));
-
-      // NSFW filter
-      const matchesNSFW = showNSFW || !creator.isNSFW;
-
-      // Price filter
-      let matchesPrice = true;
-      if (priceRange !== 'all') {
-        const price = parseInt(creator.price.replace(/[^0-9]/g, ''));
-        switch (priceRange) {
-          case 'under15':
-            matchesPrice = price < 15;
-            break;
-          case '15-25':
-            matchesPrice = price >= 15 && price <= 25;
-            break;
-          case '25-35':
-            matchesPrice = price >= 25 && price <= 35;
-            break;
-          case 'over35':
-            matchesPrice = price > 35;
-            break;
-        }
-      }
-
-      return matchesSearch && matchesSpecies && matchesTags && matchesNSFW && matchesPrice;
-    });
-
-    // Sort filtered results
-    switch (sortBy) {
-      case 'trending':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'subscribers':
-        filtered.sort((a, b) => parseFloat(b.subscribers) - parseFloat(a.subscribers));
-        break;
-      case 'newest':
-        filtered.sort((a, b) => b.contentCount - a.contentCount);
-        break;
-      case 'price_low':
-        filtered.sort((a, b) => parseInt(a.price.replace(/[^0-9]/g, '')) - parseInt(b.price.replace(/[^0-9]/g, '')));
-        break;
-      case 'price_high':
-        filtered.sort((a, b) => parseInt(b.price.replace(/[^0-9]/g, '')) - parseInt(a.price.replace(/[^0-9]/g, '')));
-        break;
-    }
-
-    setFilteredCreators(filtered);
-  }, [creators, searchTerm, selectedSpecies, selectedTags, showNSFW, priceRange, sortBy]);
-
-  const toggleSpeciesFilter = (species: string) => {
-    setSelectedSpecies(prev => 
-      prev.includes(species) 
-        ? prev.filter(s => s !== species)
-        : [...prev, species]
-    );
-  };
-
-  const toggleTagFilter = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
-  };
+  const trendingCreators = featuredCreators.slice(0, 3);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <h1 className="text-3xl font-bold text-orange-600">Explore OnlyFur</h1>
-          <Badge variant="secondary" className="bg-red-100 text-red-800">
-            <AlertTriangle className="h-3 w-3 mr-1" />
-            18+ Adult Content Platform
-          </Badge>
-        </div>
-        <p className="text-gray-600">Discover amazing furry creators and murrtubers</p>
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold">Discover Amazing Creators</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Explore exclusive content from talented creators across various categories
+        </p>
       </div>
 
-      {/* Age Verification Warning */}
-      <Card className="mb-6 border-red-200 bg-red-50">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-red-600" />
-            <div>
-              <p className="font-medium text-red-800">Adult Content Warning</p>
-              <p className="text-sm text-red-700">
-                This platform contains adult content. By continuing, you confirm you are 18+ years old.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Search and Filter */}
+      <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search creators, categories, or content..."
+            className="pl-10"
+          />
+        </div>
+        <Button variant="outline">
+          <Filter className="w-4 h-4 mr-2" />
+          Filters
+        </Button>
+      </div>
 
-      {/* Search and Filters */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Search & Filters
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search creators, species, or content..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      {/* Categories */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Browse by Category</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          {categories.map((category, index) => (
+            <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4 text-center">
+                <category.icon className={`w-8 h-8 mx-auto mb-2 ${category.color}`} />
+                <p className="text-sm font-medium">{category.name}</p>
+                <p className="text-xs text-muted-foreground">{category.count} creators</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-          {/* Filter Controls */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="trending">Trending</SelectItem>
-                <SelectItem value="subscribers">Most Subscribers</SelectItem>
-                <SelectItem value="newest">Most Content</SelectItem>
-                <SelectItem value="price_low">Price: Low to High</SelectItem>
-                <SelectItem value="price_high">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Price range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Prices</SelectItem>
-                <SelectItem value="under15">Under $15</SelectItem>
-                <SelectItem value="15-25">$15 - $25</SelectItem>
-                <SelectItem value="25-35">$25 - $35</SelectItem>
-                <SelectItem value="over35">Over $35</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="nsfw-toggle"
-                checked={showNSFW}
-                onCheckedChange={setShowNSFW}
-              />
-              <Label htmlFor="nsfw-toggle" className="text-sm font-medium">
-                Show NSFW Content
-              </Label>
-            </div>
-          </div>
-
-          {/* Species Filter */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">Filter by Species</Label>
-            <div className="flex flex-wrap gap-2">
-              {FURRY_SPECIES.slice(0, 10).map((species) => (
-                <Button
-                  key={species}
-                  variant={selectedSpecies.includes(species) ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => toggleSpeciesFilter(species)}
-                  className="h-8"
-                >
-                  {species}
-                  {selectedSpecies.includes(species) && (
-                    <span className="ml-2 bg-white/20 px-1 rounded text-xs">
-                      {creators.filter(c => c.species === species).length}
-                    </span>
+      {/* Trending Creators */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold flex items-center">
+            <TrendingUp className="w-6 h-6 mr-2 text-orange-500" />
+            Trending Creators
+          </h2>
+          <Button variant="outline">View All</Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {trendingCreators.map((creator) => (
+            <Card key={creator.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center pb-4">
+                <div className="w-20 h-20 mx-auto mb-3 text-4xl rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                  {creator.avatar}
+                </div>
+                <CardTitle className="flex items-center justify-center space-x-2">
+                  <span>{creator.name}</span>
+                  {creator.isVerified && (
+                    <Badge className="bg-blue-500">✓</Badge>
                   )}
-                </Button>
-              ))}
-            </div>
-          </div>
+                </CardTitle>
+                <CardDescription>@{creator.username}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center space-x-1">
+                    <Users className="w-4 h-4" />
+                    <span>{creator.subscribers}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-4 h-4 fill-current text-yellow-500" />
+                    <span>{creator.rating}</span>
+                  </div>
+                </div>
+                <Badge variant="secondary">{creator.category}</Badge>
+                <p className="text-sm text-muted-foreground">{creator.description}</p>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="font-semibold text-lg">{creator.price}</span>
+                  <Button size="sm">Subscribe</Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-          {/* Content Tags Filter */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">Content Tags</Label>
-            <div className="flex flex-wrap gap-2">
-              {[...FURRY_CONTENT_TAGS.slice(0, 8), ...ADULT_CONTENT_TAGS.slice(0, 4)].map((tag) => (
-                <Button
-                  key={tag}
-                  variant={selectedTags.includes(tag) ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => toggleTagFilter(tag)}
-                  className="h-8"
-                >
-                  {tag}
-                  {tag === 'NSFW' && <AlertTriangle className="h-3 w-3 ml-1" />}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Tabs defaultValue="creators" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="creators">Featured Creators</TabsTrigger>
-          <TabsTrigger value="categories">Browse Categories</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="creators" className="space-y-6">
-          {/* Featured Creators */}
-          {filteredCreators.filter(c => c.featured).length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Crown className="h-6 w-6 text-yellow-500" />
-                Featured Murrtubers
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCreators.filter(c => c.featured).map((creator) => (
-                  <Card key={creator.id} className={`relative ${creator.isNSFW ? 'border-red-200' : ''}`}>
-                    {creator.isNSFW && (
-                      <Badge className="absolute top-3 right-3 bg-red-500 hover:bg-red-600">
-                        <AlertTriangle className="h-3 w-3 mr-1" />
-                        NSFW
-                      </Badge>
-                    )}
-                    <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={creator.avatar} />
-                          <AvatarFallback>{creator.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <CardTitle className="text-lg">{creator.name}</CardTitle>
-                            {creator.isVerified && (
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                <Star className="h-3 w-3 mr-1" />
-                                Verified
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-600">@{creator.username}</p>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center gap-4 text-sm">
-                        <span>🦊 {creator.species}</span>
-                        <span>✨ {creator.fursona}</span>
-                      </div>
-                      <p className="text-sm text-gray-600">{creator.description}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {creator.tags.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {creator.subscribers}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Star className="h-4 w-4 text-yellow-500" />
-                            {creator.rating}
-                          </span>
-                        </div>
-                        <Badge variant="secondary" className="font-bold">
-                          {creator.price}
+      {/* Featured Creators */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Featured Creators</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredCreators.map((creator) => (
+            <Card key={creator.id} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 text-2xl rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                    {creator.avatar}
+                  </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <span>{creator.name}</span>
+                      {creator.isVerified && (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                          ✓
                         </Badge>
-                      </div>
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                        Subscribe Now
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
+                      )}
+                    </CardTitle>
+                    <CardDescription>@{creator.username}</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <Badge variant="outline">{creator.category}</Badge>
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-4 h-4 fill-current text-yellow-500" />
+                    <span>{creator.rating}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">{creator.description}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                    <Users className="w-4 h-4" />
+                    <span>{creator.subscribers} subscribers</span>
+                  </div>
+                  <span className="font-semibold">{creator.price}</span>
+                </div>
+                <Button className="w-full">Subscribe</Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-          {/* All Creators */}
-          <div>
-            <h2 className="text-2xl font-bold mb-4">All Creators ({filteredCreators.length})</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCreators.map((creator) => (
-                <Card key={creator.id} className={`relative ${creator.isNSFW ? 'border-red-200' : ''}`}>
-                  {creator.isNSFW && (
-                    <Badge className="absolute top-3 right-3 bg-red-500 hover:bg-red-600">
-                      <AlertTriangle className="h-3 w-3 mr-1" />
-                      NSFW
-                    </Badge>
-                  )}
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={creator.avatar} />
-                        <AvatarFallback>{creator.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <CardTitle className="text-base">{creator.name}</CardTitle>
-                          {creator.isVerified && (
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                              ✓
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-600">{creator.species} • {creator.subscribers}</p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-gray-600 line-clamp-2">{creator.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1 text-sm">
-                        <Star className="h-3 w-3 text-yellow-500" />
-                        {creator.rating}
-                      </span>
-                      <Badge variant="secondary" className="font-bold text-sm">
-                        {creator.price}
-                      </Badge>
-                    </div>
-                    <Button size="sm" className="w-full bg-orange-500 hover:bg-orange-600">
-                      Subscribe
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+      {/* CTA Section */}
+      <Card className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-none">
+        <CardContent className="p-8 text-center">
+          <h3 className="text-2xl font-bold mb-2">Ready to Start Creating?</h3>
+          <p className="text-muted-foreground mb-6">
+            Join thousands of creators earning from their passion
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Button size="lg">Become a Creator</Button>
+            <Button variant="outline" size="lg">Learn More</Button>
           </div>
-        </TabsContent>
-
-        <TabsContent value="categories" className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Browse by Category</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {furryCategories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <Card key={category.name} className={`cursor-pointer hover:shadow-lg transition-shadow ${category.nsfw ? 'border-red-200' : ''}`}>
-                    <CardHeader className="text-center">
-                      <div className="flex justify-center mb-3">
-                        <Icon className={`h-12 w-12 ${category.color}`} />
-                      </div>
-                      <CardTitle className="flex items-center justify-center gap-2">
-                        {category.name}
-                        {category.nsfw && <AlertTriangle className="h-4 w-4 text-red-500" />}
-                      </CardTitle>
-                      <CardDescription>
-                        {category.count} creators
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {filteredCreators.length === 0 && (
-        <Card className="text-center py-12">
-          <CardContent>
-            <p className="text-gray-500 mb-4">No creators found matching your criteria.</p>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedSpecies([]);
-                setSelectedTags([]);
-                setPriceRange('all');
-              }}
-            >
-              Clear Filters
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -9,6 +9,37 @@ export interface User {
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  subscriptionTier?: UserSubscriptionTier;
+  authProvider?: 'email' | 'google';
+  googleId?: string;
+}
+
+// Subscription Tier Types for Users
+export interface UserSubscriptionTier {
+  id: string;
+  name: string;
+  type: 'subscriber' | 'creator';
+  level: 'basic' | 'pro' | 'premium' | 'vip';
+  price: number;
+  features: string[];
+  messagingPermissions: MessagingPermissions;
+  contentAccessLevel: number;
+  canAccessPremiumContent: boolean;
+  canMessageCreators: boolean;
+  maxConversations: number;
+  supportLevel: 'basic' | 'priority' | 'premium';
+  status: 'active' | 'cancelled' | 'expired';
+  validUntil?: Date;
+}
+
+// Messaging Permissions
+export interface MessagingPermissions {
+  canReceiveMessages: boolean;
+  allowedSenderTiers: string[];
+  canSendBulkMessages: boolean;
+  maxMessagesPerDay: number;
+  canSendMedia: boolean;
+  canReceiveTips: boolean;
 }
 
 export interface Creator extends User {
@@ -126,6 +157,44 @@ export interface SubscriptionTier {
   description: string;
   benefits: string[];
   isActive: boolean;
+}
+
+// Platform Subscription Tiers
+export interface PlatformSubscriptionTier {
+  id: string;
+  name: string;
+  type: 'subscriber' | 'creator';
+  level: 'basic' | 'pro' | 'premium' | 'vip';
+  price: number;
+  currency: string;
+  billingPeriod: 'monthly' | 'yearly';
+  description: string;
+  features: string[];
+  limitations: string[];
+  messagingFeatures: {
+    canMessageCreators: boolean;
+    allowedCreatorTiers: string[];
+    maxConversationsPerDay: number;
+    canSendMedia: boolean;
+    canReceivePrioritySupport: boolean;
+  };
+  contentAccess: {
+    canViewPremiumContent: boolean;
+    canViewExclusiveContent: boolean;
+    downloadPermissions: boolean;
+    earlyAccess: boolean;
+  };
+  creatorFeatures?: {
+    maxUploadsPerDay: number;
+    maxSubscribers: number;
+    analyticsAccess: 'basic' | 'advanced' | 'premium';
+    customBranding: boolean;
+    liveStreamingEnabled: boolean;
+    bulkMessageLimit: number;
+  };
+  isPopular: boolean;
+  color: string;
+  badge?: string;
 }
 
 // Legacy Message Types (replaced by detailed messaging types below)

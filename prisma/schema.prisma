@@ -1,0 +1,264 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with subscription tiers
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  username         String   @unique
+  displayName      String
+  avatar           String?
+  role             UserRole @default(SUBSCRIBER)
+  isVerified       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Authentication
+  authProvider     AuthProvider @default(EMAIL)
+  googleId         String?      @unique
+  
+  // Subscription information
+  subscriptionTier   String?
+  subscriptionStatus SubscriptionStatus @default(FREE)
+  subscriptionValidUntil DateTime?
+  
+  // Creator specific fields
+  bio              String?
+  coverImage       String?
+  socialLinks      Json?
+  
+  // Relations
+  createdContent   Content[]
+  subscriptions    Subscription[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  transactions     Transaction[]
+  
+  @@map("users")
+}
+
+model PlatformSubscriptionTier {
+  id                    String   @id @default(cuid())
+  name                  String
+  type                  TierType
+  level                 TierLevel
+  price                 Float
+  currency              String   @default("USD")
+  billingPeriod         BillingPeriod @default(MONTHLY)
+  description           String
+  features              String[]
+  limitations           String[]
+  messagingFeatures     Json
+  contentAccess         Json
+  creatorFeatures       Json?
+  isPopular             Boolean  @default(false)
+  color                 String
+  badge                 String?
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  subscriptions         Subscription[]
+  
+  @@map("platform_subscription_tiers")
+}
+
+model Subscription {
+  id                    String   @id @default(cuid())
+  userId                String
+  tierId                String
+  status                SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean  @default(false)
+  canceledAt            DateTime?
+  trialStart            DateTime?
+  trialEnd              DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tier                  PlatformSubscriptionTier @relation(fields: [tierId], references: [id])
+  transactions          Transaction[]
+  
+  @@map("subscriptions")
+}
+
+model Content {
+  id                    String   @id @default(cuid())
+  creatorId             String
+  title                 String
+  description           String?
+  type                  ContentType
+  mediaUrl              String?
+  mediaUrls             String[]
+  thumbnailUrl          String?
+  isPublic              Boolean  @default(true)
+  requiresSubscription  Boolean  @default(false)
+  privacyLevel          PrivacyLevel @default(PUBLIC)
+  status                ContentStatus @default(PUBLISHED)
+  scheduledAt           DateTime?
+  tags                  String[]
+  category              String?
+  fileSize              Int?
+  fileName              String?
+  mimeType              String?
+  dimensions            Json?
+  duration              Int?
+  likesCount            Int      @default(0)
+  commentsCount         Int      @default(0)
+  viewsCount            Int      @default(0)
+  sharesCount           Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  creator               User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  @@map("content")
+}
+
+model Message {
+  id                    String   @id @default(cuid())
+  conversationId        String
+  senderId              String
+  recipientId           String
+  content               String
+  messageType           MessageType @default(TEXT)
+  mediaUrl              String?
+  isRead                Boolean  @default(false)
+  readAt                DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  sender                User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient             User @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+  
+  @@map("messages")
+}
+
+model Transaction {
+  id                    String   @id @default(cuid())
+  userId                String
+  subscriptionId        String?
+  amount                Float
+  currency              String   @default("USD")
+  type                  TransactionType
+  status                TransactionStatus @default(PENDING)
+  paymentMethodType     PaymentMethodType
+  paymentIntentId       String?
+  description           String
+  fees                  Float    @default(0)
+  netAmount             Float
+  processedAt           DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription          Subscription? @relation(fields: [subscriptionId], references: [id])
+  
+  @@map("transactions")
+}
+
+// Enums
+enum UserRole {
+  CREATOR
+  SUBSCRIBER
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+}
+
+enum TierType {
+  SUBSCRIBER
+  CREATOR
+}
+
+enum TierLevel {
+  BASIC
+  PRO
+  PREMIUM
+  VIP
+}
+
+enum BillingPeriod {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  FREE
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  UNPAID
+  TRIALING
+  PAUSED
+  EXPIRED
+}
+
+enum ContentType {
+  PHOTO
+  VIDEO
+  TEXT
+  LIVESTREAM
+}
+
+enum PrivacyLevel {
+  PUBLIC
+  SUBSCRIBERS
+  PREMIUM
+  PRIVATE
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+enum TransactionType {
+  SUBSCRIPTION
+  TIP
+  ONE_TIME
+  REFUND
+  PAYOUT
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethodType {
+  STRIPE
+  PAYPAL
+}
