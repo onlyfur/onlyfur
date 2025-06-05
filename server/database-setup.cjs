@@ -19,6 +19,9 @@ class MockPrismaClient {
   }
 
   async initializeDefaultData() {
+    // Create default admin user from environment variables
+    await this.createDefaultAdminUser();
+    
     // Add default subscription tiers
     const defaultTiers = [
       {
@@ -348,6 +351,43 @@ class MockPrismaClient {
       return this.data.platformSubscriptionTier.get(where.id) || null;
     }
   };
+
+  // Create default admin user from environment variables
+  async createDefaultAdminUser() {
+    const bcrypt = require('bcryptjs');
+    
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+    const adminDisplayName = process.env.ADMIN_DISPLAY_NAME || 'Platform Administrator';
+    
+    // Check if admin user already exists
+    const existingAdmin = Array.from(this.data.user.values()).find(u => u.email === adminEmail);
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 12);
+      const adminId = `admin_${Date.now()}`;
+      
+      const adminUser = {
+        id: adminId,
+        email: adminEmail,
+        username: adminUsername,
+        displayName: adminDisplayName,
+        avatar: '/images/branding/onlyfur-logo.png',
+        role: 'ADMIN',
+        isVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        password: hashedPassword,
+        authProvider: 'EMAIL',
+        subscriptionValidUntil: null
+      };
+      
+      this.data.user.set(adminId, adminUser);
+      console.log(`✅ Default admin user created: ${adminEmail}`);
+    } else {
+      console.log(`ℹ️  Admin user already exists: ${adminEmail}`);
+    }
+  }
 
   // Mock User operations
   user = {

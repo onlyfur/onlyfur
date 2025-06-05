@@ -20,6 +20,11 @@ app.use(express.json());
 // JWT secret
 const JWT_SECRET = process.env.JWT_SECRET || 'onlyfur-super-secret-key-for-development-only';
 
+// Admin credentials from environment variables
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -123,7 +128,42 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
+    // Check for admin credentials first
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      // Create or get admin user
+      let adminUser = await prisma.user.findUnique({
+        where: { email: ADMIN_EMAIL }
+      });
+
+      if (!adminUser) {
+        // Create admin user if doesn't exist
+        adminUser = await prisma.user.create({
+          data: {
+            email: ADMIN_EMAIL,
+            username: ADMIN_USERNAME,
+            displayName: 'OnlyFur Admin',
+            role: 'admin',
+            isVerified: true,
+            authProvider: 'EMAIL'
+          }
+        });
+      }
+
+      // Generate JWT token for admin
+      const token = jwt.sign(
+        { userId: adminUser.id, email: adminUser.email, role: 'admin' },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      return res.json({
+        success: true,
+        user: adminUser,
+        token
+      });
+    }
+
+    // Find regular user
     const user = await prisma.user.findUnique({
       where: { email }
     });

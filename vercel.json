@@ -1,9 +1,18 @@
 {
   "framework": "vite",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "server/index.cjs": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/server/index.cjs"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

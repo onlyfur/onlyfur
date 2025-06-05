@@ -3,12 +3,18 @@ import { User } from '@/types';
 // Mock authentication functions for frontend-only deployment
 // In production, these would connect to a real backend API
 
+// Admin credentials from environment variables
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@onlyfur.com';
+const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+const ADMIN_DISPLAY_NAME = import.meta.env.VITE_ADMIN_DISPLAY_NAME || 'OnlyFur Admin';
+
 const DEMO_USERS: User[] = [
   {
     id: '1',
-    email: 'admin@onlyfur.com',
-    username: 'admin',
-    displayName: 'OnlyFur Admin',
+    email: ADMIN_EMAIL,
+    username: ADMIN_USERNAME,
+    displayName: ADMIN_DISPLAY_NAME,
     role: 'admin' as const,
     avatar: '/images/branding/onlyfur-logo.png',
     bio: 'Platform Administrator',
@@ -66,9 +72,9 @@ const DEMO_USERS: User[] = [
 
 // Mock password verification
 const verifyPassword = (email: string, password: string): boolean => {
-  // For demo purposes, only accept 'password123' for valid demo accounts
+  // For demo purposes, check admin credentials from environment variables
   const validCredentials = [
-    { email: 'admin@onlyfur.com', password: 'password123' },
+    { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
     { email: 'admin@creatorhub.com', password: 'password123' },
     { email: 'demo@onlyfur.com', password: 'password123' },
     { email: 'demo@creatorhub.com', password: 'password123' }
