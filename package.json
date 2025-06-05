@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
     "frontend": "npx vite",
-    "backend": "node server/main-server.cjs",
+    "backend": "npx tsx server/production-server.ts",
     "backend:dev": "nodemon server/index.js",
     "backend:prod": "npx tsx server/production-server.ts",
     "start": "npm run backend:prod",

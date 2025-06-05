@@ -8,6 +8,12 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Load environment variables
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
@@ -16,7 +22,7 @@ dotenv.config({ path: path.join(__dirname, '..', envFile) });
 // Import middleware
 import { authenticateToken } from './middleware/auth';
 import { errorHandler } from './middleware/errorHandler';
-import { logger } from './middleware/logger';
+import { requestLogger } from './middleware/logger';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -92,7 +98,7 @@ app.use(compression());
 
 // Logging
 if (process.env.NODE_ENV !== 'test') {
-  app.use(logger);
+  app.use(requestLogger);
 }
 
 // Health check
