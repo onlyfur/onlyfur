@@ -5,10 +5,10 @@
   "description": "OnlyFur - Premium furry content platform for creators and fans",
   "type": "module",
   "scripts": {
-    "dev": "pnpm install && vite",
-    "build": "pnpm install && rm -rf node_modules/.vite-temp && tsc -b && vite build",
-    "lint": "pnpm install && eslint .",
-    "preview": "pnpm install && vite preview"
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -61,20 +61,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
-    "zod": "^3.24.1",
-    "@vercel/node": "^3.0.21",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.8",
-    "@sendgrid/mail": "^8.1.0",
-    "pg": "^8.11.3",
-    "mongodb": "^6.3.0",
-    "redis": "^4.6.12",
-    "uuid": "^9.0.1",
-    "multer": "^1.4.5-lts.1",
-    "cloudinary": "^1.41.1",
-    "aws-sdk": "^2.1519.0",
-    "stripe": "^14.14.0"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
@@ -91,12 +78,6 @@
     "postcss": "8.4.49",
     "tailwindcss": "v3.4.16",
     "typescript": "~5.6.2",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/nodemailer": "^6.4.14",
-    "@types/pg": "^8.10.9",
-    "@types/uuid": "^9.0.7",
-    "@types/multer": "^1.4.11",
     "typescript-eslint": "^8.15.0",
     "vite": "^6.0.1"
   }
