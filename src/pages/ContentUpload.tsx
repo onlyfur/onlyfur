@@ -20,10 +20,11 @@ import {
   Plus,
   AlertCircle,
   CheckCircle,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { useContent } from '@/contexts/ContentContext';
-import { ContentFile, ContentFormData } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { ContentStorage, processImageFile, processVideoFile, FURRY_SPECIES, FURRY_CONTENT_TAGS, ADULT_CONTENT_TAGS } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,29 +36,51 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
 
 const contentSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
   description: z.string().max(1000, 'Description must be less than 1000 characters'),
   tags: z.string(),
+  species: z.string().optional(),
   category: z.string().min(1, 'Category is required'),
   privacyLevel: z.enum(['public', 'subscribers', 'premium', 'private']),
+  price: z.number().min(0).optional(),
+  isNSFW: z.boolean(),
   scheduledAt: z.string().optional(),
 });
 
 type ContentFormValues = z.infer<typeof contentSchema>;
 
+interface UploadedFile {
+  id: string;
+  file: File;
+  preview: string;
+  progress: number;
+  status: 'uploading' | 'completed' | 'error';
+  type: 'image' | 'video' | 'audio';
+}
+
 const ContentUpload: React.FC = () => {
   const navigate = useNavigate();
-  const { createContent, categories, fileValidation, uploadFiles, isLoading: contentLoading } = useContent();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [uploadedFiles, setUploadedFiles] = useState<ContentFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  // File validation limits
+  const fileValidation = {
+    maxImageSize: 10, // MB
+    maxVideoSize: 100, // MB
+    allowedImageTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+    allowedVideoTypes: ['video/mp4', 'video/webm', 'video/mov']
+  };
 
   const {
     register,
@@ -70,11 +93,15 @@ const ContentUpload: React.FC = () => {
     defaultValues: {
       privacyLevel: 'public',
       category: '',
+      isNSFW: false,
+      price: 0,
     },
   });
 
   const privacyLevel = watch('privacyLevel');
   const tagsValue = watch('tags');
+  const isNSFW = watch('isNSFW');
+  const category = watch('category');
 
   const privacyOptions = [
     {
@@ -133,40 +160,83 @@ const ContentUpload: React.FC = () => {
   const processFiles = async (files: File[]) => {
     setUploadError(null);
     
-    try {
-      const contentFiles = await uploadFiles(files);
-      setUploadedFiles(prev => [...prev, ...contentFiles]);
+    const processedFiles: UploadedFile[] = [];
+    
+    for (const file of files) {
+      // Validate file type and size
+      const isImage = fileValidation.allowedImageTypes.includes(file.type);
+      const isVideo = fileValidation.allowedVideoTypes.includes(file.type);
       
-      // Simulate upload progress tracking
-      contentFiles.forEach(file => {
-        if (file.status === 'uploading') {
-          const interval = setInterval(() => {
-            setUploadProgress(prev => {
-              const newProgress = (prev[file.id] || 0) + Math.random() * 15;
-              if (newProgress >= 100) {
-                clearInterval(interval);
-                return { ...prev, [file.id]: 100 };
-              }
-              return { ...prev, [file.id]: newProgress };
-            });
-          }, 200);
+      if (!isImage && !isVideo) {
+        setUploadError(`Unsupported file type: ${file.type}`);
+        continue;
+      }
+      
+      const maxSize = isImage ? fileValidation.maxImageSize : fileValidation.maxVideoSize;
+      if (file.size > maxSize * 1024 * 1024) {
+        setUploadError(`File too large: ${file.name}. Max size: ${maxSize}MB`);
+        continue;
+      }
+      
+      try {
+        const fileId = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        let preview = '';
+        if (isImage) {
+          const { data } = await processImageFile(file);
+          preview = data;
+        } else if (isVideo) {
+          const { thumbnail } = await processVideoFile(file);
+          preview = thumbnail;
         }
-      });
-    } catch (error) {
-      setUploadError('Failed to process files. Please try again.');
+        
+        const uploadedFile: UploadedFile = {
+          id: fileId,
+          file,
+          preview,
+          progress: 0,
+          status: 'uploading',
+          type: isImage ? 'image' : isVideo ? 'video' : 'audio'
+        };
+        
+        processedFiles.push(uploadedFile);
+        
+        // Simulate upload progress
+        const interval = setInterval(() => {
+          setUploadedFiles(prev => 
+            prev.map(f => {
+              if (f.id === fileId && f.progress < 100) {
+                const newProgress = f.progress + Math.random() * 15;
+                if (newProgress >= 100) {
+                  clearInterval(interval);
+                  return { ...f, progress: 100, status: 'completed' as const };
+                }
+                return { ...f, progress: newProgress };
+              }
+              return f;
+            })
+          );
+        }, 200);
+        
+      } catch (error) {
+        console.error('Error processing file:', error);
+        setUploadError(`Failed to process file: ${file.name}`);
+      }
     }
+    
+    setUploadedFiles(prev => [...prev, ...processedFiles]);
   };
 
   const removeFile = (fileId: string) => {
     setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
-    setUploadProgress(prev => {
-      const newProgress = { ...prev };
-      delete newProgress[fileId];
-      return newProgress;
-    });
   };
 
   const onSubmit = async (data: ContentFormValues) => {
+    if (!user) {
+      setUploadError('You must be logged in to upload content.');
+      return;
+    }
+
     if (uploadedFiles.length === 0 && !data.description.trim()) {
       setUploadError('Please upload at least one file or add a description for text posts.');
       return;
@@ -178,23 +248,70 @@ const ContentUpload: React.FC = () => {
     try {
       const tags = data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
       
-      await createContent({
-        title: data.title,
-        description: data.description,
-        files: uploadedFiles,
-        tags,
-        category: data.category,
-        privacyLevel: data.privacyLevel,
-        scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : undefined,
-      });
+      // Save content for each uploaded file or create a text post
+      if (uploadedFiles.length > 0) {
+        for (const uploadedFile of uploadedFiles) {
+          if (uploadedFile.status === 'completed') {
+            const contentId = await ContentStorage.saveContent({
+              userId: user.id,
+              type: uploadedFile.type,
+              fileName: uploadedFile.file.name,
+              fileSize: uploadedFile.file.size,
+              mimeType: uploadedFile.file.type,
+              data: uploadedFile.preview,
+              thumbnail: uploadedFile.preview,
+              tags,
+              species: data.species || '',
+              isNSFW: data.isNSFW,
+              title: data.title,
+              description: data.description,
+              price: data.price || 0,
+              isPublic: data.privacyLevel === 'public',
+              likes: 0,
+              views: 0,
+              comments: []
+            });
+            
+            console.log('Content saved with ID:', contentId);
+          }
+        }
+      } else {
+        // Create text-only post
+        const contentId = await ContentStorage.saveContent({
+          userId: user.id,
+          type: 'image', // Default type for text posts
+          fileName: 'text-post.txt',
+          fileSize: 0,
+          mimeType: 'text/plain',
+          data: '',
+          tags,
+          species: data.species || '',
+          isNSFW: data.isNSFW,
+          title: data.title,
+          description: data.description,
+          price: data.price || 0,
+          isPublic: data.privacyLevel === 'public',
+          likes: 0,
+          views: 0,
+          comments: []
+        });
+        
+        console.log('Text post saved with ID:', contentId);
+      }
 
       setUploadSuccess(true);
+      
+      toast({
+        title: "Content uploaded successfully!",
+        description: `${uploadedFiles.length || 1} item(s) uploaded to your profile.`,
+      });
       
       // Redirect to content management after a short delay
       setTimeout(() => {
         navigate('/content');
       }, 2000);
     } catch (error) {
+      console.error('Upload error:', error);
       setUploadError('Failed to create content. Please try again.');
     } finally {
       setIsUploading(false);
@@ -301,8 +418,8 @@ const ContentUpload: React.FC = () => {
                     type="file"
                     multiple
                     accept={[
-                      ...fileValidation.supportedImageTypes,
-                      ...fileValidation.supportedVideoTypes,
+                      ...fileValidation.allowedImageTypes,
+                      ...fileValidation.allowedVideoTypes,
                     ].join(',')}
                     onChange={handleFileSelect}
                     className="hidden"
@@ -321,7 +438,6 @@ const ContentUpload: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {uploadedFiles.map((file) => {
                       const FileIcon = getFileIcon(file.file.type);
-                      const progress = uploadProgress[file.id] || 0;
                       
                       return (
                         <div key={file.id} className="border rounded-lg p-4 space-y-3">
@@ -347,7 +463,7 @@ const ContentUpload: React.FC = () => {
                             </Button>
                           </div>
 
-                          {file.type === 'image' && (
+                          {file.type === 'image' && file.preview && (
                             <div className="aspect-video bg-muted rounded-md overflow-hidden">
                               <img
                                 src={file.preview}
@@ -357,11 +473,11 @@ const ContentUpload: React.FC = () => {
                             </div>
                           )}
 
-                          {file.type === 'video' && (
+                          {file.type === 'video' && file.preview && (
                             <div className="aspect-video bg-muted rounded-md overflow-hidden">
-                              <video
+                              <img
                                 src={file.preview}
-                                controls
+                                alt="Video thumbnail"
                                 className="w-full h-full object-cover"
                               />
                             </div>
@@ -371,9 +487,9 @@ const ContentUpload: React.FC = () => {
                             <div className="space-y-2">
                               <div className="flex items-center justify-between text-sm">
                                 <span>Uploading...</span>
-                                <span>{Math.round(progress)}%</span>
+                                <span>{Math.round(file.progress)}%</span>
                               </div>
-                              <Progress value={progress} className="h-2" />
+                              <Progress value={file.progress} className="h-2" />
                             </div>
                           )}
 
@@ -387,7 +503,7 @@ const ContentUpload: React.FC = () => {
                           {file.status === 'error' && (
                             <div className="text-sm text-red-600">
                               <AlertCircle className="h-4 w-4 mr-2 inline" />
-                              {file.error}
+                              Upload failed
                             </div>
                           )}
                         </div>
@@ -434,36 +550,51 @@ const ContentUpload: React.FC = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
-                  <Select onValueChange={(value) => setValue('category', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: category.color }}
-                            />
-                            <span>{category.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.category && (
-                    <p className="text-sm text-destructive">{errors.category.message}</p>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category *</Label>
+                    <Select onValueChange={(value) => setValue('category', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Fursuit Photos">🐾 Fursuit Photos</SelectItem>
+                        <SelectItem value="Character Art">🎨 Character Art</SelectItem>
+                        <SelectItem value="Furry Videos">🎬 Furry Videos</SelectItem>
+                        <SelectItem value="Photography">📸 Photography</SelectItem>
+                        <SelectItem value="Tutorials">📚 Tutorials</SelectItem>
+                        <SelectItem value="Murrsuit Content">💕 Murrsuit Content</SelectItem>
+                        <SelectItem value="Adult Art">🔥 Adult Art</SelectItem>
+                        <SelectItem value="Transformation">⚡ Transformation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.category && (
+                      <p className="text-sm text-destructive">{errors.category.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="species">Species</Label>
+                    <Select onValueChange={(value) => setValue('species', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your species" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FURRY_SPECIES.map((species) => (
+                          <SelectItem key={species} value={species}>
+                            {species}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="tags">Tags</Label>
                   <Input
                     id="tags"
-                    placeholder="photography, lifestyle, behind-the-scenes (separate with commas)"
+                    placeholder="fursuit, photography, art, cute (separate with commas)"
                     {...register('tags')}
                   />
                   {tagsValue && (
@@ -480,6 +611,59 @@ const ContentUpload: React.FC = () => {
                       })}
                     </div>
                   )}
+                  
+                  {/* Suggested Tags */}
+                  <div>
+                    <Label className="text-sm text-gray-600 mb-2 block">Suggested Tags</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {[...FURRY_CONTENT_TAGS.slice(0, 6), ...ADULT_CONTENT_TAGS.slice(0, 3)].map((tag) => (
+                        <Button
+                          key={tag}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => {
+                            const currentTags = tagsValue ? tagsValue.split(',').map(t => t.trim()) : [];
+                            if (!currentTags.includes(tag)) {
+                              setValue('tags', [...currentTags, tag].join(', '));
+                            }
+                          }}
+                        >
+                          {tag}
+                          {tag === 'NSFW' && <AlertTriangle className="h-3 w-3 ml-1" />}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* NSFW and Price Controls */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="nsfw"
+                      checked={isNSFW}
+                      onCheckedChange={(checked) => setValue('isNSFW', checked)}
+                    />
+                    <Label htmlFor="nsfw" className="flex items-center gap-2">
+                      Adult Content (18+)
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                    </Label>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Price (USD)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      {...register('price', { valueAsNumber: true })}
+                    />
+                    <p className="text-xs text-gray-600">Leave empty for free content</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

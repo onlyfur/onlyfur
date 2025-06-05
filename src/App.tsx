@@ -14,6 +14,10 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
+import ProfileSettings from '@/pages/ProfileSettings';
+import SecuritySettings from '@/pages/SecuritySettings';
+import Subscribers from '@/pages/Subscribers';
+import Analytics from '@/pages/Analytics';
 import Explore from '@/pages/Explore';
 import ContentUpload from '@/pages/ContentUpload';
 import ContentManagement from '@/pages/ContentManagement';
@@ -23,6 +27,7 @@ import Subscribe from '@/pages/Subscribe';
 import Billing from '@/pages/Billing';
 import Earnings from '@/pages/Earnings';
 import Messages from '@/pages/Messages';
+import Settings from '@/pages/Settings';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/AdminDashboard';
@@ -130,6 +135,22 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="profile/settings"
+                element={
+                  <ProtectedRoute>
+                    <ProfileSettings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="profile/security"
+                element={
+                  <ProtectedRoute>
+                    <SecuritySettings />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Content Management Routes */}
               <Route
@@ -212,7 +233,7 @@ function App() {
                 path="settings"
                 element={
                   <ProtectedRoute>
-                    <ComingSoon title="Settings" />
+                    <Settings />
                   </ProtectedRoute>
                 }
               />
@@ -238,7 +259,15 @@ function App() {
                 path="creator/analytics"
                 element={
                   <ProtectedRoute>
-                    <ComingSoon title="Analytics" />
+                    <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="analytics"
+                element={
+                  <ProtectedRoute>
+                    <Analytics />
                   </ProtectedRoute>
                 }
               />
@@ -246,7 +275,15 @@ function App() {
                 path="creator/subscribers"
                 element={
                   <ProtectedRoute>
-                    <ComingSoon title="Subscribers" />
+                    <Subscribers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="subscribers"
+                element={
+                  <ProtectedRoute>
+                    <Subscribers />
                   </ProtectedRoute>
                 }
               />
