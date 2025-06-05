@@ -27,13 +27,7 @@ import Messages from '@/pages/Messages';
 import CreatorDashboard from '@/pages/CreatorDashboard';
 
 // Footer Pages
-import About from '@/pages/About';
-import HowItWorks from '@/pages/HowItWorks';
-import CreatorProgram from '@/pages/CreatorProgram';
-import HelpCenter from '@/pages/HelpCenter';
 import Contact from '@/pages/Contact';
-import PrivacyPolicy from '@/pages/PrivacyPolicy';
-import TermsOfService from '@/pages/TermsOfService';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/AdminDashboard';
