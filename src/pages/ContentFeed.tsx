@@ -13,6 +13,7 @@ import { Heart, Crown, Star, Filter, Search } from 'lucide-react';
 const ContentFeed: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [showPricingModal, setShowPricingModal] = useState(false);
+  const [selectedPricingTab, setSelectedPricingTab] = useState<'subscriber' | 'creator'>('subscriber');
   const [activeFilter, setActiveFilter] = useState<'all' | 'following' | 'discover'>('all');
   
   const contentWithCreators = getSortedContent();
@@ -73,10 +74,13 @@ const ContentFeed: React.FC = () => {
                     </Button>
                     <Button 
                       variant="outline"
-                      onClick={() => setShowPricingModal(true)}
+                      onClick={() => {
+                        setSelectedPricingTab('subscriber');
+                        setShowPricingModal(true);
+                      }}
                     >
                       <Star className="w-4 h-4 mr-2" />
-                      View Plans
+                      View Subscriber Plans
                     </Button>
                   </div>
                 </div>
@@ -184,10 +188,13 @@ const ContentFeed: React.FC = () => {
                   size="lg" 
                   variant="outline" 
                   className="text-lg px-8 border-white text-white hover:bg-white hover:text-purple-600"
-                  onClick={() => setShowPricingModal(true)}
+                  onClick={() => {
+                    setSelectedPricingTab('creator');
+                    setShowPricingModal(true);
+                  }}
                 >
                   <Crown className="mr-2 h-5 w-5" />
-                  View Premium Plans
+                  View Creator Plans
                 </Button>
               </div>
             </CardContent>
@@ -198,7 +205,7 @@ const ContentFeed: React.FC = () => {
       <PricingModal
         isOpen={showPricingModal}
         onClose={() => setShowPricingModal(false)}
-        initialTab="subscriber"
+        initialTab={selectedPricingTab}
       />
     </>
   );

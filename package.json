@@ -1,7 +1,7 @@
 {
   "name": "onlyfur-platform",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "OnlyFur - Premium furry content platform for creators and fans",
   "type": "module",
   "scripts": {

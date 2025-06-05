@@ -302,8 +302,13 @@ const MessageInterface: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-background">
-      {/* Conversations List */}
-      <div className="w-80 border-r border-border">
+      {/* Conversations List - Mobile Responsive */}
+      <div className={`
+        w-80 border-r border-border
+        md:block
+        ${selectedConversation ? 'hidden md:block' : 'block'}
+        ${selectedConversation ? 'md:w-80' : 'w-full md:w-80'}
+      `}>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5" />
@@ -387,14 +392,26 @@ const MessageInterface: React.FC = () => {
         </ScrollArea>
       </div>
 
-      {/* Chat Interface */}
-      <div className="flex-1 flex flex-col">
+      {/* Chat Interface - Mobile Responsive */}
+      <div className={`
+        flex-1 flex flex-col
+        ${selectedConversation ? 'block' : 'hidden md:block'}
+      `}>
         {selectedConv ? (
           <>
             {/* Chat Header */}
             <CardHeader className="border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
+                  {/* Mobile Back Button */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="md:hidden"
+                    onClick={() => setSelectedConversation(null)}
+                  >
+                    ←
+                  </Button>
                   <Avatar className="w-10 h-10">
                     <AvatarImage src={selectedConv.participantInfo.avatar} />
                     <AvatarFallback>
@@ -446,8 +463,8 @@ const MessageInterface: React.FC = () => {
               )}
             </CardHeader>
 
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
+            {/* Messages - Mobile Optimized */}
+            <ScrollArea className="flex-1 p-4 mobile-chat mobile-optimized">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div 
@@ -494,10 +511,10 @@ const MessageInterface: React.FC = () => {
               </div>
             </ScrollArea>
 
-            {/* Message Input */}
-            <div className="border-t border-border p-4">
+            {/* Message Input - Mobile Optimized */}
+            <div className="border-t border-border p-4 mobile-chat-input safe-bottom">
               {selectedConv.canSendMessages ? (
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3">
                   <Button variant="ghost" size="sm" disabled>
                     <Image className="w-4 h-4" />
                   </Button>
