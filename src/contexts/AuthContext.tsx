@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
-import { authenticateUser, registerUser, verifyToken, getUserById } from '@/lib/auth';
+import { authenticateUser, registerUser, verifyToken, getUserById, getCurrentUser, logout as authLogout } from '@/lib/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -35,35 +35,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Check for stored authentication on component mount
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
-        const storedToken = localStorage.getItem('onlyfur-token');
-        const storedUser = localStorage.getItem('onlyfur-user');
+        // Use consistent getCurrentUser function
+        const user = await getCurrentUser();
         
-        if (storedToken && storedUser) {
-          // Verify token validity
-          const tokenData = verifyToken(storedToken);
-          
-          if (tokenData) {
-            // Token is valid, get fresh user data
-            const user = getUserById(tokenData.userId);
-            if (user) {
-              setUser(user);
-            } else {
-              // User not found, clear storage
-              localStorage.removeItem('onlyfur-user');
-              localStorage.removeItem('onlyfur-token');
-            }
-          } else {
-            // Token is invalid, clear storage
-            localStorage.removeItem('onlyfur-user');
-            localStorage.removeItem('onlyfur-token');
-          }
+        if (user) {
+          setUser(user);
         }
       } catch (error) {
         console.error('Failed to validate stored authentication:', error);
-        localStorage.removeItem('onlyfur-user');
-        localStorage.removeItem('onlyfur-token');
+        // Clear any invalid tokens
+        localStorage.removeItem('onlyfur-auth-token');
       } finally {
         setIsLoading(false);
       }
@@ -77,16 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     
     try {
-      // Use real authentication with password hashing
-      const result = await authenticateUser(email, password);
-      
-      if (!result.success || !result.user || !result.token) {
-        throw new Error(result.error || 'Invalid email or password');
-      }
-
-      setUser(result.user);
-      localStorage.setItem('onlyfur-user', JSON.stringify(result.user));
-      localStorage.setItem('onlyfur-token', result.token);
+      // authenticateUser returns the user directly and handles token storage internally
+      const user = await authenticateUser(email, password);
+      setUser(user);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Invalid email or password';
       setError(errorMessage);
@@ -98,28 +74,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (userData: Partial<User> & { password?: string }): Promise<void> => {
     setIsLoading(true);
+    setError(null);
+    
     try {
       if (!userData.email || !userData.username || !userData.password) {
         throw new Error('Email, username, and password are required');
       }
 
-      // Use real registration with password hashing
-      const result = await registerUser({
-        email: userData.email,
-        username: userData.username,
-        password: userData.password,
-        role: (userData.role as 'user' | 'creator') || 'user',
-      });
-      
-      if (!result.success || !result.user || !result.token) {
-        throw new Error(result.error || 'Registration failed');
-      }
-
-      setUser(result.user);
-      localStorage.setItem('onlyfur-user', JSON.stringify(result.user));
-      localStorage.setItem('onlyfur-token', result.token);
+      // registerUser returns the user directly and handles token storage internally
+      const user = await registerUser(userData);
+      setUser(user);
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'Registration failed');
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -127,15 +95,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('onlyfur-user');
-    localStorage.removeItem('onlyfur-token');
+    authLogout(); // This removes the correct localStorage key
   };
 
   const updateUser = (userData: Partial<User>) => {
     if (user) {
       const updatedUser = { ...user, ...userData, updatedAt: new Date() };
       setUser(updatedUser);
-      localStorage.setItem('onlyfur-user', JSON.stringify(updatedUser));
+      // For demo purposes, we don't persist user updates to localStorage
+      // In a real app, this would update the backend
     }
   };
 

@@ -66,6 +66,8 @@ const DEMO_USERS: User[] = [
 
 // Mock password verification
 const verifyPassword = (email: string, password: string): boolean => {
+  console.log('🔍 Verifying password for:', email);
+  
   // For demo purposes, only accept 'password123' for valid demo accounts
   const validCredentials = [
     { email: 'admin@onlyfur.com', password: 'password123' },
@@ -74,23 +76,30 @@ const verifyPassword = (email: string, password: string): boolean => {
     { email: 'demo@creatorhub.com', password: 'password123' }
   ];
 
-  return validCredentials.some(
+  const isValid = validCredentials.some(
     cred => cred.email === email && cred.password === password
   );
+  
+  console.log('🔍 Password verification result:', isValid);
+  return isValid;
 };
 
 export const authenticateUser = async (email: string, password: string): Promise<User> => {
+  console.log('🔐 Authenticating user:', email);
+  
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
 
   // Verify credentials
   if (!verifyPassword(email, password)) {
+    console.log('❌ Invalid credentials for:', email);
     throw new Error('Invalid email or password');
   }
 
   // Find user by email
   const user = DEMO_USERS.find(u => u.email === email);
   if (!user) {
+    console.log('❌ User not found:', email);
     throw new Error('User not found');
   }
 
@@ -98,6 +107,7 @@ export const authenticateUser = async (email: string, password: string): Promise
   const token = btoa(JSON.stringify({ userId: user.id, email: user.email }));
   localStorage.setItem('onlyfur-auth-token', token);
 
+  console.log('✅ User authenticated successfully:', user.username);
   return user;
 };
 
