@@ -89,10 +89,63 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
     return monthlyPrice * 12 - getAnnualDiscount(monthlyPrice);
   };
 
-  const handleTierSelect = (tierId: string) => {
+  const handleTierSelect = async (tierId: string) => {
     setSelectedTier(tierId);
     if (onTierSelect) {
       onTierSelect(tierId);
+    }
+    
+    // If user is not logged in, redirect to login
+    if (!user) {
+      window.location.href = '/login';
+      return;
+    }
+    
+    // If this is the current tier, do nothing
+    if (user?.subscriptionTier?.id === tierId) {
+      return;
+    }
+    
+    try {
+      // Import payment service
+      const { createSubscriptionPayment } = await import('@/services/api');
+      
+      // Create payment intent for the subscription
+      const selectedTierData = [...subscriberTiers, ...creatorTiers].find(t => t.id === tierId);
+      if (!selectedTierData) {
+        throw new Error('Tier not found');
+      }
+      
+      // Create payment intent
+      const paymentData = await createSubscriptionPayment({
+        tierId,
+        amount: selectedTierData.price,
+        currency: selectedTierData.currency || 'USD'
+      });
+      
+      // Handle payment with Stripe
+      if (paymentData.clientSecret) {
+        // Import and initialize Stripe
+        const stripe = (window as any).Stripe?.(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+        if (!stripe) {
+          throw new Error('Stripe not loaded');
+        }
+        
+        // Confirm payment
+        const { error, paymentIntent } = await stripe.confirmCardPayment(paymentData.clientSecret);
+        
+        if (error) {
+          console.error('Payment failed:', error);
+          // Handle payment error
+        } else if (paymentIntent.status === 'succeeded') {
+          // Payment successful, close modal and refresh user data
+          onClose();
+          window.location.reload(); // Refresh to update user subscription
+        }
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      // Handle subscription error
     }
   };
 

@@ -15,6 +15,7 @@ import Register from '@/pages/Register';
 import GoogleCallback from '@/pages/GoogleCallback';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
+import UserProfile from '@/pages/UserProfile';
 import Explore from '@/pages/Explore';
 import ContentUpload from '@/pages/ContentUpload';
 import ContentManagement from '@/pages/ContentManagement';
@@ -169,6 +170,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="user/:userId"
+                element={
+                  <ProtectedRoute>
+                    <UserProfile />
                   </ProtectedRoute>
                 }
               />
