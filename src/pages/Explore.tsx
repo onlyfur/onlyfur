@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link } from 'react-router-dom';
 import { 
   Search, 
   Filter, 
@@ -29,14 +30,14 @@ const Explore: React.FC = () => {
   const [sortBy, setSortBy] = useState('popular');
 
   const furryCategories = [
-    { name: 'Fursuit Photos', icon: Camera, color: 'text-blue-500', count: 342, tag: 'fursuit' },
-    { name: 'Digital Art', icon: Palette, color: 'text-purple-500', count: 567, tag: 'art' },
-    { name: 'Videos & Animations', icon: Video, color: 'text-red-500', count: 189, tag: 'video' },
-    { name: 'Tutorials & Tips', icon: Sparkles, color: 'text-green-500', count: 124, tag: 'tutorial' },
-    { name: 'Murrsuit Content', icon: Heart, color: 'text-pink-500', count: 98, tag: 'murrsuit' },
-    { name: 'Convention Coverage', icon: Users, color: 'text-orange-500', count: 76, tag: 'convention' },
-    { name: 'Character Stories', icon: Music, color: 'text-indigo-500', count: 156, tag: 'story' },
-    { name: 'Commissions', icon: Crown, color: 'text-yellow-500', count: 203, tag: 'commission' },
+    { name: 'Murrsuit Content', icon: Heart, color: 'text-pink-500', count: 342, tag: 'murrsuit' },
+    { name: 'Fursuit Porn', icon: Camera, color: 'text-red-500', count: 567, tag: 'fursuit-porn' },
+    { name: 'Adult Digital Art', icon: Palette, color: 'text-purple-500', count: 189, tag: 'adult-art' },
+    { name: 'NSFW Videos', icon: Video, color: 'text-orange-500', count: 234, tag: 'nsfw-video' },
+    { name: 'Cam Shows & Live', icon: Zap, color: 'text-yellow-500', count: 156, tag: 'cam-shows' },
+    { name: 'Roleplay Content', icon: Users, color: 'text-green-500', count: 98, tag: 'roleplay' },
+    { name: 'Kinky Stories', icon: Music, color: 'text-indigo-500', count: 124, tag: 'kinky-stories' },
+    { name: 'Custom Requests', icon: Crown, color: 'text-blue-500', count: 203, tag: 'custom' },
   ];
 
   const species = [
@@ -46,17 +47,17 @@ const Explore: React.FC = () => {
   ];
 
   const tags = [
-    'fursuit', 'art', 'digital', 'traditional', 'commission', 'ych', 'anthro', 'feral', 'paws',
-    'sfw', 'nsfw', 'cute', 'cool', 'detailed', 'simple', 'colorful', 'monochrome', 'realistic',
-    'cartoon', 'anime', 'western', 'fantasy', 'scifi', 'modern', 'vintage', 'pride', 'lgbtq',
-    'furry', 'kemono', 'macro', 'micro', 'transformation', 'tf', 'muscle', 'chubby', 'slim',
-    'male', 'female', 'non-binary', 'trans', 'gay', 'lesbian', 'bisexual', 'straight',
-    'solo', 'couple', 'group', 'reference', 'refsheet', 'badge', 'sticker', 'poster',
-    'animation', 'gif', 'video', 'stream', 'tutorial', 'speedpaint', 'process', 'wip',
-    'convention', 'furcon', 'photography', 'nature', 'urban', 'studio', 'outdoor', 'indoor',
-    'partial', 'fullsuit', 'head', 'paws', 'tail', 'wings', 'horns', 'ears', 'costume',
-    'latex', 'plush', 'soft', 'hard', 'foam', 'fabric', 'realistic', 'toony', 'kemono',
-    'story', 'writing', 'fiction', 'roleplay', 'character', 'worldbuilding', 'lore'
+    'murrsuit', 'nsfw', 'adult', 'explicit', 'kinky', 'sexy', 'hot', 'steamy', 'intimate', 'naughty',
+    'fursuit-porn', 'cam', 'live', 'private', 'custom', 'commission', 'fetish', 'kink', 'bdsm',
+    'latex', 'leather', 'bondage', 'roleplay', 'dominant', 'submissive', 'switch', 'daddy', 'mommy',
+    'breeding', 'heat', 'rut', 'knot', 'mating', 'oral', 'anal', 'toys', 'vibrator', 'dildo',
+    'male', 'female', 'trans', 'nb', 'gay', 'straight', 'bi', 'pan', 'furry', 'anthro', 'feral',
+    'wolf', 'fox', 'dragon', 'cat', 'dog', 'horse', 'sergal', 'protogen', 'avian', 'shark',
+    'solo', 'couple', 'threesome', 'group', 'orgy', 'gangbang', 'bukkake', 'creampie', 'cumshot',
+    'video', 'photo', 'gif', 'stream', 'cam-show', 'private-show', 'sexting', 'audio', 'voice',
+    'outdoor', 'indoor', 'bedroom', 'bathroom', 'public', 'risky', 'caught', 'exhibitionist',
+    'big', 'huge', 'massive', 'tight', 'loose', 'wet', 'creamy', 'messy', 'dirty', 'clean',
+    'rough', 'gentle', 'hard', 'soft', 'fast', 'slow', 'deep', 'shallow', 'long', 'short'
   ];
 
   const featuredCreators = [
@@ -81,7 +82,7 @@ const Explore: React.FC = () => {
       name: 'Rex Dragonheart',
       username: 'rex_dragonheart',
       avatar: '🐲',
-      category: 'Digital Art',
+      category: 'Adult Digital Art',
       species: 'Dragon',
       subscribers: '5.8K',
       rating: 4.8,
@@ -89,8 +90,8 @@ const Explore: React.FC = () => {
       priceDisplay: '$14.99/month',
       isVerified: true,
       joinDate: '2022-11-20',
-      description: 'Fantasy dragon artist specializing in detailed character commissions and YCH',
-      tags: ['art', 'digital', 'dragon', 'commission', 'fantasy', 'detailed', 'male'],
+      description: 'Fantasy dragon artist specializing in detailed character commissions and explicit NSFW art',
+      tags: ['adult', 'nsfw', 'digital', 'dragon', 'commission', 'explicit', 'male', 'kinky'],
     },
     {
       id: 3,
@@ -113,7 +114,7 @@ const Explore: React.FC = () => {
       name: 'Zara Striped',
       username: 'zara_striped',
       avatar: '🦓',
-      category: 'Videos & Animations',
+      category: 'NSFW Videos',
       species: 'Equine',
       subscribers: '4.3K',
       rating: 4.7,
@@ -121,15 +122,15 @@ const Explore: React.FC = () => {
       priceDisplay: '$16.99/month',
       isVerified: true,
       joinDate: '2023-02-05',
-      description: 'Animator creating short furry films and character animations',
-      tags: ['animation', 'video', 'story', 'character', 'female', 'colorful'],
+      description: 'Adult animator creating steamy furry films and explicit character animations',
+      tags: ['nsfw', 'video', 'animation', 'explicit', 'female', 'sexy', 'adult'],
     },
     {
       id: 5,
       name: 'Copper Fennec',
       username: 'copper_fennec',
       avatar: '🦊',
-      category: 'Character Stories',
+      category: 'Kinky Stories',
       species: 'Fox',
       subscribers: '1.9K',
       rating: 4.8,
@@ -137,8 +138,8 @@ const Explore: React.FC = () => {
       priceDisplay: '$12.99/month',
       isVerified: true,
       joinDate: '2023-04-20',
-      description: 'Storyteller crafting immersive furry fiction and character development',
-      tags: ['story', 'writing', 'character', 'fiction', 'worldbuilding', 'sfw'],
+      description: 'Erotic storyteller crafting steamy furry fiction and kinky character adventures',
+      tags: ['kinky', 'story', 'erotic', 'nsfw', 'fiction', 'adult', 'hot'],
     },
     {
       id: 6,
@@ -596,12 +597,24 @@ const Explore: React.FC = () => {
                   {creator.avatar}
                 </div>
                 <CardTitle className="flex items-center justify-center space-x-2">
-                  <span>{creator.name}</span>
+                  <Link 
+                    to={`/profile/${creator.username}`} 
+                    className="hover:text-primary cursor-pointer transition-colors"
+                  >
+                    {creator.name}
+                  </Link>
                   {creator.isVerified && (
                     <Badge className="bg-blue-500">✓</Badge>
                   )}
                 </CardTitle>
-                <CardDescription>@{creator.username}</CardDescription>
+                <CardDescription>
+                  <Link 
+                    to={`/profile/${creator.username}`} 
+                    className="hover:text-primary cursor-pointer transition-colors"
+                  >
+                    @{creator.username}
+                  </Link>
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
@@ -689,14 +702,26 @@ const Explore: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <CardTitle className="text-lg flex items-center space-x-2">
-                      <span>{creator.name}</span>
+                      <Link 
+                        to={`/profile/${creator.username}`} 
+                        className="hover:text-primary cursor-pointer transition-colors"
+                      >
+                        {creator.name}
+                      </Link>
                       {creator.isVerified && (
                         <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                           ✓
                         </Badge>
                       )}
                     </CardTitle>
-                    <CardDescription>@{creator.username}</CardDescription>
+                    <CardDescription>
+                      <Link 
+                        to={`/profile/${creator.username}`} 
+                        className="hover:text-primary cursor-pointer transition-colors"
+                      >
+                        @{creator.username}
+                      </Link>
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
