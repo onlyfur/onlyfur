@@ -1,18 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
-import { authAPI } from '@/services/api';
+import { authService } from '@/services/authService';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   register: (userData: Partial<User> & { password?: string }) => Promise<void>;
   loginWithGoogle: (credential: string, userType: 'creator' | 'subscriber') => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   clearError: () => void;
+  getSavedCredentials: () => { email: string; password: string } | null;
+  saveCredentials: (email: string, password: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,24 +37,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for stored authentication on component mount
+    // Check for stored authentication and attempt auto-login
     const checkAuth = async () => {
       try {
-        const storedToken = localStorage.getItem('auth_token');
+        const storedToken = authService.getSession();
         
         if (storedToken) {
-          // Verify token with backend and get fresh user data
-          const result = await authAPI.getProfile();
-          if (result.user) {
+          // Verify existing token and get fresh user data
+          const result = await authService.getProfile(storedToken);
+          if (result.success && result.user) {
             setUser(result.user);
+            setIsLoading(false);
+            return; // Session is valid, no need for auto-login
           } else {
             // Token is invalid, clear storage
-            localStorage.removeItem('auth_token');
+            authService.clearSession();
           }
         }
+
+        // If no valid session, try auto-login with saved credentials
+        if (authService.shouldAttemptAutoLogin()) {
+          try {
+            const autoLoginResult = await authService.tryAutoLogin();
+            if (autoLoginResult.success && autoLoginResult.user && autoLoginResult.token) {
+              setUser(autoLoginResult.user);
+              authService.setSession(autoLoginResult.token, true); // Remember the auto-login
+              console.log('Auto-login successful');
+            }
+          } catch (autoLoginError) {
+            console.log('Auto-login failed:', autoLoginError);
+          }
+        }
+        
       } catch (error) {
         console.error('Failed to validate stored authentication:', error);
-        localStorage.removeItem('auth_token');
+        authService.clearSession();
       } finally {
         setIsLoading(false);
       }
@@ -61,19 +80,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const result = await authAPI.login({ email, password });
+      const result = await authService.login({ email, password });
       
       if (!result.success || !result.user || !result.token) {
         throw new Error(result.error || 'Invalid email or password');
       }
 
       setUser(result.user);
-      localStorage.setItem('auth_token', result.token);
+      authService.setSession(result.token, rememberMe);
+      
+      // Save credentials if remember me is checked
+      if (rememberMe) {
+        authService.saveCredentials(email, password);
+      } else {
+        authService.clearSavedCredentials();
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Invalid email or password';
       setError(errorMessage);
@@ -92,7 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Email, username, display name, and password are required');
       }
 
-      const result = await authAPI.register({
+      const result = await authService.register({
         email: userData.email,
         username: userData.username,
         displayName: userData.displayName,
@@ -105,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       setUser(result.user);
-      localStorage.setItem('auth_token', result.token);
+      authService.setSession(result.token, true); // Auto-remember for new registrations
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed';
       setError(errorMessage);
@@ -132,51 +158,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       const googleUser = JSON.parse(jsonPayload);
       
-      // For demo purposes, create a user account automatically
-      const newUser: User = {
-        id: `google_${googleUser.sub}`,
-        email: googleUser.email,
-        username: googleUser.email.split('@')[0],
-        displayName: googleUser.name,
-        avatar: googleUser.picture,
-        role: userType,
-        isVerified: googleUser.email_verified,
-        authProvider: 'google',
-        googleId: googleUser.sub,
-        subscriptionTier: userType === 'creator' ? 'basic-creator' : 'basic-subscriber',
-        subscriptionStatus: 'ACTIVE',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      // Use the enhanced auth service for Google login
+      const result = await authService.loginWithGoogle(googleUser, userType);
       
-      // Try to register this user in the backend
-      try {
-        const result = await authAPI.register({
-          email: newUser.email,
-          username: newUser.username,
-          displayName: newUser.displayName,
-          password: `google_${googleUser.sub}_temp_password`, // Temporary password for Google users
-          role: userType.toUpperCase() as 'SUBSCRIBER' | 'CREATOR',
-        });
-        
-        setUser(result.user);
-        localStorage.setItem('auth_token', result.token);
-      } catch (backendError) {
-        // If backend registration fails, try to login (user might already exist)
-        try {
-          const loginResult = await authAPI.login({
-            email: newUser.email,
-            password: `google_${googleUser.sub}_temp_password`,
-          });
-          
-          setUser(loginResult.user);
-          localStorage.setItem('auth_token', loginResult.token);
-        } catch (loginError) {
-          // If both fail, create a local session (demo mode)
-          setUser(newUser);
-          localStorage.setItem('auth_token', btoa(JSON.stringify({ userId: newUser.id, email: newUser.email })));
-        }
+      if (!result.success || !result.user || !result.token) {
+        throw new Error(result.error || 'Google authentication failed');
       }
+
+      setUser(result.user);
+      authService.setSession(result.token, true); // Auto-remember for Google login
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google authentication failed';
@@ -187,9 +177,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('auth_token');
+  const logout = async (redirectPath: string = '/') => {
+    try {
+      const token = authService.getSession();
+      if (token) {
+        await authService.logout(token);
+      }
+      
+      // Clear user state immediately
+      setUser(null);
+      
+      // Clear all session data
+      authService.clearSession();
+      
+      // Clear any saved credentials if user chooses to logout
+      // (Optional: could be configurable)
+      
+      // Automatic redirect after logout
+      setTimeout(() => {
+        window.location.href = redirectPath;
+      }, 100); // Minimal delay for state cleanup
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if logout fails on server, clear local state
+      setUser(null);
+      authService.clearSession();
+      
+      // Still redirect to ensure user is logged out locally
+      setTimeout(() => {
+        window.location.href = redirectPath;
+      }, 100);
+    }
   };
 
   const updateUser = (userData: Partial<User>) => {
@@ -204,6 +223,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
   };
 
+  const getSavedCredentials = () => {
+    return authService.getSavedCredentials();
+  };
+
+  const saveCredentials = (email: string, password: string) => {
+    authService.saveCredentials(email, password);
+  };
+
   const value = {
     user,
     isAuthenticated: !!user,
@@ -215,6 +242,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     updateUser,
     clearError,
+    getSavedCredentials,
+    saveCredentials,
   };
 
   return (

@@ -67,6 +67,21 @@ import TaxInfo from '@/pages/creators/TaxInfo';
 import CreateAccount from '@/pages/help/articles/CreateAccount';
 import SettingUpCreatorProfile from '@/pages/help/articles/SettingUpCreatorProfile';
 import UploadOrganizeContent from '@/pages/help/articles/UploadOrganizeContent';
+import FindingCreators from '@/pages/help/articles/FindingCreators';
+import SubscriptionTiersGuide from '@/pages/help/articles/SubscriptionTiersGuide';
+import FirstSubscription from '@/pages/help/articles/FirstSubscription';
+import ContentPrivacyLevels from '@/pages/help/articles/ContentPrivacyLevels';
+import PricingStrategies from '@/pages/help/articles/PricingStrategies';
+import SchedulingFeatures from '@/pages/help/articles/SchedulingFeatures';
+import UnderstandingAnalytics from '@/pages/help/articles/UnderstandingAnalytics';
+import CustomCommissions from '@/pages/help/articles/CustomCommissions';
+import PaymentSystem from '@/pages/help/articles/PaymentSystem';
+import MessagingCreators from '@/pages/help/articles/MessagingCreators';
+import CommunityGuidelines from '@/pages/help/articles/CommunityGuidelines';
+import SubscriptionManagement from '@/pages/help/articles/SubscriptionManagement';
+import AccountSecurity from '@/pages/help/articles/AccountSecurity';
+import ReportUserContent from '@/pages/help/articles/ReportUserContent';
+import MobileApp from '@/pages/help/articles/MobileApp';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -439,6 +454,21 @@ function App() {
               <Route path="help/articles/create-account" element={<CreateAccount />} />
               <Route path="help/articles/setting-up-creator-profile" element={<SettingUpCreatorProfile />} />
               <Route path="help/articles/upload-organize-content" element={<UploadOrganizeContent />} />
+              <Route path="help/articles/finding-creators" element={<FindingCreators />} />
+              <Route path="help/articles/subscription-tiers" element={<SubscriptionTiersGuide />} />
+              <Route path="help/articles/first-subscription" element={<FirstSubscription />} />
+              <Route path="help/articles/content-privacy-levels" element={<ContentPrivacyLevels />} />
+              <Route path="help/articles/pricing-strategies" element={<PricingStrategies />} />
+              <Route path="help/articles/scheduling-features" element={<SchedulingFeatures />} />
+              <Route path="help/articles/understanding-analytics" element={<UnderstandingAnalytics />} />
+              <Route path="help/articles/custom-commissions" element={<CustomCommissions />} />
+              <Route path="help/articles/payment-system" element={<PaymentSystem />} />
+              <Route path="help/articles/messaging-creators" element={<MessagingCreators />} />
+              <Route path="help/articles/community-guidelines" element={<CommunityGuidelines />} />
+              <Route path="help/articles/subscription-management" element={<SubscriptionManagement />} />
+              <Route path="help/articles/account-security" element={<AccountSecurity />} />
+              <Route path="help/articles/report-user-content" element={<ReportUserContent />} />
+              <Route path="help/articles/mobile-app" element={<MobileApp />} />
               <Route path="safety" element={<Safety />} />
               <Route path="guidelines" element={<CommunityGuidelines />} />
               <Route path="contact" element={<ContactUs />} />

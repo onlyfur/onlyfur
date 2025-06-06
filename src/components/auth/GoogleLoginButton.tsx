@@ -32,10 +32,18 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
     setIsLoading(true);
     try {
       await loginWithGoogle(credentialResponse.credential, userType);
+      
+      // Show success message briefly
       toast({
         title: "Success!",
-        description: `Successfully ${mode === 'login' ? 'logged in' : 'registered'} with Google`,
+        description: `Successfully ${mode === 'login' ? 'signed in' : 'registered'} with Google`,
       });
+      
+      // Automatic redirect with minimal delay for better UX
+      setTimeout(() => {
+        window.location.href = redirectPath;
+      }, 500);
+      
     } catch (error) {
       console.error('Google auth error:', error);
       toast({
@@ -94,22 +102,32 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   const handleDemoGoogleAuth = async () => {
     setIsLoading(true);
     try {
+      // Generate unique demo user data
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substr(2, 5);
+      
       // Simulate Google OAuth response with demo user data
       const demoCredential = btoa(JSON.stringify({
-        sub: `google_${Date.now()}`,
-        email: `demo.${userType}@gmail.com`,
-        name: `Demo ${userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-        picture: '/images/branding/fox-mascot.webp',
-        email_verified: true
+        sub: `google_demo_${randomId}`,
+        email: `demo.${userType}.${randomId}@gmail.com`,
+        name: `Demo ${userType.charAt(0).toUpperCase() + userType.slice(1)} ${randomId}`,
+        picture: `/images/branding/fox-mascot.webp`,
+        email_verified: true,
+        given_name: `Demo`,
+        family_name: userType.charAt(0).toUpperCase() + userType.slice(1),
+        locale: 'en'
       }));
 
       // Create a mock credential response
       const mockCredentialResponse = {
-        credential: `header.${demoCredential}.signature`
+        credential: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.${demoCredential}.demo_signature_${randomId}`
       };
 
+      // Automatic authentication with immediate success handling
       await handleGoogleSuccess(mockCredentialResponse);
+      
     } catch (error) {
+      console.error('Demo Google auth error:', error);
       handleGoogleError();
     }
   };

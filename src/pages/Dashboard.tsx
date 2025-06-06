@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import AuthStatus from '@/components/auth/AuthStatus';
 import { 
   Crown, 
   Users, 
@@ -189,22 +190,31 @@ const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Performance Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance Overview</CardTitle>
-          <CardDescription>
-            Your content performance over the last 30 days
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>Analytics chart will be implemented in the next phase</p>
-            <p className="text-sm">This will show detailed performance metrics and trends</p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Performance Overview and Auth Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Performance Overview</CardTitle>
+              <CardDescription>
+                Your content performance over the last 30 days
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12 text-muted-foreground">
+                <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Analytics chart will be implemented in the next phase</p>
+                <p className="text-sm">This will show detailed performance metrics and trends</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Authentication Status (v2.4 Testing Feature) */}
+        <div>
+          <AuthStatus />
+        </div>
+      </div>
     </div>
   );
 };

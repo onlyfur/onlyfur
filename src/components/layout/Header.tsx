@@ -19,6 +19,7 @@ import {
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,8 +35,31 @@ import { Badge } from '@/components/ui/badge';
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Enhanced logout with automatic features
+  const handleLogout = async () => {
+    try {
+      // Show logout confirmation
+      toast({
+        title: "Signing out...",
+        description: "You're being logged out. See you soon!",
+      });
+      
+      // Call logout with automatic redirect to home
+      await logout('/');
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Fallback if logout fails
+      toast({
+        title: "Logged out",
+        description: "You've been signed out.",
+      });
+    }
+  };
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -160,7 +184,7 @@ const Header: React.FC = () => {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout} className="text-red-600">
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </DropdownMenuItem>

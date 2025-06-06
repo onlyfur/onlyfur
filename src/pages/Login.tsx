@@ -6,6 +6,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Crown, Mail, Lock } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
+import AutoLoginPrompt from '@/components/auth/AutoLoginPrompt';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -27,7 +29,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login, error: authError, clearError } = useAuth();
+  const { login, error: authError, clearError, getSavedCredentials } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -35,10 +37,18 @@ const Login: React.FC = () => {
   const oauthError = searchParams.get('error');
   const isOAuthError = oauthError === 'oauth_failed';
 
-  // Clear errors when component mounts
+  // Load saved credentials and clear errors when component mounts
   React.useEffect(() => {
     clearError();
-  }, [clearError]);
+    
+    // Load saved credentials if available
+    const savedCredentials = getSavedCredentials();
+    if (savedCredentials) {
+      setValue('email', savedCredentials.email);
+      setValue('password', savedCredentials.password);
+      setValue('rememberMe', true);
+    }
+  }, [clearError, getSavedCredentials, setValue]);
 
   const {
     register,
@@ -58,11 +68,27 @@ const Login: React.FC = () => {
     clearError();
 
     try {
-      await login(data.email, data.password);
-      navigate('/dashboard');
+      await login(data.email, data.password, data.rememberMe);
+      
+      // Show success toast
+      toast({
+        title: "Welcome back!",
+        description: "You've been successfully signed in.",
+      });
+      
+      // Automatic redirect with brief delay for feedback
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Invalid email or password. Please try again.';
       setError(errorMessage);
+      toast({
+        title: "Sign In Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -83,6 +109,9 @@ const Login: React.FC = () => {
             Sign in to your account to continue your furry creator journey
           </p>
         </div>
+
+        {/* Auto-login prompt for saved credentials */}
+        <AutoLoginPrompt redirectPath="/dashboard" />
 
         <Card className="shadow-xl border-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <CardHeader>
@@ -216,9 +245,17 @@ const Login: React.FC = () => {
             <p className="text-xs text-muted-foreground text-center mb-2">
               Demo Credentials (for testing):
             </p>
-            <div className="text-xs space-y-1">
-              <p><strong>Email:</strong> demo@creatorhub.com</p>
-              <p><strong>Password:</strong> password123</p>
+            <div className="text-xs space-y-2">
+              <div>
+                <p><strong>Creator Account:</strong></p>
+                <p>Email: demo@creatorhub.com</p>
+                <p>Password: password123</p>
+              </div>
+              <div>
+                <p><strong>Subscriber Account:</strong></p>
+                <p>Email: subscriber@demo.com</p>
+                <p>Password: password123</p>
+              </div>
             </div>
           </CardContent>
         </Card>

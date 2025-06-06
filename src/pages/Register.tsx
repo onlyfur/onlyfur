@@ -6,6 +6,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Crown, Mail, Lock, User, ArrowLeft, ArrowRight } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -48,6 +49,7 @@ const Register: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState<'creator' | 'subscriber' | null>(null);
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,6 +91,7 @@ const Register: React.FC = () => {
     setError(null);
 
     try {
+      // Register the user
       await registerUser({
         email: data.email,
         username: data.username,
@@ -99,16 +102,32 @@ const Register: React.FC = () => {
         newsletter: data.newsletter,
       });
       
-      // If user selected a paid tier, redirect to payment
-      if (data.selectedTier && data.selectedTier !== 'basic-creator') {
-        navigate('/subscription/checkout', { 
-          state: { tierId: data.selectedTier } 
-        });
-      } else {
-        navigate('/dashboard');
-      }
+      // Show success toast
+      toast({
+        title: "Registration Successful!",
+        description: `Welcome to OnlyFur, ${data.displayName}! You've been automatically signed in.`,
+      });
+      
+      // Automatic redirect with feedback
+      setTimeout(() => {
+        // If user selected a paid tier, redirect to payment
+        if (data.selectedTier && data.selectedTier !== 'basic-creator') {
+          navigate('/subscription/checkout', { 
+            state: { tierId: data.selectedTier } 
+          });
+        } else {
+          navigate('/dashboard');
+        }
+      }, 1000); // Brief delay to show success message
+      
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+      setError(errorMessage);
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
