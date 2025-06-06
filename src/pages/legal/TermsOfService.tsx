@@ -198,9 +198,92 @@ const TermsOfService: React.FC = () => {
           </CardContent>
         </Card>
 
+        <Card className="border-red-300 bg-red-50 dark:bg-red-900/10">
+          <CardHeader>
+            <CardTitle className="flex items-center text-red-800 dark:text-red-200">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              13. Platform Content Liability & User Responsibility
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert className="border-red-300 bg-red-100 dark:bg-red-900/20">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800 dark:text-red-200">
+                <strong>CRITICAL DISCLAIMER:</strong> OnlyFur operates as a platform service provider. We are NOT responsible for user-generated content, user behavior, or any illegal activities conducted through our platform.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">User Content Responsibility</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• <strong>Users are solely responsible</strong> for all content they upload, share, post, or distribute on OnlyFur</li>
+                  <li>• OnlyFur does NOT review, approve, monitor, or control user-generated content before publication</li>
+                  <li>• We do not endorse, verify, guarantee, or take responsibility for any user content</li>
+                  <li>• Content posted by users does not reflect OnlyFur's opinions, views, or positions</li>
+                  <li>• Users must ensure they own all rights to content they upload or have proper authorization</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Illegal Content & Activities</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• <strong>OnlyFur is NOT responsible for illegal content</strong> uploaded or shared by users</li>
+                  <li>• Users who engage in illegal activities are solely liable for their actions</li>
+                  <li>• We do not monitor user activities for legal compliance</li>
+                  <li>• Users must comply with all applicable local, state, federal, and international laws</li>
+                  <li>• OnlyFur will cooperate with law enforcement investigations when legally required</li>
+                  <li>• We reserve the right to remove content and terminate accounts without notice</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Copyright & Intellectual Property</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• <strong>Users are responsible for ensuring they do not infringe copyright</strong></li>
+                  <li>• OnlyFur does NOT verify copyright ownership of uploaded content</li>
+                  <li>• Copyright infringement by users is their sole responsibility and liability</li>
+                  <li>• OnlyFur responds to valid DMCA takedown notices but does not proactively monitor for infringement</li>
+                  <li>• Users indemnify OnlyFur against any copyright infringement claims</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Platform Limitations & Disclaimers</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur provides platform infrastructure and services only</li>
+                  <li>• We cannot and do not control user behavior, interactions, or content</li>
+                  <li>• Users interact with each other entirely at their own risk</li>
+                  <li>• OnlyFur makes no warranties about user content accuracy, legality, or appropriateness</li>
+                  <li>• The platform is provided "AS IS" without any warranties or guarantees</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">User Indemnification</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• <strong>Users agree to indemnify and hold harmless OnlyFur</strong> from any claims, damages, or legal issues arising from:</li>
+                  <li>• Their use of the platform or violations of these terms</li>
+                  <li>• Content they upload, share, or distribute</li>
+                  <li>• Their interactions with other users</li>
+                  <li>• Any illegal activities they conduct on or through the platform</li>
+                  <li>• Any copyright infringement or intellectual property violations</li>
+                </ul>
+              </div>
+
+              <Alert className="border-amber-300 bg-amber-50 dark:bg-amber-900/10 mt-4">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800 dark:text-amber-200">
+                  <strong>By using OnlyFur, you acknowledge and agree that:</strong> (1) You are solely responsible for your content and actions, (2) OnlyFur is not liable for user content or behavior, (3) You will use the platform legally and responsibly, (4) You indemnify OnlyFur against any legal issues arising from your use of the platform.
+                </AlertDescription>
+              </Alert>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>13. Contact Information</CardTitle>
+            <CardTitle>14. Contact Information</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">

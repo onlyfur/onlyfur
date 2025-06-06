@@ -21,6 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import SearchModal from '@/components/search/SearchModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +39,7 @@ const Header: React.FC = () => {
   const { toast } = useToast();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Enhanced logout with automatic features
   const handleLogout = async () => {
@@ -107,7 +109,12 @@ const Header: React.FC = () => {
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2">
             {/* Search */}
-            <Button variant="ghost" size="icon" className="hidden sm:flex">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="hidden sm:flex"
+              onClick={() => setIsSearchOpen(true)}
+            >
               <Search className="h-5 w-5" />
             </Button>
 
@@ -242,6 +249,19 @@ const Header: React.FC = () => {
                   )}
                 </Link>
               ))}
+
+              {/* Mobile Search */}
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start"
+                onClick={() => {
+                  setIsSearchOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Search
+              </Button>
               
               {!isAuthenticated && (
                 <div className="pt-2 border-t space-y-2">
@@ -261,6 +281,12 @@ const Header: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Search Modal */}
+      <SearchModal 
+        open={isSearchOpen} 
+        onOpenChange={setIsSearchOpen} 
+      />
     </header>
   );
 };

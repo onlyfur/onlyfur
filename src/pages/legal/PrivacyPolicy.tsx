@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield, Eye, Lock, FileText, Mail, Calendar } from 'lucide-react';
+import { Shield, Eye, Lock, FileText, Mail, Calendar, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PrivacyPolicy: React.FC = () => {
@@ -250,6 +250,73 @@ const PrivacyPolicy: React.FC = () => {
               We may update this privacy policy from time to time. We will notify you of significant changes by email or 
               through our platform. Your continued use of OnlyFur after such changes constitutes acceptance of the updated policy.
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Platform Content Liability Disclaimer */}
+        <Card className="border-red-300 bg-red-50 dark:bg-red-900/10">
+          <CardHeader>
+            <CardTitle className="flex items-center text-red-800 dark:text-red-200">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              Platform Content & Liability Disclaimer
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert className="border-red-300 bg-red-100 dark:bg-red-900/20">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800 dark:text-red-200">
+                <strong>IMPORTANT:</strong> While we protect your privacy and personal data, OnlyFur is not responsible for content posted by users or any illegal activities conducted on our platform.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">User-Generated Content</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur does NOT monitor, review, or control user-generated content</li>
+                  <li>• Users are solely responsible for all content they post, share, or distribute</li>
+                  <li>• We do not endorse, verify, or guarantee the accuracy of user content</li>
+                  <li>• Content uploaded by users does not reflect OnlyFur's views or opinions</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Legal Content Compliance</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• Users must ensure their content complies with all applicable laws</li>
+                  <li>• OnlyFur is NOT responsible for illegal content uploaded by users</li>
+                  <li>• Users who upload illegal content are solely liable for their actions</li>
+                  <li>• We will cooperate with law enforcement when legally required</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Privacy vs. Content Responsibility</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• This privacy policy protects YOUR personal data that WE collect</li>
+                  <li>• It does NOT cover content that YOU choose to share publicly</li>
+                  <li>• Content you post may be viewed by other users according to your privacy settings</li>
+                  <li>• You are responsible for managing what content you share and with whom</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Platform Limitations</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur provides the platform infrastructure only</li>
+                  <li>• We cannot guarantee the behavior or actions of other users</li>
+                  <li>• Users interact with each other at their own risk</li>
+                  <li>• Report inappropriate content or behavior through our reporting system</li>
+                </ul>
+              </div>
+
+              <Alert className="border-amber-300 bg-amber-50 dark:bg-amber-900/10 mt-4">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800 dark:text-amber-200">
+                  <strong>User Responsibility:</strong> By using OnlyFur, you acknowledge that you are responsible for your own content and actions. You agree to use the platform legally and responsibly, and understand that OnlyFur cannot control or be held liable for other users' content or behavior.
+                </AlertDescription>
+              </Alert>
+            </div>
           </CardContent>
         </Card>
       </div>

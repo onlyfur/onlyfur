@@ -188,6 +188,73 @@ const DMCA: React.FC = () => {
             </p>
           </CardContent>
         </Card>
+
+        {/* Platform Liability Disclaimer */}
+        <Card className="border-red-300 bg-red-50 dark:bg-red-900/10">
+          <CardHeader>
+            <CardTitle className="flex items-center text-red-800 dark:text-red-200">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              Platform Liability Disclaimer
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert className="border-red-300 bg-red-100 dark:bg-red-900/20">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800 dark:text-red-200">
+                <strong>IMPORTANT LEGAL NOTICE:</strong> OnlyFur operates as a platform that allows users to upload, share, and distribute content. We are not responsible for the content posted by users.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Content Responsibility</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur does NOT review, monitor, or approve user-generated content before publication</li>
+                  <li>• Users are solely responsible for all content they upload, share, or distribute</li>
+                  <li>• OnlyFur makes no representations about the accuracy, legality, or appropriateness of user content</li>
+                  <li>• We do not endorse any content, opinions, or recommendations posted by users</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Illegal Content Disclaimer</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur is NOT responsible for illegal content uploaded by users</li>
+                  <li>• Users who upload illegal content are solely liable for their actions</li>
+                  <li>• We will cooperate with law enforcement investigations regarding illegal content</li>
+                  <li>• OnlyFur reserves the right to remove any content and terminate accounts without notice</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Copyright Infringement</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur does NOT verify the copyright ownership of uploaded content</li>
+                  <li>• Users are responsible for ensuring they own or have rights to content they upload</li>
+                  <li>• Copyright infringement by users is their sole responsibility</li>
+                  <li>• OnlyFur acts only as a neutral platform responding to valid DMCA notices</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Limitation of Liability</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• OnlyFur disclaims all liability for user-generated content</li>
+                  <li>• We are not liable for any damages resulting from user content</li>
+                  <li>• Users access and view content at their own risk</li>
+                  <li>• OnlyFur provides the platform "AS IS" without warranties</li>
+                </ul>
+              </div>
+
+              <Alert className="border-amber-300 bg-amber-50 dark:bg-amber-900/10 mt-4">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800 dark:text-amber-200">
+                  <strong>User Acknowledgment:</strong> By using OnlyFur, users acknowledge that they understand and agree to these disclaimers. Users agree to hold OnlyFur harmless from any legal issues arising from their content or actions on the platform.
+                </AlertDescription>
+              </Alert>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card className="mt-12 bg-red-50 dark:bg-red-900/10 border-red-200">
