@@ -427,25 +427,25 @@ function App() {
               <Route path="about" element={<About />} />
               <Route path="how-it-works" element={<HowItWorks />} />
               <Route path="creator-program" element={<CreatorProgram />} />
-              <Route path="success-stories" element={<ComingSoon title="Success Stories" />} />
+              <Route path="success-stories" element={<SuccessStories />} />
 
               {/* Support Pages */}
               <Route path="help" element={<HelpCenter />} />
-              <Route path="safety" element={<ComingSoon title="Safety Center" />} />
-              <Route path="guidelines" element={<ComingSoon title="Community Guidelines" />} />
-              <Route path="contact" element={<Contact />} />
+              <Route path="safety" element={<Safety />} />
+              <Route path="guidelines" element={<CommunityGuidelines />} />
+              <Route path="contact" element={<ContactUs />} />
 
               {/* Legal Pages */}
               <Route path="privacy" element={<PrivacyPolicy />} />
               <Route path="terms" element={<TermsOfService />} />
-              <Route path="cookies" element={<ComingSoon title="Cookie Policy" />} />
-              <Route path="dmca" element={<ComingSoon title="DMCA Information" />} />
+              <Route path="cookies" element={<CookiePolicy />} />
+              <Route path="dmca" element={<DMCA />} />
 
               {/* Creator Resources */}
-              <Route path="creator-resources" element={<ComingSoon title="Creator Resources" />} />
-              <Route path="best-practices" element={<ComingSoon title="Best Practices" />} />
-              <Route path="analytics-guide" element={<ComingSoon title="Analytics Guide" />} />
-              <Route path="tax-info" element={<ComingSoon title="Tax Information" />} />
+              <Route path="creator-resources" element={<CreatorResources />} />
+              <Route path="best-practices" element={<BestPractices />} />
+              <Route path="analytics-guide" element={<AnalyticsGuide />} />
+              <Route path="tax-info" element={<TaxInfo />} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />

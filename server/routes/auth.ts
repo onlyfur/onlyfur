@@ -102,11 +102,13 @@ router.post('/register', asyncHandler(async (req, res) => {
       email,
       username,
       displayName,
+      password: hashedPassword, // Store the hashed password
       role,
       subscriptionTier: defaultTier,
       subscriptionStatus: role === 'CREATOR' && defaultTier === 'basic-creator' ? 'ACTIVE' : 'FREE',
       authProvider: 'EMAIL',
-      // Note: password is not stored in user table, would need separate auth table in production
+      isEmailVerified: false,
+      isActive: true,
     },
     select: {
       id: true,
@@ -247,12 +249,15 @@ router.post('/login', asyncHandler(async (req, res) => {
       email: true,
       username: true,
       displayName: true,
+      password: true, // Include password for verification
       role: true,
       subscriptionTier: true,
       subscriptionStatus: true,
       isVerified: true,
       avatar: true,
-      createdAt: true
+      createdAt: true,
+      isActive: true,
+      authProvider: true
     }
   });
 
@@ -265,33 +270,55 @@ router.post('/login', asyncHandler(async (req, res) => {
     throw new AuthenticationError('Invalid email or password');
   }
 
-  // In a real implementation, you would verify the password against a hash
-  // For demo purposes, we'll accept any password for existing users
-  // TODO: Implement proper password verification
+  // Check if user account is active
+  if (!user.isActive) {
+    throw new AuthenticationError('Account is deactivated');
+  }
+
+  // Verify password for email/password authentication
+  if (user.authProvider === 'EMAIL') {
+    if (!user.password) {
+      throw new AuthenticationError('Password not set for this account');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      logSecurityEvent('Login attempt with invalid password', {
+        email,
+        userId: user.id,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+      throw new AuthenticationError('Invalid email or password');
+    }
+  }
+
+  // Remove password from response
+  const { password: _, ...userWithoutPassword } = user;
 
   // Generate tokens
   const token = generateToken({
-    userId: user.id,
-    email: user.email,
-    role: user.role
+    userId: userWithoutPassword.id,
+    email: userWithoutPassword.email,
+    role: userWithoutPassword.role
   });
 
   const refreshToken = generateRefreshToken({
-    userId: user.id,
-    email: user.email,
-    role: user.role
+    userId: userWithoutPassword.id,
+    email: userWithoutPassword.email,
+    role: userWithoutPassword.role
   });
 
   logger.info('User login successful', {
-    userId: user.id,
-    email: user.email,
-    role: user.role
+    userId: userWithoutPassword.id,
+    email: userWithoutPassword.email,
+    role: userWithoutPassword.role
   });
 
   res.json({
     success: true,
     message: 'Login successful',
-    user,
+    user: userWithoutPassword,
     token,
     refreshToken
   });
