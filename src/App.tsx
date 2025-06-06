@@ -63,6 +63,11 @@ import BestPractices from '@/pages/creators/BestPractices';
 import AnalyticsGuide from '@/pages/creators/AnalyticsGuide';
 import TaxInfo from '@/pages/creators/TaxInfo';
 
+// Help Articles
+import CreateAccount from '@/pages/help/articles/CreateAccount';
+import SettingUpCreatorProfile from '@/pages/help/articles/SettingUpCreatorProfile';
+import UploadOrganizeContent from '@/pages/help/articles/UploadOrganizeContent';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -431,6 +436,9 @@ function App() {
 
               {/* Support Pages */}
               <Route path="help" element={<HelpCenter />} />
+              <Route path="help/articles/create-account" element={<CreateAccount />} />
+              <Route path="help/articles/setting-up-creator-profile" element={<SettingUpCreatorProfile />} />
+              <Route path="help/articles/upload-organize-content" element={<UploadOrganizeContent />} />
               <Route path="safety" element={<Safety />} />
               <Route path="guidelines" element={<CommunityGuidelines />} />
               <Route path="contact" element={<ContactUs />} />

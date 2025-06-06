@@ -26,6 +26,56 @@ const HelpCenter: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<string[]>(['getting-started']);
 
+  const getArticleLink = (article: any) => {
+    const articleLinks: { [key: string]: string } = {
+      'How to create your OnlyFur account': '/help/articles/create-account',
+      'Setting up your profile as a creator': '/help/articles/setting-up-creator-profile',
+      'Understanding subscription tiers': '/help/articles/subscription-tiers',
+      'Finding and following creators': '/help/articles/finding-creators',
+      'Your first subscription - what to expect': '/help/articles/first-subscription',
+      'Uploading and organizing your content': '/help/articles/upload-organize-content',
+      'Setting content privacy levels': '/help/articles/content-privacy-levels',
+      'Pricing strategies for creators': '/help/articles/pricing-strategies',
+      'Using scheduling features': '/help/articles/scheduling-features',
+      'Understanding creator analytics': '/help/articles/understanding-analytics',
+      'Custom content and commissions': '/help/articles/custom-commissions',
+      'How payments work on OnlyFur': '/help/articles/payment-system',
+      'Updating your payment method': '/help/articles/payment-methods',
+      'Creator earnings and payouts': '/help/articles/creator-earnings',
+      'Subscription renewal and cancellation': '/help/articles/subscription-management',
+      'Refund policy and requests': '/help/articles/refund-policy',
+      'Tax information for creators': '/help/articles/tax-information',
+      'How to message creators': '/help/articles/messaging-creators',
+      'Message limits by subscription tier': '/help/articles/message-limits',
+      'Sending tips through messages': '/help/articles/messaging-tips',
+      'Blocking and reporting users': '/help/articles/blocking-reporting',
+      'Creator bulk messaging features': '/help/articles/bulk-messaging',
+      'Community guidelines overview': '/help/articles/community-guidelines',
+      'Privacy settings and controls': '/help/articles/privacy-settings',
+      'Content protection for creators': '/help/articles/content-protection',
+      'Reporting inappropriate content or behavior': '/help/articles/reporting-content',
+      'Age verification process': '/help/articles/age-verification',
+      'Supported file formats and sizes': '/help/articles/supported-formats',
+      'Troubleshooting upload issues': '/help/articles/upload-troubleshooting',
+      'Video quality and streaming': '/help/articles/video-quality',
+      'Mobile app features and limitations': '/help/articles/mobile-app',
+      'Browser compatibility': '/help/articles/browser-compatibility'
+    };
+    
+    return articleLinks[article.title] || '/help';
+  };
+
+  const getPopularArticleLink = (article: string) => {
+    const popularLinks: { [key: string]: string } = {
+      'How to create your OnlyFur account': '/help/articles/create-account',
+      'Uploading and organizing your content': '/help/articles/upload-organize-content',
+      'How payments work on OnlyFur': '/help/articles/payment-system',
+      'Community guidelines overview': '/help/articles/community-guidelines'
+    };
+    
+    return popularLinks[article] || '/help';
+  };
+
   const toggleCategory = (categoryId: string) => {
     setOpenCategories(prev => 
       prev.includes(categoryId) 
@@ -302,17 +352,19 @@ const HelpCenter: React.FC = () => {
           <h2 className="text-2xl font-bold mb-6">Popular Articles</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {popularArticles.map((article, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    <div>
-                      <h3 className="font-medium">{article}</h3>
-                      <Badge variant="secondary" className="mt-1">Popular</Badge>
+              <Link key={index} to={getPopularArticleLink(article)}>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <Star className="w-5 h-5 text-yellow-500" />
+                      <div>
+                        <h3 className="font-medium">{article}</h3>
+                        <Badge variant="secondary" className="mt-1">Popular</Badge>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
@@ -359,9 +411,10 @@ const HelpCenter: React.FC = () => {
                   <CardContent className="pt-0">
                     <div className="space-y-3">
                       {category.articles.map((article, index) => (
-                        <div
+                        <Link
                           key={index}
-                          className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                          to={getArticleLink(article)}
+                          className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
                         >
                           <div className="flex items-start justify-between">
                             <div>
@@ -377,7 +430,7 @@ const HelpCenter: React.FC = () => {
                             </div>
                             <ChevronRight className="w-4 h-4 text-muted-foreground" />
                           </div>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   </CardContent>

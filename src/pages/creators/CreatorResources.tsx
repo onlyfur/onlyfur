@@ -20,6 +20,50 @@ import {
 import { Link } from 'react-router-dom';
 
 const CreatorResources: React.FC = () => {
+  const getResourceLink = (resource: any) => {
+    const resourceLinks: { [key: string]: string } = {
+      'Creator Onboarding Guide': '/resources/pdfs/creator-onboarding-guide.md',
+      'Pricing Strategy Guide': '/resources/pdfs/pricing-strategy-guide.md',
+      'Photography Lighting Guide': '/resources/pdfs/photography-lighting-guide.md',
+      'Content Planning Template': '/resources/templates/content-planning-template.md',
+      'Welcome Message Template': '/resources/templates/welcome-message-template.md',
+      'Commission Price Sheet': '/resources/templates/commission-price-sheet.md',
+      'Content Calendar': '/resources/templates/content-calendar.md',
+      'Fan Survey Template': '/resources/templates/fan-survey-template.md',
+      'Profile Optimization Tips': '/help/articles/setting-up-creator-profile',
+      'Art Scanning & Upload Tips': '/help/articles/upload-organize-content',
+      'Growth Strategies Guide': '/resources/pdfs/growth-strategies-guide.md',
+      'Revenue Optimization Guide': '/resources/pdfs/revenue-optimization-guide.md',
+      'Tax Guide for Creators': '/resources/pdfs/tax-guide-creators.md',
+      'Custom Content Pricing': '/help/articles/pricing-strategies',
+      'Engagement Best Practices': '/help/articles/engagement-best-practices',
+      'Cross-Platform Promotion': '/help/articles/cross-platform-promotion'
+    };
+    
+    return resourceLinks[resource.title] || '#';
+  };
+
+  const getVideoLink = (tutorial: any) => {
+    const videoLinks: { [key: string]: string } = {
+      'Setting Up Your Creator Profile': '/resources/videos/creator-profile-setup.mp4',
+      'Photography Tips for Fursuit Content': '/resources/videos/fursuit-photography-tips.mp4',
+      'Building Your Community': '/resources/videos/building-community.mp4',
+      'Advanced Pricing Strategies': '/resources/videos/pricing-strategies.mp4'
+    };
+    
+    return videoLinks[tutorial.title] || '#';
+  };
+
+  const getTemplateLink = (template: any) => {
+    const templateLinks: { [key: string]: string } = {
+      'Welcome Message Template': '/resources/templates/welcome-message-template.md',
+      'Commission Price Sheet': '/resources/templates/commission-price-sheet.md',
+      'Content Calendar': '/resources/templates/content-calendar.md',
+      'Fan Survey Template': '/resources/templates/fan-survey-template.md'
+    };
+    
+    return templateLinks[template.name] || '#';
+  };
   const resourceCategories = [
     {
       title: 'Getting Started',
@@ -222,9 +266,11 @@ const CreatorResources: React.FC = () => {
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mb-3">{resource.description}</p>
-                      <Button size="sm" variant="outline" className="w-full">
-                        <Download className="w-3 h-3 mr-2" />
-                        Access Resource
+                      <Button size="sm" variant="outline" className="w-full" asChild>
+                        <a href={getResourceLink(resource)} download target="_blank" rel="noopener noreferrer">
+                          <Download className="w-3 h-3 mr-2" />
+                          Access Resource
+                        </a>
                       </Button>
                     </div>
                   ))}
@@ -254,9 +300,11 @@ const CreatorResources: React.FC = () => {
                     <p className="text-muted-foreground text-sm mb-3">{tutorial.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">{tutorial.duration}</span>
-                      <Button size="sm">
-                        <Video className="w-3 h-3 mr-2" />
-                        Watch
+                      <Button size="sm" asChild>
+                        <a href={getVideoLink(tutorial)} target="_blank" rel="noopener noreferrer">
+                          <Video className="w-3 h-3 mr-2" />
+                          Watch
+                        </a>
                       </Button>
                     </div>
                   </div>
@@ -310,9 +358,11 @@ const CreatorResources: React.FC = () => {
                 <Badge variant="outline" className="mb-3 text-xs">
                   {template.category}
                 </Badge>
-                <Button size="sm" className="w-full">
-                  <Download className="w-3 h-3 mr-2" />
-                  Download
+                <Button size="sm" className="w-full" asChild>
+                  <a href={getTemplateLink(template)} download target="_blank" rel="noopener noreferrer">
+                    <Download className="w-3 h-3 mr-2" />
+                    Download
+                  </a>
                 </Button>
               </CardContent>
             </Card>
