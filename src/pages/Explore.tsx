@@ -40,13 +40,23 @@ const Explore: React.FC = () => {
   ];
 
   const species = [
-    'All Species', 'Fox', 'Wolf', 'Dragon', 'Cat', 'Dog', 'Bear', 'Rabbit', 'Deer', 'Horse', 'Bird', 'Other'
+    'All Species', 'Fox', 'Wolf', 'Dragon', 'Cat', 'Dog', 'Bear', 'Rabbit', 'Deer', 'Horse', 'Bird', 
+    'Sergal', 'Protogen', 'Avian', 'Reptile', 'Aquatic', 'Hybrid', 'Fictional', 'Bovine', 'Canine', 
+    'Feline', 'Equine', 'Mustelid', 'Rodent', 'Marsupial', 'Primate', 'Other'
   ];
 
   const tags = [
-    'fursuit', 'art', 'digital', 'traditional', 'commission', 'ych', 'anthro', 'feral',
-    'sfw', 'cute', 'cool', 'detailed', 'simple', 'colorful', 'monochrome', 'realistic',
-    'cartoon', 'anime', 'western', 'fantasy', 'scifi', 'modern', 'vintage', 'pride'
+    'fursuit', 'art', 'digital', 'traditional', 'commission', 'ych', 'anthro', 'feral', 'paws',
+    'sfw', 'nsfw', 'cute', 'cool', 'detailed', 'simple', 'colorful', 'monochrome', 'realistic',
+    'cartoon', 'anime', 'western', 'fantasy', 'scifi', 'modern', 'vintage', 'pride', 'lgbtq',
+    'furry', 'kemono', 'macro', 'micro', 'transformation', 'tf', 'muscle', 'chubby', 'slim',
+    'male', 'female', 'non-binary', 'trans', 'gay', 'lesbian', 'bisexual', 'straight',
+    'solo', 'couple', 'group', 'reference', 'refsheet', 'badge', 'sticker', 'poster',
+    'animation', 'gif', 'video', 'stream', 'tutorial', 'speedpaint', 'process', 'wip',
+    'convention', 'furcon', 'photography', 'nature', 'urban', 'studio', 'outdoor', 'indoor',
+    'partial', 'fullsuit', 'head', 'paws', 'tail', 'wings', 'horns', 'ears', 'costume',
+    'latex', 'plush', 'soft', 'hard', 'foam', 'fabric', 'realistic', 'toony', 'kemono',
+    'story', 'writing', 'fiction', 'roleplay', 'character', 'worldbuilding', 'lore'
   ];
 
   const featuredCreators = [
@@ -56,13 +66,15 @@ const Explore: React.FC = () => {
       username: 'luna_silverpaw',
       avatar: '🦊',
       category: 'Fursuit Photos',
-      species: 'Arctic Fox',
+      species: 'Fox',
       subscribers: '3.2K',
       rating: 4.9,
-      price: '$19.99/month',
+      price: 19.99,
+      priceDisplay: '$19.99/month',
       isVerified: true,
+      joinDate: '2023-01-15',
       description: 'Professional fursuit photographer capturing magical moments at conventions and in nature',
-      tags: ['fursuit', 'photography', 'convention', 'nature'],
+      tags: ['fursuit', 'photography', 'convention', 'nature', 'sfw', 'outdoor'],
     },
     {
       id: 2,
@@ -73,10 +85,12 @@ const Explore: React.FC = () => {
       species: 'Dragon',
       subscribers: '5.8K',
       rating: 4.8,
-      price: '$14.99/month',
+      price: 14.99,
+      priceDisplay: '$14.99/month',
       isVerified: true,
+      joinDate: '2022-11-20',
       description: 'Fantasy dragon artist specializing in detailed character commissions and YCH',
-      tags: ['art', 'digital', 'dragon', 'commission', 'fantasy'],
+      tags: ['art', 'digital', 'dragon', 'commission', 'fantasy', 'detailed', 'male'],
     },
     {
       id: 3,
@@ -87,10 +101,12 @@ const Explore: React.FC = () => {
       species: 'Wolf',
       subscribers: '2.1K',
       rating: 4.9,
-      price: '$24.99/month',
+      price: 24.99,
+      priceDisplay: '$24.99/month',
       isVerified: false,
+      joinDate: '2023-03-10',
       description: 'Fursuit maker sharing detailed tutorials and behind-the-scenes crafting content',
-      tags: ['tutorial', 'fursuit', 'crafting', 'educational'],
+      tags: ['tutorial', 'fursuit', 'crafting', 'educational', 'process', 'sfw'],
     },
     {
       id: 4,
@@ -98,13 +114,15 @@ const Explore: React.FC = () => {
       username: 'zara_striped',
       avatar: '🦓',
       category: 'Videos & Animations',
-      species: 'Zebra',
+      species: 'Equine',
       subscribers: '4.3K',
       rating: 4.7,
-      price: '$16.99/month',
+      price: 16.99,
+      priceDisplay: '$16.99/month',
       isVerified: true,
+      joinDate: '2023-02-05',
       description: 'Animator creating short furry films and character animations',
-      tags: ['animation', 'video', 'story', 'character'],
+      tags: ['animation', 'video', 'story', 'character', 'female', 'colorful'],
     },
     {
       id: 5,
@@ -112,13 +130,15 @@ const Explore: React.FC = () => {
       username: 'copper_fennec',
       avatar: '🦊',
       category: 'Character Stories',
-      species: 'Fennec Fox',
+      species: 'Fox',
       subscribers: '1.9K',
       rating: 4.8,
-      price: '$12.99/month',
+      price: 12.99,
+      priceDisplay: '$12.99/month',
       isVerified: true,
+      joinDate: '2023-04-20',
       description: 'Storyteller crafting immersive furry fiction and character development',
-      tags: ['story', 'writing', 'character', 'fiction'],
+      tags: ['story', 'writing', 'character', 'fiction', 'worldbuilding', 'sfw'],
     },
     {
       id: 6,
@@ -126,29 +146,280 @@ const Explore: React.FC = () => {
       username: 'nova_starcat',
       avatar: '🐱',
       category: 'Digital Art',
-      species: 'Space Cat',
+      species: 'Cat',
       subscribers: '6.8K',
       rating: 4.9,
-      price: '$18.99/month',
+      price: 18.99,
+      priceDisplay: '$18.99/month',
       isVerified: true,
+      joinDate: '2022-09-12',
       description: 'Sci-fi furry artist creating cosmic adventures and space-themed characters',
-      tags: ['art', 'scifi', 'space', 'digital', 'commission'],
+      tags: ['art', 'scifi', 'space', 'digital', 'commission', 'female', 'colorful'],
     },
+    {
+      id: 7,
+      name: 'Thunder Sergal',
+      username: 'thunder_sergal',
+      avatar: '⚡',
+      category: 'Fursuit Photos',
+      species: 'Sergal',
+      subscribers: '2.8K',
+      rating: 4.6,
+      price: 22.99,
+      priceDisplay: '$22.99/month',
+      isVerified: true,
+      joinDate: '2023-01-30',
+      description: 'Energetic sergal sharing dynamic fursuit photos and convention adventures',
+      tags: ['fursuit', 'sergal', 'convention', 'energetic', 'male', 'photography'],
+    },
+    {
+      id: 8,
+      name: 'Mystic Protogen',
+      username: 'mystic_protogen',
+      avatar: '🤖',
+      category: 'Digital Art',
+      species: 'Protogen',
+      subscribers: '4.1K',
+      rating: 4.8,
+      price: 17.99,
+      priceDisplay: '$17.99/month',
+      isVerified: true,
+      joinDate: '2022-12-08',
+      description: 'Cyberpunk protogen artist blending technology with organic beauty',
+      tags: ['art', 'protogen', 'cyberpunk', 'digital', 'scifi', 'non-binary', 'tech'],
+    },
+    {
+      id: 9,
+      name: 'Willow Deer',
+      username: 'willow_deer',
+      avatar: '🦌',
+      category: 'Traditional Art',
+      species: 'Deer',
+      subscribers: '3.5K',
+      rating: 4.7,
+      price: 13.99,
+      priceDisplay: '$13.99/month',
+      isVerified: false,
+      joinDate: '2023-05-15',
+      description: 'Traditional artist creating beautiful watercolor and pencil illustrations',
+      tags: ['art', 'traditional', 'watercolor', 'pencil', 'nature', 'female', 'soft'],
+    },
+    {
+      id: 10,
+      name: 'Blaze Husky',
+      username: 'blaze_husky',
+      avatar: '🐕',
+      category: 'Videos & Animations',
+      species: 'Dog',
+      subscribers: '5.2K',
+      rating: 4.9,
+      price: 21.99,
+      priceDisplay: '$21.99/month',
+      isVerified: true,
+      joinDate: '2022-10-22',
+      description: 'High-energy husky creating workout videos and lifestyle content',
+      tags: ['video', 'fitness', 'lifestyle', 'energetic', 'male', 'motivation', 'sfw'],
+    },
+    {
+      id: 11,
+      name: 'Ember Wolf',
+      username: 'ember_wolf',
+      avatar: '🔥',
+      category: 'Murrsuit Content',
+      species: 'Wolf',
+      subscribers: '7.3K',
+      rating: 4.8,
+      price: 29.99,
+      priceDisplay: '$29.99/month',
+      isVerified: true,
+      joinDate: '2022-08-14',
+      description: 'Adult content creator specializing in murrsuit and intimate experiences',
+      tags: ['murrsuit', 'adult', 'nsfw', 'intimate', 'wolf', 'male', 'latex'],
+    },
+    {
+      id: 12,
+      name: 'Crystal Rabbit',
+      username: 'crystal_rabbit',
+      avatar: '🐰',
+      category: 'Character Stories',
+      species: 'Rabbit',
+      subscribers: '2.7K',
+      rating: 4.6,
+      price: 11.99,
+      priceDisplay: '$11.99/month',
+      isVerified: false,
+      joinDate: '2023-06-01',
+      description: 'Wholesome bunny sharing slice-of-life stories and daily adventures',
+      tags: ['story', 'slice-of-life', 'wholesome', 'daily', 'female', 'cute', 'sfw'],
+    },
+    {
+      id: 13,
+      name: 'Storm Gryphon',
+      username: 'storm_gryphon',
+      avatar: '🦅',
+      category: 'Digital Art',
+      species: 'Avian',
+      subscribers: '4.9K',
+      rating: 4.9,
+      price: 25.99,
+      priceDisplay: '$25.99/month',
+      isVerified: true,
+      joinDate: '2022-07-19',
+      description: 'Majestic gryphon artist creating epic fantasy scenes and character art',
+      tags: ['art', 'digital', 'fantasy', 'epic', 'gryphon', 'male', 'detailed', 'commission'],
+    },
+    {
+      id: 14,
+      name: 'Sunny Otter',
+      username: 'sunny_otter',
+      avatar: '🦦',
+      category: 'Convention Coverage',
+      species: 'Mustelid',
+      subscribers: '3.1K',
+      rating: 4.5,
+      price: 15.99,
+      priceDisplay: '$15.99/month',
+      isVerified: true,
+      joinDate: '2023-02-28',
+      description: 'Convention reporter bringing you the latest from furry gatherings worldwide',
+      tags: ['convention', 'reporting', 'news', 'community', 'travel', 'female', 'social'],
+    },
+    {
+      id: 15,
+      name: 'Midnight Bat',
+      username: 'midnight_bat',
+      avatar: '🦇',
+      category: 'Digital Art',
+      species: 'Bat',
+      subscribers: '3.8K',
+      rating: 4.7,
+      price: 16.99,
+      priceDisplay: '$16.99/month',
+      isVerified: true,
+      joinDate: '2022-11-03',
+      description: 'Gothic bat artist specializing in dark fantasy and vampire aesthetics',
+      tags: ['art', 'digital', 'gothic', 'dark', 'vampire', 'fantasy', 'non-binary', 'monochrome'],
+    },
+    {
+      id: 16,
+      name: 'Cyber Fox',
+      username: 'cyber_fox',
+      avatar: '🦊',
+      category: 'Tutorials & Tips',
+      species: 'Fox',
+      subscribers: '4.6K',
+      rating: 4.8,
+      price: 23.99,
+      priceDisplay: '$23.99/month',
+      isVerified: true,
+      joinDate: '2022-12-20',
+      description: 'Tech-savvy fox teaching digital art techniques and software tutorials',
+      tags: ['tutorial', 'digital', 'tech', 'software', 'educational', 'male', 'cyberpunk'],
+    },
+    {
+      id: 17,
+      name: 'River Dolphin',
+      username: 'river_dolphin',
+      avatar: '🐬',
+      category: 'Videos & Animations',
+      species: 'Aquatic',
+      subscribers: '2.4K',
+      rating: 4.6,
+      price: 18.99,
+      priceDisplay: '$18.99/month',
+      isVerified: false,
+      joinDate: '2023-04-10',
+      description: 'Aquatic mammal creating underwater-themed animations and marine life content',
+      tags: ['animation', 'aquatic', 'underwater', 'marine', 'nature', 'female', 'peaceful'],
+    },
+    {
+      id: 18,
+      name: 'Neon Tiger',
+      username: 'neon_tiger',
+      avatar: '🐅',
+      category: 'Digital Art',
+      species: 'Cat',
+      subscribers: '6.1K',
+      rating: 4.9,
+      price: 27.99,
+      priceDisplay: '$27.99/month',
+      isVerified: true,
+      joinDate: '2022-06-15',
+      description: 'Vibrant tiger artist known for neon-colored cyberpunk character designs',
+      tags: ['art', 'digital', 'cyberpunk', 'neon', 'colorful', 'tiger', 'male', 'commission'],
+    },
+    {
+      id: 19,
+      name: 'Cozy Bear',
+      username: 'cozy_bear',
+      avatar: '🐻',
+      category: 'Character Stories',
+      species: 'Bear',
+      subscribers: '3.3K',
+      rating: 4.7,
+      price: 14.99,
+      priceDisplay: '$14.99/month',
+      isVerified: true,
+      joinDate: '2023-01-08',
+      description: 'Gentle bear sharing cozy stories, recipes, and hygge lifestyle content',
+      tags: ['story', 'cozy', 'lifestyle', 'recipes', 'wholesome', 'male', 'comfort', 'sfw'],
+    },
+    {
+      id: 20,
+      name: 'Aurora Horse',
+      username: 'aurora_horse',
+      avatar: '🐴',
+      category: 'Fursuit Photos',
+      species: 'Horse',
+      subscribers: '2.9K',
+      rating: 4.8,
+      price: 20.99,
+      priceDisplay: '$20.99/month',
+      isVerified: true,
+      joinDate: '2023-03-25',
+      description: 'Elegant horse showcasing beautiful fursuit photography in natural settings',
+      tags: ['fursuit', 'photography', 'elegant', 'nature', 'outdoor', 'female', 'artistic'],
+    }
   ];
 
   const trendingCreators = featuredCreators.slice(0, 3);
 
-  const filteredCreators = featuredCreators.filter(creator => {
-    const matchesSearch = searchQuery === '' || 
-      creator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      creator.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      creator.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === 'all' || creator.category === selectedCategory;
-    const matchesSpecies = selectedSpecies === 'all' || creator.species === selectedSpecies;
-    
-    return matchesSearch && matchesCategory && matchesSpecies;
-  });
+  const filteredCreators = featuredCreators
+    .filter(creator => {
+      const matchesSearch = searchQuery === '' || 
+        creator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        creator.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        creator.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        creator.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        creator.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const matchesCategory = selectedCategory === 'all' || creator.category === selectedCategory;
+      const matchesSpecies = selectedSpecies === 'all' || creator.species === selectedSpecies;
+      
+      return matchesSearch && matchesCategory && matchesSpecies;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime();
+        case 'rating':
+          return b.rating - a.rating;
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'subscribers':
+          const aSubscribers = parseInt(a.subscribers.replace(/[^\d]/g, ''));
+          const bSubscribers = parseInt(b.subscribers.replace(/[^\d]/g, ''));
+          return bSubscribers - aSubscribers;
+        case 'popular':
+        default:
+          // Sort by a combination of rating and subscriber count
+          const aScore = a.rating * (parseInt(a.subscribers.replace(/[^\d]/g, '')) / 1000);
+          const bScore = b.rating * (parseInt(b.subscribers.replace(/[^\d]/g, '')) / 1000);
+          return bScore - aScore;
+      }
+    });
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -211,6 +482,7 @@ const Explore: React.FC = () => {
               <SelectItem value="popular">Most Popular</SelectItem>
               <SelectItem value="newest">Newest</SelectItem>
               <SelectItem value="rating">Highest Rated</SelectItem>
+              <SelectItem value="subscribers">Most Subscribers</SelectItem>
               <SelectItem value="price-low">Price: Low to High</SelectItem>
               <SelectItem value="price-high">Price: High to Low</SelectItem>
             </SelectContent>
@@ -221,18 +493,70 @@ const Explore: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">Popular Tags:</h3>
           <div className="flex flex-wrap gap-2">
-            {tags.slice(0, 12).map((tag) => (
+            {tags.slice(0, 16).map((tag) => (
               <Badge 
                 key={tag}
-                variant="outline" 
-                className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                onClick={() => setSearchQuery(tag)}
+                variant={searchQuery === tag ? "default" : "outline"}
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                onClick={() => setSearchQuery(searchQuery === tag ? '' : tag)}
               >
                 #{tag}
               </Badge>
             ))}
           </div>
         </div>
+
+        {/* Active Filters Display */}
+        {(searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all') && (
+          <div className="flex flex-wrap items-center gap-2 p-4 bg-muted/50 rounded-lg">
+            <span className="text-sm font-medium text-muted-foreground">Active filters:</span>
+            {searchQuery && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Search: "{searchQuery}"
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {selectedCategory !== 'all' && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Category: {selectedCategory}
+                <button 
+                  onClick={() => setSelectedCategory('all')}
+                  className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {selectedSpecies !== 'all' && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Species: {selectedSpecies}
+                <button 
+                  onClick={() => setSelectedSpecies('all')}
+                  className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+                setSelectedSpecies('all');
+              }}
+              className="text-xs"
+            >
+              Clear All
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Categories */}
@@ -293,7 +617,7 @@ const Explore: React.FC = () => {
                 <Badge variant="secondary">{creator.category}</Badge>
                 <p className="text-sm text-muted-foreground">{creator.description}</p>
                 <div className="flex items-center justify-between pt-2">
-                  <span className="font-semibold text-lg">{creator.price}</span>
+                  <span className="font-semibold text-lg">{creator.priceDisplay}</span>
                   <Button size="sm">Subscribe</Button>
                 </div>
               </CardContent>
@@ -305,12 +629,20 @@ const Explore: React.FC = () => {
       {/* Search Results */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">
-            {searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all' 
-              ? `Search Results (${filteredCreators.length})`
-              : 'Featured Creators'
-            }
-          </h2>
+          <div>
+            <h2 className="text-2xl font-bold">
+              {searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all' 
+                ? `Search Results`
+                : 'Featured Creators'
+              }
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all' 
+                ? `Found ${filteredCreators.length} creator${filteredCreators.length !== 1 ? 's' : ''} matching your criteria`
+                : `Discover ${featuredCreators.length} amazing creators in the furry community`
+              }
+            </p>
+          </div>
           {(searchQuery || selectedCategory !== 'all' || selectedSpecies !== 'all') && (
             <Button 
               variant="outline"
@@ -320,12 +652,35 @@ const Explore: React.FC = () => {
                 setSelectedSpecies('all');
               }}
             >
-              Clear Filters
+              Show All Creators
             </Button>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCreators.map((creator) => (
+        {filteredCreators.length === 0 ? (
+          <Card className="p-8 text-center">
+            <CardContent>
+              <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                <Search className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">No creators found</h3>
+              <p className="text-muted-foreground mb-4">
+                Try adjusting your search terms or filters to find what you're looking for.
+              </p>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                  setSelectedSpecies('all');
+                }}
+              >
+                Clear All Filters
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCreators.map((creator) => (
             <Card key={creator.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center space-x-3">
@@ -363,7 +718,12 @@ const Explore: React.FC = () => {
                 {creator.tags && (
                   <div className="flex flex-wrap gap-1">
                     {creator.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
+                      <Badge 
+                        key={tag} 
+                        variant="outline" 
+                        className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                        onClick={() => setSearchQuery(tag)}
+                      >
                         #{tag}
                       </Badge>
                     ))}
@@ -379,13 +739,14 @@ const Explore: React.FC = () => {
                     <Users className="w-4 h-4" />
                     <span>{creator.subscribers} subscribers</span>
                   </div>
-                  <span className="font-semibold">{creator.price}</span>
+                  <span className="font-semibold">{creator.priceDisplay}</span>
                 </div>
                 <Button className="w-full">Subscribe</Button>
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* CTA Section */}
