@@ -12,38 +12,38 @@ datasource db {
 
 // User model with subscription tiers
 model User {
-  id               String   @id @default(cuid())
-  email            String   @unique
-  username         String   @unique
-  displayName      String
-  avatar           String?
-  role             UserRole @default(SUBSCRIBER)
-  isVerified       Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  displayName String
+  avatar      String?
+  role        UserRole @default(SUBSCRIBER)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   // Authentication
-  authProvider     AuthProvider @default(EMAIL)
-  googleId         String?      @unique
-  password         String?      // For email/password authentication
-  isActive         Boolean      @default(true)
-  isEmailVerified  Boolean      @default(false)
-  
+  authProvider    AuthProvider @default(EMAIL)
+  googleId        String?      @unique
+  password        String? // For email/password authentication
+  isActive        Boolean      @default(true)
+  isEmailVerified Boolean      @default(false)
+
   // V3.8 Enhanced Authentication
   emailVerificationToken String?
   emailVerifiedAt        DateTime?
   passwordResetToken     String?
   passwordResetExpires   DateTime?
-  failedLoginAttempts    Int      @default(0)
-  lockedUntil           DateTime?
-  twoFactorSecret       String?
-  isTwoFactorEnabled    Boolean  @default(false)
-  tempTwoFactorSecret   String?
-  stripeCustomerId      String?
-  
+  failedLoginAttempts    Int       @default(0)
+  lockedUntil            DateTime?
+  twoFactorSecret        String?
+  isTwoFactorEnabled     Boolean   @default(false)
+  tempTwoFactorSecret    String?
+  stripeCustomerId       String?
+
   // V3.8 User Preferences & Settings
-  categories            String[]
-  tags                  String[]
+  categories           String[]
+  tags                 String[]
   isPrivate            Boolean  @default(false)
   allowMessages        Boolean  @default(true)
   website              String?
@@ -52,241 +52,240 @@ model User {
   subscriberCount      Int      @default(0)
   notificationSettings Json?
   settings             Json?
-  
+
   // Subscription information
-  subscriptionTier   String?
-  subscriptionStatus SubscriptionStatus @default(FREE)
+  subscriptionTier       String?
+  subscriptionStatus     SubscriptionStatus @default(FREE)
   subscriptionValidUntil DateTime?
-  
+
   // Creator specific fields
-  bio              String?
-  coverImage       String?
-  socialLinks      Json?
-  
+  bio         String?
+  coverImage  String?
+  socialLinks Json?
+
   // V2.9 New fields
-  lastLoginAt           DateTime?
-  loginAttempts         Int       @default(0)
-  lockedUntil           DateTime?
-  preferredLanguage     String    @default("en")
-  timezone              String    @default("UTC")
-  twoFactorEnabled      Boolean   @default(false)
-  emailNotifications    Boolean   @default(true)
-  pushNotifications     Boolean   @default(true)
-  marketingEmails       Boolean   @default(false)
-  
+  lastLoginAt        DateTime?
+  loginAttempts      Int       @default(0)
+  preferredLanguage  String    @default("en")
+  timezone           String    @default("UTC")
+  twoFactorEnabled   Boolean   @default(false)
+  emailNotifications Boolean   @default(true)
+  pushNotifications  Boolean   @default(true)
+  marketingEmails    Boolean   @default(false)
+
   // V3.5 Online Status Tracking
-  isOnline              Boolean   @default(false)
-  lastActivityAt        DateTime  @default(now())
+  isOnline              Boolean        @default(false)
+  lastActivityAt        DateTime       @default(now())
   lastSeenAt            DateTime?
-  onlineStatusUpdatedAt DateTime  @default(now())
+  onlineStatusUpdatedAt DateTime       @default(now())
   activityStatus        ActivityStatus @default(OFFLINE)
-  followersCount        Int       @default(0)
-  followingCount        Int       @default(0)
-  contentCount          Int       @default(0)
-  
+  followersCount        Int            @default(0)
+  followingCount        Int            @default(0)
+  contentCount          Int            @default(0)
+
   // Relations
-  createdContent        Content[]
-  subscriptions         Subscription[]
-  sentMessages          Message[] @relation("SentMessages")
-  receivedMessages      Message[] @relation("ReceivedMessages")
-  transactions          Transaction[]
-  twoFactorSecrets      TwoFactorSecret[]
-  userSessions          UserSession[]
-  notifications         Notification[]
-  contentReports        ContentReport[]
-  userPreferences       UserPreference[]
-  auditLogs             AuditLog[] @relation("UserAuditLogs")
-  adminAuditLogs        AuditLog[] @relation("AdminAuditLogs")
-  userAnalytics         UserAnalytics[]
-  apiKeys               ApiKey[]
-  webhookEndpoints      WebhookEndpoint[]
+  createdContent     Content[]
+  subscriptions      Subscription[]
+  sentMessages       Message[]           @relation("SentMessages")
+  receivedMessages   Message[]           @relation("ReceivedMessages")
+  transactions       Transaction[]
+  twoFactorSecrets   TwoFactorSecret[]
+  userSessions       UserSession[]
+  notifications      Notification[]
+  contentReports     ContentReport[]
+  userPreferences    UserPreference[]
+  auditLogs          AuditLog[]          @relation("UserAuditLogs")
+  adminAuditLogs     AuditLog[]          @relation("AdminAuditLogs")
+  userAnalytics      UserAnalytics[]
+  apiKeys            ApiKey[]
+  webhookEndpoints   WebhookEndpoint[]
   // V3.0 New relations
-  liveStreams           LiveStream[]
-  streamChatMessages    StreamChatMessage[]
-  streamDonations       StreamDonation[]
-  socialPosts           SocialPost[]
-  socialComments        SocialComment[]
-  socialLikes           SocialLike[]
-  socialShares          SocialShare[]
-  following             UserFollow[]    @relation("UserFollows")
-  followers             UserFollow[]    @relation("UserFollowing")
-  mentionsMade          UserMention[]   @relation("UserMentions")
-  mentionsReceived      UserMention[]   @relation("UserMentioned")
-  pollVotes             PollVote[]
-  aiRecommendations     AIRecommendation[]
-  userInsights          UserInsight[]
+  liveStreams        LiveStream[]
+  streamChatMessages StreamChatMessage[]
+  streamDonations    StreamDonation[]
+  socialPosts        SocialPost[]
+  socialComments     SocialComment[]
+  socialLikes        SocialLike[]
+  socialShares       SocialShare[]
+  following          UserFollow[]        @relation("UserFollows")
+  followers          UserFollow[]        @relation("UserFollowing")
+  mentionsMade       UserMention[]       @relation("UserMentions")
+  mentionsReceived   UserMention[]       @relation("UserMentioned")
+  pollVotes          PollVote[]
+  aiRecommendations  AIRecommendation[]
+  userInsights       UserInsight[]
 
   // V3.1 Enhanced Payment Relations
-  paymentMethods        PaymentMethod[]     @relation("UserPaymentMethods")
-  paymentIntents        PaymentIntent[]     @relation("UserPaymentIntents")
-  paymentSubscriptions  PaymentSubscription[] @relation("UserPaymentSubscriptions")
-  creatorSubscriptions  PaymentSubscription[] @relation("CreatorPaymentSubscriptions")
-  payoutSchedules       PayoutSchedule[]    @relation("UserPayoutSchedules")
+  paymentMethods       PaymentMethod[]       @relation("UserPaymentMethods")
+  paymentIntents       PaymentIntent[]       @relation("UserPaymentIntents")
+  paymentSubscriptions PaymentSubscription[] @relation("UserPaymentSubscriptions")
+  creatorSubscriptions PaymentSubscription[] @relation("CreatorPaymentSubscriptions")
+  payoutSchedules      PayoutSchedule[]      @relation("UserPayoutSchedules")
 
   // V3.1 Enhanced Search Relations
-  searchAnalytics       SearchAnalytics[]   @relation("UserSearchAnalytics")
-  savedSearches         SavedSearch[]       @relation("UserSavedSearches")
+  searchAnalytics SearchAnalytics[] @relation("UserSearchAnalytics")
+  savedSearches   SavedSearch[]     @relation("UserSavedSearches")
 
   // V3.1 Mobile App Relations
-  mobileDevices         MobileDevice[]      @relation("UserMobileDevices")
-  mobileSessions        MobileSession[]     @relation("UserMobileSessions")
-  pushNotifications     PushNotification[]  @relation("UserPushNotifications")
+  mobileDevices         MobileDevice[]     @relation("UserMobileDevices")
+  mobileSessions        MobileSession[]    @relation("UserMobileSessions")
+  userPushNotifications PushNotification[] @relation("UserPushNotifications")
 
   // V3.2 Stripe Relations
-  stripeCustomer         StripeCustomer?        @relation("UserStripeCustomer")
-  stripeSubscriptions    StripeSubscription[]   @relation("UserStripeSubscriptions")
-  creatorSubscriptions   StripeSubscription[]   @relation("CreatorStripeSubscriptions")
-  blobStorage            BlobStorage[]          @relation("UserBlobStorage")
-  
+  stripeCustomer             StripeCustomer?      @relation("UserStripeCustomer")
+  stripeSubscriptions        StripeSubscription[] @relation("UserStripeSubscriptions")
+  creatorStripeSubscriptions StripeSubscription[] @relation("CreatorStripeSubscriptions")
+  blobStorage                BlobStorage[]        @relation("UserBlobStorage")
+
   // V3.8 New Relations
-  contentInteractions    ContentInteraction[]
-  activities             Activity[]
-  creatorApplications    CreatorApplication[]
-  comments               Comment[]
-  
+  contentInteractions ContentInteraction[]
+  activities          Activity[]
+  creatorApplications CreatorApplication[]
+  comments            Comment[]
+
   @@map("users")
 }
 
 model PlatformSubscriptionTier {
-  id                    String   @id @default(cuid())
-  name                  String
-  type                  TierType
-  level                 TierLevel
-  price                 Float
-  currency              String   @default("USD")
-  billingPeriod         BillingPeriod @default(MONTHLY)
-  description           String
-  features              Json
-  limitations           Json
-  messagingFeatures     Json
-  contentAccess         Json
-  creatorFeatures       Json?
-  isPopular             Boolean  @default(false)
-  color                 String
-  badge                 String?
-  isActive              Boolean  @default(true)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
+  id                String        @id @default(cuid())
+  name              String
+  type              TierType
+  level             TierLevel
+  price             Float
+  currency          String        @default("USD")
+  billingPeriod     BillingPeriod @default(MONTHLY)
+  description       String
+  features          Json
+  limitations       Json
+  messagingFeatures Json
+  contentAccess     Json
+  creatorFeatures   Json?
+  isPopular         Boolean       @default(false)
+  color             String
+  badge             String?
+  isActive          Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
   // Relations
-  subscriptions         Subscription[]
-  
+  subscriptions Subscription[]
+
   @@map("platform_subscription_tiers")
 }
 
 model Subscription {
-  id                    String   @id @default(cuid())
-  userId                String
-  tierId                String
-  status                SubscriptionStatus @default(ACTIVE)
-  currentPeriodStart    DateTime
-  currentPeriodEnd      DateTime
-  cancelAtPeriodEnd     Boolean  @default(false)
-  canceledAt            DateTime?
-  trialStart            DateTime?
-  trialEnd              DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
+  id                 String             @id @default(cuid())
+  userId             String
+  tierId             String
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  canceledAt         DateTime?
+  trialStart         DateTime?
+  trialEnd           DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
   // Relations
-  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tier                  PlatformSubscriptionTier @relation(fields: [tierId], references: [id])
-  transactions          Transaction[]
-  
+  user         User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tier         PlatformSubscriptionTier @relation(fields: [tierId], references: [id])
+  transactions Transaction[]
+
   @@map("subscriptions")
 }
 
 model Content {
-  id                    String   @id @default(cuid())
-  creatorId             String
-  title                 String
-  description           String?
-  type                  ContentType
-  mediaUrl              String?
-  mediaUrls             Json
-  thumbnailUrl          String?
-  isPublic              Boolean  @default(true)
-  requiresSubscription  Boolean  @default(false)
-  privacyLevel          PrivacyLevel @default(PUBLIC)
-  status                ContentStatus @default(PUBLISHED)
-  scheduledAt           DateTime?
-  tags                  Json
-  category              String?
-  fileSize              Int?
-  fileName              String?
-  mimeType              String?
-  dimensions            Json?
-  duration              Int?
-  likesCount            Int      @default(0)
-  commentsCount         Int      @default(0)
-  viewsCount            Int      @default(0)
-  sharesCount           Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
+  id                   String        @id @default(cuid())
+  creatorId            String
+  title                String
+  description          String?
+  type                 ContentType
+  mediaUrl             String?
+  mediaUrls            Json
+  thumbnailUrl         String?
+  isPublic             Boolean       @default(true)
+  requiresSubscription Boolean       @default(false)
+  privacyLevel         PrivacyLevel  @default(PUBLIC)
+  status               ContentStatus @default(PUBLISHED)
+  scheduledAt          DateTime?
+  tags                 Json
+  category             String?
+  fileSize             Int?
+  fileName             String?
+  mimeType             String?
+  dimensions           Json?
+  duration             Int?
+  likesCount           Int           @default(0)
+  commentsCount        Int           @default(0)
+  viewsCount           Int           @default(0)
+  sharesCount          Int           @default(0)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
   // V3.8 Enhanced Content Fields
-  mediaMetadata         Json?
-  allowComments         Boolean  @default(true)
-  allowDownload         Boolean  @default(false)
-  views                 Int      @default(0)
-  likes                 Int      @default(0)
-  comments              Int      @default(0)
-  tier                  String   @default("FREE")
-  textContent           String?
-  
+  mediaMetadata Json?
+  allowComments Boolean @default(true)
+  allowDownload Boolean @default(false)
+  views         Int     @default(0)
+  likes         Int     @default(0)
+  comments      Int     @default(0)
+  tier          String  @default("FREE")
+  textContent   String?
+
   // Relations
-  creator               User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  reports               ContentReport[]
-  analytics             ContentAnalytics[]
-  
+  creator   User               @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  reports   ContentReport[]
+  analytics ContentAnalytics[]
+
   // V3.8 New Relations
-  interactions          ContentInteraction[]
-  commentsList          Comment[]
-  
+  interactions ContentInteraction[]
+  commentsList Comment[]
+
   @@map("content")
 }
 
 model Message {
-  id                    String   @id @default(cuid())
-  conversationId        String
-  senderId              String
-  recipientId           String
-  content               String
-  messageType           MessageType @default(TEXT)
-  mediaUrl              String?
-  isRead                Boolean  @default(false)
-  readAt                DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
+  id             String      @id @default(cuid())
+  conversationId String
+  senderId       String
+  recipientId    String
+  content        String
+  messageType    MessageType @default(TEXT)
+  mediaUrl       String?
+  isRead         Boolean     @default(false)
+  readAt         DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
   // Relations
-  sender                User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  recipient             User @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
-  
+  sender    User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+
   @@map("messages")
 }
 
 model Transaction {
-  id                    String   @id @default(cuid())
-  userId                String
-  subscriptionId        String?
-  amount                Float
-  currency              String   @default("USD")
-  type                  TransactionType
-  status                TransactionStatus @default(PENDING)
-  paymentMethodType     PaymentMethodType
-  paymentIntentId       String?
-  description           String
-  fees                  Float    @default(0)
-  netAmount             Float
-  processedAt           DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
+  id                String            @id @default(cuid())
+  userId            String
+  subscriptionId    String?
+  amount            Float
+  currency          String            @default("USD")
+  type              TransactionType
+  status            TransactionStatus @default(PENDING)
+  paymentMethodType PaymentMethodType
+  paymentIntentId   String?
+  description       String
+  fees              Float             @default(0)
+  netAmount         Float
+  processedAt       DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
   // Relations
-  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subscription          Subscription? @relation(fields: [subscriptionId], references: [id])
-  
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+
   @@map("transactions")
 }
 
@@ -390,16 +389,16 @@ enum PaymentMethodType {
 // V2.9 New Models
 
 model TwoFactorSecret {
-  id        String   @id @default(cuid())
-  userId    String
-  secret    String
-  backupCodes Json   // Array of backup codes
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id          String   @id @default(cuid())
+  userId      String
+  secret      String
+  backupCodes Json // Array of backup codes
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId])
   @@map("two_factor_secrets")
 }
@@ -417,27 +416,27 @@ model UserSession {
   lastActivity DateTime @default(now())
   expiresAt    DateTime
   createdAt    DateTime @default(now())
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("user_sessions")
 }
 
 model Notification {
-  id          String             @id @default(cuid())
-  userId      String
-  type        NotificationType
-  title       String
-  message     String
-  data        Json?              // Additional notification data
-  isRead      Boolean            @default(false)
-  readAt      DateTime?
-  priority    NotificationPriority @default(NORMAL)
-  expiresAt   DateTime?
-  createdAt   DateTime           @default(now())
-  
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String               @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json? // Additional notification data
+  isRead    Boolean              @default(false)
+  readAt    DateTime?
+  priority  NotificationPriority @default(NORMAL)
+  expiresAt DateTime?
+  createdAt DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("notifications")
 }
 
@@ -453,81 +452,81 @@ model ContentReport {
   resolution  String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  
-  content     Content      @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  reporter    User         @relation(fields: [reporterId], references: [id], onDelete: Cascade)
-  
+
+  content  Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  reporter User    @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
   @@map("content_reports")
 }
 
 model UserPreference {
-  id           String @id @default(cuid())
-  userId       String
-  category     String
-  key          String
-  value        String
-  isPublic     Boolean @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  userId    String
+  category  String
+  key       String
+  value     String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, category, key])
   @@map("user_preferences")
 }
 
 model AuditLog {
-  id          String       @id @default(cuid())
-  userId      String?
-  adminId     String?
-  action      AuditAction
-  resource    String       // e.g., "user", "content", "subscription"
-  resourceId  String?
-  oldValues   Json?
-  newValues   Json?
-  ipAddress   String?
-  userAgent   String?
-  metadata    Json?
-  createdAt   DateTime     @default(now())
-  
-  user        User?        @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: SetNull)
-  admin       User?        @relation("AdminAuditLogs", fields: [adminId], references: [id], onDelete: SetNull)
-  
+  id         String      @id @default(cuid())
+  userId     String?
+  adminId    String?
+  action     AuditAction
+  resource   String // e.g., "user", "content", "subscription"
+  resourceId String?
+  oldValues  Json?
+  newValues  Json?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+
+  user  User? @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: SetNull)
+  admin User? @relation("AdminAuditLogs", fields: [adminId], references: [id], onDelete: SetNull)
+
   @@map("audit_logs")
 }
 
 model ContentAnalytics {
-  id              String   @id @default(cuid())
-  contentId       String
-  date            DateTime @db.Date
-  views           Int      @default(0)
-  uniqueViews     Int      @default(0)
-  likes           Int      @default(0)
-  comments        Int      @default(0)
-  shares          Int      @default(0)
-  downloads       Int      @default(0)
-  watchTime       Int      @default(0) // in seconds
-  bounceRate      Float    @default(0)
-  engagement      Float    @default(0)
-  
-  content         Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  
+  id          String   @id @default(cuid())
+  contentId   String
+  date        DateTime @db.Date
+  views       Int      @default(0)
+  uniqueViews Int      @default(0)
+  likes       Int      @default(0)
+  comments    Int      @default(0)
+  shares      Int      @default(0)
+  downloads   Int      @default(0)
+  watchTime   Int      @default(0) // in seconds
+  bounceRate  Float    @default(0)
+  engagement  Float    @default(0)
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
   @@unique([contentId, date])
   @@map("content_analytics")
 }
 
 model UserAnalytics {
-  id              String   @id @default(cuid())
-  userId          String
-  date            DateTime @db.Date
-  sessionTime     Int      @default(0) // in seconds
-  pageViews       Int      @default(0)
-  contentViewed   Int      @default(0)
-  messagesExchanged Int    @default(0)
-  subscriptionsChanged Int @default(0)
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id                   String   @id @default(cuid())
+  userId               String
+  date                 DateTime @db.Date
+  sessionTime          Int      @default(0) // in seconds
+  pageViews            Int      @default(0)
+  contentViewed        Int      @default(0)
+  messagesExchanged    Int      @default(0)
+  subscriptionsChanged Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, date])
   @@map("user_analytics")
 }
@@ -543,301 +542,301 @@ model SystemSettings {
   isEditable  Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@unique([category, key])
   @@map("system_settings")
 }
 
 model ApiKey {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
   name        String
-  keyHash     String     @unique
-  permissions Json       // Array of allowed permissions
-  isActive    Boolean    @default(true)
+  keyHash     String    @unique
+  permissions Json // Array of allowed permissions
+  isActive    Boolean   @default(true)
   lastUsedAt  DateTime?
   expiresAt   DateTime?
-  createdAt   DateTime   @default(now())
-  
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("api_keys")
 }
 
 model WebhookEndpoint {
-  id          String        @id @default(cuid())
-  userId      String
-  url         String
-  events      Json          // Array of events to subscribe to
-  secret      String?
-  isActive    Boolean       @default(true)
+  id            String    @id @default(cuid())
+  userId        String
+  url           String
+  events        Json // Array of events to subscribe to
+  secret        String?
+  isActive      Boolean   @default(true)
   lastTriggered DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deliveries  WebhookDelivery[]
-  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries WebhookDelivery[]
+
   @@map("webhook_endpoints")
 }
 
 model WebhookDelivery {
-  id           String          @id @default(cuid())
+  id           String    @id @default(cuid())
   endpointId   String
   eventType    String
   payload      Json
   responseCode Int?
   responseBody String?
-  attempts     Int             @default(1)
-  succeeded    Boolean         @default(false)
-  createdAt    DateTime        @default(now())
+  attempts     Int       @default(1)
+  succeeded    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
   deliveredAt  DateTime?
-  
-  endpoint     WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
-  
+
+  endpoint WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
   @@map("webhook_deliveries")
 }
 
 // V3.0 New Models
 
 model LiveStream {
-  id                    String      @id @default(cuid())
-  creatorId             String
-  title                 String
-  description           String?
-  category              String
-  tags                  Json        // Array of tags
-  isPrivate             Boolean     @default(false)
-  requiresSubscription  Boolean     @default(false)
-  status                StreamStatus @default(SCHEDULED)
-  streamKey             String      @unique
-  playbackUrl           String?
-  thumbnailUrl          String?
-  scheduledAt           DateTime?
-  startedAt             DateTime?
-  endedAt               DateTime?
-  duration              Int?        // in seconds
-  viewerCount           Int         @default(0)
-  maxViewers            Int         @default(0)
-  settings              Json        // Stream settings object
-  analytics             Json        // Stream analytics object
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  
-  creator               User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  chatMessages          StreamChatMessage[]
-  donations             StreamDonation[]
-  
+  id                   String       @id @default(cuid())
+  creatorId            String
+  title                String
+  description          String?
+  category             String
+  tags                 Json // Array of tags
+  isPrivate            Boolean      @default(false)
+  requiresSubscription Boolean      @default(false)
+  status               StreamStatus @default(SCHEDULED)
+  streamKey            String       @unique
+  playbackUrl          String?
+  thumbnailUrl         String?
+  scheduledAt          DateTime?
+  startedAt            DateTime?
+  endedAt              DateTime?
+  duration             Int? // in seconds
+  viewerCount          Int          @default(0)
+  maxViewers           Int          @default(0)
+  settings             Json // Stream settings object
+  analytics            Json // Stream analytics object
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  creator      User                @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  chatMessages StreamChatMessage[]
+  donations    StreamDonation[]
+
   @@map("live_streams")
 }
 
 model StreamChatMessage {
-  id            String     @id @default(cuid())
-  streamId      String
-  userId        String
-  username      String
-  message       String
-  timestamp     DateTime   @default(now())
-  isDeleted     Boolean    @default(false)
-  isModerator   Boolean    @default(false)
-  isCreator     Boolean    @default(false)
-  metadata      Json?
-  
-  stream        LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id          String   @id @default(cuid())
+  streamId    String
+  userId      String
+  username    String
+  message     String
+  timestamp   DateTime @default(now())
+  isDeleted   Boolean  @default(false)
+  isModerator Boolean  @default(false)
+  isCreator   Boolean  @default(false)
+  metadata    Json?
+
+  stream LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("stream_chat_messages")
 }
 
 model StreamDonation {
-  id            String     @id @default(cuid())
-  streamId      String
-  userId        String
-  username      String
-  amount        Float
-  currency      String     @default("USD")
-  message       String?
-  timestamp     DateTime   @default(now())
-  isAnonymous   Boolean    @default(false)
-  
-  stream        LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id          String   @id @default(cuid())
+  streamId    String
+  userId      String
+  username    String
+  amount      Float
+  currency    String   @default("USD")
+  message     String?
+  timestamp   DateTime @default(now())
+  isAnonymous Boolean  @default(false)
+
+  stream LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("stream_donations")
 }
 
 model SocialPost {
-  id              String      @id @default(cuid())
-  userId          String
-  content         String
-  mediaUrls       Json?       // Array of media URLs
-  type            PostType    @default(TEXT)
-  visibility      PostVisibility @default(PUBLIC)
-  isNSFW          Boolean     @default(false)
-  tags            Json?       // Array of hashtags
-  mentions        Json?       // Array of mentioned usernames
-  likes           Int         @default(0)
-  comments        Int         @default(0)
-  shares          Int         @default(0)
-  views           Int         @default(0)
-  engagement      Float       @default(0)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  socialComments  SocialComment[]
-  socialLikes     SocialLike[]
-  socialShares    SocialShare[]
-  userMentions    UserMention[]
-  polls           SocialPoll[]
-  
+  id         String         @id @default(cuid())
+  userId     String
+  content    String
+  mediaUrls  Json? // Array of media URLs
+  type       PostType       @default(TEXT)
+  visibility PostVisibility @default(PUBLIC)
+  isNSFW     Boolean        @default(false)
+  tags       Json? // Array of hashtags
+  mentions   Json? // Array of mentioned usernames
+  likes      Int            @default(0)
+  comments   Int            @default(0)
+  shares     Int            @default(0)
+  views      Int            @default(0)
+  engagement Float          @default(0)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  socialComments SocialComment[]
+  socialLikes    SocialLike[]
+  socialShares   SocialShare[]
+  userMentions   UserMention[]
+  polls          SocialPoll[]
+
   @@map("social_posts")
 }
 
 model SocialComment {
-  id            String      @id @default(cuid())
-  postId        String
-  userId        String
-  parentId      String?     // For nested comments
-  content       String
-  mediaUrl      String?
-  likes         Int         @default(0)
-  replies       Int         @default(0)
-  isEdited      Boolean     @default(false)
-  isDeleted     Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
-  post          SocialPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent        SocialComment? @relation("CommentReplies", fields: [parentId], references: [id])
-  replies       SocialComment[] @relation("CommentReplies")
-  
+  id           String   @id @default(cuid())
+  postId       String
+  userId       String
+  parentId     String? // For nested comments
+  content      String
+  mediaUrl     String?
+  likes        Int      @default(0)
+  repliesCount Int      @default(0)
+  isEdited     Boolean  @default(false)
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  post    SocialPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  SocialComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies SocialComment[] @relation("CommentReplies")
+
   @@map("social_comments")
 }
 
 model SocialLike {
-  id            String      @id @default(cuid())
-  postId        String
-  userId        String
-  createdAt     DateTime    @default(now())
-  
-  post          SocialPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([postId, userId])
   @@map("social_likes")
 }
 
 model SocialShare {
-  id            String      @id @default(cuid())
-  postId        String
-  userId        String
-  platform      String?     // Platform where it was shared
-  createdAt     DateTime    @default(now())
-  
-  post          SocialPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  platform  String? // Platform where it was shared
+  createdAt DateTime @default(now())
+
+  post SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("social_shares")
 }
 
 model UserFollow {
-  id                    String   @id @default(cuid())
-  followerId            String
-  followingId           String
-  isSubscriber          Boolean  @default(false)
-  notificationsEnabled  Boolean  @default(true)
-  createdAt             DateTime @default(now())
-  
-  follower              User     @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
-  following             User     @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
-  
+  id                   String   @id @default(cuid())
+  followerId           String
+  followingId          String
+  isSubscriber         Boolean  @default(false)
+  notificationsEnabled Boolean  @default(true)
+  createdAt            DateTime @default(now())
+
+  follower  User @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
   @@unique([followerId, followingId])
   @@map("user_follows")
 }
 
 model UserMention {
-  id            String      @id @default(cuid())
-  postId        String
-  mentionerId   String
-  mentionedId   String
-  isRead        Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  
-  post          SocialPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  mentioner     User        @relation("UserMentions", fields: [mentionerId], references: [id], onDelete: Cascade)
-  mentioned     User        @relation("UserMentioned", fields: [mentionedId], references: [id], onDelete: Cascade)
-  
+  id          String   @id @default(cuid())
+  postId      String
+  mentionerId String
+  mentionedId String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  mentioner User       @relation("UserMentions", fields: [mentionerId], references: [id], onDelete: Cascade)
+  mentioned User       @relation("UserMentioned", fields: [mentionedId], references: [id], onDelete: Cascade)
+
   @@map("user_mentions")
 }
 
 model SocialPoll {
-  id            String      @id @default(cuid())
+  id            String    @id @default(cuid())
   postId        String
   question      String
-  options       Json        // Array of poll options with vote counts
-  totalVotes    Int         @default(0)
+  options       Json // Array of poll options with vote counts
+  totalVotes    Int       @default(0)
   expiresAt     DateTime?
-  allowMultiple Boolean     @default(false)
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
-  post          SocialPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  votes         PollVote[]
-  
+  allowMultiple Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  post  SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
   @@map("social_polls")
 }
 
 model PollVote {
-  id            String      @id @default(cuid())
-  pollId        String
-  userId        String
-  optionIds     Json        // Array of selected option IDs
-  createdAt     DateTime    @default(now())
-  
-  poll          SocialPoll  @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  pollId    String
+  userId    String
+  optionIds Json // Array of selected option IDs
+  createdAt DateTime @default(now())
+
+  poll SocialPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([pollId, userId])
   @@map("poll_votes")
 }
 
 model AIRecommendation {
-  id            String      @id @default(cuid())
-  userId        String
-  type          RecommendationType
-  contentId     String?     // For content recommendations
-  score         Float
-  reason        String
-  category      String
-  tags          Json?       // Array of relevant tags
-  confidence    Float
-  isViewed      Boolean     @default(false)
-  isInteracted  Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  expiresAt     DateTime?
-  
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id           String             @id @default(cuid())
+  userId       String
+  type         RecommendationType
+  contentId    String? // For content recommendations
+  score        Float
+  reason       String
+  category     String
+  tags         Json? // Array of relevant tags
+  confidence   Float
+  isViewed     Boolean            @default(false)
+  isInteracted Boolean            @default(false)
+  createdAt    DateTime           @default(now())
+  expiresAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("ai_recommendations")
 }
 
 model UserInsight {
-  id            String      @id @default(cuid())
-  userId        String
-  category      InsightCategory
-  insight       String
-  confidence    Float
-  actionable    Boolean     @default(false)
-  suggestions   Json?       // Array of suggestion strings
-  data          Json?       // Supporting data
-  isRead        Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id          String          @id @default(cuid())
+  userId      String
+  category    InsightCategory
+  insight     String
+  confidence  Float
+  actionable  Boolean         @default(false)
+  suggestions Json? // Array of suggestion strings
+  data        Json? // Supporting data
+  isRead      Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("user_insights")
 }
 
@@ -936,16 +935,16 @@ enum InsightCategory {
 
 // Enhanced Payment Models
 model PaymentMethod {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  type      String   // card, bank_account, paypal, crypto, apple_pay, google_pay
-  provider  String   // stripe, paypal, coinbase, apple, google
-  isDefault Boolean  @default(false)
-  isActive  Boolean  @default(true)
+  type      String // card, bank_account, paypal, crypto, apple_pay, google_pay
+  provider  String // stripe, paypal, coinbase, apple, google
+  isDefault Boolean   @default(false)
+  isActive  Boolean   @default(true)
   metadata  Json?
   expiresAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user User @relation("UserPaymentMethods", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -953,19 +952,19 @@ model PaymentMethod {
 }
 
 model PaymentIntent {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   userId                String
   amount                Float
   currency              String
-  type                  String   // subscription, tip, content_purchase, commission, donation
-  status                String   // pending, processing, succeeded, failed, cancelled, refunded
+  type                  String // subscription, tip, content_purchase, commission, donation
+  status                String // pending, processing, succeeded, failed, cancelled, refunded
   paymentMethodId       String?
-  stripePaymentIntentId String?  @unique
+  stripePaymentIntentId String?   @unique
   metadata              Json?
   failureReason         String?
   processedAt           DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   user     User             @relation("UserPaymentIntents", fields: [userId], references: [id], onDelete: Cascade)
   disputes PaymentDispute[]
@@ -979,7 +978,7 @@ model PaymentSubscription {
   creatorId            String
   tierId               String
   stripeSubscriptionId String?   @unique
-  status               String    // active, cancelled, past_due, unpaid, incomplete
+  status               String // active, cancelled, past_due, unpaid, incomplete
   currentPeriodStart   DateTime
   currentPeriodEnd     DateTime
   cancelAtPeriodEnd    Boolean   @default(false)
@@ -996,17 +995,17 @@ model PaymentSubscription {
 }
 
 model PaymentDispute {
-  id               String    @id @default(cuid())
-  paymentIntentId  String
-  stripeDisputeId  String?   @unique
-  reason           String
-  status           String
-  amount           Float
-  currency         String
-  evidence         Json?
-  dueBy            DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  paymentIntentId String
+  stripeDisputeId String?   @unique
+  reason          String
+  status          String
+  amount          Float
+  currency        String
+  evidence        Json?
+  dueBy           DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   paymentIntent PaymentIntent @relation(fields: [paymentIntentId], references: [id], onDelete: Cascade)
 
@@ -1018,7 +1017,7 @@ model PayoutSchedule {
   userId           String
   amount           Float
   currency         String
-  status           String    // pending, processing, paid, failed
+  status           String // pending, processing, paid, failed
   scheduledAt      DateTime
   processedAt      DateTime?
   stripeTransferId String?
@@ -1032,18 +1031,18 @@ model PayoutSchedule {
 
 // Enhanced Search Models
 model SearchAnalytics {
-  id           String   @id @default(cuid())
-  queryId      String
-  userId       String?
-  query        String
-  resultCount  Int
-  filters      Json?
+  id             String   @id @default(cuid())
+  queryId        String
+  userId         String?
+  query          String
+  resultCount    Int
+  filters        Json?
   clickedResults Json?
-  timeSpent    Int?     // in milliseconds
-  sessionId    String?
-  userAgent    String?
-  location     String?
-  timestamp    DateTime @default(now())
+  timeSpent      Int? // in milliseconds
+  sessionId      String?
+  userAgent      String?
+  location       String?
+  timestamp      DateTime @default(now())
 
   user User? @relation("UserSearchAnalytics", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1073,7 +1072,7 @@ model SearchTrend {
   count     Int      @default(1)
   growth    Float    @default(0)
   category  String?
-  period    String   // hour, day, week, month
+  period    String // hour, day, week, month
   timestamp DateTime @default(now())
 
   @@unique([query, period, timestamp])
@@ -1087,7 +1086,7 @@ model MobileDevice {
   id           String   @id @default(cuid())
   userId       String
   deviceId     String   @unique
-  deviceType   String   // ios, android
+  deviceType   String // ios, android
   deviceModel  String?
   osVersion    String?
   appVersion   String
@@ -1147,17 +1146,17 @@ model PushNotification {
 
 // Stripe Integration Models
 model StripeCustomer {
-  id                     String    @id @default(cuid())
-  userId                 String    @unique
-  stripeCustomerId       String    @unique
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  stripeCustomerId       String   @unique
   email                  String
   name                   String?
   defaultPaymentMethodId String?
   billingAddress         Json?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
-  user          User              @relation("UserStripeCustomer", fields: [userId], references: [id], onDelete: Cascade)
+  user          User                 @relation("UserStripeCustomer", fields: [userId], references: [id], onDelete: Cascade)
   subscriptions StripeSubscription[]
   invoices      StripeInvoice[]
   payments      StripePayment[]
@@ -1171,7 +1170,7 @@ model StripeSubscription {
   creatorId            String
   stripeSubscriptionId String    @unique
   stripePriceId        String
-  status               String    // active, canceled, incomplete, past_due, unpaid
+  status               String // active, canceled, incomplete, past_due, unpaid
   currentPeriodStart   DateTime
   currentPeriodEnd     DateTime
   trialStart           DateTime?
@@ -1182,30 +1181,32 @@ model StripeSubscription {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
-  user     User @relation("UserStripeSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
-  creator  User @relation("CreatorStripeSubscriptions", fields: [creatorId], references: [id], onDelete: Cascade)
-  invoices StripeInvoice[]
+  user             User            @relation("UserStripeSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  creator          User            @relation("CreatorStripeSubscriptions", fields: [creatorId], references: [id], onDelete: Cascade)
+  invoices         StripeInvoice[]
+  StripeCustomer   StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
+  stripeCustomerId String?
 
   @@map("stripe_subscriptions")
 }
 
 model StripeInvoice {
-  id               String    @id @default(cuid())
-  stripeInvoiceId  String    @unique
-  customerId       String
-  subscriptionId   String?
-  amount           Float
-  currency         String
-  status           String    // draft, open, paid, uncollectible, void
-  paidAt           DateTime?
-  dueDate          DateTime?
-  invoiceNumber    String
-  invoiceUrl       String?
-  invoicePdfUrl    String?
-  blobUrl          String?   // Vercel Blob URL for stored PDF
-  metadata         Json?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  stripeInvoiceId String    @unique
+  customerId      String
+  subscriptionId  String?
+  amount          Float
+  currency        String
+  status          String // draft, open, paid, uncollectible, void
+  paidAt          DateTime?
+  dueDate         DateTime?
+  invoiceNumber   String
+  invoiceUrl      String?
+  invoicePdfUrl   String?
+  blobUrl         String? // Vercel Blob URL for stored PDF
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   customer     StripeCustomer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
   subscription StripeSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
@@ -1215,20 +1216,20 @@ model StripeInvoice {
 }
 
 model StripePayment {
-  id                     String    @id @default(cuid())
-  stripePaymentIntentId  String    @unique
-  customerId             String
-  amount                 Float
-  currency               String
-  status                 String    // succeeded, failed, canceled, processing, requires_action
-  paymentMethodId        String?
-  invoiceId              String?
-  description            String?
-  metadata               Json?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  id                    String   @id @default(cuid())
+  stripePaymentIntentId String   @unique
+  customerId            String
+  amount                Float
+  currency              String
+  status                String // succeeded, failed, canceled, processing, requires_action
+  paymentMethodId       String?
+  invoiceId             String?
+  description           String?
+  metadata              Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  customer StripeCustomer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer StripeCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   invoice  StripeInvoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 
   @@map("stripe_payments")
@@ -1236,17 +1237,17 @@ model StripePayment {
 
 // File Storage Models
 model BlobStorage {
-  id          String   @id @default(cuid())
-  userId      String?
-  fileName    String
+  id           String   @id @default(cuid())
+  userId       String?
+  fileName     String
   originalName String
-  mimeType    String
-  size        Int
-  blobUrl     String   @unique
-  category    String   // avatar, content, invoice, document, etc.
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  mimeType     String
+  size         Int
+  blobUrl      String   @unique
+  category     String // avatar, content, invoice, document, etc.
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user User? @relation("UserBlobStorage", fields: [userId], references: [id], onDelete: SetNull)
 
@@ -1256,11 +1257,11 @@ model BlobStorage {
 // V3.8 Complete Integration Models
 
 model ContentInteraction {
-  id        String   @id @default(cuid())
+  id        String          @id @default(cuid())
   userId    String
   contentId String
   type      InteractionType
-  createdAt DateTime @default(now())
+  createdAt DateTime        @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
@@ -1269,26 +1270,13 @@ model ContentInteraction {
   @@map("content_interactions")
 }
 
-model Follow {
-  id          String   @id @default(cuid())
-  followerId  String
-  followingId String
-  createdAt   DateTime @default(now())
-
-  follower  User @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
-
-  @@unique([followerId, followingId])
-  @@map("follows")
-}
-
 model Activity {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   userId      String
   type        ActivityType
   description String
   metadata    Json?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime     @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1296,18 +1284,18 @@ model Activity {
 }
 
 model CreatorApplication {
-  id           String              @id @default(cuid())
+  id           String            @id @default(cuid())
   userId       String
   reason       String
   contentTypes String[]
   portfolio    String?
   socialMedia  Json?
-  status       ApplicationStatus   @default(PENDING)
+  status       ApplicationStatus @default(PENDING)
   reviewedBy   String?
   reviewedAt   DateTime?
   reviewNotes  String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1316,7 +1304,7 @@ model CreatorApplication {
 
 model Comment {
   id        String   @id @default(cuid())
-  content   String
+  text      String
   userId    String
   contentId String
   parentId  String?
@@ -1331,8 +1319,6 @@ model Comment {
 
   @@map("comments")
 }
-
-
 
 // New Enums for V3.8
 enum InteractionType {

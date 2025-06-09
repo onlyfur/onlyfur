@@ -62,7 +62,7 @@ import SuccessStories from '@/pages/platform/SuccessStories';
 // Support
 import HelpCenter from '@/pages/support/HelpCenter';
 import Safety from '@/pages/support/Safety';
-import CommunityGuidelines from '@/pages/support/CommunityGuidelines';
+import CommunityGuidelinesPage from '@/pages/support/CommunityGuidelines';
 import ContactUs from '@/pages/support/ContactUs';
 
 // Legal
@@ -71,11 +71,7 @@ import TermsOfService from '@/pages/legal/TermsOfService';
 import CookiePolicy from '@/pages/legal/CookiePolicy';
 import DMCA from '@/pages/legal/DMCA';
 
-// Creator Resources
-import CreatorResources from '@/pages/creators/CreatorResources';
-import BestPractices from '@/pages/creators/BestPractices';
-import AnalyticsGuide from '@/pages/creators/AnalyticsGuide';
-import TaxInfo from '@/pages/creators/TaxInfo';
+// Creator Resources - Removed as requested
 
 // Help Articles
 import CreateAccount from '@/pages/help/articles/CreateAccount';
@@ -91,7 +87,7 @@ import UnderstandingAnalytics from '@/pages/help/articles/UnderstandingAnalytics
 import CustomCommissions from '@/pages/help/articles/CustomCommissions';
 import PaymentSystem from '@/pages/help/articles/PaymentSystem';
 import MessagingCreators from '@/pages/help/articles/MessagingCreators';
-import CommunityGuidelines from '@/pages/help/articles/CommunityGuidelines';
+import CommunityGuidelinesArticle from '@/pages/help/articles/CommunityGuidelines';
 import SubscriptionManagement from '@/pages/help/articles/SubscriptionManagement';
 import AccountSecurity from '@/pages/help/articles/AccountSecurity';
 import ReportUserContent from '@/pages/help/articles/ReportUserContent';
@@ -569,11 +565,17 @@ function App() {
               <Route path="help/articles/custom-commissions" element={<CustomCommissions />} />
               <Route path="help/articles/payment-system" element={<PaymentSystem />} />
               <Route path="help/articles/messaging-creators" element={<MessagingCreators />} />
-              <Route path="help/articles/community-guidelines" element={<CommunityGuidelines />} />
+              <Route path="help/articles/community-guidelines" element={<CommunityGuidelinesArticle />} />
               <Route path="help/articles/subscription-management" element={<SubscriptionManagement />} />
               <Route path="help/articles/account-security" element={<AccountSecurity />} />
               <Route path="help/articles/report-user-content" element={<ReportUserContent />} />
               <Route path="help/articles/mobile-app" element={<MobileApp />} />
+              <Route path="help/articles/messaging-tips" element={<MessagingTips />} />
+              <Route path="help/articles/message-limits" element={<MessageLimits />} />
+              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiers />} />
+              <Route path="help/articles/payment-methods" element={<PaymentMethods />} />
+              <Route path="help/articles/how-to-create-account" element={<HowToCreateAccount />} />
+              <Route path="help/articles/creator-earnings" element={<CreatorEarnings />} />
               <Route path="safety" element={<Safety />} />
               <Route path="guidelines" element={<CommunityGuidelines />} />
               <Route path="contact" element={<ContactUs />} />
@@ -584,11 +586,7 @@ function App() {
               <Route path="cookies" element={<CookiePolicy />} />
               <Route path="dmca" element={<DMCA />} />
 
-              {/* Creator Resources */}
-              <Route path="creator-resources" element={<CreatorResources />} />
-              <Route path="best-practices" element={<BestPractices />} />
-              <Route path="analytics-guide" element={<AnalyticsGuide />} />
-              <Route path="tax-info" element={<TaxInfo />} />
+              {/* Creator Resources - Removed as requested */}
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
