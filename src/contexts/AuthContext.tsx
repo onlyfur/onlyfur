@@ -153,20 +153,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     
     try {
-      // Decode the JWT credential from Google
-      const base64Url = credential.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      
-      const googleUser = JSON.parse(jsonPayload);
-      
-      // Use the enhanced auth service for Google login
-      const result = await authService.loginWithGoogle(googleUser, userType);
+      // Pass the credential directly to the auth service (don't decode manually)
+      const result = await authService.loginWithGoogle(credential, userType);
       
       if (!result.success || !result.user || !result.token) {
         throw new Error(result.error || 'Google authentication failed');

@@ -24,7 +24,9 @@
     "db:studio": "npx prisma studio",
     "test": "jest",
     "test:watch": "jest --watch",
-    "docs:generate": "node server/scripts/generate-docs.js"
+    "docs:generate": "node server/scripts/generate-docs.js",
+    "setup:google-oauth": "node scripts/setup-google-oauth.js",
+    "test:auth": "node scripts/test-auth.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",

@@ -328,17 +328,25 @@ router.post('/login', asyncHandler(async (req, res) => {
 
 // Google OAuth login
 router.post('/google', asyncHandler(async (req, res) => {
+  // Check Google OAuth configuration
   if (!googleClient) {
+    logger.error('Google OAuth attempt failed: not configured', {
+      clientIdExists: !!process.env.GOOGLE_CLIENT_ID,
+      clientSecretExists: !!process.env.GOOGLE_CLIENT_SECRET
+    });
     throw new AppError('Google OAuth not configured', 501);
   }
 
-  const { credential } = req.body;
+  const { credential, userType } = req.body;
 
   if (!credential) {
+    logger.warn('Google OAuth attempt without credential');
     throw new ValidationError('Google credential is required');
   }
 
   try {
+    logger.info('Verifying Google OAuth credential', { userType });
+    
     // Verify Google token
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
@@ -347,14 +355,18 @@ router.post('/google', asyncHandler(async (req, res) => {
 
     const payload = ticket.getPayload();
     if (!payload) {
+      logger.error('Invalid Google token payload');
       throw new AuthenticationError('Invalid Google token');
     }
 
     const { sub: googleId, email, name, picture } = payload;
 
     if (!email) {
+      logger.error('Google OAuth missing email', { googleId });
       throw new ValidationError('Email not provided by Google');
     }
+
+    logger.info('Google OAuth verification successful', { email, googleId });
 
     // Check if user exists
     let user = await prisma.user.findFirst({
@@ -380,11 +392,41 @@ router.post('/google', asyncHandler(async (req, res) => {
     });
 
     if (user) {
+      logger.info('Existing user found for Google OAuth', { userId: user.id, email });
+      
       // Update Google ID if not set
       if (!user.googleId) {
+        logger.info('Updating existing user with Google ID', { userId: user.id });
         user = await prisma.user.update({
           where: { id: user.id },
-          data: { googleId },
+          data: { 
+            googleId,
+            avatar: picture || user.avatar, // Update avatar if provided
+            isVerified: true, // Ensure verified status
+            lastLoginAt: new Date()
+          },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            displayName: true,
+            role: true,
+            subscriptionTier: true,
+            subscriptionStatus: true,
+            isVerified: true,
+            avatar: true,
+            googleId: true,
+            createdAt: true
+          }
+        });
+      } else {
+        // Update last login and avatar
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { 
+            lastLoginAt: new Date(),
+            avatar: picture || user.avatar
+          },
           select: {
             id: true,
             email: true,
@@ -402,20 +444,32 @@ router.post('/google', asyncHandler(async (req, res) => {
       }
     } else {
       // Create new user
-      const username = email.split('@')[0] + Math.random().toString(36).substr(2, 4);
+      const baseUsername = email.split('@')[0];
+      const randomSuffix = Math.random().toString(36).substr(2, 4);
+      const username = `${baseUsername}_${randomSuffix}`;
+      
+      // Determine role based on userType parameter
+      const role = userType === 'creator' ? 'CREATOR' : 'SUBSCRIBER';
+      const subscriptionTier = role === 'CREATOR' ? 'basic-creator' : 'basic-subscriber';
+      
+      logger.info('Creating new user from Google OAuth', { email, role, userType });
       
       user = await prisma.user.create({
         data: {
           email,
           username,
-          displayName: name || email.split('@')[0],
-          role: 'SUBSCRIBER',
+          displayName: name || baseUsername,
+          role,
           authProvider: 'GOOGLE',
           googleId,
           isVerified: true, // Google emails are pre-verified
+          isEmailVerified: true,
+          emailVerifiedAt: new Date(),
           avatar: picture,
-          subscriptionTier: 'basic-subscriber',
-          subscriptionStatus: 'FREE'
+          subscriptionTier,
+          subscriptionStatus: 'FREE',
+          lastLoginAt: new Date(),
+          isActive: true
         },
         select: {
           id: true,
@@ -431,6 +485,8 @@ router.post('/google', asyncHandler(async (req, res) => {
           createdAt: true
         }
       });
+      
+      logger.info('New user created successfully', { userId: user.id, email, role });
     }
 
     // Generate tokens
@@ -446,23 +502,43 @@ router.post('/google', asyncHandler(async (req, res) => {
       role: user.role
     });
 
+    // Log security event
+    logSecurityEvent('google_oauth_success', {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      userAgent: req.headers['user-agent'],
+      ip: req.ip
+    });
+
     logger.info('Google OAuth login successful', {
       userId: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
+      newUser: !user.createdAt || (new Date().getTime() - new Date(user.createdAt).getTime()) < 60000
     });
 
     res.json({
       success: true,
       message: 'Google login successful',
-      user,
-      token,
-      refreshToken
+      data: {
+        user,
+        token,
+        refreshToken
+      }
     });
 
   } catch (error) {
+    logger.error('Google OAuth error', { 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    
     if (error instanceof Error && error.message.includes('Token used too late')) {
-      throw new AuthenticationError('Google token expired');
+      throw new AuthenticationError('Google token expired. Please try signing in again.');
+    }
+    if (error instanceof Error && error.message.includes('Invalid token')) {
+      throw new AuthenticationError('Invalid Google token. Please try signing in again.');
     }
     throw error;
   }

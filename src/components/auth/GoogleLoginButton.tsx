@@ -21,9 +21,10 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential) {
+      console.error('No credential received from Google:', credentialResponse);
       toast({
         title: "Authentication Failed",
-        description: "No credential received from Google",
+        description: "No credential received from Google. Please try again.",
         variant: "destructive",
       });
       return;
@@ -31,6 +32,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
 
     setIsLoading(true);
     try {
+      console.log('Attempting Google authentication with userType:', userType);
       await loginWithGoogle(credentialResponse.credential, userType);
       
       // Show success message briefly
@@ -45,10 +47,22 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
       }, 500);
       
     } catch (error) {
-      console.error('Google auth error:', error);
+      console.error('Google auth error details:', error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to authenticate with Google";
+      
+      // Provide more specific error messages
+      let userFriendlyMessage = errorMessage;
+      if (errorMessage.includes('Google OAuth not configured')) {
+        userFriendlyMessage = "Google sign-in is not available. Please contact support or use email/password login.";
+      } else if (errorMessage.includes('Network error')) {
+        userFriendlyMessage = "Network error. Please check your connection and try again.";
+      } else if (errorMessage.includes('Invalid Google token')) {
+        userFriendlyMessage = "Google authentication expired. Please try signing in again.";
+      }
+      
       toast({
         title: "Authentication Failed",
-        description: error instanceof Error ? error.message : "Failed to authenticate with Google",
+        description: userFriendlyMessage,
         variant: "destructive",
       });
     } finally {
