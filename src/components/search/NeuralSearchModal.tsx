@@ -21,6 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { realDataAPI } from '@/services/realDataAPI';
+import { neuralSearchEngine, type NeuralSearchResult, type SearchContext } from '@/services/neuralSearch';
 
 interface SearchResult {
   id: string;
@@ -86,6 +87,10 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
 
   // Real data state
   const [hasRealData, setHasRealData] = useState(false);
+  
+  // Neural search state
+  const [neuralResults, setNeuralResults] = useState<NeuralSearchResult[]>([]);
+  const [showNeuralInsights, setShowNeuralInsights] = useState(false);
 
   // Check for real data on component mount
   useEffect(() => {
@@ -137,10 +142,90 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
     [filters, searchMode, enablePersonalization, enableNeuralBoost]
   );
 
+  // Generate mock search results for demo purposes
+  const generateMockSearchResults = async (query: string): Promise<SearchResult[]> => {
+    const mockData = [
+      {
+        id: 'creator-demo-1',
+        type: 'creator' as const,
+        title: 'FurryArtist_Pro',
+        subtitle: '12.5K followers • Digital art specialist',
+        thumbnail: '/images/branding/fox-mascot.webp',
+        url: '/profile/furryartist-pro',
+        badge: 'Verified',
+        relevanceScore: 92,
+        createdAt: '2024-01-15',
+        tags: ['digital-art', 'character-design', 'commissions']
+      },
+      {
+        id: 'content-demo-1',
+        type: 'content' as const,
+        title: 'Digital Art Masterclass: Character Design Fundamentals',
+        subtitle: 'By FurryArtist_Pro • 45.2K views',
+        thumbnail: '/images/branding/fox-mascot.webp',
+        url: '/content/digital-art-masterclass',
+        badge: 'Premium',
+        relevanceScore: 89,
+        createdAt: '2024-02-01',
+        tags: ['tutorial', 'character-design', 'digital-art']
+      },
+      {
+        id: 'creator-demo-2',
+        type: 'creator' as const,
+        title: 'AnimationMaster',
+        subtitle: '8.7K followers • Animation tutorials & tips',
+        thumbnail: '/images/branding/fox-mascot.webp',
+        url: '/profile/animation-master',
+        badge: 'Featured',
+        relevanceScore: 85,
+        createdAt: '2024-01-20',
+        tags: ['animation', 'tutorial', 'motion-graphics']
+      },
+      {
+        id: 'content-demo-2',
+        type: 'content' as const,
+        title: 'Animation Basics: Walk Cycles for Beginners',
+        subtitle: 'By AnimationMaster • 23.8K views',
+        thumbnail: '/images/branding/fox-mascot.webp',
+        url: '/content/animation-walk-cycles',
+        badge: 'Tutorial',
+        relevanceScore: 83,
+        createdAt: '2024-02-10',
+        tags: ['animation', 'tutorial', 'walk-cycle', 'beginner']
+      },
+      {
+        id: 'content-demo-3',
+        type: 'content' as const,
+        title: 'Fursuit Construction: Head Building Techniques',
+        subtitle: 'By CraftMaster • 18.5K views',
+        thumbnail: '/images/branding/fox-mascot.webp',
+        url: '/content/fursuit-construction',
+        badge: 'Guide',
+        relevanceScore: 78,
+        createdAt: '2024-02-05',
+        tags: ['fursuit', 'tutorial', 'crafting', 'construction']
+      }
+    ];
+
+    // Filter based on query relevance
+    const queryLower = query.toLowerCase();
+    return mockData
+      .filter(item => 
+        item.title.toLowerCase().includes(queryLower) ||
+        item.subtitle.toLowerCase().includes(queryLower) ||
+        item.tags.some(tag => tag.toLowerCase().includes(queryLower))
+      )
+      .map(item => ({
+        ...item,
+        relevanceScore: item.relevanceScore * (Math.random() * 0.2 + 0.9) // Add some variation
+      }));
+  };
+
   // Enhanced search function with multiple engines
   const performSearch = async (searchQuery: string, source: 'text' | 'voice' | 'suggestion' = 'text') => {
     if (!searchQuery.trim()) {
       setResults([]);
+      setNeuralResults([]);
       return;
     }
 
@@ -199,6 +284,52 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
             }));
           searchResults.push(...contentResults);
         }
+      } else {
+        // Fallback to mock data when no real data is available
+        const mockResults = await generateMockSearchResults(searchQuery);
+        searchResults.push(...mockResults);
+      }
+
+      // Perform neural search if enabled
+      if (searchMode === 'neural' && enableNeuralBoost) {
+        const currentTime = new Date().getHours();
+        let timeContext: 'morning' | 'afternoon' | 'evening' | 'night' = 'afternoon';
+        
+        if (currentTime < 12) timeContext = 'morning';
+        else if (currentTime < 17) timeContext = 'afternoon';
+        else if (currentTime < 22) timeContext = 'evening';
+        else timeContext = 'night';
+
+        const searchContext: SearchContext = {
+          user_preferences: {
+            preferred_content_types: filters.contentType.length > 0 ? filters.contentType : ['art', 'tutorial'],
+            favorite_creators: [],
+            interest_categories: ['digital-art', 'character-design', 'animation'],
+            content_quality_threshold: confidenceThreshold,
+            language_preferences: ['en'],
+            accessibility_needs: []
+          },
+          search_history: recentSearches,
+          recent_interactions: [],
+          time_context: timeContext,
+          device_context: window.innerWidth < 768 ? 'mobile' : 'desktop'
+        };
+
+        const neuralSearchResults = await neuralSearchEngine.neuralSearch(
+          searchQuery, 
+          searchContext, 
+          { limit: 10, threshold: confidenceThreshold * 0.5 }
+        );
+
+        setNeuralResults(neuralSearchResults);
+
+        // Enhance search results with neural insights
+        searchResults.forEach(result => {
+          const neuralMatch = neuralSearchResults.find(nr => nr.id.includes(result.id.split('-')[1]));
+          if (neuralMatch) {
+            result.relevanceScore = (result.relevanceScore || 0) * (1 + neuralMatch.relevance_score);
+          }
+        });
       }
 
       // Apply neural boost scoring
@@ -279,20 +410,46 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   };
 
   const renderSearchModeSelector = () => (
-    <div className="flex items-center space-x-2 mb-4">
-      <Brain className="w-4 h-4 text-blue-500" />
+    <div className="flex items-center space-x-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+      <Brain className={`w-4 h-4 ${searchMode === 'neural' ? 'text-blue-600' : 'text-blue-400'}`} />
       <span className="text-sm font-medium">Search Mode:</span>
       <Select value={searchMode} onValueChange={(value: any) => setSearchMode(value)}>
-        <SelectTrigger className="w-32">
+        <SelectTrigger className="w-36">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="traditional">Traditional</SelectItem>
-          <SelectItem value="neural">Neural</SelectItem>
-          <SelectItem value="visual">Visual</SelectItem>
-          <SelectItem value="api">API</SelectItem>
+          <SelectItem value="traditional">
+            <div className="flex items-center">
+              <Search className="w-3 h-3 mr-2" />
+              Traditional
+            </div>
+          </SelectItem>
+          <SelectItem value="neural">
+            <div className="flex items-center">
+              <Brain className="w-3 h-3 mr-2 text-blue-500" />
+              Neural AI
+            </div>
+          </SelectItem>
+          <SelectItem value="visual">
+            <div className="flex items-center">
+              <Eye className="w-3 h-3 mr-2" />
+              Visual
+            </div>
+          </SelectItem>
+          <SelectItem value="api">
+            <div className="flex items-center">
+              <Zap className="w-3 h-3 mr-2" />
+              API
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
+      {searchMode === 'neural' && (
+        <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-700">
+          <Sparkles className="w-3 h-3 mr-1" />
+          AI Enhanced
+        </Badge>
+      )}
     </div>
   );
 
@@ -334,51 +491,130 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
 
   const renderResults = () => (
     <div className="space-y-2">
-      {results.map((result) => (
-        <div
-          key={result.id}
-          className="p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-          onClick={() => handleResultClick(result)}
-        >
-          <div className="flex items-start space-x-3">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={result.thumbnail} />
-              <AvatarFallback>
-                {result.type === 'creator' ? <User className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <h3 className="font-medium text-sm truncate">{result.title}</h3>
-                {result.badge && (
-                  <Badge variant="secondary" className="text-xs">
-                    {result.badge}
-                  </Badge>
+      {results.map((result) => {
+        const neuralMatch = neuralResults.find(nr => nr.id.includes(result.id.split('-')[1]));
+        
+        return (
+          <div
+            key={result.id}
+            className="p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+            onClick={() => handleResultClick(result)}
+          >
+            <div className="flex items-start space-x-3">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={result.thumbnail} />
+                <AvatarFallback>
+                  {result.type === 'creator' ? <User className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-medium text-sm truncate">{result.title}</h3>
+                  {result.badge && (
+                    <Badge variant="secondary" className="text-xs">
+                      {result.badge}
+                    </Badge>
+                  )}
+                  {searchMode === 'neural' && neuralMatch && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      <Brain className="w-3 h-3 mr-1" />
+                      {Math.round(neuralMatch.confidence_score * 100)}%
+                    </Badge>
+                  )}
+                  {result.relevanceScore && (
+                    <span className="text-xs text-muted-foreground">
+                      {Math.round(result.relevanceScore)}%
+                    </span>
+                  )}
+                </div>
+                {result.subtitle && (
+                  <p className="text-xs text-muted-foreground truncate mt-1">
+                    {result.subtitle}
+                  </p>
                 )}
-                {result.relevanceScore && (
-                  <span className="text-xs text-muted-foreground">
-                    {Math.round(result.relevanceScore)}%
-                  </span>
+                {searchMode === 'neural' && neuralMatch && neuralMatch.explanation && (
+                  <p className="text-xs text-blue-600 mt-1 italic">
+                    {neuralMatch.explanation}
+                  </p>
+                )}
+                {result.tags && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {result.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 )}
               </div>
-              {result.subtitle && (
-                <p className="text-xs text-muted-foreground truncate mt-1">
-                  {result.subtitle}
-                </p>
-              )}
-              {result.tags && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {result.tags.slice(0, 3).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
+        );
+      })}
+    </div>
+  );
+
+  const renderNeuralInsights = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium flex items-center">
+          <Brain className="w-4 h-4 mr-2 text-blue-500" />
+          Neural Search Insights
+        </h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowNeuralInsights(!showNeuralInsights)}
+        >
+          {showNeuralInsights ? 'Hide' : 'Show'} Details
+        </Button>
+      </div>
+
+      {showNeuralInsights && neuralResults.length > 0 && (
+        <div className="space-y-3">
+          {neuralResults.slice(0, 3).map((result) => (
+            <Card key={result.id} className="p-3">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Match #{result.id}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      Confidence: {Math.round(result.confidence_score * 100)}%
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Relevance: {Math.round(result.relevance_score * 100)}%
+                    </Badge>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-muted-foreground">
+                  {result.explanation}
+                </p>
+
+                {result.personalization_factors.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-medium mb-1">Personalization Factors:</h4>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      {result.personalization_factors.map((factor, idx) => (
+                        <li key={idx} className="flex items-center">
+                          <Target className="w-3 h-3 mr-1 text-green-500" />
+                          {factor}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.recommendation_reason && (
+                  <div className="bg-blue-50 p-2 rounded text-xs">
+                    <strong>Why recommended:</strong> {result.recommendation_reason}
+                  </div>
+                )}
+              </div>
+            </Card>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 
@@ -394,8 +630,16 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
 
         <div className="flex-1 overflow-hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="search">Search</TabsTrigger>
+              <TabsTrigger value="insights" className="relative">
+                Insights
+                {searchMode === 'neural' && neuralResults.length > 0 && (
+                  <Badge variant="secondary" className="ml-1 text-xs h-4 w-4 p-0 flex items-center justify-center">
+                    {neuralResults.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="filters">Filters</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
@@ -497,6 +741,31 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                   </div>
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="insights" className="mt-4 overflow-auto">
+              {searchMode === 'neural' ? (
+                neuralResults.length > 0 ? (
+                  renderNeuralInsights()
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>Perform a neural search to see AI insights</p>
+                  </div>
+                )
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>Switch to Neural mode to see AI-powered insights</p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-2"
+                    onClick={() => setSearchMode('neural')}
+                  >
+                    Enable Neural Search
+                  </Button>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="filters" className="mt-4">

@@ -6,7 +6,9 @@ import { ContentProvider } from '@/contexts/ContentContext';
 import { PaymentProvider } from '@/contexts/PaymentContext';
 import { MessagingProvider } from '@/contexts/MessagingContext';
 import { AdminProvider } from '@/contexts/AdminContext';
+import { CookieConsentProvider } from '@/contexts/CookieConsentContext';
 import MainLayout from '@/layouts/MainLayout';
+import CookieConsentManager from '@/components/legal/CookieConsentManager';
 
 // Pages
 import Landing from '@/pages/Landing';
@@ -152,12 +154,13 @@ const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="onlyfur-theme">
-      <AuthProvider>
-        <ContentProvider>
-          <PaymentProvider>
-            <MessagingProvider>
-              <AdminProvider>
-                <Router>
+      <CookieConsentProvider>
+        <AuthProvider>
+          <ContentProvider>
+            <PaymentProvider>
+              <MessagingProvider>
+                <AdminProvider>
+                  <Router>
             <Routes>
             {/* Public Routes */}
             <Route path="/" element={<MainLayout />}>
@@ -585,12 +588,14 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
-                </Router>
-              </AdminProvider>
-            </MessagingProvider>
-          </PaymentProvider>
-        </ContentProvider>
-      </AuthProvider>
+                    <CookieConsentManager />
+                  </Router>
+                </AdminProvider>
+              </MessagingProvider>
+            </PaymentProvider>
+          </ContentProvider>
+        </AuthProvider>
+      </CookieConsentProvider>
     </ThemeProvider>
   );
 }
