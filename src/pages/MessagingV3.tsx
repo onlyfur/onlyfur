@@ -5,49 +5,41 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  MessageCircle, 
   Send, 
   Search, 
-  Plus, 
-  MoreVertical,
+  MoreHorizontal, 
+  Paperclip, 
+  Image as ImageIcon,
+  Smile,
   Phone,
   Video,
-  Paperclip,
-  Smile,
-  Heart,
-  Star,
-  Brain,
-  Sparkles,
-  Zap,
-  Image as ImageIcon,
-  FileText,
-  Mic,
-  Camera,
-  Gift,
-  Crown,
-  Shield,
-  Clock,
-  Check,
-  CheckCheck,
-  Users,
-  Settings,
   Archive,
   Pin,
-  Flag,
-  Eye,
-  EyeOff,
-  Trash2,
-  Edit3,
-  Reply,
-  Forward,
-  Download,
-  X
+  Star,
+  Circle,
+  Check,
+  CheckCheck,
+  Clock,
+  Filter,
+  Heart,
+  Plus,
+  Mic,
+  Camera,
+  File,
+  X,
+  Brain,
+  Sparkles,
+  MessageSquare,
+  Users,
+  Settings,
+  Info
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import { format, isToday, isYesterday, differenceInMinutes } from 'date-fns';
+import { format, isToday, isYesterday } from 'date-fns';
+import AnimatedLoader from '@/components/ui/AnimatedLoader';
 
 interface Message {
   id: string;
@@ -55,16 +47,21 @@ interface Message {
   senderName: string;
   senderAvatar: string;
   content: string;
-  type: 'text' | 'image' | 'file' | 'gift' | 'tip' | 'ai_suggestion';
+  type: 'text' | 'image' | 'file' | 'voice' | 'system';
   timestamp: Date;
   status: 'sending' | 'sent' | 'delivered' | 'read';
   isRead: boolean;
-  replyTo?: string;
-  metadata?: any;
   reactions?: Array<{
     emoji: string;
     userId: string;
     userName: string;
+  }>;
+  replyTo?: string;
+  attachments?: Array<{
+    type: 'image' | 'file' | 'voice';
+    url: string;
+    name: string;
+    size?: number;
   }>;
 }
 
@@ -73,7 +70,7 @@ interface Conversation {
   participantId: string;
   participantName: string;
   participantAvatar: string;
-  participantRole: 'creator' | 'subscriber' | 'vip';
+  participantRole: 'creator' | 'subscriber' | 'moderator';
   isOnline: boolean;
   lastSeen: Date;
   lastMessage: Message;
@@ -81,7 +78,7 @@ interface Conversation {
   isPinned: boolean;
   isArchived: boolean;
   canMessage: boolean;
-  subscriptionTier?: 'basic' | 'pro' | 'vip';
+  subscriptionTier: 'free' | 'premium' | 'vip';
   isVerified: boolean;
 }
 
@@ -93,4 +90,725 @@ interface AIAssistant {
 }
 
 const MessagingV3: React.FC = () => {
-  const { user } = useAuth();\n  const [conversations, setConversations] = useState<Conversation[]>([]);\n  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);\n  const [messages, setMessages] = useState<Message[]>([]);\n  const [newMessage, setNewMessage] = useState('');\n  const [searchQuery, setSearchQuery] = useState('');\n  const [isLoading, setIsLoading] = useState(true);\n  const [showAIAssistant, setShowAIAssistant] = useState(false);\n  const [aiAssistant, setAiAssistant] = useState<AIAssistant>({\n    suggestions: [],\n    isActive: false,\n    typing: false\n  });\n  const [selectedFilter, setSelectedFilter] = useState<'all' | 'creators' | 'subscribers' | 'archived'>('all');\n  const [showMediaPicker, setShowMediaPicker] = useState(false);\n  const [isTyping, setIsTyping] = useState(false);\n  const [typingUsers, setTypingUsers] = useState<string[]>([]);\n\n  const messagesEndRef = useRef<HTMLDivElement>(null);\n  const fileInputRef = useRef<HTMLInputElement>(null);\n  const imageInputRef = useRef<HTMLInputElement>(null);\n\n  useEffect(() => {\n    loadConversations();\n    initializeAIAssistant();\n  }, []);\n\n  useEffect(() => {\n    if (activeConversation) {\n      loadMessages(activeConversation.id);\n    }\n  }, [activeConversation]);\n\n  useEffect(() => {\n    scrollToBottom();\n  }, [messages]);\n\n  const loadConversations = async () => {\n    setIsLoading(true);\n    try {\n      const response = await fetch('/api/messages/conversations', {\n        headers: {\n          'Authorization': `Bearer ${localStorage.getItem('token')}`,\n        },\n      });\n      const data = await response.json();\n      if (data.success) {\n        setConversations(data.conversations);\n        if (data.conversations.length > 0) {\n          setActiveConversation(data.conversations[0]);\n        }\n      } else {\n        // Mock data for demo\n        setConversations(generateMockConversations());\n        setActiveConversation(generateMockConversations()[0]);\n      }\n    } catch (error) {\n      console.error('Error loading conversations:', error);\n      setConversations(generateMockConversations());\n      setActiveConversation(generateMockConversations()[0]);\n    } finally {\n      setIsLoading(false);\n    }\n  };\n\n  const loadMessages = async (conversationId: string) => {\n    try {\n      const response = await fetch(`/api/messages/${conversationId}`, {\n        headers: {\n          'Authorization': `Bearer ${localStorage.getItem('token')}`,\n        },\n      });\n      const data = await response.json();\n      if (data.success) {\n        setMessages(data.messages);\n      } else {\n        setMessages(generateMockMessages());\n      }\n    } catch (error) {\n      console.error('Error loading messages:', error);\n      setMessages(generateMockMessages());\n    }\n  };\n\n  const initializeAIAssistant = async () => {\n    try {\n      const response = await fetch('/api/ai/messaging/assistant', {\n        headers: {\n          'Authorization': `Bearer ${localStorage.getItem('token')}`,\n        },\n      });\n      const data = await response.json();\n      if (data.success) {\n        setAiAssistant({\n          suggestions: data.suggestions,\n          isActive: true,\n          typing: false\n        });\n      }\n    } catch (error) {\n      console.error('Error initializing AI assistant:', error);\n      setAiAssistant({\n        suggestions: [\n          \"Thanks for your amazing content!\",\n          \"I love your art style, keep it up!\",\n          \"Could you do a tutorial on this?\",\n          \"This is incredible work!\",\n          \"Would love to see more like this\"\n        ],\n        isActive: true,\n        typing: false\n      });\n    }\n  };\n\n  const generateMockConversations = (): Conversation[] => [\n    {\n      id: '1',\n      participantId: 'creator1',\n      participantName: 'ArtisticFox',\n      participantAvatar: '/api/placeholder/40/40',\n      participantRole: 'creator',\n      isOnline: true,\n      lastSeen: new Date(),\n      lastMessage: {\n        id: 'msg1',\n        senderId: 'creator1',\n        senderName: 'ArtisticFox',\n        senderAvatar: '/api/placeholder/40/40',\n        content: 'Thanks for the support! New artwork coming soon! 🎨',\n        type: 'text',\n        timestamp: new Date(Date.now() - 300000),\n        status: 'read',\n        isRead: false\n      },\n      unreadCount: 1,\n      isPinned: true,\n      isArchived: false,\n      canMessage: true,\n      subscriptionTier: 'vip',\n      isVerified: true\n    },\n    {\n      id: '2',\n      participantId: 'creator2',\n      participantName: 'DigitalDragon',\n      participantAvatar: '/api/placeholder/40/40',\n      participantRole: 'creator',\n      isOnline: false,\n      lastSeen: new Date(Date.now() - 3600000),\n      lastMessage: {\n        id: 'msg2',\n        senderId: 'user',\n        senderName: 'You',\n        senderAvatar: user?.avatar || '/api/placeholder/40/40',\n        content: 'Love your latest commission!',\n        type: 'text',\n        timestamp: new Date(Date.now() - 3600000),\n        status: 'delivered',\n        isRead: true\n      },\n      unreadCount: 0,\n      isPinned: false,\n      isArchived: false,\n      canMessage: true,\n      subscriptionTier: 'pro',\n      isVerified: true\n    }\n  ];\n\n  const generateMockMessages = (): Message[] => [\n    {\n      id: '1',\n      senderId: 'creator1',\n      senderName: 'ArtisticFox',\n      senderAvatar: '/api/placeholder/40/40',\n      content: 'Hey! Thanks for subscribing to my VIP tier! 🎉',\n      type: 'text',\n      timestamp: new Date(Date.now() - 86400000),\n      status: 'read',\n      isRead: true\n    },\n    {\n      id: '2',\n      senderId: user?.id || 'user',\n      senderName: 'You',\n      senderAvatar: user?.avatar || '/api/placeholder/40/40',\n      content: 'Your art is absolutely amazing! Keep up the great work!',\n      type: 'text',\n      timestamp: new Date(Date.now() - 82800000),\n      status: 'read',\n      isRead: true\n    },\n    {\n      id: '3',\n      senderId: 'creator1',\n      senderName: 'ArtisticFox',\n      senderAvatar: '/api/placeholder/40/40',\n      content: 'Thanks for the support! New artwork coming soon! 🎨',\n      type: 'text',\n      timestamp: new Date(Date.now() - 300000),\n      status: 'delivered',\n      isRead: false,\n      reactions: [\n        { emoji: '❤️', userId: 'user', userName: 'You' },\n        { emoji: '🔥', userId: 'user2', userName: 'Fan2' }\n      ]\n    }\n  ];\n\n  const sendMessage = async () => {\n    if (!newMessage.trim() || !activeConversation) return;\n\n    const message: Message = {\n      id: Date.now().toString(),\n      senderId: user?.id || 'user',\n      senderName: user?.displayName || 'You',\n      senderAvatar: user?.avatar || '/api/placeholder/40/40',\n      content: newMessage,\n      type: 'text',\n      timestamp: new Date(),\n      status: 'sending',\n      isRead: true\n    };\n\n    setMessages(prev => [...prev, message]);\n    setNewMessage('');\n\n    try {\n      const response = await fetch('/api/messages/send', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n          'Authorization': `Bearer ${localStorage.getItem('token')}`,\n        },\n        body: JSON.stringify({\n          conversationId: activeConversation.id,\n          content: newMessage,\n          type: 'text'\n        }),\n      });\n\n      const data = await response.json();\n      if (data.success) {\n        setMessages(prev => prev.map(msg => \n          msg.id === message.id ? { ...msg, status: 'sent', id: data.messageId } : msg\n        ));\n      }\n    } catch (error) {\n      console.error('Error sending message:', error);\n      // Simulate successful send for demo\n      setTimeout(() => {\n        setMessages(prev => prev.map(msg => \n          msg.id === message.id ? { ...msg, status: 'delivered' } : msg\n        ));\n      }, 1000);\n    }\n  };\n\n  const getAISuggestions = async (context: string) => {\n    setAiAssistant(prev => ({ ...prev, typing: true }));\n    \n    try {\n      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate AI processing\n      \n      const suggestions = [\n        \"That sounds really interesting!\",\n        \"I'd love to see more of your work\",\n        \"Thanks for sharing this with me\",\n        \"Keep up the amazing creativity!\",\n        \"Looking forward to your next piece\"\n      ];\n      \n      setAiAssistant(prev => ({\n        ...prev,\n        suggestions,\n        typing: false\n      }));\n    } catch (error) {\n      console.error('Error getting AI suggestions:', error);\n      setAiAssistant(prev => ({ ...prev, typing: false }));\n    }\n  };\n\n  const scrollToBottom = () => {\n    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });\n  };\n\n  const handleFileUpload = (type: 'image' | 'file') => {\n    if (type === 'image') {\n      imageInputRef.current?.click();\n    } else {\n      fileInputRef.current?.click();\n    }\n  };\n\n  const filteredConversations = conversations.filter(conv => {\n    const matchesSearch = conv.participantName.toLowerCase().includes(searchQuery.toLowerCase());\n    const matchesFilter = \n      selectedFilter === 'all' || \n      (selectedFilter === 'creators' && conv.participantRole === 'creator') ||\n      (selectedFilter === 'subscribers' && conv.participantRole === 'subscriber') ||\n      (selectedFilter === 'archived' && conv.isArchived);\n    \n    return matchesSearch && matchesFilter && !conv.isArchived;\n  });\n\n  const formatMessageTime = (timestamp: Date) => {\n    if (isToday(timestamp)) {\n      return format(timestamp, 'HH:mm');\n    } else if (isYesterday(timestamp)) {\n      return 'Yesterday';\n    } else {\n      return format(timestamp, 'dd/MM/yyyy');\n    }\n  };\n\n  const getMessageStatusIcon = (status: Message['status']) => {\n    switch (status) {\n      case 'sending': return <Clock className=\"w-3 h-3 text-gray-400\" />;\n      case 'sent': return <Check className=\"w-3 h-3 text-gray-400\" />;\n      case 'delivered': return <CheckCheck className=\"w-3 h-3 text-gray-400\" />;\n      case 'read': return <CheckCheck className=\"w-3 h-3 text-blue-500\" />;\n    }\n  };\n\n  const ConversationItem: React.FC<{ conversation: Conversation; index: number }> = ({ conversation, index }) => (\n    <motion.div\n      initial={{ opacity: 0, x: -20 }}\n      animate={{ opacity: 1, x: 0 }}\n      transition={{ delay: index * 0.05, duration: 0.3 }}\n      whileHover={{ x: 4, transition: { duration: 0.2 } }}\n      onClick={() => setActiveConversation(conversation)}\n      className={`p-4 cursor-pointer border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200 ${\n        activeConversation?.id === conversation.id ? 'bg-purple-50 dark:bg-purple-950/50 border-r-4 border-r-purple-500' : ''\n      }`}\n    >\n      <div className=\"flex items-center space-x-3\">\n        <div className=\"relative\">\n          <Avatar className=\"w-12 h-12 ring-2 ring-purple-200 dark:ring-purple-800\">\n            <AvatarImage src={conversation.participantAvatar} alt={conversation.participantName} />\n            <AvatarFallback>{conversation.participantName.charAt(0)}</AvatarFallback>\n          </Avatar>\n          {conversation.isOnline && (\n            <motion.div\n              initial={{ scale: 0 }}\n              animate={{ scale: 1 }}\n              className=\"absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900\"\n            />\n          )}\n          {conversation.isPinned && (\n            <motion.div\n              initial={{ scale: 0 }}\n              animate={{ scale: 1 }}\n              className=\"absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center\"\n            >\n              <Pin className=\"w-3 h-3 text-white\" />\n            </motion.div>\n          )}\n        </div>\n\n        <div className=\"flex-1 min-w-0\">\n          <div className=\"flex items-center justify-between\">\n            <div className=\"flex items-center space-x-2\">\n              <h3 className=\"font-semibold text-sm truncate\">{conversation.participantName}</h3>\n              {conversation.isVerified && (\n                <Star className=\"w-4 h-4 text-blue-500 fill-current\" />\n              )}\n              {conversation.participantRole === 'creator' && (\n                <Crown className=\"w-4 h-4 text-yellow-500\" />\n              )}\n            </div>\n            <div className=\"flex items-center space-x-2\">\n              {conversation.subscriptionTier && (\n                <Badge \n                  variant={conversation.subscriptionTier === 'vip' ? 'default' : 'secondary'}\n                  className=\"text-xs\"\n                >\n                  {conversation.subscriptionTier.toUpperCase()}\n                </Badge>\n              )}\n              {conversation.unreadCount > 0 && (\n                <motion.div\n                  initial={{ scale: 0 }}\n                  animate={{ scale: 1 }}\n                  className=\"bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold\"\n                >\n                  {conversation.unreadCount}\n                </motion.div>\n              )}\n            </div>\n          </div>\n          \n          <div className=\"flex items-center justify-between mt-1\">\n            <p className=\"text-sm text-gray-600 dark:text-gray-400 truncate flex-1\">\n              {conversation.lastMessage.senderId === user?.id ? 'You: ' : ''}\n              {conversation.lastMessage.content}\n            </p>\n            <span className=\"text-xs text-gray-500 ml-2\">\n              {formatMessageTime(conversation.lastMessage.timestamp)}\n            </span>\n          </div>\n        </div>\n      </div>\n    </motion.div>\n  );\n\n  const MessageBubble: React.FC<{ message: Message; index: number }> = ({ message, index }) => {\n    const isOwn = message.senderId === user?.id;\n    const showAvatar = !isOwn;\n    \n    return (\n      <motion.div\n        initial={{ opacity: 0, y: 20, scale: 0.9 }}\n        animate={{ opacity: 1, y: 0, scale: 1 }}\n        transition={{ delay: index * 0.05, duration: 0.3 }}\n        className={`flex items-end space-x-2 mb-4 ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}\n      >\n        {showAvatar && (\n          <Avatar className=\"w-8 h-8 flex-shrink-0\">\n            <AvatarImage src={message.senderAvatar} alt={message.senderName} />\n            <AvatarFallback>{message.senderName.charAt(0)}</AvatarFallback>\n          </Avatar>\n        )}\n        \n        <div className={`max-w-xs lg:max-w-md ${isOwn ? 'ml-auto' : ''}`}>\n          <motion.div\n            whileHover={{ scale: 1.02 }}\n            className={`p-3 rounded-2xl shadow-sm ${\n              isOwn \n                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-br-md'\n                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-bl-md'\n            }`}\n          >\n            {message.type === 'ai_suggestion' && (\n              <div className=\"flex items-center space-x-2 mb-2 opacity-70\">\n                <Brain className=\"w-3 h-3\" />\n                <span className=\"text-xs\">AI Suggested</span>\n              </div>\n            )}\n            \n            <p className=\"text-sm whitespace-pre-wrap\">{message.content}</p>\n            \n            {message.reactions && message.reactions.length > 0 && (\n              <div className=\"flex space-x-1 mt-2\">\n                {message.reactions.map((reaction, i) => (\n                  <motion.span\n                    key={i}\n                    initial={{ scale: 0 }}\n                    animate={{ scale: 1 }}\n                    className=\"text-sm bg-white/20 px-2 py-1 rounded-full\"\n                  >\n                    {reaction.emoji}\n                  </motion.span>\n                ))}\n              </div>\n            )}\n          </motion.div>\n          \n          <div className={`flex items-center space-x-2 mt-1 text-xs text-gray-500 ${\n            isOwn ? 'justify-end' : 'justify-start'\n          }`}>\n            <span>{formatMessageTime(message.timestamp)}</span>\n            {isOwn && getMessageStatusIcon(message.status)}\n          </div>\n        </div>\n      </motion.div>\n    );\n  };\n\n  if (isLoading) {\n    return (\n      <div className=\"h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950\">\n        <motion.div\n          animate={{ rotate: 360 }}\n          transition={{ duration: 2, repeat: Infinity, ease: \"linear\" }}\n          className=\"w-12 h-12 text-purple-600\"\n        >\n          <MessageCircle className=\"w-full h-full\" />\n        </motion.div>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"h-screen flex bg-gray-50 dark:bg-gray-900\">\n      {/* Conversations Sidebar */}\n      <div className=\"w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col\">\n        {/* Header */}\n        <motion.div\n          initial={{ opacity: 0, y: -20 }}\n          animate={{ opacity: 1, y: 0 }}\n          className=\"p-4 border-b border-gray-200 dark:border-gray-800\"\n        >\n          <div className=\"flex items-center justify-between mb-4\">\n            <h1 className=\"text-xl font-bold flex items-center space-x-2\">\n              <MessageCircle className=\"w-6 h-6 text-purple-600\" />\n              <span>Messages</span>\n            </h1>\n            <Button variant=\"ghost\" size=\"sm\">\n              <Plus className=\"w-4 h-4\" />\n            </Button>\n          </div>\n          \n          <div className=\"relative\">\n            <Search className=\"absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400\" />\n            <Input\n              placeholder=\"Search conversations...\"\n              value={searchQuery}\n              onChange={(e) => setSearchQuery(e.target.value)}\n              className=\"pl-10\"\n            />\n          </div>\n          \n          <div className=\"flex space-x-2 mt-3\">\n            {(['all', 'creators', 'subscribers', 'archived'] as const).map((filter) => (\n              <Button\n                key={filter}\n                variant={selectedFilter === filter ? \"default\" : \"ghost\"}\n                size=\"sm\"\n                onClick={() => setSelectedFilter(filter)}\n                className=\"text-xs\"\n              >\n                {filter.charAt(0).toUpperCase() + filter.slice(1)}\n              </Button>\n            ))}\n          </div>\n        </motion.div>\n\n        {/* Conversations List */}\n        <ScrollArea className=\"flex-1\">\n          <AnimatePresence>\n            {filteredConversations.map((conversation, index) => (\n              <ConversationItem\n                key={conversation.id}\n                conversation={conversation}\n                index={index}\n              />\n            ))}\n          </AnimatePresence>\n          \n          {filteredConversations.length === 0 && (\n            <motion.div\n              initial={{ opacity: 0 }}\n              animate={{ opacity: 1 }}\n              className=\"p-8 text-center\"\n            >\n              <MessageCircle className=\"w-12 h-12 text-gray-400 mx-auto mb-4\" />\n              <p className=\"text-gray-600 dark:text-gray-400\">No conversations found</p>\n            </motion.div>\n          )}\n        </ScrollArea>\n      </div>\n\n      {/* Chat Area */}\n      <div className=\"flex-1 flex flex-col\">\n        {activeConversation ? (\n          <>\n            {/* Chat Header */}\n            <motion.div\n              initial={{ opacity: 0, y: -20 }}\n              animate={{ opacity: 1, y: 0 }}\n              className=\"p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between\"\n            >\n              <div className=\"flex items-center space-x-3\">\n                <div className=\"relative\">\n                  <Avatar className=\"w-10 h-10\">\n                    <AvatarImage src={activeConversation.participantAvatar} alt={activeConversation.participantName} />\n                    <AvatarFallback>{activeConversation.participantName.charAt(0)}</AvatarFallback>\n                  </Avatar>\n                  {activeConversation.isOnline && (\n                    <div className=\"absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900\" />\n                  )}\n                </div>\n                \n                <div>\n                  <div className=\"flex items-center space-x-2\">\n                    <h2 className=\"font-semibold\">{activeConversation.participantName}</h2>\n                    {activeConversation.isVerified && (\n                      <Star className=\"w-4 h-4 text-blue-500 fill-current\" />\n                    )}\n                    {activeConversation.participantRole === 'creator' && (\n                      <Crown className=\"w-4 h-4 text-yellow-500\" />\n                    )}\n                  </div>\n                  <p className=\"text-sm text-gray-600 dark:text-gray-400\">\n                    {activeConversation.isOnline ? 'Online' : `Last seen ${formatMessageTime(activeConversation.lastSeen)}`}\n                  </p>\n                </div>\n              </div>\n              \n              <div className=\"flex items-center space-x-2\">\n                <Button variant=\"ghost\" size=\"sm\">\n                  <Phone className=\"w-4 h-4\" />\n                </Button>\n                <Button variant=\"ghost\" size=\"sm\">\n                  <Video className=\"w-4 h-4\" />\n                </Button>\n                <Button variant=\"ghost\" size=\"sm\">\n                  <MoreVertical className=\"w-4 h-4\" />\n                </Button>\n              </div>\n            </motion.div>\n\n            {/* Messages Area */}\n            <ScrollArea className=\"flex-1 p-4 bg-gray-50 dark:bg-gray-900\">\n              <div className=\"space-y-2\">\n                <AnimatePresence>\n                  {messages.map((message, index) => (\n                    <MessageBubble key={message.id} message={message} index={index} />\n                  ))}\n                </AnimatePresence>\n                \n                {typingUsers.length > 0 && (\n                  <motion.div\n                    initial={{ opacity: 0, y: 20 }}\n                    animate={{ opacity: 1, y: 0 }}\n                    exit={{ opacity: 0, y: -20 }}\n                    className=\"flex items-center space-x-2 text-gray-600 dark:text-gray-400\"\n                  >\n                    <div className=\"flex space-x-1\">\n                      {[0, 1, 2].map((i) => (\n                        <motion.div\n                          key={i}\n                          animate={{\n                            scale: [1, 1.2, 1],\n                            opacity: [0.5, 1, 0.5]\n                          }}\n                          transition={{\n                            duration: 1,\n                            repeat: Infinity,\n                            delay: i * 0.2\n                          }}\n                          className=\"w-2 h-2 bg-gray-400 rounded-full\"\n                        />\n                      ))}\n                    </div>\n                    <span className=\"text-sm\">{typingUsers.join(', ')} typing...</span>\n                  </motion.div>\n                )}\n                \n                <div ref={messagesEndRef} />\n              </div>\n            </ScrollArea>\n\n            {/* AI Assistant */}\n            <AnimatePresence>\n              {showAIAssistant && aiAssistant.isActive && (\n                <motion.div\n                  initial={{ opacity: 0, height: 0 }}\n                  animate={{ opacity: 1, height: 'auto' }}\n                  exit={{ opacity: 0, height: 0 }}\n                  className=\"border-t border-gray-200 dark:border-gray-800 bg-purple-50 dark:bg-purple-950/50 p-4\"\n                >\n                  <div className=\"flex items-center justify-between mb-3\">\n                    <div className=\"flex items-center space-x-2\">\n                      <Brain className=\"w-4 h-4 text-purple-600\" />\n                      <span className=\"text-sm font-medium text-purple-600\">AI Suggestions</span>\n                    </div>\n                    <Button\n                      variant=\"ghost\"\n                      size=\"sm\"\n                      onClick={() => setShowAIAssistant(false)}\n                    >\n                      <X className=\"w-4 h-4\" />\n                    </Button>\n                  </div>\n                  \n                  {aiAssistant.typing ? (\n                    <div className=\"flex items-center space-x-2 text-purple-600\">\n                      <motion.div\n                        animate={{ rotate: 360 }}\n                        transition={{ duration: 2, repeat: Infinity, ease: \"linear\" }}\n                      >\n                        <Brain className=\"w-4 h-4\" />\n                      </motion.div>\n                      <span className=\"text-sm\">AI is thinking...</span>\n                    </div>\n                  ) : (\n                    <div className=\"flex flex-wrap gap-2\">\n                      {aiAssistant.suggestions.map((suggestion, index) => (\n                        <motion.button\n                          key={index}\n                          initial={{ opacity: 0, scale: 0.8 }}\n                          animate={{ opacity: 1, scale: 1 }}\n                          transition={{ delay: index * 0.1 }}\n                          whileHover={{ scale: 1.05 }}\n                          whileTap={{ scale: 0.95 }}\n                          onClick={() => setNewMessage(suggestion)}\n                          className=\"text-sm px-3 py-2 bg-white dark:bg-gray-800 border border-purple-200 dark:border-purple-800 rounded-full hover:bg-purple-50 dark:hover:bg-purple-950 transition-colors\"\n                        >\n                          {suggestion}\n                        </motion.button>\n                      ))}\n                    </div>\n                  )}\n                </motion.div>\n              )}\n            </AnimatePresence>\n\n            {/* Message Input */}\n            <motion.div\n              initial={{ opacity: 0, y: 20 }}\n              animate={{ opacity: 1, y: 0 }}\n              className=\"p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800\"\n            >\n              <div className=\"flex items-center space-x-3\">\n                <div className=\"flex items-center space-x-2\">\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    onClick={() => handleFileUpload('image')}\n                  >\n                    <ImageIcon className=\"w-4 h-4\" />\n                  </Button>\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    onClick={() => handleFileUpload('file')}\n                  >\n                    <Paperclip className=\"w-4 h-4\" />\n                  </Button>\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    onClick={() => setShowAIAssistant(!showAIAssistant)}\n                    className={showAIAssistant ? 'text-purple-600' : ''}\n                  >\n                    <Brain className=\"w-4 h-4\" />\n                  </Button>\n                </div>\n                \n                <div className=\"flex-1 relative\">\n                  <Textarea\n                    placeholder={activeConversation.canMessage ? \"Type a message...\" : \"Upgrade to message this creator\"}\n                    value={newMessage}\n                    onChange={(e) => setNewMessage(e.target.value)}\n                    onKeyPress={(e) => {\n                      if (e.key === 'Enter' && !e.shiftKey) {\n                        e.preventDefault();\n                        sendMessage();\n                      }\n                    }}\n                    disabled={!activeConversation.canMessage}\n                    className=\"min-h-[40px] max-h-32 resize-none\"\n                  />\n                </div>\n                \n                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>\n                  <Button\n                    onClick={sendMessage}\n                    disabled={!newMessage.trim() || !activeConversation.canMessage}\n                    className=\"bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700\"\n                  >\n                    <Send className=\"w-4 h-4\" />\n                  </Button>\n                </motion.div>\n              </div>\n            </motion.div>\n          </>\n        ) : (\n          <motion.div\n            initial={{ opacity: 0, scale: 0.9 }}\n            animate={{ opacity: 1, scale: 1 }}\n            className=\"flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900\"\n          >\n            <div className=\"text-center space-y-4\">\n              <motion.div\n                animate={{\n                  scale: [1, 1.1, 1],\n                  rotate: [0, 5, -5, 0]\n                }}\n                transition={{\n                  duration: 4,\n                  repeat: Infinity,\n                  ease: \"easeInOut\"\n                }}\n              >\n                <MessageCircle className=\"w-16 h-16 text-gray-400 mx-auto\" />\n              </motion.div>\n              <div className=\"space-y-2\">\n                <h3 className=\"text-lg font-semibold text-gray-600 dark:text-gray-400\">\n                  Select a conversation\n                </h3>\n                <p className=\"text-gray-500\">\n                  Choose a conversation from the sidebar to start messaging\n                </p>\n              </div>\n            </div>\n          </motion.div>\n        )}\n      </div>\n\n      {/* Hidden file inputs */}\n      <input\n        type=\"file\"\n        ref={fileInputRef}\n        className=\"hidden\"\n        accept=\"*/*\"\n        onChange={(e) => {\n          // Handle file upload\n          console.log('File upload:', e.target.files);\n        }}\n      />\n      <input\n        type=\"file\"\n        ref={imageInputRef}\n        className=\"hidden\"\n        accept=\"image/*\"\n        onChange={(e) => {\n          // Handle image upload\n          console.log('Image upload:', e.target.files);\n        }}\n      />\n    </div>\n  );\n};\n\nexport default MessagingV3;
+  const { user } = useAuth();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiAssistant, setAiAssistant] = useState<AIAssistant>({
+    suggestions: [],
+    isActive: false,
+    typing: false
+  });
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'creators' | 'subscribers' | 'archived'>('all');
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    loadConversations();
+    initializeAIAssistant();
+  }, []);
+
+  useEffect(() => {
+    if (activeConversation) {
+      loadMessages(activeConversation.id);
+    }
+  }, [activeConversation]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const loadConversations = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/messages/conversations', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setConversations(data.conversations);
+        if (data.conversations.length > 0) {
+          setActiveConversation(data.conversations[0]);
+        }
+      } else {
+        // Mock data for demo
+        setConversations(generateMockConversations());
+        setActiveConversation(generateMockConversations()[0]);
+      }
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+      setConversations(generateMockConversations());
+      setActiveConversation(generateMockConversations()[0]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadMessages = async (conversationId: string) => {
+    try {
+      const response = await fetch(`/api/messages/${conversationId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessages(data.messages);
+      } else {
+        setMessages(generateMockMessages());
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      setMessages(generateMockMessages());
+    }
+  };
+
+  const initializeAIAssistant = async () => {
+    try {
+      const response = await fetch('/api/ai/messaging/assistant', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAiAssistant({
+          suggestions: data.suggestions,
+          isActive: true,
+          typing: false
+        });
+      }
+    } catch (error) {
+      console.error('Error initializing AI assistant:', error);
+      setAiAssistant({
+        suggestions: [
+          "Thanks for your amazing content!",
+          "I love your art style, keep it up!",
+          "Could you do a tutorial on this?",
+          "This is incredible work!",
+          "Would love to see more like this"
+        ],
+        isActive: true,
+        typing: false
+      });
+    }
+  };
+
+  const generateMockConversations = (): Conversation[] => [
+    {
+      id: '1',
+      participantId: 'creator1',
+      participantName: 'ArtisticFox',
+      participantAvatar: '/api/placeholder/40/40',
+      participantRole: 'creator',
+      isOnline: true,
+      lastSeen: new Date(),
+      lastMessage: {
+        id: 'msg1',
+        senderId: 'creator1',
+        senderName: 'ArtisticFox',
+        senderAvatar: '/api/placeholder/40/40',
+        content: 'Thanks for the support! New artwork coming soon! 🎨',
+        type: 'text',
+        timestamp: new Date(Date.now() - 300000),
+        status: 'read',
+        isRead: false
+      },
+      unreadCount: 1,
+      isPinned: true,
+      isArchived: false,
+      canMessage: true,
+      subscriptionTier: 'vip',
+      isVerified: true
+    },
+    {
+      id: '2',
+      participantId: 'creator2',
+      participantName: 'DigitalDragon',
+      participantAvatar: '/api/placeholder/40/40',
+      participantRole: 'creator',
+      isOnline: false,
+      lastSeen: new Date(Date.now() - 3600000),
+      lastMessage: {
+        id: 'msg2',
+        senderId: 'user',
+        senderName: 'You',
+        senderAvatar: user?.avatar || '/api/placeholder/40/40',
+        content: 'Love your latest commission!',
+        type: 'text',
+        timestamp: new Date(Date.now() - 3600000),
+        status: 'delivered',
+        isRead: true
+      },
+      unreadCount: 0,
+      isPinned: false,
+      isArchived: false,
+      canMessage: true,
+      subscriptionTier: 'premium',
+      isVerified: true
+    }
+  ];
+
+  const generateMockMessages = (): Message[] => [
+    {
+      id: '1',
+      senderId: 'creator1',
+      senderName: 'ArtisticFox',
+      senderAvatar: '/api/placeholder/40/40',
+      content: 'Hey! Thanks for subscribing to my VIP tier! 🎉',
+      type: 'text',
+      timestamp: new Date(Date.now() - 86400000),
+      status: 'read',
+      isRead: true
+    },
+    {
+      id: '2',
+      senderId: user?.id || 'user',
+      senderName: 'You',
+      senderAvatar: user?.avatar || '/api/placeholder/40/40',
+      content: 'Your art is absolutely amazing! Keep up the great work!',
+      type: 'text',
+      timestamp: new Date(Date.now() - 82800000),
+      status: 'read',
+      isRead: true
+    },
+    {
+      id: '3',
+      senderId: 'creator1',
+      senderName: 'ArtisticFox',
+      senderAvatar: '/api/placeholder/40/40',
+      content: 'Thanks for the support! New artwork coming soon! 🎨',
+      type: 'text',
+      timestamp: new Date(Date.now() - 300000),
+      status: 'delivered',
+      isRead: false,
+      reactions: [
+        { emoji: '❤️', userId: 'user', userName: 'You' },
+        { emoji: '🔥', userId: 'user2', userName: 'Fan2' }
+      ]
+    }
+  ];
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !activeConversation) return;
+
+    const message: Message = {
+      id: Date.now().toString(),
+      senderId: user?.id || 'user',
+      senderName: user?.displayName || 'You',
+      senderAvatar: user?.avatar || '/api/placeholder/40/40',
+      content: newMessage,
+      type: 'text',
+      timestamp: new Date(),
+      status: 'sending',
+      isRead: true
+    };
+
+    setMessages(prev => [...prev, message]);
+    setNewMessage('');
+
+    try {
+      const response = await fetch('/api/messages/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          conversationId: activeConversation.id,
+          content: newMessage,
+          type: 'text'
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessages(prev => prev.map(msg => 
+          msg.id === message.id ? { ...msg, status: 'sent', id: data.messageId } : msg
+        ));
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Simulate successful send for demo
+      setTimeout(() => {
+        setMessages(prev => prev.map(msg => 
+          msg.id === message.id ? { ...msg, status: 'delivered' } : msg
+        ));
+      }, 1000);
+    }
+  };
+
+  const getAISuggestions = async (context: string) => {
+    setAiAssistant(prev => ({ ...prev, typing: true }));
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate AI processing
+      
+      const suggestions = [
+        "That sounds really interesting!",
+        "I'd love to see more of your work",
+        "Thanks for sharing this with me",
+        "Keep up the amazing creativity!",
+        "Looking forward to your next piece"
+      ];
+      
+      setAiAssistant(prev => ({
+        ...prev,
+        suggestions,
+        typing: false
+      }));
+    } catch (error) {
+      console.error('Error getting AI suggestions:', error);
+      setAiAssistant(prev => ({ ...prev, typing: false }));
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleFileUpload = (type: 'image' | 'file') => {
+    if (type === 'image') {
+      imageInputRef.current?.click();
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const filteredConversations = conversations.filter(conv => {
+    const matchesSearch = conv.participantName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = 
+      selectedFilter === 'all' || 
+      (selectedFilter === 'creators' && conv.participantRole === 'creator') ||
+      (selectedFilter === 'subscribers' && conv.participantRole === 'subscriber') ||
+      (selectedFilter === 'archived' && conv.isArchived);
+    
+    return matchesSearch && matchesFilter && !conv.isArchived;
+  });
+
+  const formatMessageTime = (timestamp: Date) => {
+    if (isToday(timestamp)) {
+      return format(timestamp, 'HH:mm');
+    } else if (isYesterday(timestamp)) {
+      return 'Yesterday';
+    } else {
+      return format(timestamp, 'MMM dd');
+    }
+  };
+
+  const getMessageStatusIcon = (status: string) => {
+    switch (status) {
+      case 'sending':
+        return <Clock className="w-3 h-3 text-gray-400" />;
+      case 'sent':
+        return <Check className="w-3 h-3 text-gray-400" />;
+      case 'delivered':
+        return <CheckCheck className="w-3 h-3 text-gray-400" />;
+      case 'read':
+        return <CheckCheck className="w-3 h-3 text-blue-500" />;
+      default:
+        return null;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <AnimatedLoader type="messaging" size="lg" message="Loading your conversations..." />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 h-screen">
+          {/* Conversations Sidebar */}
+          <div className="lg:col-span-1 bg-white border-r border-gray-200 flex flex-col">
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-xl font-bold">Messages</h1>
+                <Button variant="ghost" size="sm">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              {/* Search */}
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search conversations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Filters */}
+              <Tabs value={selectedFilter} onValueChange={(value: any) => setSelectedFilter(value)}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+                  <TabsTrigger value="creators" className="text-xs">Creators</TabsTrigger>
+                  <TabsTrigger value="subscribers" className="text-xs">Fans</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            {/* Conversations List */}
+            <div className="flex-1 overflow-y-auto">
+              <AnimatePresence>
+                {filteredConversations.map((conversation, index) => (
+                  <motion.div
+                    key={conversation.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => setActiveConversation(conversation)}
+                    className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                      activeConversation?.id === conversation.id ? 'bg-purple-50 border-r-2 border-r-purple-500' : ''
+                    }`}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className="relative">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={conversation.participantAvatar} />
+                          <AvatarFallback>{conversation.participantName[0]}</AvatarFallback>
+                        </Avatar>
+                        {conversation.isOnline && (
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center space-x-1">
+                            <span className="font-semibold text-sm truncate">{conversation.participantName}</span>
+                            {conversation.isVerified && (
+                              <Star className="w-3 h-3 text-blue-500" />
+                            )}
+                            {conversation.isPinned && (
+                              <Pin className="w-3 h-3 text-gray-400" />
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {formatMessageTime(conversation.lastMessage.timestamp)}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-600 truncate pr-2">
+                            {conversation.lastMessage.content}
+                          </p>
+                          {conversation.unreadCount > 0 && (
+                            <Badge className="bg-purple-500 text-white text-xs px-2 py-1 rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                              {conversation.unreadCount}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Chat Area */}
+          <div className="lg:col-span-3 flex flex-col bg-white">
+            {activeConversation ? (
+              <>
+                {/* Chat Header */}
+                <div className="p-4 border-b border-gray-200 bg-white">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage src={activeConversation.participantAvatar} />
+                          <AvatarFallback>{activeConversation.participantName[0]}</AvatarFallback>
+                        </Avatar>
+                        {activeConversation.isOnline && (
+                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h2 className="font-semibold">{activeConversation.participantName}</h2>
+                          {activeConversation.isVerified && (
+                            <Star className="w-4 h-4 text-blue-500" />
+                          )}
+                          <Badge className={`text-xs ${
+                            activeConversation.subscriptionTier === 'vip' ? 'bg-yellow-100 text-yellow-800' :
+                            activeConversation.subscriptionTier === 'premium' ? 'bg-purple-100 text-purple-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {activeConversation.subscriptionTier.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          {activeConversation.isOnline ? 'Online' : `Last seen ${formatMessageTime(activeConversation.lastSeen)}`}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAIAssistant(!showAIAssistant)}
+                        className={showAIAssistant ? 'bg-purple-100 text-purple-700' : ''}
+                      >
+                        <Brain className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Video className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Info className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  <AnimatePresence>
+                    {messages.map((message, index) => {
+                      const isOwn = message.senderId === user?.id || message.senderId === 'user';
+                      return (
+                        <motion.div
+                          key={message.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-xs lg:max-w-md ${isOwn ? 'order-2' : 'order-1'}`}>
+                            {!isOwn && (
+                              <div className="flex items-center space-x-2 mb-1">
+                                <Avatar className="w-6 h-6">
+                                  <AvatarImage src={message.senderAvatar} />
+                                  <AvatarFallback className="text-xs">{message.senderName[0]}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs text-gray-500">{message.senderName}</span>
+                              </div>
+                            )}
+                            
+                            <div className={`p-3 rounded-lg ${
+                              isOwn 
+                                ? 'bg-purple-600 text-white' 
+                                : 'bg-gray-100 text-gray-900'
+                            }`}>
+                              <p className="text-sm">{message.content}</p>
+                              
+                              {message.reactions && message.reactions.length > 0 && (
+                                <div className="flex space-x-1 mt-2">
+                                  {message.reactions.map((reaction, idx) => (
+                                    <span key={idx} className="text-xs bg-white/20 px-1 rounded">
+                                      {reaction.emoji}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className={`flex items-center space-x-1 mt-1 text-xs text-gray-500 ${
+                              isOwn ? 'justify-end' : 'justify-start'
+                            }`}>
+                              <span>{formatMessageTime(message.timestamp)}</span>
+                              {isOwn && getMessageStatusIcon(message.status)}
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                  
+                  {typingUsers.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex justify-start"
+                    >
+                      <div className="bg-gray-100 rounded-lg p-3 max-w-xs">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">{typingUsers[0]} is typing...</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* AI Assistant Panel */}
+                <AnimatePresence>
+                  {showAIAssistant && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="border-t border-gray-200 bg-purple-50 p-4"
+                    >
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Brain className="w-4 h-4 text-purple-600" />
+                        <span className="font-medium text-purple-800">AI Assistant</span>
+                        {aiAssistant.typing && (
+                          <AnimatedLoader type="ai" size="sm" />
+                        )}
+                      </div>
+                      
+                      {aiAssistant.suggestions.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-sm text-purple-700">Suggested responses:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {aiAssistant.suggestions.map((suggestion, index) => (
+                              <Button
+                                key={index}
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setNewMessage(suggestion)}
+                                className="text-left justify-start bg-white border-purple-200 hover:bg-purple-100"
+                              >
+                                <Sparkles className="w-3 h-3 mr-2 text-purple-500" />
+                                {suggestion}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Message Input */}
+                <div className="p-4 border-t border-gray-200 bg-white">
+                  <div className="flex items-end space-x-2">
+                    <div className="flex-1 relative">
+                      <Textarea
+                        value={newMessage}
+                        onChange={(e) => {
+                          setNewMessage(e.target.value);
+                          if (e.target.value && aiAssistant.isActive) {
+                            getAISuggestions(e.target.value);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                          }
+                        }}
+                        placeholder="Type your message..."
+                        className="min-h-[44px] max-h-32 resize-none"
+                        rows={1}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowMediaPicker(!showMediaPicker)}
+                      >
+                        <Paperclip className="w-4 h-4" />
+                      </Button>
+                      
+                      <Button
+                        onClick={sendMessage}
+                        disabled={!newMessage.trim()}
+                        className="bg-purple-600 hover:bg-purple-700"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Media Picker */}
+                  <AnimatePresence>
+                    {showMediaPicker && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="mt-3 flex items-center space-x-2"
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleFileUpload('image')}
+                        >
+                          <ImageIcon className="w-4 h-4 mr-2" />
+                          Image
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleFileUpload('file')}
+                        >
+                          <File className="w-4 h-4 mr-2" />
+                          File
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Mic className="w-4 h-4 mr-2" />
+                          Voice
+                        </Button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                  <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">Select a conversation</h3>
+                  <p className="text-gray-500">Choose a conversation from the sidebar to start messaging</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden file inputs */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,.doc,.docx,.txt"
+      />
+      <input
+        ref={imageInputRef}
+        type="file"
+        className="hidden"
+        accept="image/*"
+      />
+    </div>
+  );
+};
+
+export default MessagingV3;
