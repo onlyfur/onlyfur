@@ -574,12 +574,6 @@ function App() {
               <Route path="help/articles/account-security" element={<AccountSecurity />} />
               <Route path="help/articles/report-user-content" element={<ReportUserContent />} />
               <Route path="help/articles/mobile-app" element={<MobileApp />} />
-              <Route path="help/articles/messaging-tips" element={<MessagingTips />} />
-              <Route path="help/articles/message-limits" element={<MessageLimits />} />
-              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiers />} />
-              <Route path="help/articles/payment-methods" element={<PaymentMethods />} />
-              <Route path="help/articles/how-to-create-account" element={<HowToCreateAccount />} />
-              <Route path="help/articles/creator-earnings" element={<CreatorEarnings />} />
               <Route path="safety" element={<Safety />} />
               <Route path="guidelines" element={<CommunityGuidelines />} />
               <Route path="contact" element={<ContactUs />} />
