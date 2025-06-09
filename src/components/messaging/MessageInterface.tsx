@@ -15,47 +15,14 @@ import {
   Star, 
   Heart,
   Shield,
-  MessageCircle
+  MessageCircle,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { messagingAPI, type Conversation, type Message } from '@/services/messagingAPI';
 
-interface Message {
-  id: string;
-  senderId: string;
-  receiverId: string;
-  content: string;
-  type: 'text' | 'image' | 'media';
-  timestamp: Date;
-  isRead: boolean;
-  senderInfo: {
-    username: string;
-    displayName: string;
-    avatar?: string;
-    tier: string;
-    isVerified: boolean;
-  };
-}
-
-interface Conversation {
-  id: string;
-  participantId: string;
-  participantInfo: {
-    username: string;
-    displayName: string;
-    avatar?: string;
-    tier: string;
-    isVerified: boolean;
-    role: 'creator' | 'subscriber';
-  };
-  lastMessage?: Message;
-  unreadCount: number;
-  canSendMessages: boolean;
-  restrictions?: {
-    reason: string;
-    upgradeRequired?: string;
-  };
-}
+// Interfaces imported from messagingAPI
 
 const MessageInterface: React.FC = () => {
   const { user } = useAuth();
@@ -67,107 +34,63 @@ const MessageInterface: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with sample conversations and messaging restrictions
+  // Load user conversations on component mount
   useEffect(() => {
-    initializeSampleConversations();
+    if (user) {
+      loadUserConversations();
+    }
   }, [user]);
 
-  const initializeSampleConversations = () => {
-    if (!user) return;
-
-    const sampleConversations: Conversation[] = [
-      {
-        id: 'conv-1',
-        participantId: 'creator-1',
-        participantInfo: {
-          username: 'demofox',
-          displayName: 'Demo Fox',
-          avatar: '/images/branding/fox-mascot.webp',
-          tier: 'pro-creator',
-          isVerified: true,
-          role: 'creator'
-        },
-        lastMessage: {
-          id: 'msg-1',
-          senderId: 'creator-1',
-          receiverId: user.id,
-          content: 'Thanks for subscribing! Feel free to message me anytime.',
-          type: 'text',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-          isRead: true,
-          senderInfo: {
-            username: 'demofox',
-            displayName: 'Demo Fox',
-            avatar: '/images/branding/fox-mascot.webp',
-            tier: 'pro-creator',
-            isVerified: true
-          }
-        },
-        unreadCount: 0,
-        canSendMessages: canUserMessageCreator(user.subscriptionTier, 'pro-creator'),
-        restrictions: !canUserMessageCreator(user.subscriptionTier, 'pro-creator') ? {
-          reason: 'Creator only accepts messages from Pro Subscribers and above',
-          upgradeRequired: 'pro-subscriber'
-        } : undefined
-      },
-      {
-        id: 'conv-2',
-        participantId: 'creator-2',
-        participantInfo: {
-          username: 'artdragon',
-          displayName: 'Art Dragon',
-          avatar: '/images/branding/fursuit-icon.jpg',
-          tier: 'premium-creator',
-          isVerified: true,
-          role: 'creator'
-        },
-        lastMessage: {
-          id: 'msg-2',
-          senderId: 'creator-2',
-          receiverId: user.id,
-          content: 'Check out my latest commission!',
-          type: 'text',
-          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-          isRead: false,
-          senderInfo: {
-            username: 'artdragon',
-            displayName: 'Art Dragon',
-            avatar: '/images/branding/fursuit-icon.jpg',
-            tier: 'premium-creator',
-            isVerified: true
-          }
-        },
-        unreadCount: 1,
-        canSendMessages: canUserMessageCreator(user.subscriptionTier, 'premium-creator'),
-        restrictions: !canUserMessageCreator(user.subscriptionTier, 'premium-creator') ? {
-          reason: 'Creator only accepts messages from VIP Subscribers',
-          upgradeRequired: 'vip-subscriber'
-        } : undefined
-      }
-    ];
-
-    setConversations(sampleConversations);
+  // Load conversations from API
+  const loadUserConversations = async () => {
+    try {
+      setIsLoading(true);
+      const userConversations = await messagingAPI.getConversations();
+      setConversations(userConversations);
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load conversations",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const canUserMessageCreator = (userTier: string | undefined, creatorTier: string): boolean => {
-    if (!userTier) return false;
-
-    // Basic creator accepts messages from any subscriber
-    if (creatorTier === 'basic-creator') {
-      return ['basic-subscriber', 'pro-subscriber', 'vip-subscriber'].includes(userTier);
+  // Load messages for selected conversation
+  const loadMessages = async (conversationId: string) => {
+    try {
+      setIsLoading(true);
+      const result = await messagingAPI.getMessages(conversationId);
+      setMessages(result.messages);
+      
+      // Mark messages as read
+      await messagingAPI.markAsRead(conversationId);
+      
+      // Update conversation unread count
+      setConversations(prev => prev.map(conv => 
+        conv.id === conversationId 
+          ? { ...conv, unreadCount: 0 } 
+          : conv
+      ));
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load messages",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    // Pro creator accepts messages from Pro and VIP subscribers
-    if (creatorTier === 'pro-creator') {
-      return ['pro-subscriber', 'vip-subscriber'].includes(userTier);
-    }
-
-    // Premium creator accepts messages only from VIP subscribers
-    if (creatorTier === 'premium-creator') {
-      return userTier === 'vip-subscriber';
-    }
-
-    return false;
+  // Handle conversation selection
+  const handleConversationSelect = async (conversationId: string) => {
+    setSelectedConversation(conversationId);
+    await loadMessages(conversationId);
   };
 
   const getTierIcon = (tier: string) => {
@@ -182,53 +105,10 @@ const MessageInterface: React.FC = () => {
     return 'bg-blue-500';
   };
 
-  const loadMessages = (conversationId: string) => {
-    const conversation = conversations.find(c => c.id === conversationId);
-    if (!conversation) return;
-
-    // Sample messages for demonstration
-    const sampleMessages: Message[] = [
-      {
-        id: 'msg-1',
-        senderId: conversation.participantId,
-        receiverId: user?.id || '',
-        content: 'Hey there! Welcome to my content page! 🦊',
-        type: 'text',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        isRead: true,
-        senderInfo: conversation.participantInfo
-      },
-      {
-        id: 'msg-2',
-        senderId: user?.id || '',
-        receiverId: conversation.participantId,
-        content: 'Thank you! I love your fursuit designs!',
-        type: 'text',
-        timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000),
-        isRead: true,
-        senderInfo: {
-          username: user?.username || '',
-          displayName: user?.displayName || '',
-          avatar: user?.avatar,
-          tier: user?.subscriptionTier || 'basic-subscriber',
-          isVerified: user?.isVerified || false
-        }
-      },
-      {
-        id: 'msg-3',
-        senderId: conversation.participantId,
-        receiverId: user?.id || '',
-        content: 'Thanks for subscribing! Feel free to message me anytime.',
-        type: 'text',
-        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
-        isRead: true,
-        senderInfo: conversation.participantInfo
-      }
-    ];
-
-    setMessages(sampleMessages);
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
     scrollToBottom();
-  };
+  }, [messages]);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -252,32 +132,30 @@ const MessageInterface: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const message: Message = {
-        id: `msg-${Date.now()}`,
-        senderId: user.id,
-        receiverId: conversation.participantId,
-        content: newMessage,
-        type: 'text',
-        timestamp: new Date(),
-        isRead: false,
-        senderInfo: {
-          username: user.username,
-          displayName: user.displayName,
-          avatar: user.avatar,
-          tier: user.subscriptionTier || 'basic-subscriber',
-          isVerified: user.isVerified || false
-        }
-      };
-
-      setMessages(prev => [...prev, message]);
-      setNewMessage('');
-      scrollToBottom();
-
-      toast({
-        title: "Message Sent",
-        description: "Your message has been sent successfully!"
+      const sentMessage = await messagingAPI.sendMessage({
+        conversationId: selectedConversation,
+        content: newMessage.trim(),
+        type: 'text'
       });
+
+      if (sentMessage) {
+        setMessages(prev => [...prev, sentMessage]);
+        setNewMessage('');
+        
+        // Update conversation with new last message
+        setConversations(prev => prev.map(conv => 
+          conv.id === selectedConversation 
+            ? { ...conv, lastMessage: sentMessage } 
+            : conv
+        ));
+
+        toast({
+          title: "Message Sent",
+          description: "Your message has been sent successfully!"
+        });
+      }
     } catch (error) {
+      console.error('Error sending message:', error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -327,10 +205,7 @@ const MessageInterface: React.FC = () => {
                 className={`cursor-pointer transition-all hover:shadow-md ${
                   selectedConversation === conversation.id ? 'ring-2 ring-primary' : ''
                 }`}
-                onClick={() => {
-                  setSelectedConversation(conversation.id);
-                  loadMessages(conversation.id);
-                }}
+                onClick={() => handleConversationSelect(conversation.id)}
               >
                 <CardContent className="p-3">
                   <div className="flex items-start gap-3">

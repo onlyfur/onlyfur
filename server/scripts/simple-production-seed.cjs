@@ -219,61 +219,12 @@ async function main() {
 
     console.log('✅ Admin user created successfully');
 
-    // Create sample creator user
-    console.log('🎨 Creating sample creator...');
-    
-    const creatorPassword = await bcrypt.hash('Creator2024!', 12);
-    
-    const creatorUser = await prisma.user.upsert({
-      where: { email: 'creator@onlyfur.com' },
-      update: {},
-      create: {
-        email: 'creator@onlyfur.com',
-        username: 'democreator',
-        displayName: 'Demo Creator',
-        password: creatorPassword,
-        role: 'CREATOR',
-        isActive: true,
-        isEmailVerified: true,
-        subscriptionTier: 'basic-creator',
-        subscriptionStatus: 'ACTIVE',
-        bio: 'Welcome to my OnlyFur profile! I create amazing furry content.',
-        subscriptionValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-      }
-    });
-
-    console.log('✅ Sample creator created successfully');
-
-    // Create sample subscriber user
-    console.log('👥 Creating sample subscriber...');
-    
-    const subscriberPassword = await bcrypt.hash('Subscriber2024!', 12);
-    
-    const subscriberUser = await prisma.user.upsert({
-      where: { email: 'subscriber@onlyfur.com' },
-      update: {},
-      create: {
-        email: 'subscriber@onlyfur.com',
-        username: 'demosubscriber',
-        displayName: 'Demo Subscriber',
-        password: subscriberPassword,
-        role: 'SUBSCRIBER',
-        isActive: true,
-        isEmailVerified: true,
-        subscriptionTier: 'basic-subscriber',
-        subscriptionStatus: 'ACTIVE',
-        bio: 'Furry enthusiast and supporter of amazing creators!',
-        subscriptionValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-      }
-    });
-
-    console.log('✅ Sample subscriber created successfully');
+    // No demo users - platform will start clean for real user registrations
 
     console.log('🎉 Database seeding completed successfully!');
     console.log('\n📝 Default Users Created:');
     console.log('👤 Admin: admin@onlyfur.com / OnlyFur2024!');
-    console.log('🎨 Creator: creator@onlyfur.com / Creator2024!');
-    console.log('👥 Subscriber: subscriber@onlyfur.com / Subscriber2024!');
+    console.log('\n✨ Platform ready for real user registrations - no demo users created!');
 
   } catch (error) {
     console.error('❌ Error during seeding:', error);

@@ -30,6 +30,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login, error: authError, clearError, getSavedCredentials } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -48,7 +49,7 @@ const Login: React.FC = () => {
       setValue('password', savedCredentials.password);
       setValue('rememberMe', true);
     }
-  }, [clearError, getSavedCredentials, setValue]);
+  }, [clearError, getSavedCredentials]);
 
   const {
     register,

@@ -1,0 +1,579 @@
+interface NeuralSearchVector {
+  id: string;
+  embedding: number[];
+  metadata: {
+    type: 'text' | 'image' | 'audio' | 'video';
+    content: string;
+    category: string;
+    tags: string[];
+    quality_score: number;
+  };
+}
+
+interface SearchContext {
+  user_preferences: UserPreferences;
+  search_history: string[];
+  recent_interactions: string[];
+  time_context: 'morning' | 'afternoon' | 'evening' | 'night';
+  device_context: 'mobile' | 'desktop' | 'tablet';
+}
+
+interface UserPreferences {
+  preferred_content_types: string[];
+  favorite_creators: string[];
+  interest_categories: string[];
+  content_quality_threshold: number;
+  language_preferences: string[];
+  accessibility_needs: string[];
+}
+
+interface NeuralSearchResult {
+  id: string;
+  relevance_score: number;
+  confidence_score: number;
+  explanation: string;
+  personalization_factors: string[];
+  similar_items: string[];
+  recommendation_reason: string;
+}
+
+class NeuralSearchEngine {
+  private vectors: Map<string, NeuralSearchVector> = new Map();
+  private userModel: Map<string, UserPreferences> = new Map();
+  private searchHistory: Map<string, string[]> = new Map();
+  
+  // Neural network weights (simplified for demo)
+  private weights = {
+    text_similarity: 0.4,
+    semantic_match: 0.3,
+    user_preference: 0.2,
+    temporal_relevance: 0.05,
+    quality_score: 0.05
+  };
+
+  constructor() {
+    this.initializeVectors();
+    this.loadUserModels();
+  }
+
+  // Initialize vector embeddings for content
+  private initializeVectors(): void {
+    // Simulated vector embeddings for demo content
+    this.vectors.set('creator-1', {
+      id: 'creator-1',
+      embedding: [0.8, 0.6, 0.9, 0.4, 0.7, 0.5, 0.8, 0.3],
+      metadata: {
+        type: 'text',
+        content: 'FurryArtist_Pro digital art character design commissions',
+        category: 'creator',
+        tags: ['digital-art', 'character-design', 'commissions'],
+        quality_score: 0.95
+      }
+    });
+
+    this.vectors.set('content-1', {
+      id: 'content-1',
+      embedding: [0.7, 0.8, 0.6, 0.9, 0.5, 0.7, 0.4, 0.8],
+      metadata: {
+        type: 'text',
+        content: 'Digital Art Masterclass Character Design Fundamentals tutorial',
+        category: 'tutorial',
+        tags: ['tutorial', 'character-design', 'digital-art'],
+        quality_score: 0.92
+      }
+    });
+
+    this.vectors.set('content-2', {
+      id: 'content-2',
+      embedding: [0.6, 0.7, 0.8, 0.5, 0.9, 0.4, 0.7, 0.6],
+      metadata: {
+        type: 'video',
+        content: 'Animation Basics Walk Cycles tutorial beginner',
+        category: 'tutorial',
+        tags: ['animation', 'tutorial', 'walk-cycle'],
+        quality_score: 0.88
+      }
+    });
+
+    this.vectors.set('content-3', {
+      id: 'content-3',
+      embedding: [0.9, 0.5, 0.7, 0.8, 0.6, 0.9, 0.3, 0.7],
+      metadata: {
+        type: 'text',
+        content: 'Fursuit Construction Head Building Techniques crafting',
+        category: 'tutorial',
+        tags: ['fursuit', 'tutorial', 'crafting'],
+        quality_score: 0.85
+      }
+    });
+  }
+
+  // Load user preference models
+  private loadUserModels(): void {
+    // Load from localStorage or default preferences
+    const savedPreferences = localStorage.getItem('neural_search_user_model');
+    if (savedPreferences) {
+      try {
+        const parsed = JSON.parse(savedPreferences);
+        this.userModel.set('current_user', parsed);
+      } catch {
+        this.setDefaultUserModel();
+      }
+    } else {
+      this.setDefaultUserModel();
+    }
+  }
+
+  private setDefaultUserModel(): void {
+    this.userModel.set('current_user', {
+      preferred_content_types: ['tutorial', 'art'],
+      favorite_creators: [],
+      interest_categories: ['digital-art', 'character-design'],
+      content_quality_threshold: 0.8,
+      language_preferences: ['en'],
+      accessibility_needs: []
+    });
+  }
+
+  // Convert query to vector embedding (simplified)
+  private queryToVector(query: string): number[] {
+    const words = query.toLowerCase().split(' ');
+    const baseVector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
+    
+    // Simple keyword-based vector generation
+    const keywords = {
+      'art': [0.9, 0.7, 0.6, 0.4, 0.5, 0.3, 0.8, 0.2],
+      'digital': [0.8, 0.8, 0.5, 0.6, 0.4, 0.7, 0.3, 0.9],
+      'animation': [0.6, 0.9, 0.8, 0.7, 0.5, 0.4, 0.6, 0.8],
+      'tutorial': [0.7, 0.6, 0.9, 0.8, 0.7, 0.5, 0.4, 0.6],
+      'character': [0.8, 0.7, 0.6, 0.9, 0.8, 0.6, 0.5, 0.4],
+      'fursuit': [0.5, 0.4, 0.6, 0.7, 0.9, 0.8, 0.7, 0.6]
+    };
+
+    words.forEach(word => {
+      if (keywords[word]) {
+        keywords[word].forEach((val, idx) => {
+          baseVector[idx] = (baseVector[idx] + val) / 2;
+        });
+      }
+    });
+
+    return baseVector;
+  }
+
+  // Calculate cosine similarity between vectors
+  private cosineSimilarity(vec1: number[], vec2: number[]): number {
+    const dotProduct = vec1.reduce((sum, a, idx) => sum + a * vec2[idx], 0);
+    const magnitude1 = Math.sqrt(vec1.reduce((sum, a) => sum + a * a, 0));
+    const magnitude2 = Math.sqrt(vec2.reduce((sum, a) => sum + a * a, 0));
+    
+    return dotProduct / (magnitude1 * magnitude2);
+  }
+
+  // Calculate semantic similarity (enhanced)
+  private calculateSemanticSimilarity(query: string, content: string): number {
+    const queryWords = query.toLowerCase().split(' ');
+    const contentWords = content.toLowerCase().split(' ');
+    
+    // Semantic word groups
+    const semanticGroups = {
+      art: ['art', 'drawing', 'painting', 'illustration', 'design', 'creative'],
+      tutorial: ['tutorial', 'guide', 'lesson', 'walkthrough', 'howto', 'learn'],
+      animation: ['animation', 'animated', 'motion', 'movement', 'sequence'],
+      character: ['character', 'persona', 'avatar', 'figure', 'being'],
+      digital: ['digital', 'electronic', 'computer', 'software', 'tech']
+    };
+
+    let matches = 0;
+    let total = 0;
+
+    queryWords.forEach(qWord => {
+      contentWords.forEach(cWord => {
+        total++;
+        if (qWord === cWord) {
+          matches += 1;
+        } else {
+          // Check semantic similarity
+          for (const [group, words] of Object.entries(semanticGroups)) {
+            if (words.includes(qWord) && words.includes(cWord)) {
+              matches += 0.7; // Partial match for semantically related words
+              break;
+            }
+          }
+        }
+      });
+    });
+
+    return total > 0 ? matches / total : 0;
+  }
+
+  // Calculate user preference alignment
+  private calculateUserAlignment(vector: NeuralSearchVector, context: SearchContext): number {
+    const preferences = context.user_preferences;
+    let score = 0;
+    let factors = 0;
+
+    // Content type preference
+    if (preferences.preferred_content_types.includes(vector.metadata.category)) {
+      score += 0.3;
+    }
+    factors += 0.3;
+
+    // Tag alignment
+    const tagMatches = vector.metadata.tags.filter(tag => 
+      preferences.interest_categories.includes(tag)
+    ).length;
+    score += (tagMatches / Math.max(vector.metadata.tags.length, 1)) * 0.4;
+    factors += 0.4;
+
+    // Quality threshold
+    if (vector.metadata.quality_score >= preferences.content_quality_threshold) {
+      score += 0.3;
+    }
+    factors += 0.3;
+
+    return factors > 0 ? score / factors : 0;
+  }
+
+  // Calculate temporal relevance
+  private calculateTemporalRelevance(context: SearchContext): number {
+    // Boost certain content types based on time of day
+    const timeBoosts = {
+      morning: { tutorial: 0.3, educational: 0.2 },
+      afternoon: { art: 0.2, creative: 0.3 },
+      evening: { entertainment: 0.3, casual: 0.2 },
+      night: { relaxing: 0.3, ambient: 0.2 }
+    };
+
+    return timeBoosts[context.time_context] ? 0.1 : 0;
+  }
+
+  // Neural search with personalization
+  async neuralSearch(
+    query: string, 
+    context: SearchContext, 
+    options: { limit?: number; threshold?: number } = {}
+  ): Promise<NeuralSearchResult[]> {
+    const { limit = 10, threshold = 0.1 } = options;
+    
+    const queryVector = this.queryToVector(query);
+    const results: NeuralSearchResult[] = [];
+
+    // Process each vector
+    for (const [id, vector] of this.vectors) {
+      // Vector similarity
+      const vectorSimilarity = this.cosineSimilarity(queryVector, vector.embedding);
+      
+      // Semantic similarity
+      const semanticSimilarity = this.calculateSemanticSimilarity(query, vector.metadata.content);
+      
+      // User alignment
+      const userAlignment = this.calculateUserAlignment(vector, context);
+      
+      // Temporal relevance
+      const temporalRelevance = this.calculateTemporalRelevance(context);
+      
+      // Quality score
+      const qualityScore = vector.metadata.quality_score;
+
+      // Calculate final relevance score
+      const relevanceScore = 
+        (vectorSimilarity * this.weights.text_similarity) +
+        (semanticSimilarity * this.weights.semantic_match) +
+        (userAlignment * this.weights.user_preference) +
+        (temporalRelevance * this.weights.temporal_relevance) +
+        (qualityScore * this.weights.quality_score);
+
+      // Calculate confidence based on score distribution
+      const confidence = Math.min(1, relevanceScore * 1.2);
+
+      if (relevanceScore >= threshold) {
+        // Generate explanation
+        const explanation = this.generateExplanation(
+          vectorSimilarity, semanticSimilarity, userAlignment, qualityScore
+        );
+
+        // Generate personalization factors
+        const personalizationFactors = this.getPersonalizationFactors(
+          vector, context, userAlignment
+        );
+
+        // Find similar items
+        const similarItems = this.findSimilarItems(vector, 3);
+
+        // Generate recommendation reason
+        const recommendationReason = this.generateRecommendationReason(
+          vector, context, relevanceScore
+        );
+
+        results.push({
+          id,
+          relevance_score: relevanceScore,
+          confidence_score: confidence,
+          explanation,
+          personalization_factors: personalizationFactors,
+          similar_items: similarItems,
+          recommendation_reason: recommendationReason
+        });
+      }
+    }
+
+    // Sort by relevance score and limit results
+    return results
+      .sort((a, b) => b.relevance_score - a.relevance_score)
+      .slice(0, limit);
+  }
+
+  // Generate human-readable explanation
+  private generateExplanation(
+    vectorSim: number, 
+    semanticSim: number, 
+    userAlign: number, 
+    quality: number
+  ): string {
+    const factors = [];
+    
+    if (vectorSim > 0.7) factors.push('strong keyword match');
+    if (semanticSim > 0.6) factors.push('semantic relevance');
+    if (userAlign > 0.5) factors.push('matches your interests');
+    if (quality > 0.8) factors.push('high-quality content');
+
+    if (factors.length === 0) {
+      return 'Basic relevance match';
+    }
+
+    return `Recommended due to: ${factors.join(', ')}`;
+  }
+
+  // Get personalization factors
+  private getPersonalizationFactors(
+    vector: NeuralSearchVector, 
+    context: SearchContext, 
+    alignment: number
+  ): string[] {
+    const factors = [];
+    
+    if (context.user_preferences.preferred_content_types.includes(vector.metadata.category)) {
+      factors.push(`Matches your preferred ${vector.metadata.category} content`);
+    }
+    
+    const tagMatches = vector.metadata.tags.filter(tag => 
+      context.user_preferences.interest_categories.includes(tag)
+    );
+    
+    if (tagMatches.length > 0) {
+      factors.push(`Related to your interests: ${tagMatches.join(', ')}`);
+    }
+    
+    if (vector.metadata.quality_score > context.user_preferences.content_quality_threshold) {
+      factors.push('Meets your quality standards');
+    }
+    
+    if (context.device_context === 'mobile' && vector.metadata.type === 'video') {
+      factors.push('Optimized for mobile viewing');
+    }
+
+    return factors;
+  }
+
+  // Find similar items
+  private findSimilarItems(targetVector: NeuralSearchVector, limit: number): string[] {
+    const similarities = [];
+    
+    for (const [id, vector] of this.vectors) {
+      if (id !== targetVector.id) {
+        const similarity = this.cosineSimilarity(targetVector.embedding, vector.embedding);
+        similarities.push({ id, similarity });
+      }
+    }
+    
+    return similarities
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, limit)
+      .map(item => item.id);
+  }
+
+  // Generate recommendation reason
+  private generateRecommendationReason(
+    vector: NeuralSearchVector, 
+    context: SearchContext, 
+    score: number
+  ): string {
+    if (score > 0.8) {
+      return 'Highly recommended based on your preferences and search intent';
+    } else if (score > 0.6) {
+      return 'Good match for your interests with relevant content';
+    } else if (score > 0.4) {
+      return 'May be of interest based on related topics';
+    } else {
+      return 'General relevance to your search query';
+    }
+  }
+
+  // Update user model based on interactions
+  updateUserModel(interactions: {
+    clicked_items: string[];
+    liked_items: string[];
+    search_queries: string[];
+    time_spent: Map<string, number>;
+  }): void {
+    const currentModel = this.userModel.get('current_user');
+    if (!currentModel) return;
+
+    // Update interest categories based on clicked items
+    interactions.clicked_items.forEach(itemId => {
+      const vector = this.vectors.get(itemId);
+      if (vector) {
+        vector.metadata.tags.forEach(tag => {
+          if (!currentModel.interest_categories.includes(tag)) {
+            currentModel.interest_categories.push(tag);
+          }
+        });
+      }
+    });
+
+    // Update preferred content types
+    interactions.liked_items.forEach(itemId => {
+      const vector = this.vectors.get(itemId);
+      if (vector) {
+        const category = vector.metadata.category;
+        if (!currentModel.preferred_content_types.includes(category)) {
+          currentModel.preferred_content_types.push(category);
+        }
+      }
+    });
+
+    // Save updated model
+    this.userModel.set('current_user', currentModel);
+    localStorage.setItem('neural_search_user_model', JSON.stringify(currentModel));
+  }
+
+  // Get current user model
+  getUserModel(): UserPreferences {
+    return this.userModel.get('current_user') || this.getDefaultUserModel();
+  }
+
+  private getDefaultUserModel(): UserPreferences {
+    return {
+      preferred_content_types: ['tutorial', 'art'],
+      favorite_creators: [],
+      interest_categories: ['digital-art'],
+      content_quality_threshold: 0.7,
+      language_preferences: ['en'],
+      accessibility_needs: []
+    };
+  }
+
+  // Reset user model
+  resetUserModel(): void {
+    this.setDefaultUserModel();
+    localStorage.removeItem('neural_search_user_model');
+  }
+
+  // Get search context
+  getSearchContext(): SearchContext {
+    const hour = new Date().getHours();
+    let timeContext: 'morning' | 'afternoon' | 'evening' | 'night';
+    
+    if (hour >= 5 && hour < 12) timeContext = 'morning';
+    else if (hour >= 12 && hour < 17) timeContext = 'afternoon';
+    else if (hour >= 17 && hour < 22) timeContext = 'evening';
+    else timeContext = 'night';
+
+    const deviceContext = this.detectDeviceContext();
+    const searchHistory = this.getSearchHistory();
+    
+    return {
+      user_preferences: this.getUserModel(),
+      search_history: searchHistory,
+      recent_interactions: this.getRecentInteractions(),
+      time_context: timeContext,
+      device_context: deviceContext
+    };
+  }
+
+  private detectDeviceContext(): 'mobile' | 'desktop' | 'tablet' {
+    const width = window.innerWidth;
+    if (width < 768) return 'mobile';
+    if (width < 1024) return 'tablet';
+    return 'desktop';
+  }
+
+  private getSearchHistory(): string[] {
+    const history = localStorage.getItem('onlyfur_recent_searches');
+    return history ? JSON.parse(history) : [];
+  }
+
+  private getRecentInteractions(): string[] {
+    const interactions = localStorage.getItem('neural_search_interactions');
+    return interactions ? JSON.parse(interactions) : [];
+  }
+
+  // Add training data for continuous learning
+  addTrainingData(query: string, selectedResult: string, rating: number): void {
+    const trainingData = {
+      query,
+      result: selectedResult,
+      rating,
+      timestamp: Date.now(),
+      context: this.getSearchContext()
+    };
+
+    const existingData = localStorage.getItem('neural_search_training');
+    const trainingSet = existingData ? JSON.parse(existingData) : [];
+    trainingSet.push(trainingData);
+
+    // Keep only recent training data (last 1000 entries)
+    if (trainingSet.length > 1000) {
+      trainingSet.splice(0, trainingSet.length - 1000);
+    }
+
+    localStorage.setItem('neural_search_training', JSON.stringify(trainingSet));
+  }
+
+  // Get model performance metrics
+  getModelMetrics(): {
+    total_searches: number;
+    avg_relevance_score: number;
+    user_satisfaction: number;
+    personalization_effectiveness: number;
+  } {
+    const trainingData = localStorage.getItem('neural_search_training');
+    const data = trainingData ? JSON.parse(trainingData) : [];
+
+    if (data.length === 0) {
+      return {
+        total_searches: 0,
+        avg_relevance_score: 0,
+        user_satisfaction: 0,
+        personalization_effectiveness: 0
+      };
+    }
+
+    const totalSearches = data.length;
+    const avgRating = data.reduce((sum: number, item: any) => sum + item.rating, 0) / totalSearches;
+    const avgRelevance = data.reduce((sum: number, item: any) => sum + (item.relevance_score || 0.5), 0) / totalSearches;
+    
+    // Calculate personalization effectiveness based on improvement over time
+    const recentData = data.slice(-100); // Last 100 searches
+    const oldData = data.slice(0, 100); // First 100 searches
+    
+    const recentAvg = recentData.length > 0 ? 
+      recentData.reduce((sum: number, item: any) => sum + item.rating, 0) / recentData.length : 0;
+    const oldAvg = oldData.length > 0 ? 
+      oldData.reduce((sum: number, item: any) => sum + item.rating, 0) / oldData.length : 0;
+    
+    const personalizationEffectiveness = recentAvg > oldAvg ? 
+      Math.min(1, (recentAvg - oldAvg) + 0.5) : 0.5;
+
+    return {
+      total_searches: totalSearches,
+      avg_relevance_score: avgRelevance,
+      user_satisfaction: avgRating / 5, // Normalize to 0-1
+      personalization_effectiveness
+    };
+  }
+}
+
+export const neuralSearchEngine = new NeuralSearchEngine();
+export type { NeuralSearchResult, SearchContext, UserPreferences };

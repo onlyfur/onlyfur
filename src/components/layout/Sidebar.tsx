@@ -18,6 +18,9 @@ import {
   Wallet,
   Receipt,
   Tag as TagIcon,
+  TrendingUp,
+  Video,
+  Brain,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { NavItem } from '@/types';
@@ -49,6 +52,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
     { title: 'My Content', href: '/content', icon: 'Crown' },
     { title: 'Upload Content', href: '/content/upload', icon: 'Upload' },
     { title: 'Analytics', href: '/creator/analytics', icon: 'BarChart3' },
+    { title: 'Advanced Analytics', href: '/creator/analytics-v2', icon: 'TrendingUp', badge: 'NEW' },
+    { title: 'Live Streaming', href: '/creator/streaming', icon: 'Video', badge: 'v3.7' },
+    { title: 'AI Assistant', href: '/creator/ai-assistant', icon: 'Brain', badge: 'AI' },
     { title: 'Subscribers', href: '/creator/subscribers', icon: 'Users', badge: 127 },
     { title: 'Earnings', href: '/creator/earnings', icon: 'DollarSign' },
     { title: 'Subscription Tiers', href: '/subscription-settings', icon: 'Crown' },
@@ -94,6 +100,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       Wallet,
       Receipt,
       TagIcon,
+      TrendingUp,
+      Video,
+      Brain,
     };
     return icons[iconName] || Home;
   };

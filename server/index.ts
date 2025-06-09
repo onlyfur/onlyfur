@@ -13,14 +13,42 @@ import { validateEnv } from './config/validation';
 
 // Import routes
 import authRoutes from './routes/auth';
+import authEnhancedRoutes from './routes/authEnhanced';
 import userRoutes from './routes/users';
+import usersEnhancedRoutes from './routes/usersEnhanced';
 import subscriptionRoutes from './routes/subscriptions';
 import contentRoutes from './routes/content';
+import contentEnhancedRoutes from './routes/contentEnhanced';
 import paymentRoutes from './routes/payments';
 import messagingRoutes from './routes/messaging';
 import adminRoutes from './routes/admin';
 import uploadRoutes from './routes/upload';
 import analyticsRoutes from './routes/analytics';
+// V2.9 New routes
+import twoFactorRoutes from './routes/twoFactor';
+import notificationRoutes from './routes/notifications';
+import moderationRoutes from './routes/moderation';
+// V3.6 New routes
+import creatorDashboardRoutes from './routes/creatorDashboard';
+import advancedAnalyticsRoutes from './routes/advancedAnalytics';\nimport webhookRoutes from './routes/webhooks';
+// V3.0 New routes
+import userPreferencesRoutes from './routes/userPreferences';
+import aiRoutes from './routes/ai';
+import liveStreamingRoutes from './routes/liveStreaming';
+import enhancedPaymentsRoutes from './routes/enhancedPayments';
+import enhancedSearchRoutes from './routes/enhancedSearch';\nimport stripeIntegrationRoutes from './routes/stripeIntegration';\nimport vercelBlobUploadRoutes from './routes/vercelBlobUpload';\nimport realDataRoutes from './routes/realData';\nimport onlineStatusRoutes from './routes/onlineStatus';
+// V3.7 New routes
+import liveStreamingCompleteRoutes from './routes/liveStreamingComplete';
+import advancedAnalyticsV2Routes from './routes/advancedAnalyticsV2';
+import aiContentAssistantRoutes from './routes/aiContentAssistant';
+
+// V3.8 Complete Integration Routes
+import authCompleteRoutes from './routes/authComplete';
+import usersCompleteRoutes from './routes/usersComplete';
+import contentCompleteRoutes from './routes/contentComplete';
+import subscriptionsCompleteRoutes from './routes/subscriptionsComplete';
+import homeExploreAIRoutes from './routes/homeExploreAI';\nimport aiCompleteRoutes from './routes/aiComplete';\nimport userAnalyticsV3Routes from './routes/userAnalyticsV3';\nimport aiOptimizationV3Routes from './routes/aiOptimizationV3';\nimport aiCommunityV3Routes from './routes/aiCommunityV3';
+import aiCompleteRoutes from './routes/aiComplete';
 
 // Import services
 import { initializeDatabase } from './services/database';
@@ -28,6 +56,7 @@ import { initializeSocketServer } from './services/socket';
 import { initializeStripe } from './services/stripe';
 import { initializeEmailService } from './services/email';
 import { initializeS3 } from './services/s3';
+import vercelIntegration from './services/vercelIntegration';
 
 // Load environment variables
 dotenv.config();
@@ -113,14 +142,47 @@ if (process.env.NODE_ENV === 'development' && process.env.ENABLE_API_DOCS === 't
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth-v2', authEnhancedRoutes); // Enhanced auth with PostgreSQL integration
 app.use('/api/users', userRoutes);
+app.use('/api/users-v2', usersEnhancedRoutes); // Enhanced users with PostgreSQL integration
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/content-v2', contentEnhancedRoutes); // Enhanced content with Blob storage
 app.use('/api/payments', paymentRoutes);
 app.use('/api/messaging', messagingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/analytics', analyticsRoutes);
+// V2.9 New routes
+app.use('/api/2fa', twoFactorRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/moderation', moderationRoutes);
+app.use('/api/advanced-analytics', advancedAnalyticsRoutes);\napp.use('/api/webhooks', webhookRoutes);
+// V3.6 Creator Dashboard
+app.use('/api/creator', creatorDashboardRoutes);
+// V3.0 New routes
+app.use('/api/preferences', userPreferencesRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/streaming', liveStreamingRoutes);
+app.use('/api/payments', enhancedPaymentsRoutes);
+app.use('/api/search', enhancedSearchRoutes);\napp.use('/api/stripe', stripeIntegrationRoutes);\napp.use('/api/blob', vercelBlobUploadRoutes);\napp.use('/api/real-data', realDataRoutes);\napp.use('/api/online-status', onlineStatusRoutes);
+// V3.7 New routes
+app.use('/api/streaming-v2', liveStreamingCompleteRoutes);
+app.use('/api/analytics-v2', advancedAnalyticsV2Routes);
+app.use('/api/ai-assistant', aiContentAssistantRoutes);
+
+// V3.8 Complete Integration Routes (Vercel PostgreSQL + Blob + AI)
+app.use('/api/auth-v3', authCompleteRoutes);
+app.use('/api/users-v3', usersCompleteRoutes);
+app.use('/api/content-v3', contentCompleteRoutes);
+app.use('/api/subscriptions-v3', subscriptionsCompleteRoutes);
+app.use('/api/home-v2', homeExploreAIRoutes);
+
+// V3.9 AI-Powered Features (Complete AI Integration)
+app.use('/api/ai', aiCompleteRoutes);
+app.use('/api/analytics-v3', userAnalyticsV3Routes);
+app.use('/api/ai-optimization', aiOptimizationV3Routes);
+app.use('/api/ai-community', aiCommunityV3Routes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -156,6 +218,20 @@ async function initializeServices() {
     // Initialize Socket.IO
     initializeSocketServer(io);
     logger.info('Socket.IO server initialized');
+
+    // Initialize AI Engine (V3.0)
+    const { aiEngine } = await import('./services/aiEngine');
+    await aiEngine.initialize();
+    logger.info('AI Engine initialized');
+
+    // Initialize Vercel Integration (V3.8)
+    await vercelIntegration.connectDatabase();
+    const healthCheck = await vercelIntegration.healthCheck();
+    if (healthCheck.database === 'healthy' && healthCheck.blobStorage === 'healthy') {
+      logger.info('Vercel PostgreSQL + Blob Storage initialized successfully');
+    } else {
+      logger.warn('Vercel services partially initialized:', healthCheck);
+    }
 
   } catch (error) {
     logger.error('Failed to initialize services:', error);

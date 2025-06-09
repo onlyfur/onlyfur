@@ -798,18 +798,12 @@ const Billing: React.FC = () => {
               </Button>
               <Button 
                 onClick={() => {
-                  // Mock form data for demo
-                  const mockFormData = {
-                    type: paymentMethodType,
-                    cardNumber: '1234567812345678',
-                    expiryMonth: '12',
-                    expiryYear: '2028',
-                    cvc: '123',
-                    cardholderName: 'Demo User',
-                    paypalEmail: 'demo@paypal.com',
-                    setAsDefault: false,
-                  };
-                  handleAddPaymentMethod(mockFormData);
+                  // Real form validation and submission would go here
+                  toast({
+                    title: "Form Required",
+                    description: "Please fill out the payment method form and submit it properly.",
+                    variant: "destructive",
+                  });
                 }}
               >
                 Add Payment Method

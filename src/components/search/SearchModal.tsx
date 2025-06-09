@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { realDataAPI } from '@/services/realDataAPI';
 
 interface SearchResult {
   id: string;
@@ -31,76 +32,17 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onOpenChange }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // Mock search data
-  const mockResults: SearchResult[] = [
-    // Creators
-    {
-      id: 'creator-1',
-      type: 'creator',
-      title: 'FurryArtist_Pro',
-      subtitle: '12.5K followers • Digital Art',
-      thumbnail: '/images/branding/fox-mascot.webp',
-      url: '/profile/furryartist-pro',
-      badge: 'Verified'
-    },
-    {
-      id: 'creator-2',
-      type: 'creator',
-      title: 'PawsomeMaker',
-      subtitle: '8.2K followers • Animation',
-      thumbnail: '/images/branding/fox-mascot.webp',
-      url: '/profile/pawsomemaker'
-    },
-    // Content
-    {
-      id: 'content-1',
-      type: 'content',
-      title: 'Amazing Forest Scene Digital Art',
-      subtitle: 'By FurryArtist_Pro • 2 hours ago',
-      thumbnail: '/images/branding/fox-mascot.webp',
-      url: '/content/amazing-forest-scene',
-      badge: 'New'
-    },
-    {
-      id: 'content-2',
-      type: 'content',
-      title: 'Character Design Tutorial',
-      subtitle: 'By PawsomeMaker • 1 day ago',
-      thumbnail: '/images/branding/fox-mascot.webp',
-      url: '/content/character-design-tutorial',
-      badge: 'Popular'
-    },
-    // Tags
-    {
-      id: 'tag-1',
-      type: 'tag',
-      title: '#DigitalArt',
-      subtitle: '1.2K posts',
-      url: '/explore?tag=digitalart'
-    },
-    {
-      id: 'tag-2',
-      type: 'tag',
-      title: '#Animation',
-      subtitle: '856 posts',
-      url: '/explore?tag=animation'
-    },
-    // General pages
-    {
-      id: 'general-1',
-      type: 'general',
-      title: 'Creator Program',
-      subtitle: 'Join our creator program',
-      url: '/creator-program'
-    },
-    {
-      id: 'general-2',
-      type: 'general',
-      title: 'Help Center',
-      subtitle: 'Get help and support',
-      url: '/help'
-    }
-  ];
+  // Real data state
+  const [hasRealData, setHasRealData] = useState(false);
+
+  // Check for real data on component mount
+  useEffect(() => {
+    const checkRealData = async () => {
+      const hasData = await realDataAPI.hasRealData();
+      setHasRealData(hasData);
+    };
+    checkRealData();
+  }, []);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -123,8 +65,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onOpenChange }) => {
     }
   }, [open]);
 
-  // Search function
-  const performSearch = (searchQuery: string) => {
+  // Search function using real data
+  const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
       return;
@@ -132,15 +74,76 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onOpenChange }) => {
 
     setIsLoading(true);
     
-    // Simulate API delay
-    setTimeout(() => {
-      const filtered = mockResults.filter(result =>
+    try {
+      const searchResults: SearchResult[] = [];
+      
+      if (hasRealData) {
+        // Search users/creators
+        const usersResponse = await realDataAPI.searchUsers(searchQuery, 5);
+        if (usersResponse.success && usersResponse.users) {
+          const userResults = usersResponse.users.map((user: any) => ({
+            id: `creator-${user.id}`,
+            type: 'creator' as const,
+            title: user.displayName || user.username,
+            subtitle: `${user.followersCount || 0} followers • ${user.bio?.slice(0, 30) || 'Content Creator'}...`,
+            thumbnail: user.avatar || '/images/branding/fox-mascot.webp',
+            url: `/profile/${user.username}`,
+            badge: user.isVerified ? 'Verified' : undefined
+          }));
+          searchResults.push(...userResults);
+        }
+
+        // Search content
+        const contentResponse = await realDataAPI.getRealContent(5, 0, false);
+        if (contentResponse.success && contentResponse.content) {
+          const contentResults = contentResponse.content
+            .filter((content: any) => 
+              content.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              content.description?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .slice(0, 5)
+            .map((content: any) => ({
+              id: `content-${content.id}`,
+              type: 'content' as const,
+              title: content.title,
+              subtitle: `By ${content.creator?.displayName || 'Creator'} • ${new Date(content.createdAt).toLocaleDateString()}`,
+              thumbnail: content.thumbnailUrl || '/images/branding/fox-mascot.webp',
+              url: `/content/${content.id}`,
+              badge: content.status === 'published' ? 'Published' : undefined
+            }));
+          searchResults.push(...contentResults);
+        }
+      }
+
+      // Add some general navigation results
+      const generalResults: SearchResult[] = [
+        {
+          id: 'general-creators',
+          type: 'general',
+          title: 'Explore Creators',
+          subtitle: 'Discover amazing content creators',
+          url: '/explore'
+        },
+        {
+          id: 'general-help',
+          type: 'general',
+          title: 'Help Center',
+          subtitle: 'Get help and support',
+          url: '/help'
+        }
+      ].filter(result => 
         result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         result.subtitle?.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setResults(filtered);
+
+      searchResults.push(...generalResults);
+      setResults(searchResults);
+    } catch (error) {
+      console.error('Search error:', error);
+      setResults([]);
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
   // Handle input change

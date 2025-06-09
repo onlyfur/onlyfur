@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { creatorDashboardAPI } from '@/services/creatorDashboardAPI';
 import {
   BarChart,
   Bar,
@@ -76,15 +77,26 @@ const Earnings: React.FC = () => {
   });
   const [paypalEmail, setPaypalEmail] = useState('');
 
-  // Mock data for demonstration
-  const revenueData = [
-    { month: 'Jan', revenue: 12000, subscribers: 65 },
-    { month: 'Feb', revenue: 13500, subscribers: 68 },
-    { month: 'Mar', revenue: 14200, subscribers: 71 },
-    { month: 'Apr', revenue: 15600, subscribers: 76 },
-    { month: 'May', revenue: 16800, subscribers: 81 },
-    { month: 'Jun', revenue: 18200, subscribers: 86 },
-  ];
+  // Revenue data loaded from API
+  const [revenueData, setRevenueData] = useState([]);
+  const [isLoadingRevenue, setIsLoadingRevenue] = useState(false);
+
+  // Load revenue data on component mount
+  useEffect(() => {
+    loadRevenueData();
+  }, []);
+
+  const loadRevenueData = async () => {
+    try {
+      setIsLoadingRevenue(true);
+      const data = await creatorDashboardAPI.getRevenueData('year');
+      setRevenueData(data);
+    } catch (error) {
+      console.error('Error loading revenue data:', error);
+    } finally {
+      setIsLoadingRevenue(false);
+    }
+  };
 
   const tierRevenueData = [
     { name: 'Basic', value: 44955, subscribers: 45, color: '#3B82F6' },
@@ -159,8 +171,30 @@ const Earnings: React.FC = () => {
     }
   };
 
-  // Calculate available balance (mock calculation)
-  const totalEarnings = paymentAnalytics?.totalRevenue || 0;
+  // Calculate available balance from real data
+  const [earningsBreakdown, setEarningsBreakdown] = useState({
+    subscriptions: 0,
+    tips: 0,
+    contentSales: 0,
+    commissions: 0,
+    total: 0
+  });
+
+  // Load earnings breakdown
+  useEffect(() => {
+    loadEarningsBreakdown();
+  }, []);
+
+  const loadEarningsBreakdown = async () => {
+    try {
+      const breakdown = await creatorDashboardAPI.getEarningsBreakdown('month');
+      setEarningsBreakdown(breakdown);
+    } catch (error) {
+      console.error('Error loading earnings breakdown:', error);
+    }
+  };
+
+  const totalEarnings = earningsBreakdown.total;
   const totalPayouts = payouts.reduce((sum, payout) => sum + payout.amount, 0);
   const availableBalance = totalEarnings - totalPayouts;
 

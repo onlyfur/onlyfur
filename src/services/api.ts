@@ -258,6 +258,31 @@ export const healthCheck = async () => {
   return apiRequest('/health');
 };
 
+// Create apiService object with common HTTP methods
+export const apiService = {
+  get: (endpoint: string, options?: RequestInit) => 
+    apiRequest(endpoint, { method: 'GET', ...options }),
+  
+  post: (endpoint: string, data?: any, options?: RequestInit) => 
+    apiRequest(endpoint, { 
+      method: 'POST', 
+      body: data instanceof FormData ? data : JSON.stringify(data),
+      headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },
+      ...options 
+    }),
+  
+  put: (endpoint: string, data?: any, options?: RequestInit) => 
+    apiRequest(endpoint, { 
+      method: 'PUT', 
+      body: data instanceof FormData ? data : JSON.stringify(data),
+      headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },
+      ...options 
+    }),
+  
+  delete: (endpoint: string, options?: RequestInit) => 
+    apiRequest(endpoint, { method: 'DELETE', ...options }),
+};
+
 export default {
   auth: authAPI,
   subscription: subscriptionAPI,
@@ -267,4 +292,6 @@ export default {
   upload: uploadAPI,
   messaging: messagingAPI,
   healthCheck,
+  // Add apiService to default export as well
+  api: apiService,
 };

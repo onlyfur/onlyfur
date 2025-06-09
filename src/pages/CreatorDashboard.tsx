@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { creatorDashboardAPI, type ContentItem, type Subscriber, type DashboardStats } from '@/services/creatorDashboardAPI';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,35 +36,7 @@ import {
   Unlock
 } from 'lucide-react';
 
-interface ContentItem {
-  id: string;
-  title: string;
-  description: string;
-  type: 'photo' | 'video' | 'text';
-  mediaUrl?: string;
-  thumbnailUrl?: string;
-  privacyLevel: 'public' | 'subscribers' | 'premium' | 'private';
-  requiredTiers: string[];
-  status: 'draft' | 'published' | 'scheduled';
-  createdAt: Date;
-  stats: {
-    views: number;
-    likes: number;
-    comments: number;
-    earnings: number;
-  };
-}
-
-interface Subscriber {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar?: string;
-  tier: string;
-  subscriptionDate: Date;
-  totalSpent: number;
-  isActive: boolean;
-}
+// Interfaces imported from creatorDashboardAPI
 
 const CreatorDashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -71,8 +44,10 @@ const CreatorDashboard: React.FC = () => {
   
   const [content, setContent] = useState<ContentItem[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isCreatingContent, setIsCreatingContent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Creator-only access
   if (!isAuthenticated || (user?.role !== 'creator' && user?.role !== 'CREATOR')) {
@@ -83,83 +58,34 @@ const CreatorDashboard: React.FC = () => {
     loadCreatorData();
   }, []);
 
-  const loadCreatorData = () => {
-    // Sample content for demonstration
-    const sampleContent: ContentItem[] = [
-      {
-        id: 'content-1',
-        title: 'Welcome to my furry world! 🦊',
-        description: 'My latest fursuit photos and character introduction',
-        type: 'photo',
-        mediaUrl: '/images/branding/fox-mascot.webp',
-        thumbnailUrl: '/images/branding/fox-mascot.webp',
-        privacyLevel: 'public',
-        requiredTiers: [],
-        status: 'published',
-        createdAt: new Date(),
-        stats: { views: 1250, likes: 124, comments: 23, earnings: 0 }
-      },
-      {
-        id: 'content-2',
-        title: 'Exclusive fursuit photoshoot',
-        description: 'Behind the scenes of my latest photoshoot - subscribers only!',
-        type: 'photo',
-        mediaUrl: '/images/branding/fursuit-icon.jpg',
-        thumbnailUrl: '/images/branding/fursuit-icon.jpg',
-        privacyLevel: 'subscribers',
-        requiredTiers: ['basic-subscriber', 'pro-subscriber', 'vip-subscriber'],
-        status: 'published',
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-        stats: { views: 567, likes: 89, comments: 34, earnings: 15.50 }
-      },
-      {
-        id: 'content-3',
-        title: 'Premium commission showcase',
-        description: 'Exclusive art commission - VIP subscribers only',
-        type: 'photo',
-        mediaUrl: '/images/branding/onlyfur-logo.png',
-        thumbnailUrl: '/images/branding/onlyfur-logo.png',
-        privacyLevel: 'premium',
-        requiredTiers: ['vip-subscriber'],
-        status: 'published',
-        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-        stats: { views: 234, likes: 67, comments: 12, earnings: 45.00 }
-      }
-    ];
+  const loadCreatorData = async () => {
+    try {
+      setIsLoading(true);
 
-    const sampleSubscribers: Subscriber[] = [
-      {
-        id: 'sub-1',
-        username: 'furryfan123',
-        displayName: 'Furry Fan',
-        tier: 'pro-subscriber',
-        subscriptionDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        totalSpent: 59.97,
-        isActive: true
-      },
-      {
-        id: 'sub-2',
-        username: 'vipuser456',
-        displayName: 'VIP User',
-        tier: 'vip-subscriber',
-        subscriptionDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-        totalSpent: 119.94,
-        isActive: true
-      },
-      {
-        id: 'sub-3',
-        username: 'basicuser789',
-        displayName: 'Basic User',
-        tier: 'basic-subscriber',
-        subscriptionDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        totalSpent: 9.99,
-        isActive: true
-      }
-    ];
+      // Load dashboard stats
+      const dashboardStats = await creatorDashboardAPI.getDashboardStats();
+      setStats(dashboardStats);
 
-    setContent(sampleContent);
-    setSubscribers(sampleSubscribers);
+      // Load creator content
+      const contentResult = await creatorDashboardAPI.getCreatorContent(1, 20);
+      setContent(contentResult.content);
+
+      // Load subscribers
+      const subscribersResult = await creatorDashboardAPI.getSubscribers(1, 20);
+      setSubscribers(subscribersResult.subscribers);
+
+    } catch (error) {
+      console.error('Error loading creator data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   const getTierIcon = (tier: string) => {
     if (tier.includes('vip') || tier.includes('premium')) return <Crown className="w-4 h-4" />;

@@ -14,7 +14,7 @@ import ContentAccessControl from '@/components/content/ContentAccessControl';
 import EnhancedPricingModal from '@/components/subscription/EnhancedPricingModal';
 import { contentAccessService, ContentWithAccess } from '@/services/contentAccessService';
 import { tierValidationService } from '@/services/tierValidationService';
-import { getSortedContent } from '@/data/mockContent';
+import { realDataAPI } from '@/services/realDataAPI';
 import { 
   Heart, 
   Crown, 
@@ -55,10 +55,46 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
   const [filteredContent, setFilteredContent] = useState<ContentWithAccess[]>([]);
   const [upgradeRecommendations, setUpgradeRecommendations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Get all content and process it
-  const allContentWithCreators = getSortedContent();
-  const allContent = allContentWithCreators.map(({ content }) => content);
+  const [allContentWithCreators, setAllContentWithCreators] = useState<any[]>([]);
+  const [allContent, setAllContent] = useState<any[]>([]);
+  const [hasRealData, setHasRealData] = useState(false);
+
+  // Load real content from database
+  useEffect(() => {
+    const loadRealContent = async () => {
+      setIsLoading(true);
+      try {
+        // Check if there's real data in the database
+        const hasData = await realDataAPI.hasRealData();
+        setHasRealData(hasData);
+
+        if (hasData) {
+          // Load real content from database
+          const contentResponse = await realDataAPI.getSortedContent(20, 0);
+          if (contentResponse.success) {
+            setAllContentWithCreators(contentResponse.sortedContent);
+            setAllContent(contentResponse.sortedContent.map(({ content }: any) => content));
+          } else {
+            setAllContentWithCreators([]);
+            setAllContent([]);
+          }
+        } else {
+          // No real data available
+          setAllContentWithCreators([]);
+          setAllContent([]);
+        }
+      } catch (error) {
+        console.error('Error loading real content:', error);
+        setAllContentWithCreators([]);
+        setAllContent([]);
+        setHasRealData(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRealContent();
+  }, []);
 
   // Filter content based on user access and settings
   useEffect(() => {
@@ -444,6 +480,24 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
               </Card>
             ))}
           </div>
+        ) : !hasRealData ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="text-4xl mb-4">🏗️</div>
+              <h3 className="text-lg font-medium mb-2">Platform Ready for Content</h3>
+              <p className="text-muted-foreground mb-4">
+                No content has been created yet. Be the first to share amazing content with the community!
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button asChild>
+                  <Link to="/register">Join as Creator</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/content-v2/upload">Upload Content</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ) : filteredContent.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">

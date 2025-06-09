@@ -12,12 +12,17 @@ import MainLayout from '@/layouts/MainLayout';
 import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
-import GoogleCallback from '@/pages/GoogleCallback';
+import AuthCallback from '@/pages/AuthCallback';
 import OAuthDebugger from '@/components/auth/OAuthDebugger';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
 import UserProfile from '@/pages/UserProfile';
 import Explore from '@/pages/Explore';
+import EnhancedSearchInterface from '@/components/search/EnhancedSearchInterface';
+import MySubscriptions from '@/components/subscription/MySubscriptions';
+import EnhancedUserProfile from '@/components/profile/EnhancedUserProfile';
+import EnhancedContentUpload from '@/components/upload/EnhancedContentUpload';
+
 import ContentUpload from '@/pages/ContentUpload';
 import ContentManagement from '@/pages/ContentManagement';
 import ContentFeed from '@/pages/ContentFeed';
@@ -27,6 +32,13 @@ import Billing from '@/pages/Billing';
 import Earnings from '@/pages/Earnings';
 import Messages from '@/pages/Messages';
 import CreatorDashboard from '@/pages/CreatorDashboard';
+
+// V3.9 Enhanced Pages with AI and Smooth Animations
+import HomeV3 from '@/pages/HomeV3';
+import ExploreV3 from '@/pages/ExploreV3';
+import ProfileV3 from '@/pages/ProfileV3';
+import MessagingV3 from '@/pages/MessagingV3';
+import CreatorDashboardV3 from '@/pages/CreatorDashboardV3';
 
 // Footer Pages
 import Contact from '@/pages/Contact';
@@ -82,6 +94,11 @@ import SubscriptionManagement from '@/pages/help/articles/SubscriptionManagement
 import AccountSecurity from '@/pages/help/articles/AccountSecurity';
 import ReportUserContent from '@/pages/help/articles/ReportUserContent';
 import MobileApp from '@/pages/help/articles/MobileApp';
+
+// V3.7 New Creator Components
+import LiveStreamingStudio from '@/pages/creator/LiveStreamingStudio';
+import AdvancedAnalyticsV2 from '@/pages/creator/AdvancedAnalyticsV2';
+import AIContentAssistant from '@/pages/creator/AIContentAssistant';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -145,7 +162,10 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Landing />} />
+              <Route path="home-v3" element={<HomeV3 />} />
               <Route path="explore" element={<Explore />} />
+              <Route path="explore-v3" element={<ExploreV3 />} />
+              <Route path="search" element={<EnhancedSearchInterface />} />
               
               {/* Auth Routes */}
               <Route
@@ -165,8 +185,12 @@ function App() {
                 }
               />
               <Route
+                path="auth/callback"
+                element={<AuthCallback />}
+              />
+              <Route
                 path="auth/callback/google"
-                element={<GoogleCallback />}
+                element={<AuthCallback />}
               />
               <Route
                 path="auth/debug"
@@ -191,6 +215,14 @@ function App() {
                 }
               />
               <Route
+                path="creator-dashboard-v3"
+                element={
+                  <ProtectedRoute>
+                    <CreatorDashboardV3 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="profile"
                 element={
                   <ProtectedRoute>
@@ -205,6 +237,14 @@ function App() {
                     <UserProfile />
                   </ProtectedRoute>
                 }
+              />
+              <Route
+                path="profile-v2/:userId"
+                element={<EnhancedUserProfile />}
+              />
+              <Route
+                path="profile-v3/:userId?"
+                element={<ProfileV3 />}
               />
 
               {/* Content Management Routes */}
@@ -221,6 +261,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ContentUpload />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="content-v2/upload"
+                element={
+                  <ProtectedRoute>
+                    <EnhancedContentUpload />
                   </ProtectedRoute>
                 }
               />
@@ -255,6 +303,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Messages />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="messages-v3"
+                element={
+                  <ProtectedRoute>
+                    <MessagingV3 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="messages-v3/:conversationId"
+                element={
+                  <ProtectedRoute>
+                    <MessagingV3 />
                   </ProtectedRoute>
                 }
               />
@@ -319,6 +383,30 @@ function App() {
                 }
               />
               <Route
+                path="creator/analytics-v2"
+                element={
+                  <ProtectedRoute>
+                    <AdvancedAnalyticsV2 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="creator/streaming"
+                element={
+                  <ProtectedRoute>
+                    <LiveStreamingStudio />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="creator/ai-assistant"
+                element={
+                  <ProtectedRoute>
+                    <AIContentAssistant />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="creator/subscribers"
                 element={
                   <ProtectedRoute>
@@ -365,6 +453,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Earnings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my-subscriptions"
+                element={
+                  <ProtectedRoute>
+                    <MySubscriptions />
                   </ProtectedRoute>
                 }
               />

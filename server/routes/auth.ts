@@ -1,5 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../services/database';
@@ -138,7 +139,8 @@ router.post('/register', asyncHandler(async (req, res) => {
 
   // Send verification email (in background)
   if (process.env.NODE_ENV !== 'test') {
-    sendVerificationEmail(user.email, user.displayName, user.id).catch(error => {
+    const verificationToken = generateToken({ userId: user.id, email: user.email, role: 'email_verification' });
+    sendVerificationEmail(user.email, user.displayName, verificationToken).catch(error => {
       logger.error('Failed to send verification email:', error);
     });
   }
@@ -543,8 +545,94 @@ router.get('/me', authenticateToken, asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    user
+    data: user
   });
+}));
+
+// Get user profile (alias for /me)
+router.get('/profile', authenticateToken, asyncHandler(async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.user!.userId },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      displayName: true,
+      avatar: true,
+      role: true,
+      isVerified: true,
+      subscriptionTier: true,
+      subscriptionStatus: true,
+      subscriptionValidUntil: true,
+      bio: true,
+      coverImage: true,
+      socialLinks: true,
+      createdAt: true,
+      updatedAt: true
+    }
+  });
+
+  if (!user) {
+    throw new AuthenticationError('User not found');
+  }
+
+  res.json({
+    success: true,
+    data: user
+  });
+}));
+
+// Update user profile
+router.put('/profile', authenticateToken, asyncHandler(async (req, res) => {
+  const updateData = req.body;
+  
+  // Remove sensitive fields that shouldn't be updated via this endpoint
+  const { password, role, id, email, createdAt, updatedAt, ...allowedUpdates } = updateData;
+  
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: {
+        ...allowedUpdates,
+        updatedAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        displayName: true,
+        avatar: true,
+        role: true,
+        isVerified: true,
+        subscriptionTier: true,
+        subscriptionStatus: true,
+        subscriptionValidUntil: true,
+        bio: true,
+        coverImage: true,
+        socialLinks: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+
+    logger.info('User profile updated', {
+      userId: req.user!.userId,
+      updatedFields: Object.keys(allowedUpdates)
+    });
+
+    res.json({
+      success: true,
+      data: updatedUser,
+      message: 'Profile updated successfully'
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Unique constraint')) {
+      if (error.message.includes('username')) {
+        throw new ConflictError('Username already taken');
+      }
+    }
+    throw error;
+  }
 }));
 
 // Logout (client-side token removal, but we can log it)
@@ -591,26 +679,157 @@ router.post('/reset-password', asyncHandler(async (req, res) => {
   const validatedData = resetPasswordSchema.parse(req.body);
   const { token, password } = validatedData;
 
-  // TODO: Implement password reset functionality
-  // This would involve verifying the reset token and updating the user's password
+  try {
+    // Verify the reset token
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET not configured');
+    }
 
-  res.json({
-    success: true,
-    message: 'Password reset successful'
-  });
+    const decoded = jwt.verify(token, jwtSecret) as any;
+    
+    if (decoded.role !== 'password_reset') {
+      throw new AuthenticationError('Invalid reset token');
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Update user's password
+    const user = await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { 
+        password: hashedPassword,
+        updatedAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true
+      }
+    });
+
+    logger.info('Password reset successful', {
+      userId: user.id,
+      email: user.email
+    });
+
+    res.json({
+      success: true,
+      message: 'Password reset successful'
+    });
+
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+      throw new AuthenticationError('Invalid or expired reset token');
+    }
+    throw error;
+  }
 }));
 
 // Verify email
-router.post('/verify-email/:token', asyncHandler(async (req, res) => {
+router.post('/verify-email', asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    throw new ValidationError('Verification token is required');
+  }
+
+  try {
+    // Verify the verification token
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET not configured');
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as any;
+    
+    if (decoded.role !== 'email_verification') {
+      throw new AuthenticationError('Invalid verification token');
+    }
+
+    // Update user's verification status
+    const user = await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { 
+        isVerified: true,
+        isEmailVerified: true,
+        updatedAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        isVerified: true,
+        isEmailVerified: true
+      }
+    });
+
+    logger.info('Email verification successful', {
+      userId: user.id,
+      email: user.email
+    });
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully',
+      user
+    });
+
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+      throw new AuthenticationError('Invalid or expired verification token');
+    }
+    throw error;
+  }
+}));
+
+// Verify email with token in URL (alternative endpoint)
+router.get('/verify-email/:token', asyncHandler(async (req, res) => {
   const { token } = req.params;
 
-  // TODO: Implement email verification
-  // This would involve verifying the token and marking the user as verified
+  try {
+    // Verify the verification token
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET not configured');
+    }
 
-  res.json({
-    success: true,
-    message: 'Email verified successfully'
-  });
+    const decoded = jwt.verify(token, jwtSecret) as any;
+    
+    if (decoded.role !== 'email_verification') {
+      throw new AuthenticationError('Invalid verification token');
+    }
+
+    // Update user's verification status
+    const user = await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { 
+        isVerified: true,
+        isEmailVerified: true,
+        updatedAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true
+      }
+    });
+
+    logger.info('Email verification successful via URL', {
+      userId: user.id,
+      email: user.email
+    });
+
+    // Redirect to frontend with success message
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/email-verified?success=true`);
+
+  } catch (error) {
+    logger.error('Email verification failed', { token, error: error.message });
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/email-verified?success=false&error=invalid_token`);
+  }
 }));
 
 // Resend verification email
@@ -629,7 +848,8 @@ router.post('/resend-verification', authenticateToken, asyncHandler(async (req, 
   }
 
   if (process.env.NODE_ENV !== 'test') {
-    sendVerificationEmail(user.email, user.displayName, user.id).catch(error => {
+    const verificationToken = generateToken({ userId: user.id, email: user.email, role: 'email_verification' });
+    sendVerificationEmail(user.email, user.displayName, verificationToken).catch(error => {
       logger.error('Failed to send verification email:', error);
     });
   }

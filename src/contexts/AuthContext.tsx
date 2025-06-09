@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { authService } from '@/services/authService';
+import onlineStatusAPI from '@/services/onlineStatusAPI';
 
 interface AuthContextType {
   user: User | null;
@@ -94,6 +95,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(result.user);
       authService.setSession(result.token, rememberMe);
       
+      // Start online status tracking
+      onlineStatusAPI.startTracking().catch(console.error);
+      
       // Save credentials if remember me is checked
       if (rememberMe) {
         authService.saveCredentials(email, password);
@@ -132,6 +136,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(result.user);
       authService.setSession(result.token, true); // Auto-remember for new registrations
+      
+      // Start online status tracking
+      onlineStatusAPI.startTracking().catch(console.error);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed';
       setError(errorMessage);
@@ -168,6 +175,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(result.user);
       authService.setSession(result.token, true); // Auto-remember for Google login
       
+      // Start online status tracking
+      onlineStatusAPI.startTracking().catch(console.error);
+      
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google authentication failed';
       setError(errorMessage);
@@ -183,6 +193,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (token) {
         await authService.logout(token);
       }
+      
+      // Stop online status tracking
+      onlineStatusAPI.stopTracking().catch(console.error);
       
       // Clear user state immediately
       setUser(null);

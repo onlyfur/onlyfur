@@ -15,13 +15,15 @@ import {
   Crown,
   MessageCircle,
   Upload,
+  Brain,
+  Sparkles,
 } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import SearchModal from '@/components/search/SearchModal';
+import NeuralSearchModal from '@/components/search/NeuralSearchModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,14 +110,16 @@ const Header: React.FC = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2">
-            {/* Search */}
+            {/* Neural Search */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="hidden sm:flex"
+              className="hidden sm:flex relative"
               onClick={() => setIsSearchOpen(true)}
+              title="Neural Search v2.7 - AI-Powered Search"
             >
-              <Search className="h-5 w-5" />
+              <Brain className="h-5 w-5" />
+              <Sparkles className="h-2 w-2 absolute -top-0.5 -right-0.5 text-primary" />
             </Button>
 
             {/* Theme Toggle */}
@@ -250,7 +254,7 @@ const Header: React.FC = () => {
                 </Link>
               ))}
 
-              {/* Mobile Search */}
+              {/* Mobile Neural Search */}
               <Button 
                 variant="ghost" 
                 className="w-full justify-start"
@@ -259,8 +263,9 @@ const Header: React.FC = () => {
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <Search className="h-4 w-4 mr-2" />
-                Search
+                <Brain className="h-4 w-4 mr-2" />
+                Neural Search
+                <Sparkles className="h-3 w-3 ml-auto text-primary" />
               </Button>
               
               {!isAuthenticated && (
@@ -282,8 +287,8 @@ const Header: React.FC = () => {
         )}
       </div>
 
-      {/* Search Modal */}
-      <SearchModal 
+      {/* Neural Search Modal */}
+      <NeuralSearchModal 
         open={isSearchOpen} 
         onOpenChange={setIsSearchOpen} 
       />

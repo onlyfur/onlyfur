@@ -12,6 +12,7 @@ import {
   SupportedVideoType,
 } from '@/types';
 import { useAuth } from './AuthContext';
+import { realDataAPI } from '@/services/realDataAPI';
 
 interface ContentContextType {
   // Content State
@@ -92,7 +93,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     { id: '5', name: 'Behind the Scenes', description: 'BTS content', color: '#8B5CF6', icon: 'Eye', contentCount: 0 },
   ];
 
-  // Load content from localStorage
+  // Load content from localStorage and real data
   useEffect(() => {
     if (user) {
       loadContentFromStorage();
@@ -100,7 +101,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     }
   }, [user]);
 
-  const loadContentFromStorage = () => {
+  const loadContentFromStorage = async () => {
     try {
       const storedContent = localStorage.getItem(`creator-content-${user?.id}`);
       const storedFolders = localStorage.getItem(`creator-folders-${user?.id}`);
@@ -114,6 +115,9 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
           scheduledAt: content.scheduledAt ? new Date(content.scheduledAt) : undefined,
         }));
         setContents(parsedContent);
+      } else {
+        // No stored content, try to load real data
+        await loadRealContent();
       }
 
       if (storedFolders) {
@@ -132,7 +136,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       }
     } catch (error) {
       console.error('Failed to load content from storage:', error);
-      generateMockContent();
+      await loadRealContent();
       generateMockStats();
     }
   };
@@ -145,74 +149,53 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     localStorage.setItem(`creator-folders-${user?.id}`, JSON.stringify(updatedFolders));
   };
 
-  const generateMockContent = () => {
-    const mockContent: Content[] = [
-      {
-        id: '1',
-        creatorId: user?.id || '1',
-        title: 'Sunset Photography Session',
-        description: 'Beautiful sunset shots from my recent photoshoot at the beach.',
-        type: 'photo',
-        mediaUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-        isPublic: true,
-        requiresSubscription: false,
-        privacyLevel: 'public',
-        status: 'published',
-        tags: ['photography', 'sunset', 'landscape'],
-        category: 'Photography',
-        likesCount: 124,
-        commentsCount: 18,
-        viewsCount: 2540,
-        sharesCount: 32,
-        createdAt: new Date(2024, 0, 15),
-        updatedAt: new Date(2024, 0, 15),
-      },
-      {
-        id: '2',
-        creatorId: user?.id || '1',
-        title: 'Morning Workout Routine',
-        description: 'My daily 30-minute morning workout that keeps me energized all day!',
-        type: 'video',
-        mediaUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
-        isPublic: false,
-        requiresSubscription: true,
-        privacyLevel: 'subscribers',
-        status: 'published',
-        tags: ['fitness', 'workout', 'morning'],
-        category: 'Lifestyle',
-        duration: 1800,
-        likesCount: 89,
-        commentsCount: 25,
-        viewsCount: 1230,
-        sharesCount: 15,
-        createdAt: new Date(2024, 0, 12),
-        updatedAt: new Date(2024, 0, 12),
-      },
-      {
-        id: '3',
-        creatorId: user?.id || '1',
-        title: 'Photography Tips for Beginners',
-        description: 'Essential tips and tricks every new photographer should know.',
-        type: 'text',
-        isPublic: true,
-        requiresSubscription: false,
-        privacyLevel: 'public',
-        status: 'draft',
-        tags: ['photography', 'tips', 'tutorial'],
-        category: 'Tutorials',
-        likesCount: 0,
-        commentsCount: 0,
-        viewsCount: 0,
-        sharesCount: 0,
-        createdAt: new Date(2024, 0, 10),
-        updatedAt: new Date(2024, 0, 10),
-      },
-    ];
+  const loadRealContent = async () => {
+    try {
+      if (!user?.id) return;
 
-    setContents(mockContent);
-    saveContentToStorage(mockContent);
+      const hasData = await realDataAPI.hasRealData();
+      if (!hasData) {
+        setContents([]);
+        return;
+      }
+
+      // Load real content from database
+      const contentResponse = await realDataAPI.getRealContent(50, 0, true);
+      if (contentResponse.success && contentResponse.content) {
+        const transformedContent: Content[] = contentResponse.content
+          .filter((item: any) => item.creatorId === user.id)
+          .map((item: any) => ({
+            id: item.id,
+            creatorId: item.creatorId,
+            title: item.title,
+            description: item.description,
+            type: item.type,
+            mediaUrl: item.mediaUrl,
+            thumbnailUrl: item.thumbnailUrl,
+            isPublic: item.isPublic,
+            requiresSubscription: item.requiresSubscription,
+            privacyLevel: item.privacyLevel,
+            status: item.status,
+            tags: Array.isArray(item.tags) ? item.tags : [],
+            category: item.category || 'General',
+            likesCount: item.likesCount,
+            commentsCount: item.commentsCount,
+            viewsCount: item.viewsCount,
+            sharesCount: item.sharesCount,
+            createdAt: new Date(item.createdAt),
+            updatedAt: new Date(item.updatedAt),
+            duration: item.duration
+          }));
+
+        setContents(transformedContent);
+        saveContentToStorage(transformedContent);
+      } else {
+        setContents([]);
+      }
+    } catch (error) {
+      console.error('Error loading real content:', error);
+      setContents([]);
+    }
   };
 
   const generateMockStats = () => {
