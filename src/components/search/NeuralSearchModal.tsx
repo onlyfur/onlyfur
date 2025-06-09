@@ -410,7 +410,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   };
 
   const renderSearchModeSelector = () => (
-    <div className="flex items-center space-x-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+    <div className="flex items-center space-x-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
       <Brain className={`w-4 h-4 ${searchMode === 'neural' ? 'text-blue-600' : 'text-blue-400'}`} />
       <span className="text-sm font-medium">Search Mode:</span>
       <Select value={searchMode} onValueChange={(value: any) => setSearchMode(value)}>
@@ -445,7 +445,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
         </SelectContent>
       </Select>
       {searchMode === 'neural' && (
-        <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-700">
+        <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
           <Sparkles className="w-3 h-3 mr-1" />
           AI Enhanced
         </Badge>
@@ -516,7 +516,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                     </Badge>
                   )}
                   {searchMode === 'neural' && neuralMatch && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
                       <Brain className="w-3 h-3 mr-1" />
                       {Math.round(neuralMatch.confidence_score * 100)}%
                     </Badge>
@@ -606,7 +606,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                 )}
 
                 {result.recommendation_reason && (
-                  <div className="bg-blue-50 p-2 rounded text-xs">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 p-2 rounded text-xs">
                     <strong>Why recommended:</strong> {result.recommendation_reason}
                   </div>
                 )}

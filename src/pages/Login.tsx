@@ -240,26 +240,7 @@ const Login: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Demo Credentials */}
-        <Card className="mt-4 bg-muted/50">
-          <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground text-center mb-2">
-              Demo Credentials (for testing):
-            </p>
-            <div className="text-xs space-y-2">
-              <div>
-                <p><strong>Creator Account:</strong></p>
-                <p>Email: demo@creatorhub.com</p>
-                <p>Password: password123</p>
-              </div>
-              <div>
-                <p><strong>Subscriber Account:</strong></p>
-                <p>Email: subscriber@demo.com</p>
-                <p>Password: password123</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );
