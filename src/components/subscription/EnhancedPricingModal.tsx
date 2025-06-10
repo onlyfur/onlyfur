@@ -107,45 +107,81 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
     }
     
     try {
-      // Import payment service
-      const { createSubscriptionPayment } = await import('@/services/api');
-      
-      // Create payment intent for the subscription
+      // Find the selected tier data
       const selectedTierData = [...subscriberTiers, ...creatorTiers].find(t => t.id === tierId);
       if (!selectedTierData) {
         throw new Error('Tier not found');
       }
       
-      // Create payment intent
-      const paymentData = await createSubscriptionPayment({
-        tierId,
-        amount: selectedTierData.price,
-        currency: selectedTierData.currency || 'USD'
-      });
-      
-      // Handle payment with Stripe
-      if (paymentData.clientSecret) {
-        // Import and initialize Stripe
-        const stripe = (window as any).Stripe?.(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-        if (!stripe) {
-          throw new Error('Stripe not loaded');
-        }
-        
-        // Confirm payment
-        const { error, paymentIntent } = await stripe.confirmCardPayment(paymentData.clientSecret);
-        
-        if (error) {
-          console.error('Payment failed:', error);
-          // Handle payment error
-        } else if (paymentIntent.status === 'succeeded') {
-          // Payment successful, close modal and refresh user data
+      // Check if we need to proceed with payment (free tiers don't need payment)
+      if (selectedTierData.price === 0) {
+        // For free tiers, just update the user's subscription
+        try {
+          const { updateUserSubscription } = await import('@/services/api');
+          await updateUserSubscription(tierId);
           onClose();
           window.location.reload(); // Refresh to update user subscription
+        } catch (updateError) {
+          console.error('Failed to update subscription:', updateError);
+          alert('Failed to update your subscription. Please try again.');
         }
+        return;
+      }
+      
+      // For paid tiers, create payment intent
+      try {
+        // Import payment service
+        const { createSubscriptionPayment } = await import('@/services/api');
+        
+        // Create payment intent
+        const paymentData = await createSubscriptionPayment({
+          tierId,
+          amount: selectedTierData.price,
+          currency: selectedTierData.currency || 'USD'
+        });
+        
+        // Check if Stripe is loaded
+        if (typeof (window as any).Stripe === 'undefined') {
+          // Load Stripe dynamically if not available
+          const script = document.createElement('script');
+          script.src = 'https://js.stripe.com/v3/';
+          document.body.appendChild(script);
+          
+          // Wait for script to load
+          await new Promise((resolve) => {
+            script.onload = resolve;
+          });
+        }
+        
+        // Handle payment with Stripe
+        if (paymentData.clientSecret) {
+          // Initialize Stripe
+          const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+          if (!stripe) {
+            throw new Error('Failed to initialize Stripe');
+          }
+          
+          // Confirm payment
+          const { error, paymentIntent } = await stripe.confirmCardPayment(paymentData.clientSecret);
+          
+          if (error) {
+            console.error('Payment failed:', error);
+            alert(`Payment failed: ${error.message}`);
+          } else if (paymentIntent.status === 'succeeded') {
+            // Payment successful, close modal and refresh user data
+            onClose();
+            window.location.reload(); // Refresh to update user subscription
+          }
+        } else {
+          throw new Error('No client secret returned from payment service');
+        }
+      } catch (paymentError) {
+        console.error('Payment error:', paymentError);
+        alert('There was a problem processing your payment. Please try again.');
       }
     } catch (error) {
       console.error('Subscription error:', error);
-      // Handle subscription error
+      alert('There was a problem with your subscription. Please try again.');
     }
   };
 

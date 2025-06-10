@@ -79,6 +79,13 @@ export const subscriptionAPI = {
   getStatus: async () => {
     return apiRequest('/subscriptions/status');
   },
+  
+  updateTier: async (tierId: string) => {
+    return apiRequest('/subscriptions/update-tier', {
+      method: 'POST',
+      body: JSON.stringify({ tierId }),
+    });
+  },
 };
 
 // Payment API
@@ -102,13 +109,17 @@ export const paymentAPI = {
   },
 };
 
-// Combined function for easier use
+// Combined functions for easier use
 export const createSubscriptionPayment = async (data: {
   tierId: string;
   amount: number;
   currency: string;
 }) => {
   return paymentAPI.createPaymentIntent(data);
+};
+
+export const updateUserSubscription = async (tierId: string) => {
+  return subscriptionAPI.updateTier(tierId);
 };
 
 // Content API
@@ -294,4 +305,7 @@ export default {
   healthCheck,
   // Add apiService to default export as well
   api: apiService,
+  // Add combined functions
+  createSubscriptionPayment,
+  updateUserSubscription,
 };

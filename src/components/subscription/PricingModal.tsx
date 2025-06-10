@@ -36,19 +36,37 @@ const PricingModal: React.FC<PricingModalProps> = ({
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
-  // Fetch subscription tiers from API
+  // Fetch subscription tiers from API or use local data as fallback
   useEffect(() => {
     const fetchTiers = async () => {
       if (isOpen) {
         try {
           setIsLoading(true);
-          const tiers = await subscriptionAPI.getTiers();
           
-          const subscribers = tiers.filter((tier: any) => tier.type === 'SUBSCRIBER');
-          const creators = tiers.filter((tier: any) => tier.type === 'CREATOR');
-          
-          setSubscriberTiers(subscribers);
-          setCreatorTiers(creators);
+          // Try to fetch from API first
+          try {
+            const tiers = await subscriptionAPI.getTiers();
+            
+            if (tiers && Array.isArray(tiers) && tiers.length > 0) {
+              const subscribers = tiers.filter((tier: any) => tier.type === 'SUBSCRIBER');
+              const creators = tiers.filter((tier: any) => tier.type === 'CREATOR');
+              
+              setSubscriberTiers(subscribers);
+              setCreatorTiers(creators);
+            } else {
+              // If API returns empty or invalid data, use local data
+              throw new Error('Invalid data from API');
+            }
+          } catch (apiError) {
+            console.warn('Could not fetch tiers from API, using local data:', apiError);
+            
+            // Import local data as fallback
+            const { subscriberTiers: localSubscriberTiers, creatorTiers: localCreatorTiers } = 
+              await import('@/data/subscriptionTiers');
+            
+            setSubscriberTiers(localSubscriberTiers);
+            setCreatorTiers(localCreatorTiers);
+          }
         } catch (error) {
           console.error('Failed to fetch subscription tiers:', error);
           toast({
@@ -65,22 +83,85 @@ const PricingModal: React.FC<PricingModalProps> = ({
     fetchTiers();
   }, [isOpen, toast]);
 
-  const handleSelectTier = (tier: PlatformSubscriptionTier) => {
+  const handleSelectTier = async (tier: PlatformSubscriptionTier) => {
     if (!isAuthenticated) {
       toast({
         title: "Login Required",
         description: "Please login or register to subscribe to a tier.",
         variant: "destructive",
       });
+      
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
+      
+      return;
+    }
+    
+    // Check if this is the current tier
+    if (user?.subscriptionTier?.id === tier.id) {
+      toast({
+        title: "Current Plan",
+        description: `You are already subscribed to the ${tier.name} plan.`,
+      });
       return;
     }
 
+    // If callback provided, use it
     if (onSelectTier) {
       onSelectTier(tier);
-    } else {
+      return;
+    }
+    
+    try {
+      // For free tiers, just update the subscription
+      if (tier.price === 0) {
+        try {
+          const { updateUserSubscription } = await import('@/services/api');
+          await updateUserSubscription(tier.id);
+          
+          toast({
+            title: "Subscription Updated",
+            description: `You have successfully subscribed to the ${tier.name} plan.`,
+          });
+          
+          // Close modal and refresh after a short delay
+          setTimeout(() => {
+            onClose();
+            window.location.reload();
+          }, 1500);
+          
+        } catch (error) {
+          console.error('Failed to update subscription:', error);
+          toast({
+            title: "Error",
+            description: "Failed to update your subscription. Please try again.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+      
+      // For paid tiers, redirect to payment page
       toast({
-        title: "Tier Selected",
-        description: `You selected ${tier.name}. This would redirect to payment processing.`,
+        title: "Proceeding to Payment",
+        description: `You selected ${tier.name}. Redirecting to payment processing.`,
+      });
+      
+      // In a real implementation, this would redirect to a payment page
+      // For now, we'll just simulate it with a timeout
+      setTimeout(() => {
+        onClose();
+        window.location.href = `/subscription?tier=${tier.id}`;
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem with your subscription. Please try again.",
+        variant: "destructive",
       });
     }
   };
