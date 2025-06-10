@@ -148,7 +148,7 @@ const DMCA: React.FC = () => {
               <div className="text-center p-4 border rounded-lg">
                 <Clock className="w-8 h-8 mx-auto mb-2 text-blue-500" />
                 <h4 className="font-semibold">Notice Review</h4>
-                <p className="text-sm text-muted-foreground">24-48 hours</p>
+                <p className="text-sm text-muted-foreground">24-72 hours</p>
               </div>
               <div className="text-center p-4 border rounded-lg">
                 <Clock className="w-8 h-8 mx-auto mb-2 text-orange-500" />

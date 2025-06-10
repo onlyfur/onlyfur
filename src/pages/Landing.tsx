@@ -78,15 +78,15 @@ const Landing: React.FC = () => {
               {/* Subscriber Badge */}
               <div className="inline-flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 px-4 py-2 rounded-full mb-8 shadow-lg backdrop-blur">
                 <Heart className="h-4 w-4 text-pink-500" />
-                <span className="text-sm font-medium">Join Our Growing Community</span>
+                <span className="text-sm font-medium">Join Our Growing Pack</span>
                 <Heart className="h-4 w-4 text-pink-500" />
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
-                Discover Amazing Furry Content
+                Discover Amazing OnlyFur Content
               </h1>
               <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                Access exclusive fursuit photos, art, and videos from your favorite creators. 
+                Access exclusive fursuit photos and videos from your favorite creators. 
                 Connect with the furry community in a safe, welcoming space designed just for you.
               </p>
               
@@ -104,7 +104,7 @@ const Landing: React.FC = () => {
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2" asChild>
                   <Link to="/register">
-                    Join Free Now
+                    Join for Free
                   </Link>
                 </Button>
               </div>
@@ -112,16 +112,16 @@ const Landing: React.FC = () => {
               {/* Subscriber Stats */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">450+</div>
+                  <div className="text-3xl font-bold text-primary mb-2">50+</div>
                   <div className="text-muted-foreground">Active Creators</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">15K+</div>
+                  <div className="text-3xl font-bold text-primary mb-2">1K+</div>
                   <div className="text-muted-foreground">Posts & Videos</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-muted-foreground">New Content</div>
+                  <div className="text-muted-foreground">Support</div>
                 </div>
               </div>
             </div>
@@ -227,7 +227,7 @@ const Landing: React.FC = () => {
                 <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
                   <Link to="/register">
                     <Heart className="mr-2 h-5 w-5" />
-                    Join Free Now
+                    Join for Free
                   </Link>
                 </Button>
                 <Button 
@@ -253,7 +253,7 @@ const Landing: React.FC = () => {
             <div className="text-center mb-16">
               <Badge className="mb-4 bg-orange-500">For Creators</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                Are You a Furry Creator?
+                Are You a Creator?
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 Turn your passion into profit. Join hundreds of successful furry creators already earning money from their art, photography, and content.
