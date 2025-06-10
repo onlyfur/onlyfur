@@ -213,39 +213,7 @@ const Landing: React.FC = () => {
           </div>
         </section>
 
-        {/* Subscriber CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
-          <div className="container mx-auto px-4 text-center">
-            <div className="max-w-3xl mx-auto text-white">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-                Ready to Join the Pack?
-              </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Start discovering amazing furry content today. Free to join, with premium options available.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
-                  <Link to="/register">
-                    <Heart className="mr-2 h-5 w-5" />
-                    Join for Free
-                  </Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-purple-600"
-                  onClick={() => {
-                    setSelectedPricingTab('creator');
-                    setShowPricingModal(true);
-                  }}
-                >
-                  <Star className="mr-2 h-5 w-5" />
-                  View Creator Plans
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+
 
         {/* Creator Section - Bottom */}
         <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-red-900/20">

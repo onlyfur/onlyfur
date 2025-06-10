@@ -35,6 +35,11 @@ const PricingModal: React.FC<PricingModalProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  
+  // Update activeTab when initialTab changes
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   // Fetch subscription tiers from API or use local data as fallback
   useEffect(() => {

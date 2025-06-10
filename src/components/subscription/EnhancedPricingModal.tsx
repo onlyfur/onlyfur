@@ -51,6 +51,11 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
   const [showAnnual, setShowAnnual] = useState(false);
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [showFeatureComparison, setShowFeatureComparison] = useState(false);
+  
+  // Update activeTab when initialTab changes
+  React.useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   const getTierIcon = (tier: PlatformSubscriptionTier) => {
     switch (tier.level) {
