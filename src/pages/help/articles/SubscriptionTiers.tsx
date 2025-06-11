@@ -217,19 +217,19 @@ const SubscriptionTiers: React.FC = () => {
         </AlertDescription>
       </Alert>
 
-        {/* Subscriber Tiers */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="mr-3 h-6 w-6 text-blue-500" />
-              Subscriber Tiers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-6">
-              Support your favorite creators and unlock exclusive content with our subscriber plans.
-            </p>
-            
+      {/* Subscriber Tiers */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Users className="mr-3 h-6 w-6 text-blue-500" />
+            Subscriber Tiers
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-6">
+            Support your favorite creators and unlock exclusive content with our subscriber plans.
+          </p>
+          
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {subscriberTiers.map((tier, index) => (
                 <div key={tier.name} className={`border rounded-lg overflow-hidden ${tier.popular ? 'ring-2 ring-purple-500' : ''}`}>
@@ -286,17 +286,17 @@ const SubscriptionTiers: React.FC = () => {
               ))}
             </div>
           </CardContent>
-        </Card>
+      </Card>
 
-        {/* Creator Tiers */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Crown className="mr-3 h-6 w-6 text-purple-500" />
-              Creator Tiers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* Creator Tiers */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Crown className="mr-3 h-6 w-6 text-purple-500" />
+            Creator Tiers
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
             <p className="text-sm text-muted-foreground mb-6">
               Unlock advanced tools and features to grow your creator business and maximize earnings.
             </p>
@@ -357,17 +357,17 @@ const SubscriptionTiers: React.FC = () => {
               ))}
             </div>
           </CardContent>
-        </Card>
+      </Card>
 
-        {/* Detailed Comparison */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Eye className="mr-3 h-6 w-6 text-green-500" />
-              Detailed Feature Comparison
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
+      {/* Detailed Comparison */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Eye className="mr-3 h-6 w-6 text-green-500" />
+            Detailed Feature Comparison
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -400,17 +400,17 @@ const SubscriptionTiers: React.FC = () => {
               </table>
             </div>
           </CardContent>
-        </Card>
+      </Card>
 
-        {/* FAQ Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Info className="mr-3 h-6 w-6 text-amber-500" />
-              Frequently Asked Questions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* FAQ Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Info className="mr-3 h-6 w-6 text-amber-500" />
+            Frequently Asked Questions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
             <div className="space-y-4">
               <div className="border-b pb-3">
                 <h4 className="font-medium text-sm mb-1">Can I change my subscription tier?</h4>
@@ -433,11 +433,11 @@ const SubscriptionTiers: React.FC = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+      </Card>
 
-        {/* Call to Action */}
-        <Card className="mb-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-6">
+      {/* Call to Action */}
+      <Card className="mb-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+        <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="mb-4 md:mb-0">
                 <h3 className="text-xl font-semibold mb-2">Ready to Choose Your Tier?</h3>
@@ -461,12 +461,12 @@ const SubscriptionTiers: React.FC = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+      </Card>
 
-        {/* Related Articles */}
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Related Articles */}
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="hover:shadow-sm transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center">
