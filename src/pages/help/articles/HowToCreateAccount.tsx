@@ -13,7 +13,8 @@ import {
   Eye,
   EyeOff,
   Smartphone,
-  Shield
+  Shield,
+  ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -104,37 +105,43 @@ const HowToCreateAccount: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
-      <div className="container mx-auto px-6 py-12 max-w-4xl">
-        
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full mb-6">
-            <UserPlus className="h-5 w-5" />
-            <span className="font-semibold">Account Creation Guide</span>
-          </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            How to Create Your OnlyFur Account
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Follow this step-by-step guide to create your account and join the OnlyFur community.
-          </p>
-        </div>
+    <div className="container mx-auto p-6 max-w-4xl">
+      {/* Navigation */}
+      <div className="mb-6">
+        <Button variant="ghost" asChild>
+          <Link to="/help">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Help Center
+          </Link>
+        </Button>
+      </div>
 
-        {/* Quick Start Alert */}
-        <Alert className="mb-8 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800 dark:text-green-200">
-            <strong>Quick Start:</strong> Have your email ready and choose whether you want to be a creator or subscriber. 
-            The entire process takes less than 5 minutes!
-          </AlertDescription>
-        </Alert>
+      {/* Article Header */}
+      <div className="mb-8">
+        <div className="flex items-center space-x-2 mb-4">
+          <UserPlus className="w-6 h-6 text-blue-500" />
+          <Badge variant="secondary">Getting Started</Badge>
+        </div>
+        <h1 className="text-4xl font-bold mb-4">How to create your account</h1>
+        <p className="text-xl text-muted-foreground">
+          Follow this step-by-step guide to create your account and join the OnlyFur community.
+        </p>
+      </div>
+
+      {/* Quick Start Alert */}
+      <Alert className="mb-8 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+        <CheckCircle className="h-4 w-4 text-green-600" />
+        <AlertDescription className="text-green-800 dark:text-green-200">
+          <strong>Quick Start:</strong> Have your email ready and choose whether you want to be a creator or subscriber. 
+          The entire process takes less than 5 minutes!
+        </AlertDescription>
+      </Alert>
 
         {/* Requirements */}
-        <Card className="mb-12">
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Shield className="mr-3 h-6 w-6 text-primary" />
+              <Shield className="mr-3 h-6 w-6 text-blue-500" />
               Account Requirements
             </CardTitle>
           </CardHeader>
@@ -150,8 +157,8 @@ const HowToCreateAccount: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h4 className="font-semibold">{req.requirement}</h4>
-                      <Badge variant={req.mandatory ? "destructive" : "secondary"}>
+                      <h4 className="font-medium text-sm">{req.requirement}</h4>
+                      <Badge variant={req.mandatory ? "destructive" : "secondary"} className="text-xs">
                         {req.mandatory ? "Required" : "Optional"}
                       </Badge>
                     </div>
@@ -164,40 +171,41 @@ const HowToCreateAccount: React.FC = () => {
         </Card>
 
         {/* Step-by-Step Guide */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-center mb-8">Step-by-Step Creation Process</h2>
-          <div className="space-y-6">
-            {steps.map((step, index) => (
-              <Card key={step.step} className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="flex flex-col lg:flex-row">
-                    <div className="lg:w-1/4 bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-6 flex flex-col items-center justify-center text-center">
-                      <div className="p-4 rounded-full bg-white/20 mb-4">
-                        {step.icon}
-                      </div>
-                      <div className="text-3xl font-bold mb-2">Step {step.step}</div>
-                      <div className="text-sm opacity-90">of {steps.length}</div>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <UserPlus className="mr-3 h-6 w-6 text-green-500" />
+              Step-by-Step Creation Process
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {steps.map((step, index) => (
+                <div key={step.step} className="p-4">
+                  <div className="flex items-start">
+                    <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-1 flex-shrink-0">
+                      {step.step}
                     </div>
-                    <div className="lg:w-3/4 p-6">
-                      <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                      <p className="text-lg text-muted-foreground mb-4">{step.description}</p>
-                      <p className="text-sm leading-relaxed">{step.details}</p>
+                    <div>
+                      <h3 className="font-semibold mb-1">{step.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{step.description}</p>
+                      <p className="text-xs text-muted-foreground">{step.details}</p>
                       {index < steps.length - 1 && (
-                        <div className="flex items-center mt-4 text-sm text-primary">
+                        <div className="flex items-center mt-2 text-xs text-primary">
                           <span>Next: {steps[index + 1].title}</span>
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <ArrowRight className="ml-1 h-3 w-3" />
                         </div>
                       )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Password Security Tips */}
-        <Card className="mb-12 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <Card className="mb-8 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
           <CardHeader>
             <CardTitle className="flex items-center text-amber-800 dark:text-amber-200">
               <Lock className="mr-3 h-6 w-6" />
@@ -207,7 +215,7 @@ const HowToCreateAccount: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold mb-3 text-green-700 dark:text-green-300">✅ Good Password Practices:</h4>
+                <h4 className="font-medium text-sm mb-3 text-green-700 dark:text-green-300">✅ Good Password Practices:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -228,7 +236,7 @@ const HowToCreateAccount: React.FC = () => {
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-3 text-red-700 dark:text-red-300">❌ Avoid These Mistakes:</h4>
+                <h4 className="font-medium text-sm mb-3 text-red-700 dark:text-red-300">❌ Avoid These Mistakes:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
                     <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -253,16 +261,19 @@ const HowToCreateAccount: React.FC = () => {
         </Card>
 
         {/* Troubleshooting */}
-        <Card className="mb-12">
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Common Issues & Solutions</CardTitle>
+            <CardTitle className="flex items-center">
+              <AlertTriangle className="mr-3 h-6 w-6 text-orange-500" />
+              Common Issues & Solutions
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {troubleshooting.map((item, index) => (
-                <div key={index} className="border-l-4 border-primary pl-4">
-                  <h4 className="font-semibold text-lg mb-2">{item.issue}</h4>
-                  <p className="text-muted-foreground">{item.solution}</p>
+                <div key={index} className="border-l-4 border-orange-500 pl-4 py-1">
+                  <h4 className="font-medium text-sm mb-1">{item.issue}</h4>
+                  <p className="text-sm text-muted-foreground">{item.solution}</p>
                 </div>
               ))}
             </div>
@@ -270,68 +281,76 @@ const HowToCreateAccount: React.FC = () => {
         </Card>
 
         {/* Next Steps */}
-        <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Ready to Create Your Account?</h2>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Join thousands of creators and fans in the OnlyFur community. 
-              Start your journey today and discover amazing furry content!
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="text-blue-600 hover:text-blue-700" asChild>
-                <Link to="/register">
-                  <UserPlus className="mr-2 h-5 w-5" />
-                  Create Account Now
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600" asChild>
-                <Link to="/help">
-                  <Smartphone className="mr-2 h-5 w-5" />
-                  More Help Articles
-                </Link>
-              </Button>
+        <Card className="mb-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0">
+                <h3 className="text-xl font-semibold mb-2">Ready to Create Your Account?</h3>
+                <p className="text-muted-foreground">
+                  Join thousands of creators and fans in the OnlyFur community.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/register">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Create Account Now
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/help">
+                    <Smartphone className="mr-2 h-4 w-4" />
+                    More Help Articles
+                  </Link>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Related Articles */}
-        <div className="mt-12">
-          <h3 className="text-xl font-bold mb-6 text-center">Related Help Articles</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <Shield className="h-8 w-8 text-primary mx-auto mb-3" />
-                <CardTitle className="text-lg text-center">Account Security</CardTitle>
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="hover:shadow-sm transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center">
+                  <Shield className="h-4 w-4 text-primary mr-2" />
+                  Account Security
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4 text-sm">Learn how to secure your account with two-factor authentication.</p>
+              <CardContent>
+                <p className="text-muted-foreground mb-3 text-sm">Learn how to secure your account with two-factor authentication.</p>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/help/account-security">Read More</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <Eye className="h-8 w-8 text-primary mx-auto mb-3" />
-                <CardTitle className="text-lg text-center">Profile Setup</CardTitle>
+            <Card className="hover:shadow-sm transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center">
+                  <Eye className="h-4 w-4 text-primary mr-2" />
+                  Profile Setup
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4 text-sm">Complete your profile to attract followers and subscribers.</p>
+              <CardContent>
+                <p className="text-muted-foreground mb-3 text-sm">Complete your profile to attract followers and subscribers.</p>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/help/profile-setup">Read More</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <Mail className="h-8 w-8 text-primary mx-auto mb-3" />
-                <CardTitle className="text-lg text-center">Email Verification</CardTitle>
+            <Card className="hover:shadow-sm transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center">
+                  <Mail className="h-4 w-4 text-primary mr-2" />
+                  Email Verification
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4 text-sm">Troubleshoot email verification issues and resend emails.</p>
+              <CardContent>
+                <p className="text-muted-foreground mb-3 text-sm">Troubleshoot email verification issues and resend emails.</p>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/help/email-verification">Read More</Link>
                 </Button>

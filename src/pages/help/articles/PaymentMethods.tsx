@@ -18,7 +18,8 @@ import {
   Receipt,
   Eye,
   Calendar,
-  Info
+  Info,
+  ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -177,50 +178,64 @@ const PaymentMethods: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-green-900 dark:to-blue-900">
-      <div className="container mx-auto px-6 py-12 max-w-6xl">
-        
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-full mb-6">
-            <CreditCard className="h-5 w-5" />
-            <span className="font-semibold">Payment Guide</span>
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">
-            Payment Methods & Billing
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Learn about accepted payment methods, billing cycles, security features, and how to manage 
-            your payments on OnlyFur platform.
-          </p>
-        </div>
+    <div className="container mx-auto p-6 max-w-4xl">
+      {/* Navigation */}
+      <div className="mb-6">
+        <Button variant="ghost" asChild>
+          <Link to="/help">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Help Center
+          </Link>
+        </Button>
+      </div>
 
-        {/* Security Alert */}
-        <Alert className="mb-12 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-          <Shield className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800 dark:text-green-200">
-            <strong>Security First:</strong> All payments are processed through industry-leading secure payment 
-            processors. We never store your complete card details on our servers.
-          </AlertDescription>
-        </Alert>
+      {/* Article Header */}
+      <div className="mb-8">
+        <div className="flex items-center space-x-2 mb-4">
+          <CreditCard className="w-6 h-6 text-blue-500" />
+          <Badge variant="secondary">Billing & Payments</Badge>
+        </div>
+        <h1 className="text-4xl font-bold mb-4">Payment methods & billing</h1>
+        <p className="text-xl text-muted-foreground">
+          Learn about accepted payment methods, billing cycles, security features, and how to manage 
+          your payments on OnlyFur platform.
+        </p>
+      </div>
+
+      {/* Security Alert */}
+      <Alert className="mb-8 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+        <Shield className="h-4 w-4 text-green-600" />
+        <AlertDescription className="text-green-800 dark:text-green-200">
+          <strong>Security First:</strong> All payments are processed through industry-leading secure payment 
+          processors. We never store your complete card details on our servers.
+        </AlertDescription>
+      </Alert>
 
         {/* Accepted Payment Methods */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Accepted Payment Methods</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paymentMethods.map((method, index) => (
-              <Card key={method.name} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="text-center">
-                  <div className={`mx-auto p-4 rounded-full text-white w-fit mb-4 ${method.color}`}>
-                    {method.icon}
-                  </div>
-                  <CardTitle className="text-xl">{method.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{method.description}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CreditCard className="mr-3 h-6 w-6 text-blue-500" />
+              Accepted Payment Methods
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paymentMethods.map((method, index) => (
+                <div key={method.name} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-3">
+                    <div className={`p-3 rounded-full text-white mr-3 ${method.color}`}>
+                      {method.icon}
+                    </div>
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">Supported Options:</h4>
+                      <h3 className="font-semibold">{method.name}</h3>
+                      <p className="text-xs text-muted-foreground">{method.description}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Supported Options:</h4>
                       <div className="flex flex-wrap gap-1">
                         {method.supported.map((option, idx) => (
                           <Badge key={idx} variant="secondary" className="text-xs">
@@ -230,42 +245,42 @@ const PaymentMethods: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
-                        <div className="flex items-center text-muted-foreground mb-1">
-                          <Clock className="h-4 w-4 mr-1" />
+                        <div className="flex items-center text-muted-foreground mb-1 text-xs">
+                          <Clock className="h-3 w-3 mr-1" />
                           Processing
                         </div>
-                        <div className="font-medium">{method.processingTime}</div>
+                        <div className="text-sm">{method.processingTime}</div>
                       </div>
                       <div>
-                        <div className="flex items-center text-muted-foreground mb-1">
-                          <DollarSign className="h-4 w-4 mr-1" />
+                        <div className="flex items-center text-muted-foreground mb-1 text-xs">
+                          <DollarSign className="h-3 w-3 mr-1" />
                           Fees
                         </div>
-                        <div className="font-medium">{method.fees}</div>
+                        <div className="text-sm">{method.fees}</div>
                       </div>
                     </div>
                     
                     <div>
-                      <div className="flex items-center text-muted-foreground mb-1 text-sm">
-                        <Globe className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-muted-foreground mb-1 text-xs">
+                        <Globe className="h-3 w-3 mr-1" />
                         Availability
                       </div>
-                      <div className="text-sm font-medium">{method.regions}</div>
+                      <div className="text-sm">{method.regions}</div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Supported Currencies */}
-        <Card className="mb-16">
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Globe className="mr-3 h-6 w-6 text-primary" />
+              <Globe className="mr-3 h-6 w-6 text-green-500" />
               Supported Currencies
             </CardTitle>
           </CardHeader>
@@ -288,42 +303,44 @@ const PaymentMethods: React.FC = () => {
         </Card>
 
         {/* Billing Cycles */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Billing Cycles & Savings</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {billingCycles.map((cycle, index) => (
-              <Card key={cycle.period} className={`hover:shadow-lg transition-shadow ${index === 2 ? 'ring-2 ring-green-500' : ''}`}>
-                {index === 2 && (
-                  <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-center py-2 text-sm font-semibold">
-                    Best Value
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Calendar className="mr-3 h-6 w-6 text-purple-500" />
+              Billing Cycles & Savings
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {billingCycles.map((cycle, index) => (
+                <div key={cycle.period} className={`border rounded-lg p-4 ${index === 2 ? 'ring-2 ring-green-500' : ''}`}>
+                  {index === 2 && (
+                    <div className="bg-green-500 text-white text-center py-1 px-2 text-xs font-semibold rounded-full w-fit mb-2">
+                      Best Value
+                    </div>
+                  )}
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-lg">{cycle.period}</h3>
+                    <p className="text-sm text-muted-foreground">{cycle.description}</p>
                   </div>
-                )}
-                <CardHeader className="text-center">
-                  <div className="p-3 rounded-full bg-primary/10 text-primary w-fit mx-auto mb-4">
-                    <Calendar className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl">{cycle.period}</CardTitle>
-                  <p className="text-muted-foreground">{cycle.description}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">Best For:</h4>
+                      <h4 className="text-sm font-medium mb-1">Best For:</h4>
                       <p className="text-sm text-muted-foreground">{cycle.bestFor}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">Example:</h4>
+                      <h4 className="text-sm font-medium mb-1">Example:</h4>
                       <p className="text-sm text-muted-foreground">{cycle.example}</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Security Features */}
-        <Card className="mb-16 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+        <Card className="mb-8 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
           <CardHeader>
             <CardTitle className="flex items-center text-blue-800 dark:text-blue-200">
               <Shield className="mr-3 h-6 w-6" />
@@ -348,21 +365,21 @@ const PaymentMethods: React.FC = () => {
         </Card>
 
         {/* Troubleshooting */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Common Payment Issues</h2>
-          <div className="space-y-6">
-            {troubleshooting.map((item, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle className="flex items-center text-red-600">
-                    <AlertTriangle className="mr-3 h-5 w-5" />
-                    {item.issue}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <AlertTriangle className="mr-3 h-6 w-6 text-orange-500" />
+              Common Payment Issues
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {troubleshooting.map((item, index) => (
+                <div key={index} className="border-l-4 border-orange-500 pl-4 py-2">
+                  <h3 className="font-semibold mb-3">{item.issue}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold mb-3 text-orange-600">Common Causes:</h4>
+                      <h4 className="font-medium text-sm mb-2 text-orange-600">Common Causes:</h4>
                       <ul className="space-y-1">
                         {item.causes.map((cause, idx) => (
                           <li key={idx} className="text-sm flex items-start">
@@ -373,7 +390,7 @@ const PaymentMethods: React.FC = () => {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-3 text-green-600">Solutions:</h4>
+                      <h4 className="font-medium text-sm mb-2 text-green-600">Solutions:</h4>
                       <ul className="space-y-1">
                         {item.solutions.map((solution, idx) => (
                           <li key={idx} className="text-sm flex items-start">
@@ -384,14 +401,14 @@ const PaymentMethods: React.FC = () => {
                       </ul>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Payment Management Tips */}
-        <Card className="mb-16 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <Card className="mb-8 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
           <CardHeader>
             <CardTitle className="flex items-center text-amber-800 dark:text-amber-200">
               <Receipt className="mr-3 h-6 w-6" />
@@ -401,7 +418,7 @@ const PaymentMethods: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold mb-3 text-green-700 dark:text-green-300">✅ Best Practices:</h4>
+                <h4 className="font-medium text-sm mb-3 text-green-700 dark:text-green-300">✅ Best Practices:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -422,7 +439,7 @@ const PaymentMethods: React.FC = () => {
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-3 text-red-700 dark:text-red-300">❌ Common Mistakes:</h4>
+                <h4 className="font-medium text-sm mb-3 text-red-700 dark:text-red-300">❌ Common Mistakes:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
                     <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -447,68 +464,76 @@ const PaymentMethods: React.FC = () => {
         </Card>
 
         {/* Call to Action */}
-        <Card className="bg-gradient-to-r from-green-600 to-blue-600 text-white">
-          <CardContent className="p-8 lg:p-12 text-center">
-            <h2 className="text-3xl font-bold mb-4">Need Payment Support?</h2>
-            <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-              Our support team is available 24/7 to help with payment issues, billing questions, 
-              and account management.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="text-green-600 hover:text-green-700" asChild>
-                <Link to="/contact">
-                  <RefreshCw className="mr-2 h-5 w-5" />
-                  Contact Support
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600" asChild>
-                <Link to="/settings/billing">
-                  <Receipt className="mr-2 h-5 w-5" />
-                  Manage Billing
-                </Link>
-              </Button>
+        <Card className="mb-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0">
+                <h3 className="text-xl font-semibold mb-2">Need Payment Support?</h3>
+                <p className="text-muted-foreground">
+                  Our support team is available 24/7 to help with payment issues and billing questions.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/contact">
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Contact Support
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/settings/billing">
+                    <Receipt className="mr-2 h-4 w-4" />
+                    Manage Billing
+                  </Link>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Related Articles */}
-        <div className="mt-16">
-          <h3 className="text-xl font-bold mb-6 text-center">Related Help Articles</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <RefreshCw className="h-8 w-8 text-primary mx-auto mb-3" />
-                <CardTitle className="text-lg text-center">Subscription Management</CardTitle>
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="hover:shadow-sm transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center">
+                  <RefreshCw className="h-4 w-4 text-primary mr-2" />
+                  Subscription Management
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4 text-sm">Learn how to upgrade, downgrade, or cancel subscriptions.</p>
+              <CardContent>
+                <p className="text-muted-foreground mb-3 text-sm">Learn how to upgrade, downgrade, or cancel subscriptions.</p>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/help/subscription-management">Read More</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <Receipt className="h-8 w-8 text-primary mx-auto mb-3" />
-                <CardTitle className="text-lg text-center">Billing History</CardTitle>
+            <Card className="hover:shadow-sm transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center">
+                  <Receipt className="h-4 w-4 text-primary mr-2" />
+                  Billing History
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4 text-sm">Access and download your billing statements and invoices.</p>
+              <CardContent>
+                <p className="text-muted-foreground mb-3 text-sm">Access and download your billing statements and invoices.</p>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/help/billing-history">Read More</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="p-6 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <DollarSign className="h-8 w-8 text-primary mx-auto mb-3" />
-                <CardTitle className="text-lg text-center">Refunds & Disputes</CardTitle>
+            <Card className="hover:shadow-sm transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center">
+                  <DollarSign className="h-4 w-4 text-primary mr-2" />
+                  Refunds & Disputes
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4 text-sm">Understand our refund policy and how to dispute charges.</p>
+              <CardContent>
+                <p className="text-muted-foreground mb-3 text-sm">Understand our refund policy and how to dispute charges.</p>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/help/refunds-disputes">Read More</Link>
                 </Button>
