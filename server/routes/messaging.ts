@@ -43,7 +43,7 @@ const createConversationSchema = z.object({
  *       200:
  *         description: List of conversations
  */
-router.get('/conversations', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/conversations', authenticateToken, asyncHandler(async (req: express.Request, res: express.Response) => {
   const userId = req.user!.userId;
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
@@ -68,7 +68,7 @@ router.get('/conversations', authenticateToken, asyncHandler(async (req, res) =>
     take: limit
   });
 
-  const conversationIds = userMessages.map(m => m.conversationId);
+  const conversationIds = userMessages.map((m: { conversationId: string }) => m.conversationId);
 
   if (conversationIds.length === 0) {
     return res.json({
@@ -566,5 +566,75 @@ async function checkMessagingPermissions(senderId: string, recipientId: string):
 
   return true;
 }
+
+// Delete a message by ID (only sender or admin)
+router.delete('/messages/:messageId', authenticateToken, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { messageId } = req.params;
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+
+  const message = await prisma.message.findUnique({
+    where: { id: messageId }
+  });
+
+  if (!message) {
+    throw new NotFoundError('Message not found');
+  }
+
+  if (message.senderId !== userId && userRole !== 'ADMIN') {
+    throw new AuthorizationError('Not authorized to delete this message');
+  }
+
+  await prisma.message.delete({
+    where: { id: messageId }
+  });
+
+  logger.info('Message deleted', {
+    messageId,
+    deletedBy: userId
+  });
+
+  res.json({
+    success: true,
+    message: 'Message deleted successfully'
+  });
+}));
+
+// Delete a conversation by ID (only participants or admin)
+router.delete('/conversations/:conversationId', authenticateToken, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { conversationId } = req.params;
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+
+  // Check if user is participant in conversation
+  const isParticipant = await prisma.message.findFirst({
+    where: {
+      conversationId,
+      OR: [
+        { senderId: userId },
+        { recipientId: userId }
+      ]
+    }
+  });
+
+  if (!isParticipant && userRole !== 'ADMIN') {
+    throw new AuthorizationError('Not authorized to delete this conversation');
+  }
+
+  // Delete all messages in conversation
+  await prisma.message.deleteMany({
+    where: { conversationId }
+  });
+
+  logger.info('Conversation deleted', {
+    conversationId,
+    deletedBy: userId
+  });
+
+  res.json({
+    success: true,
+    message: 'Conversation deleted successfully'
+  });
+}));
 
 export default router;

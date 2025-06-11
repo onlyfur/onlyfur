@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -114,7 +114,7 @@ const ExploreV3: React.FC = () => {
     loadExploreData();
   }, [selectedCategory, selectedType, sortBy, currentPage, searchQuery]);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/home-v2/categories', {
         headers: {
@@ -128,9 +128,9 @@ const ExploreV3: React.FC = () => {
     } catch (error) {
       console.error('Error loading categories:', error);
     }
-  };
+  }, [user]);
 
-  const loadTrendingData = async () => {
+  const loadTrendingData = useCallback(async () => {
     try {
       const response = await fetch('/api/home-v2/trending?timeframe=week&limit=20', {
         headers: {
@@ -145,9 +145,9 @@ const ExploreV3: React.FC = () => {
     } catch (error) {
       console.error('Error loading trending data:', error);
     }
-  };
+  }, [user]);
 
-  const loadRecommendations = async () => {
+  const loadRecommendations = useCallback(async () => {
     try {
       const response = await fetch('/api/home-v2/recommendations?limit=12', {
         headers: {
@@ -161,9 +161,9 @@ const ExploreV3: React.FC = () => {
     } catch (error) {
       console.error('Error loading recommendations:', error);
     }
-  };
+  }, []);
 
-  const loadExploreData = async () => {
+  const loadExploreData = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams({
@@ -208,13 +208,18 @@ const ExploreV3: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, selectedCategory, selectedType, sortBy, searchQuery, user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
     loadExploreData();
   };
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedType, sortBy, searchQuery]);
 
   const CreatorCard: React.FC<{ creator: Creator }> = ({ creator }) => (
     <Card className="group hover:shadow-lg transition-all duration-200 border-purple-200 dark:border-purple-800">

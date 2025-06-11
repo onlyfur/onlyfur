@@ -567,13 +567,195 @@ router.get('/transactions', asyncHandler(async (req, res) => {
   });
 }));
 
+import { createAuditLog, AuditActions, extractRequestInfo } from '../services/auditLog';
+
 // TODO: Add more admin endpoints
 // - Platform settings management
 // - Tier management (CRUD)
 // - Email template management
 // - System health monitoring
 // - Analytics and reporting
-// - User ban/unban functionality
-// - Bulk operations
+
+// Ban a user (soft ban by setting isActive false and lockedUntil far future)
+router.post('/users/:userId/ban', asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const adminId = req.user!.userId;
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new NotFoundError('User not found');
+
+  if (!user.isActive) {
+    return res.status(400).json({ success: false, message: 'User already banned' });
+  }
+
+  const lockedUntil = new Date();
+  lockedUntil.setFullYear(lockedUntil.getFullYear() + 100); // effectively permanent ban
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: false, lockedUntil }
+  });
+
+  await createAuditLog({
+    adminId,
+    action: AuditActions.ADMIN_ACTION,
+    resource: 'user',
+    resourceId: userId,
+    oldValues: { isActive: true, lockedUntil: null },
+    newValues: { isActive: false, lockedUntil },
+    metadata: { action: 'ban' },
+    ...extractRequestInfo(req)
+  });
+
+  res.json({ success: true, message: 'User banned successfully', user: updatedUser });
+}));
+
+// Unban a user
+router.post('/users/:userId/unban', asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const adminId = req.user!.userId;
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new NotFoundError('User not found');
+
+  if (user.isActive) {
+    return res.status(400).json({ success: false, message: 'User is not banned' });
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: true, lockedUntil: null }
+  });
+
+  await createAuditLog({
+    adminId,
+    action: AuditActions.ADMIN_ACTION,
+    resource: 'user',
+    resourceId: userId,
+    oldValues: { isActive: false },
+    newValues: { isActive: true, lockedUntil: null },
+    metadata: { action: 'unban' },
+    ...extractRequestInfo(req)
+  });
+
+  res.json({ success: true, message: 'User unbanned successfully', user: updatedUser });
+}));
+
+// Bulk ban users
+router.post('/users/bulk-ban', asyncHandler(async (req, res) => {
+  const { userIds } = req.body as { userIds: string[] };
+  const adminId = req.user!.userId;
+
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    throw new ValidationError('userIds array is required');
+  }
+
+  const lockedUntil = new Date();
+  lockedUntil.setFullYear(lockedUntil.getFullYear() + 100);
+
+  const updatedUsers = await prisma.user.updateMany({
+    where: { id: { in: userIds }, isActive: true },
+    data: { isActive: false, lockedUntil }
+  });
+
+  await createAuditLog({
+    adminId,
+    action: AuditActions.ADMIN_ACTION,
+    resource: 'user',
+    resourceId: 'bulk',
+    newValues: { isActive: false, lockedUntil },
+    metadata: { action: 'bulk-ban', userIds },
+    ...extractRequestInfo(req)
+  });
+
+  res.json({ success: true, message: `Banned ${updatedUsers.count} users` });
+}));
+
+// Bulk unban users
+router.post('/users/bulk-unban', asyncHandler(async (req, res) => {
+  const { userIds } = req.body as { userIds: string[] };
+  const adminId = req.user!.userId;
+
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    throw new ValidationError('userIds array is required');
+  }
+
+  const updatedUsers = await prisma.user.updateMany({
+    where: { id: { in: userIds }, isActive: false },
+    data: { isActive: true, lockedUntil: null }
+  });
+
+  await createAuditLog({
+    adminId,
+    action: AuditActions.ADMIN_ACTION,
+    resource: 'user',
+    resourceId: 'bulk',
+    newValues: { isActive: true, lockedUntil: null },
+    metadata: { action: 'bulk-unban', userIds },
+    ...extractRequestInfo(req)
+  });
+
+  res.json({ success: true, message: `Unbanned ${updatedUsers.count} users` });
+}));
+
+// Set or unset VIP status for a user
+router.post('/users/:userId/vip', asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { isVip } = req.body as { isVip: boolean };
+  const adminId = req.user!.userId;
+
+  if (typeof isVip !== 'boolean') {
+    throw new ValidationError('isVip boolean is required');
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new NotFoundError('User not found');
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { isVip },
+    select: {
+      id: true,
+      username: true,
+      displayName: true,
+      isVip: true
+    }
+  });
+
+  await createAuditLog({
+    adminId,
+    action: AuditActions.ADMIN_ACTION,
+    resource: 'user',
+    resourceId: userId,
+    oldValues: { isVip: user.isVip },
+    newValues: { isVip },
+    metadata: { action: 'set-vip' },
+    ...extractRequestInfo(req)
+  });
+
+  res.json({ success: true, message: `User VIP status set to ${isVip}`, user: updatedUser });
+}));
+
+// Delete content (post)
+router.delete('/content/:contentId', asyncHandler(async (req, res) => {
+  const { contentId } = req.params;
+  const adminId = req.user!.userId;
+
+  const content = await prisma.content.findUnique({ where: { id: contentId } });
+  if (!content) throw new NotFoundError('Content not found');
+
+  await prisma.content.delete({ where: { id: contentId } });
+
+  await createAuditLog({
+    adminId,
+    action: AuditActions.ADMIN_ACTION,
+    resource: 'content',
+    resourceId: contentId,
+    metadata: { action: 'delete' },
+    ...extractRequestInfo(req)
+  });
+
+  res.json({ success: true, message: 'Content deleted successfully' });
+}));
 
 export default router;
