@@ -33,6 +33,7 @@ import messagingRoutes from './routes/messaging';
 import adminRoutes from './routes/admin';
 import paymentRoutes from './routes/payments';
 import uploadBlobRoutes from './routes/upload-blob';
+import creatorPagesRoutes from './routes/creatorPages';
 
 // Import services
 import stripeService from './services/stripe-production';
@@ -120,6 +121,7 @@ app.use('/api/messages', messagingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/upload', uploadBlobRoutes);
+app.use('/api/creator', creatorPagesRoutes);
 
 // Stripe webhook handling (raw body needed)
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {

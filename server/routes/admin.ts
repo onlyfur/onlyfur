@@ -1,9 +1,10 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../services/database';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 import { asyncHandler, ValidationError, NotFoundError } from '../middleware/errorHandler';
 import { logger } from '../middleware/logger';
+import { createAuditLog, AuditActions, extractRequestInfo } from '../services/auditLog';
 
 const router = express.Router();
 
@@ -57,7 +58,7 @@ const moderateContentSchema = z.object({
  *                     activeSubscriptions:
  *                       type: integer
  */
-router.get('/dashboard', asyncHandler(async (req, res) => {
+router.get('/dashboard', asyncHandler(async (req: Request, res: Response) => {
   const [
     totalUsers,
     totalCreators,
@@ -154,7 +155,7 @@ router.get('/dashboard', asyncHandler(async (req, res) => {
  *       200:
  *         description: List of users
  */
-router.get('/users', asyncHandler(async (req, res) => {
+router.get('/users', asyncHandler(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
   const offset = (page - 1) * limit;
@@ -248,7 +249,7 @@ router.get('/users', asyncHandler(async (req, res) => {
  *       200:
  *         description: User updated successfully
  */
-router.put('/users/:userId', asyncHandler(async (req, res) => {
+router.put('/users/:userId', asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.params;
   const validatedData = updateUserSchema.parse(req.body);
 
@@ -316,7 +317,7 @@ router.put('/users/:userId', asyncHandler(async (req, res) => {
  *       200:
  *         description: Content list for moderation
  */
-router.get('/content', asyncHandler(async (req, res) => {
+router.get('/content', asyncHandler(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
   const offset = (page - 1) * limit;
@@ -387,7 +388,7 @@ router.get('/content', asyncHandler(async (req, res) => {
  *       200:
  *         description: Content moderated successfully
  */
-router.put('/content/:contentId/moderate', asyncHandler(async (req, res) => {
+router.put('/content/:contentId/moderate', asyncHandler(async (req: Request, res: Response) => {
   const { contentId } = req.params;
   const validatedData = moderateContentSchema.parse(req.body);
   const { status, reason } = validatedData;
@@ -449,7 +450,7 @@ router.put('/content/:contentId/moderate', asyncHandler(async (req, res) => {
  *       200:
  *         description: List of subscriptions
  */
-router.get('/subscriptions', asyncHandler(async (req, res) => {
+router.get('/subscriptions', asyncHandler(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
   const offset = (page - 1) * limit;
@@ -524,7 +525,7 @@ router.get('/subscriptions', asyncHandler(async (req, res) => {
  *       200:
  *         description: List of transactions
  */
-router.get('/transactions', asyncHandler(async (req, res) => {
+router.get('/transactions', asyncHandler(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
   const offset = (page - 1) * limit;
@@ -567,8 +568,6 @@ router.get('/transactions', asyncHandler(async (req, res) => {
   });
 }));
 
-import { createAuditLog, AuditActions, extractRequestInfo } from '../services/auditLog';
-
 // TODO: Add more admin endpoints
 // - Platform settings management
 // - Tier management (CRUD)
@@ -577,7 +576,7 @@ import { createAuditLog, AuditActions, extractRequestInfo } from '../services/au
 // - Analytics and reporting
 
 // Ban a user (soft ban by setting isActive false and lockedUntil far future)
-router.post('/users/:userId/ban', asyncHandler(async (req, res) => {
+router.post('/users/:userId/ban', asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.params;
   const adminId = req.user!.userId;
 
@@ -611,7 +610,7 @@ router.post('/users/:userId/ban', asyncHandler(async (req, res) => {
 }));
 
 // Unban a user
-router.post('/users/:userId/unban', asyncHandler(async (req, res) => {
+router.post('/users/:userId/unban', asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.params;
   const adminId = req.user!.userId;
 
@@ -642,7 +641,7 @@ router.post('/users/:userId/unban', asyncHandler(async (req, res) => {
 }));
 
 // Bulk ban users
-router.post('/users/bulk-ban', asyncHandler(async (req, res) => {
+router.post('/users/bulk-ban', asyncHandler(async (req: Request, res: Response) => {
   const { userIds } = req.body as { userIds: string[] };
   const adminId = req.user!.userId;
 
@@ -672,7 +671,7 @@ router.post('/users/bulk-ban', asyncHandler(async (req, res) => {
 }));
 
 // Bulk unban users
-router.post('/users/bulk-unban', asyncHandler(async (req, res) => {
+router.post('/users/bulk-unban', asyncHandler(async (req: Request, res: Response) => {
   const { userIds } = req.body as { userIds: string[] };
   const adminId = req.user!.userId;
 
@@ -699,7 +698,7 @@ router.post('/users/bulk-unban', asyncHandler(async (req, res) => {
 }));
 
 // Set or unset VIP status for a user
-router.post('/users/:userId/vip', asyncHandler(async (req, res) => {
+router.post('/users/:userId/vip', asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { isVip } = req.body as { isVip: boolean };
   const adminId = req.user!.userId;
@@ -737,7 +736,7 @@ router.post('/users/:userId/vip', asyncHandler(async (req, res) => {
 }));
 
 // Delete content (post)
-router.delete('/content/:contentId', asyncHandler(async (req, res) => {
+router.delete('/content/:contentId', asyncHandler(async (req: Request, res: Response) => {
   const { contentId } = req.params;
   const adminId = req.user!.userId;
 

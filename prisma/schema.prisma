@@ -15,6 +15,7 @@ model User {
   id          String   @id @default(cuid())
   email       String   @unique
   username    String   @unique
+  customUrl   String?  @unique
   displayName String
   avatar      String?
   role        UserRole @default(SUBSCRIBER)

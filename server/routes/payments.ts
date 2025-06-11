@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../services/database';
 import { authenticateToken } from '../middleware/auth';
@@ -9,8 +9,15 @@ import {
   createSubscription, 
   createOrRetrieveCustomer, 
   verifyWebhookSignature,
-  handleWebhookEvent 
+  handleWebhookEvent,
+  createProduct,
+  createPrice,
+  getStripeInstance
 } from '../services/stripe';
+import { createAuditLog } from '../services/auditLog';
+import type { Stripe } from 'stripe';
+
+const stripe = getStripeInstance();
 
 const router = express.Router();
 
@@ -64,7 +71,7 @@ const createSubscriptionSchema = z.object({
  *                 paymentIntentId:
  *                   type: string
  */
-router.post('/intent', authenticateToken, asyncHandler(async (req, res) => {
+router.post('/intent', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createPaymentIntentSchema.parse(req.body);
   const { amount, currency, description, metadata } = validatedData;
   const userId = req.user!.userId;
@@ -154,49 +161,201 @@ router.post('/intent', authenticateToken, asyncHandler(async (req, res) => {
  *       400:
  *         description: Invalid tier or payment setup
  */
-router.post('/subscription', authenticateToken, asyncHandler(async (req, res) => {
+router.post('/subscription', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createSubscriptionSchema.parse(req.body);
   const { tierId } = validatedData;
   const userId = req.user!.userId;
 
   // Get tier details
   const tier = await prisma.platformSubscriptionTier.findUnique({
-    where: { id: tierId }
+    where: { id: tierId },
+    include: {
+      subscriptions: {
+        where: { userId, status: 'ACTIVE' },
+        take: 1
+      }
+    }
   });
 
   if (!tier || !tier.isActive) {
     throw new PaymentError('Invalid subscription tier');
   }
 
-  // For free tiers, handle directly without Stripe
-  if (tier.price === 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'Use subscription endpoint for free tiers'
-    });
+  // Check for existing active subscription
+  if (tier.subscriptions.length > 0) {
+    throw new PaymentError('User already has an active subscription to this tier');
   }
 
   // Get user details
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, displayName: true }
+    select: {
+      email: true,
+      displayName: true,
+      stripeCustomerId: true
+    }
   });
 
   if (!user) {
     throw new PaymentError('User not found');
   }
 
-  // TODO: Implement Stripe subscription creation
-  // This would involve:
-  // 1. Create or retrieve Stripe customer
-  // 2. Create Stripe price/product if needed
-  // 3. Create Stripe subscription
-  // 4. Return client_secret for payment confirmation
+  // Handle free tiers
+  if (tier.price === 0) {
+    const subscription = await prisma.subscription.create({
+      data: {
+        userId,
+        tierId,
+        status: 'ACTIVE',
+        currentPeriodStart: new Date(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      }
+    });
 
-  res.status(501).json({
-    success: false,
-    message: 'Stripe subscription implementation pending'
-  });
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionStatus: 'ACTIVE',
+        subscriptionTier: tier.name
+      }
+    });
+
+    await createAuditLog({
+      userId,
+      action: 'SUBSCRIPTION_CREATE',
+      resource: 'subscription',
+      resourceId: subscription.id,
+      metadata: {
+        tierId,
+        tierName: tier.name,
+        price: 0
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: 'Free subscription activated successfully',
+      subscription
+    });
+  }
+
+  // Handle paid tiers
+  if (!stripe) {
+    throw new PaymentError('Stripe not initialized');
+  }
+
+  try {
+    // Create or retrieve Stripe customer
+    let stripeCustomer;
+    if (user.stripeCustomerId) {
+      stripeCustomer = await stripe.customers.retrieve(user.stripeCustomerId);
+    } else {
+      stripeCustomer = await createOrRetrieveCustomer(
+        user.email,
+        user.displayName,
+        userId
+      );
+
+      // Save Stripe customer ID
+      await prisma.user.update({
+        where: { id: userId },
+        data: { stripeCustomerId: stripeCustomer.id }
+      });
+    }
+
+    // Create or retrieve Stripe product and price
+    let stripePrice = await stripe.prices.list({
+      lookup_keys: [`tier_${tierId}`],
+      limit: 1
+    }).then(res => res.data[0]);
+
+    if (!stripePrice) {
+      const product = await createProduct(
+        tier.name,
+        tier.description
+      );
+
+      stripePrice = await createPrice(
+        product.id,
+        tier.price,
+        tier.currency.toLowerCase(),
+        tier.billingPeriod.toLowerCase() as 'month' | 'year'
+      );
+
+      // Update price with lookup key
+      await stripe.prices.update(stripePrice.id, {
+        lookup_key: `tier_${tierId}`
+      });
+    }
+
+    // Create Stripe subscription
+    const subscription = await createSubscription(
+      stripeCustomer.id,
+      stripePrice.id,
+      {
+        tierId,
+        userId,
+        tierName: tier.name
+      }
+    );
+
+    // Create platform subscription record
+    const platformSubscription = await prisma.subscription.create({
+      data: {
+        userId,
+        tierId,
+        status: 'ACTIVE',
+        currentPeriodStart: new Date(subscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      }
+    });
+
+    // Create transaction record
+    const transaction = await prisma.transaction.create({
+      data: {
+        userId,
+        subscriptionId: platformSubscription.id,
+        amount: tier.price,
+        currency: tier.currency,
+        type: 'SUBSCRIPTION',
+        status: 'PENDING',
+        paymentMethodType: 'STRIPE',
+        description: `Subscription to ${tier.name}`,
+        fees: 0,
+        netAmount: tier.price
+      }
+    });
+
+    await createAuditLog({
+      userId,
+      action: 'SUBSCRIPTION_CREATE',
+      resource: 'subscription',
+      resourceId: platformSubscription.id,
+      metadata: {
+        tierId,
+        tierName: tier.name,
+        price: tier.price,
+        stripeSubscriptionId: subscription.id
+      }
+    });
+
+    // Extract client secret safely
+    const latestInvoice = subscription.latest_invoice as Stripe.Invoice;
+    const clientSecret = typeof latestInvoice.payment_intent === 'object' 
+      ? latestInvoice.payment_intent?.client_secret 
+      : null;
+
+    res.json({
+      success: true,
+      message: 'Subscription created successfully',
+      clientSecret,
+      subscription: platformSubscription,
+      transaction
+    });
+  } catch (error) {
+    logger.error('Failed to create subscription:', error);
+    throw new PaymentError('Failed to create subscription');
+  }
 }));
 
 /**
@@ -217,7 +376,7 @@ router.post('/subscription', authenticateToken, asyncHandler(async (req, res) =>
  *       400:
  *         description: Invalid webhook
  */
-router.post('/webhooks/stripe', asyncHandler(async (req, res) => {
+router.post('/webhooks/stripe', asyncHandler(async (req: Request, res: Response) => {
   const signature = req.headers['stripe-signature'] as string;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -273,7 +432,7 @@ router.post('/webhooks/stripe', asyncHandler(async (req, res) => {
  *       200:
  *         description: Transaction history
  */
-router.get('/transactions', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/transactions', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
@@ -323,7 +482,7 @@ router.get('/transactions', authenticateToken, asyncHandler(async (req, res) => 
  *       501:
  *         description: Not implemented
  */
-router.get('/methods', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/methods', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   // TODO: Implement payment methods management
   res.status(501).json({
     success: false,
