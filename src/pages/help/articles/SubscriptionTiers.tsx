@@ -511,7 +511,6 @@ const SubscriptionTiers: React.FC = () => {
                 </Button>
               </CardContent>
             </Card>
-          </div>
         </div>
       </div>
     </div>
