@@ -178,7 +178,7 @@ const SubscriptionTiers: React.FC = () => {
 
   const getFeatureValue = (value: any) => {
     if (typeof value === 'boolean') {
-      return value ? <CheckCircle className="h-4 w-4 text-green-500" /> : <span className="text-gray-400">—</span>;
+      return value ? <CheckCircle className="h-4 w-4 text-green-500" /> : <span className="text-gray-400">-</span>;
     }
     return <span className="text-sm">{value}</span>;
   };
