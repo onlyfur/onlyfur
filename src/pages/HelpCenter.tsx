@@ -38,14 +38,14 @@ const HelpCenter: React.FC = () => {
       title: 'Safety & Privacy',
       description: 'Stay safe and protect your privacy',
       color: 'text-purple-500',
-      articles: 6
+      articles: 8
     },
     {
-      icon: Users,
-      title: 'Creator Resources',
-      description: 'Tools and tips for content creators',
-      color: 'text-orange-500',
-      articles: 15
+      icon: Search,
+      title: 'Search Features',
+      description: 'Find content and creators effectively',
+      color: 'text-indigo-500',
+      articles: 4
     },
     {
       icon: MessageCircle,
@@ -101,6 +101,24 @@ const HelpCenter: React.FC = () => {
       ]
     },
     {
+      id: 'search',
+      category: 'Search Features',
+      questions: [
+        {
+          question: 'What is Neural Search and how does it work?',
+          answer: 'Neural Search is our AI-powered search technology that understands the meaning behind your queries, not just keywords. It uses advanced machine learning to deliver more relevant results based on context and intent.'
+        },
+        {
+          question: 'How do I use advanced search filters?',
+          answer: 'Click the filter icon in the search bar to access advanced filters. You can filter by content type, creator category, date range, and more to refine your search results.'
+        },
+        {
+          question: 'Can I search using an image?',
+          answer: 'Yes! Our Visual Search feature allows you to upload an image to find similar content or creators with matching styles. Simply switch to "Visual" search mode in the search modal.'
+        }
+      ]
+    },
+    {
       id: 'creators',
       category: 'Creator Resources',
       questions: [
@@ -126,7 +144,11 @@ const HelpCenter: React.FC = () => {
     'Community guidelines and safety',
     'Payment and withdrawal options',
     'Content uploading best practices',
-    'Managing your subscribers'
+    'Managing your subscribers',
+    'Using Neural Search features',
+    'Advanced search techniques',
+    'Privacy settings and content visibility',
+    'Two-factor authentication setup'
   ];
 
   return (

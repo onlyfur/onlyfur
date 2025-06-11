@@ -25,7 +25,6 @@ const Footer: React.FC = () => {
       { name: 'DMCA', href: '/dmca' },
     ],
     creators: [
-      { name: 'Creator Resources', href: '/creator-resources' },
       { name: 'Best Practices', href: '/best-practices' },
       { name: 'Analytics Guide', href: '/analytics-guide' },
       { name: 'Tax Information', href: '/tax-info' },

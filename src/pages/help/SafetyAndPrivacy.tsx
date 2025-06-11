@@ -372,10 +372,28 @@ const SafetyAndPrivacy: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-4">
+            <Link to="/help/articles/PrivacySettings">
+              <Button variant="outline" className="w-full justify-start">
+                <Lock className="w-4 h-4 mr-2" />
+                Privacy Settings Guide
+              </Button>
+            </Link>
+            <Link to="/help/articles/TwoFactorAuthentication">
+              <Button variant="outline" className="w-full justify-start">
+                <Shield className="w-4 h-4 mr-2" />
+                Two-Factor Authentication
+              </Button>
+            </Link>
             <Link to="/guidelines">
               <Button variant="outline" className="w-full justify-start">
                 <Users className="w-4 h-4 mr-2" />
                 Community Guidelines
+              </Button>
+            </Link>
+            <Link to="/help/articles/ContentPrivacyLevels">
+              <Button variant="outline" className="w-full justify-start">
+                <Eye className="w-4 h-4 mr-2" />
+                Content Privacy Levels
               </Button>
             </Link>
             <Link to="/privacy">
@@ -388,6 +406,12 @@ const SafetyAndPrivacy: React.FC = () => {
               <Button variant="outline" className="w-full justify-start">
                 <FileText className="w-4 h-4 mr-2" />
                 Terms of Service
+              </Button>
+            </Link>
+            <Link to="/help/articles/ReportUserContent">
+              <Button variant="outline" className="w-full justify-start">
+                <Flag className="w-4 h-4 mr-2" />
+                How to Report Content
               </Button>
             </Link>
             <Link to="/contact">
