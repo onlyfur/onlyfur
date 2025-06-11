@@ -252,7 +252,7 @@ const SubscriptionTiers: React.FC = () => {
                     
                     <div className="space-y-4">
                       <div>
-                        <h4 className="text-sm font-medium mb-2 text-green-700 dark:text-green-300">✅ Included Features:</h4>
+                        <h4 className="text-sm font-medium mb-2 text-green-700 dark:text-green-300">Included Features:</h4>
                         <ul className="space-y-1">
                           {tier.features.map((feature, idx) => (
                             <li key={idx} className="flex items-start text-sm">
@@ -265,7 +265,7 @@ const SubscriptionTiers: React.FC = () => {
                       
                       {tier.limitations.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">⚠️ Limitations:</h4>
+                          <h4 className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Limitations:</h4>
                           <ul className="space-y-1">
                             {tier.limitations.map((limitation, idx) => (
                               <li key={idx} className="flex items-start text-sm text-muted-foreground">
@@ -323,7 +323,7 @@ const SubscriptionTiers: React.FC = () => {
                     
                     <div className="space-y-4">
                       <div>
-                        <h4 className="text-sm font-medium mb-2 text-green-700 dark:text-green-300">✅ Creator Tools:</h4>
+                        <h4 className="text-sm font-medium mb-2 text-green-700 dark:text-green-300">Creator Tools:</h4>
                         <ul className="space-y-1">
                           {tier.features.map((feature, idx) => (
                             <li key={idx} className="flex items-start text-sm">
@@ -336,7 +336,7 @@ const SubscriptionTiers: React.FC = () => {
                       
                       {tier.limitations.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">⚠️ Limitations:</h4>
+                          <h4 className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Limitations:</h4>
                           <ul className="space-y-1">
                             {tier.limitations.map((limitation, idx) => (
                               <li key={idx} className="flex items-start text-sm text-muted-foreground">
