@@ -20,6 +20,29 @@ import { apiService } from '../services/api';
 import { Button } from '../components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 
+const LoadingSpinner: React.FC<{ size?: string }> = ({ size = '6' }) => (
+  <svg
+    className={`animate-spin h-${size} w-${size} text-gray-600`}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+    />
+  </svg>
+);
+
 interface Creator {
   id: string;
   username: string;
@@ -83,7 +106,7 @@ const CreatorPage: React.FC = () => {
   const fetchCreatorPage = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/creator/${username}`);
+      const response = await apiService.get(`/creator/${username}`);
       setData(response.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load creator page');
@@ -101,7 +124,7 @@ const CreatorPage: React.FC = () => {
     try {
       setSubscribing(true);
       // Implement subscription logic here
-      await api.post(`/subscriptions/subscribe`, {
+      await apiService.post(`/subscriptions/subscribe`, {
         creatorId: data?.creator.id,
         tier: 'BASIC'
       });
@@ -139,7 +162,7 @@ const CreatorPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="12" />
       </div>
     );
   }
@@ -224,10 +247,10 @@ const CreatorPage: React.FC = () => {
                 ) : (
                   <Button
                     onClick={handleSubscribe}
-                    loading={subscribing}
+                    disabled={subscribing}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
-                    Subscribe
+                    {subscribing ? 'Subscribing...' : 'Subscribe'}
                   </Button>
                 )}
                 <Button variant="outline" size="sm">

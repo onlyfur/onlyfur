@@ -3,12 +3,14 @@ import multer from 'multer';
 import { authenticationService } from '../services/authenticationService';
 import { blobService } from '../services/blob';
 import { authenticateToken } from '../middleware/auth';
-import { prisma } from '../services/database'; // Added import for prisma
+import { prisma } from '../services/database';
 import bcrypt from 'bcryptjs';
 
-// Configure multer for memory storage
+const router = Router();
 const storage = multer.memoryStorage();
-const loginHandler = async (req: Request, res: Response) => {
+
+// Routes
+router.post('/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -88,4 +90,63 @@ const loginHandler = async (req: Request, res: Response) => {
       error: error.message
     });
   }
-};
+});
+
+router.post('/register', async (req: Request, res: Response) => {
+  try {
+    const result = await authenticationService.register(req.body);
+    res.json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.get('/me', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: 'User not authenticated'
+      });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        displayName: true,
+        role: true,
+        avatar: true,
+        bio: true,
+        isVerified: true,
+        createdAt: true
+      }
+    });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      user
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+export default router;
