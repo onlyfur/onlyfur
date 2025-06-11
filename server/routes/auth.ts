@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
@@ -19,6 +19,7 @@ import {
 } from '../middleware/errorHandler';
 import { logger, logSecurityEvent } from '../middleware/logger';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../services/email';
+import { blobService } from '../services/blob';
 
 const router = express.Router();
 
@@ -659,11 +660,41 @@ router.get('/profile', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Update user profile
-router.put('/profile', authenticateToken, asyncHandler(async (req, res) => {
-  const updateData = req.body;
+router.put('/profile', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+  const updateData = req.body as Record<string, unknown>;
+  let avatarUpdate: string | undefined;
   
-  // Remove sensitive fields that shouldn't be updated via this endpoint
-  const { password, role, id, email, createdAt, updatedAt, ...allowedUpdates } = updateData;
+  // Handle avatar upload/delete
+  if (typeof updateData.avatar === 'string') {
+    const oldUser = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: { avatar: true }
+    });
+
+    // Delete old avatar if it exists in blob storage
+    if (oldUser?.avatar?.startsWith('blob:')) {
+      await blobService.deleteAvatar(oldUser.avatar);
+    }
+
+    // Handle new avatar upload
+    if (updateData.avatar.startsWith('data:image')) {
+      const matches = updateData.avatar.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (matches) {
+        const [_, type, data] = matches;
+        const buffer = Buffer.from(data, 'base64');
+        avatarUpdate = await blobService.uploadAvatar(req.user!.userId, buffer, `image/${type}`);
+      }
+    } else if (updateData.avatar) {
+      avatarUpdate = updateData.avatar as string;
+    }
+  }
+
+  // Prepare safe updates
+  const { password, role, id, email, createdAt, updatedAt, avatar, ...allowedUpdates } = updateData;
+  const updates = {
+    ...allowedUpdates,
+    ...(avatarUpdate ? { avatar: avatarUpdate } : {})
+  };
   
   try {
     const updatedUser = await prisma.user.update({
