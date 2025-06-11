@@ -77,11 +77,8 @@ const Login: React.FC = () => {
         description: "You've been successfully signed in.",
       });
       
-      // Automatic redirect with brief delay for feedback
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 500);
-      
+      // Immediate redirect after successful login
+      navigate('/dashboard');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Invalid email or password. Please try again.';
       setError(errorMessage);

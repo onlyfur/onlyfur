@@ -1,8 +1,11 @@
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import * as crypto from 'crypto';
 import { prisma } from './database';
 import { logger } from '../middleware/logger';
 import { createAuditLog } from './auditLog';
+import { emailService } from './emailService';
+import { googleAuthService } from './googleAuth';
 
 export interface AuthUser {
   id: string;
@@ -40,8 +43,14 @@ export interface AuthResponse {
   success: boolean;
   user?: AuthUser;
   token?: string;
+  refreshToken?: string;
   message?: string;
   error?: string;
+}
+
+export interface TokenPair {
+  accessToken: string;
+  refreshToken: string;
 }
 
 /**
@@ -268,22 +277,27 @@ export class AuthenticationService {
   /**
    * Google OAuth login/register
    */
-  async googleAuth(googleData: {
-    googleId: string;
-    email: string;
-    name: string;
-    picture?: string;
-  }): Promise<AuthResponse> {
+  async googleAuth(credential: string, userType?: 'creator' | 'subscriber'): Promise<AuthResponse> {
     try {
+      // Verify Google credential
+      const googleUserInfo = await googleAuthService.verifyCredential(credential);
+      
+      if (!googleUserInfo) {
+        return {
+          success: false,
+          error: 'Invalid Google credential'
+        };
+      }
+
       // Check if user exists with Google ID
       let user = await prisma.user.findUnique({
-        where: { googleId: googleData.googleId }
+        where: { googleId: googleUserInfo.id }
       });
 
       if (!user) {
         // Check if user exists with same email
         user = await prisma.user.findUnique({
-          where: { email: googleData.email }
+          where: { email: googleUserInfo.email }
         });
 
         if (user) {
@@ -291,7 +305,7 @@ export class AuthenticationService {
           user = await prisma.user.update({
             where: { id: user.id },
             data: {
-              googleId: googleData.googleId,
+              googleId: googleUserInfo.id,
               authProvider: 'GOOGLE',
               isEmailVerified: true,
               lastLoginAt: new Date()
@@ -299,23 +313,29 @@ export class AuthenticationService {
           });
         } else {
           // Create new user
-          const username = await this.generateUniqueUsername(googleData.name, googleData.email);
+          const username = await this.generateUniqueUsername(
+            googleUserInfo.name, 
+            googleUserInfo.email
+          );
           
           user = await prisma.user.create({
             data: {
-              email: googleData.email,
+              email: googleUserInfo.email,
               username,
-              displayName: googleData.name,
-              googleId: googleData.googleId,
+              displayName: googleAuthService.getDisplayName(googleUserInfo),
+              googleId: googleUserInfo.id,
               authProvider: 'GOOGLE',
-              avatar: googleData.picture,
-              role: 'SUBSCRIBER',
+              avatar: googleUserInfo.picture,
+              role: userType === 'creator' ? 'CREATOR' : 'SUBSCRIBER',
               isActive: true,
               isEmailVerified: true,
               subscriptionStatus: 'FREE',
               lastLoginAt: new Date()
             }
           });
+
+          // Send welcome email
+          await emailService.sendWelcomeEmail(user.email, user.displayName);
         }
       } else {
         // Update last login for existing Google user
@@ -329,8 +349,8 @@ export class AuthenticationService {
         });
       }
 
-      // Generate JWT token
-      const token = this.generateToken(user);
+      // Generate tokens
+      const tokens = this.generateTokenPair(user);
 
       // Create audit log
       await createAuditLog({
@@ -339,33 +359,441 @@ export class AuthenticationService {
         resource: 'auth',
         resourceId: 'google_login',
         metadata: {
-          googleId: googleData.googleId,
-          email: googleData.email
+          googleId: googleUserInfo.id,
+          email: googleUserInfo.email
         }
       });
 
       logger.info('Google authentication successful', {
         userId: user.id,
         email: user.email,
-        googleId: googleData.googleId
+        googleId: googleUserInfo.id
       });
 
       return {
         success: true,
         user: this.mapUserToAuthUser(user),
-        token
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken
       };
 
     } catch (error: any) {
       logger.error('Google authentication failed', {
-        googleId: googleData.googleId,
-        email: googleData.email,
         error: error.message
       });
 
       return {
         success: false,
         error: 'Google authentication failed. Please try again.'
+      };
+    }
+  }
+
+  /**
+   * Send password reset email
+   */
+  async sendPasswordResetEmail(email: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email }
+      });
+
+      if (!user) {
+        // Don't reveal if email exists for security
+        return {
+          success: true,
+          message: 'If an account with that email exists, a password reset link has been sent.'
+        };
+      }
+
+      // Generate reset token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      // Save reset token to database
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordResetToken: resetToken,
+          passwordResetExpires: resetTokenExpires
+        }
+      });
+
+      // Send reset email
+      const emailSent = await emailService.sendPasswordResetEmail(
+        user.email,
+        resetToken,
+        user.displayName
+      );
+
+      if (!emailSent) {
+        return {
+          success: false,
+          error: 'Failed to send password reset email. Please try again.'
+        };
+      }
+
+      // Create audit log
+      await createAuditLog({
+        userId: user.id,
+        action: 'PASSWORD_RESET_REQUESTED' as any,
+        resource: 'auth',
+        resourceId: user.id,
+        metadata: {
+          email: user.email
+        }
+      });
+
+      logger.info('Password reset email sent', {
+        userId: user.id,
+        email: user.email
+      });
+
+      return {
+        success: true,
+        message: 'If an account with that email exists, a password reset link has been sent.'
+      };
+
+    } catch (error: any) {
+      logger.error('Password reset email failed', {
+        email,
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: 'Failed to send password reset email. Please try again.'
+      };
+    }
+  }
+
+  /**
+   * Reset password with token
+   */
+  async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      // Find user with valid reset token
+      const user = await prisma.user.findFirst({
+        where: {
+          passwordResetToken: token,
+          passwordResetExpires: {
+            gt: new Date()
+          }
+        }
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          error: 'Invalid or expired reset token'
+        };
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      // Update password and clear reset token
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          passwordResetToken: null,
+          passwordResetExpires: null,
+          loginAttempts: 0,
+          lockedUntil: null,
+          updatedAt: new Date()
+        }
+      });
+
+      // Create audit log
+      await createAuditLog({
+        userId: user.id,
+        action: 'PASSWORD_RESET_COMPLETED' as any,
+        resource: 'auth',
+        resourceId: user.id,
+        metadata: {
+          email: user.email
+        }
+      });
+
+      logger.info('Password reset completed', {
+        userId: user.id,
+        email: user.email
+      });
+
+      return {
+        success: true,
+        message: 'Password has been reset successfully'
+      };
+
+    } catch (error: any) {
+      logger.error('Password reset failed', {
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: 'Failed to reset password. Please try again.'
+      };
+    }
+  }
+
+  /**
+   * Send email verification
+   */
+  async sendVerificationEmail(userId: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          error: 'User not found'
+        };
+      }
+
+      if (user.isEmailVerified) {
+        return {
+          success: false,
+          error: 'Email is already verified'
+        };
+      }
+
+      // Generate verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      // Save verification token to database
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          emailVerificationToken: verificationToken,
+          emailVerifiedAt: verificationExpires
+        }
+      });
+
+      // Send verification email
+      const emailSent = await emailService.sendVerificationEmail(
+        user.email,
+        verificationToken,
+        user.displayName
+      );
+
+      if (!emailSent) {
+        return {
+          success: false,
+          error: 'Failed to send verification email. Please try again.'
+        };
+      }
+
+      logger.info('Verification email sent', {
+        userId: user.id,
+        email: user.email
+      });
+
+      return {
+        success: true,
+        message: 'Verification email sent successfully'
+      };
+
+    } catch (error: any) {
+      logger.error('Send verification email failed', {
+        userId,
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: 'Failed to send verification email. Please try again.'
+      };
+    }
+  }
+
+  /**
+   * Verify email with token
+   */
+  async verifyEmail(token: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      // Find user with valid verification token
+      const user = await prisma.user.findFirst({
+        where: {
+          emailVerificationToken: token,
+          emailVerifiedAt: {
+            gt: new Date()
+          }
+        }
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          error: 'Invalid or expired verification token'
+        };
+      }
+
+      // Update user as verified
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          isEmailVerified: true,
+          emailVerificationToken: null,
+          emailVerifiedAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      // Create audit log
+      await createAuditLog({
+        userId: user.id,
+        action: 'EMAIL_VERIFIED' as any,
+        resource: 'auth',
+        resourceId: user.id,
+        metadata: {
+          email: user.email
+        }
+      });
+
+      // Send welcome email
+      await emailService.sendWelcomeEmail(user.email, user.displayName);
+
+      logger.info('Email verified successfully', {
+        userId: user.id,
+        email: user.email
+      });
+
+      return {
+        success: true,
+        message: 'Email verified successfully'
+      };
+
+    } catch (error: any) {
+      logger.error('Email verification failed', {
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: 'Failed to verify email. Please try again.'
+      };
+    }
+  }
+
+  /**
+   * Refresh authentication tokens
+   */
+  async refreshTokens(refreshToken: string): Promise<AuthResponse> {
+    try {
+      // Verify refresh token
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as any;
+      
+      // Get user from database
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId }
+      });
+
+      if (!user || !user.isActive) {
+        return {
+          success: false,
+          error: 'Invalid refresh token'
+        };
+      }
+
+      // Generate new token pair
+      const tokens = this.generateTokenPair(user);
+
+      // Create audit log
+      await createAuditLog({
+        userId: user.id,
+        action: 'TOKEN_REFRESH' as any,
+        resource: 'auth',
+        resourceId: user.id,
+        metadata: {
+          email: user.email
+        }
+      });
+
+      logger.info('Tokens refreshed successfully', {
+        userId: user.id,
+        email: user.email
+      });
+
+      return {
+        success: true,
+        user: this.mapUserToAuthUser(user),
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken
+      };
+
+    } catch (error: any) {
+      logger.error('Token refresh failed', {
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: 'Invalid refresh token'
+      };
+    }
+  }
+
+  /**
+   * Logout user and invalidate sessions
+   */
+  async logout(userId: string, sessionToken?: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      // Invalidate specific session if provided
+      if (sessionToken) {
+        await prisma.userSession.updateMany({
+          where: {
+            userId,
+            sessionToken
+          },
+          data: {
+            isActive: false
+          }
+        });
+      } else {
+        // Invalidate all sessions for user
+        await prisma.userSession.updateMany({
+          where: { userId },
+          data: {
+            isActive: false
+          }
+        });
+      }
+
+      // Create audit log
+      await createAuditLog({
+        userId,
+        action: 'LOGOUT' as any,
+        resource: 'auth',
+        resourceId: userId,
+        metadata: {
+          sessionToken: sessionToken ? 'specific' : 'all'
+        }
+      });
+
+      logger.info('User logged out successfully', {
+        userId,
+        sessionType: sessionToken ? 'specific' : 'all'
+      });
+
+      return {
+        success: true,
+        message: 'Logged out successfully'
+      };
+
+    } catch (error: any) {
+      logger.error('Logout failed', {
+        userId,
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: 'Logout failed. Please try again.'
       };
     }
   }
@@ -588,8 +1016,28 @@ export class AuthenticationService {
         role: user.role
       },
       process.env.JWT_SECRET!,
+      { expiresIn: '15m' }
+    );
+  }
+
+  private generateRefreshToken(user: any): string {
+    return jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role
+      },
+      process.env.JWT_REFRESH_SECRET!,
       { expiresIn: '7d' }
     );
+  }
+
+  private generateTokenPair(user: any): TokenPair {
+    return {
+      accessToken: this.generateToken(user),
+      refreshToken: this.generateRefreshToken(user)
+    };
   }
 
   private async generateUniqueUsername(name: string, email: string): Promise<string> {

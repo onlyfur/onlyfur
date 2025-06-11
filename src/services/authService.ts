@@ -327,14 +327,10 @@ class AuthService {
 
   // Session management
   setSession(token: string, remember: boolean = false): void {
-    const storage = remember ? localStorage : sessionStorage;
-    
-    storage.setItem(TOKEN_KEY, token);
+    // Always store in both storages to prevent race conditions
+    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(REMEMBER_KEY, remember.toString());
-    
-    // Remove from the other storage type
-    const otherStorage = remember ? sessionStorage : localStorage;
-    otherStorage.removeItem(TOKEN_KEY);
   }
 
   getSession(): string | null {

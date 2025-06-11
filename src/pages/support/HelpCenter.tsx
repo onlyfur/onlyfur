@@ -61,6 +61,11 @@ const HelpCenter: React.FC = () => {
       'Mobile app features and limitations': '/help/articles/mobile-app',
       'Browser compatibility': '/help/articles/browser-compatibility',
       'Account security': '/help/articles/account-security',
+      'Password reset guide': '/help/articles/password-reset',
+      'Login troubleshooting': '/help/articles/login-troubleshooting',
+      'Session management': '/help/articles/session-management',
+      'Google OAuth guide': '/help/articles/oauth-guide',
+      'Two-factor authentication': '/help/articles/two-factor-authentication',
       'Age Verification': '/help/articles/age-verification',
       'Content Protection': '/help/articles/content-protection',
       'Bulk Messaging': '/help/articles/bulk-messaging',
@@ -83,7 +88,9 @@ const HelpCenter: React.FC = () => {
       'How to message creators': '/help/articles/messaging-creators',
       'Setting content privacy levels': '/help/articles/content-privacy-levels',
       'Mobile app features and limitations': '/help/articles/mobile-app',
-      'Account security': '/help/articles/account-security'
+      'Account security': '/help/articles/account-security',
+      'Password reset guide': '/help/articles/password-reset',
+      'Login troubleshooting': '/help/articles/login-troubleshooting'
     };
     
     return popularLinks[article] || '/help';
@@ -130,6 +137,26 @@ const HelpCenter: React.FC = () => {
           title: 'Account security',
           description: 'Best practices for keeping your OnlyFur account secure',
           popular: true
+        },
+        {
+          title: 'Password reset guide',
+          description: 'Learn how to securely reset your password'
+        },
+        {
+          title: 'Login troubleshooting',
+          description: 'Resolve common login issues and access problems'
+        },
+        {
+          title: 'Two-factor authentication',
+          description: 'Set up 2FA for enhanced account protection'
+        },
+        {
+          title: 'Google OAuth guide',
+          description: 'Use Google Sign-In for convenient and secure access'
+        },
+        {
+          title: 'Session management',
+          description: 'Monitor and control your active login sessions'
         }
       ]
     },
@@ -264,36 +291,45 @@ const HelpCenter: React.FC = () => {
         }
       ]
     },
-    {
-      id: 'technical',
-      title: 'Technical Support',
-      icon: Settings,
-      description: 'Troubleshooting and technical help',
-      color: 'text-orange-500',
-      articles: [
-        {
-          title: 'Supported file formats and sizes',
-          description: 'What content types you can upload'
-        },
-        {
-          title: 'Troubleshooting upload issues',
-          description: 'Fix common upload problems'
-        },
-        {
-          title: 'Video quality and streaming',
-          description: 'Optimize your video content'
-        },
-        {
-          title: 'Mobile app features and limitations',
-          description: 'Using OnlyFur on mobile devices',
-          popular: true
-        },
-        {
-          title: 'Browser compatibility',
-          description: 'Supported browsers and requirements'
-        }
-      ]
-    }
+      {
+        id: 'technical',
+        title: 'Technical Support',
+        icon: Settings,
+        description: 'Troubleshooting and technical help',
+        color: 'text-orange-500',
+        articles: [
+          {
+            title: 'Supported file formats and sizes',
+            description: 'What content types you can upload'
+          },
+          {
+            title: 'Troubleshooting upload issues',
+            description: 'Fix common upload problems'
+          },
+          {
+            title: 'Video quality and streaming',
+            description: 'Optimize your video content'
+          },
+          {
+            title: 'Mobile app features and limitations',
+            description: 'Using OnlyFur on mobile devices',
+            popular: true
+          },
+          {
+            title: 'Browser compatibility',
+            description: 'Supported browsers and requirements'
+          },
+          {
+            title: 'Login troubleshooting',
+            description: 'Resolve common login and access issues',
+            popular: true
+          },
+          {
+            title: 'Session management',
+            description: 'Monitor and control your active sessions'
+          }
+        ]
+      }
   ];
 
 
@@ -307,7 +343,9 @@ const HelpCenter: React.FC = () => {
     'How to message creators',
     'Setting content privacy levels',
     'Mobile app features and limitations',
-    'Account security'
+    'Account security',
+    'Password reset guide',
+    'Login troubleshooting'
   ];
 
   const quickLinks = [

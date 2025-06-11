@@ -548,22 +548,30 @@ const AccountSecurity: React.FC = () => {
           <CardTitle>Related Articles</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link to="/help/articles/community-guidelines" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-              <h4 className="font-medium">Community guidelines overview</h4>
-              <p className="text-sm text-muted-foreground mt-1">Understand safe behavior standards</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Link to="/help/articles/password-reset" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <h4 className="font-medium">Password Reset Guide</h4>
+              <p className="text-sm text-muted-foreground mt-1">How to securely reset your password</p>
             </Link>
-            <Link to="/help/articles/payment-system" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-              <h4 className="font-medium">How payments work on OnlyFur</h4>
-              <p className="text-sm text-muted-foreground mt-1">Payment security and protection</p>
+            <Link to="/help/articles/login-troubleshooting" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <h4 className="font-medium">Login Troubleshooting</h4>
+              <p className="text-sm text-muted-foreground mt-1">Resolve common login issues</p>
+            </Link>
+            <Link to="/help/articles/session-management" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <h4 className="font-medium">Session Management</h4>
+              <p className="text-sm text-muted-foreground mt-1">Control active login sessions</p>
+            </Link>
+            <Link to="/help/articles/oauth-guide" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <h4 className="font-medium">Google Sign-In Guide</h4>
+              <p className="text-sm text-muted-foreground mt-1">Use Google for secure login</p>
             </Link>
             <Link to="/help/articles/content-privacy-levels" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-              <h4 className="font-medium">Setting content privacy levels</h4>
+              <h4 className="font-medium">Content Privacy Settings</h4>
               <p className="text-sm text-muted-foreground mt-1">Control who sees your content</p>
             </Link>
             <Link to="/help/articles/report-user-content" className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-              <h4 className="font-medium">How to report users or content</h4>
-              <p className="text-sm text-muted-foreground mt-1">Report security threats and violations</p>
+              <h4 className="font-medium">Report Security Issues</h4>
+              <p className="text-sm text-muted-foreground mt-1">Report threats and violations</p>
             </Link>
           </div>
         </CardContent>

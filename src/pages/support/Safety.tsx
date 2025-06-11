@@ -123,9 +123,9 @@ const Safety: React.FC = () => {
       allowed: true,
       category: 'Furry Art & Content',
       items: [
-        'Original furry artwork and photography',
-        'Fursuit photos and videos',
-        'Character art and commissions',
+        'Original furry videography and photography',
+        'Fursuit / Murrsuit photos and videos',
+        'Character art',
         'Convention and meetup content',
         'Tutorial and educational content'
       ]

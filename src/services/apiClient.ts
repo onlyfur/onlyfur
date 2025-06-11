@@ -10,9 +10,11 @@ export interface ApiResponse<T = any> {
 
 export interface AuthResponse {
   success: boolean;
-  user?: any;
-  token?: string;
-  refreshToken?: string;
+  data?: {
+    user: any;
+    token: string;
+    refreshToken?: string;
+  };
   message?: string;
   error?: string;
 }
@@ -21,8 +23,8 @@ class ApiClient {
   private baseURL: string;
 
   constructor() {
-    // Use environment variable or fallback to current origin
-    this.baseURL = import.meta.env.VITE_API_URL || '/api';
+    // Use environment variable or fallback to production server
+    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002/api';
   }
 
   private getAuthHeaders(): HeadersInit {
@@ -106,30 +108,63 @@ class ApiClient {
     password: string;
     role: 'CREATOR' | 'SUBSCRIBER';
   }): Promise<AuthResponse> {
-    return this.makeRequest<AuthResponse>('/auth/register', {
+    const response = await this.makeRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
+    
+    return {
+      success: response.success,
+      data: response.data ? {
+        user: (response.data as any).user || response.data,
+        token: (response.data as any).token,
+        refreshToken: (response.data as any).refreshToken
+      } : undefined,
+      message: response.message,
+      error: response.error
+    };
   }
 
   async login(credentials: {
     email: string;
     password: string;
   }): Promise<AuthResponse> {
-    return this.makeRequest<AuthResponse>('/auth/login', {
+    const response = await this.makeRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
+    
+    return {
+      success: response.success,
+      data: response.data ? {
+        user: (response.data as any).user || response.data,
+        token: (response.data as any).token,
+        refreshToken: (response.data as any).refreshToken
+      } : undefined,
+      message: response.message,
+      error: response.error
+    };
   }
 
   async loginWithGoogle(googleData: {
     credential: string;
     userType?: 'creator' | 'subscriber';
   }): Promise<AuthResponse> {
-    return this.makeRequest<AuthResponse>('/auth/google', {
+    const response = await this.makeRequest('/auth/google', {
       method: 'POST',
       body: JSON.stringify(googleData),
     });
+    
+    return {
+      success: response.success,
+      data: response.data ? {
+        user: (response.data as any).user || response.data,
+        token: (response.data as any).token,
+        refreshToken: (response.data as any).refreshToken
+      } : undefined,
+      message: response.message,
+      error: response.error
+    };
   }
 
   async getProfile(): Promise<ApiResponse<any>> {
@@ -144,10 +179,21 @@ class ApiClient {
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    return this.makeRequest<AuthResponse>('/auth/refresh', {
+    const response = await this.makeRequest('/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
     });
+    
+    return {
+      success: response.success,
+      data: response.data ? {
+        user: (response.data as any).user || response.data,
+        token: (response.data as any).token,
+        refreshToken: (response.data as any).refreshToken
+      } : undefined,
+      message: response.message,
+      error: response.error
+    };
   }
 
   async logout(): Promise<ApiResponse> {
