@@ -1,10 +1,8 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 import { prisma } from './database';
 import { logger } from '../middleware/logger';
-import { createAuditLog, AuditActions } from './auditLog';
-import { vercelBlobStorage } from './vercelBlobStorage';
-import { User, UserRole, AuthProvider, SubscriptionStatus } from '@prisma/client';
+import { createAuditLog } from './auditLog';
 
 export interface AuthUser {
   id: string;
@@ -12,12 +10,12 @@ export interface AuthUser {
   username: string;
   displayName: string;
   avatar?: string;
-  role: UserRole;
+  role: string;
   isVerified: boolean;
   isActive: boolean;
   isEmailVerified: boolean;
-  subscriptionStatus: SubscriptionStatus;
-  authProvider: AuthProvider;
+  subscriptionStatus: string;
+  authProvider: string;
   createdAt: Date;
   lastLoginAt?: Date;
 }
@@ -27,7 +25,7 @@ export interface RegisterData {
   username: string;
   displayName: string;
   password?: string;
-  authProvider?: AuthProvider;
+  authProvider?: string;
   googleId?: string;
   avatar?: string;
 }
@@ -86,13 +84,13 @@ export class AuthenticationService {
           username: data.username,
           displayName: data.displayName,
           password: hashedPassword,
-          authProvider: data.authProvider || AuthProvider.EMAIL,
+          authProvider: data.authProvider || 'EMAIL',
           googleId: data.googleId,
           avatar: data.avatar,
-          role: UserRole.SUBSCRIBER,
+          role: 'SUBSCRIBER',
           isActive: true,
-          isEmailVerified: data.authProvider === AuthProvider.GOOGLE, // Auto-verify for Google
-          subscriptionStatus: SubscriptionStatus.FREE,
+          isEmailVerified: data.authProvider === 'GOOGLE',
+          subscriptionStatus: 'FREE',
           lastLoginAt: new Date()
         }
       });
@@ -100,7 +98,7 @@ export class AuthenticationService {
       // Create audit log
       await createAuditLog({
         userId: user.id,
-        action: AuditActions.CREATE,
+        action: 'CREATE' as any,
         resource: 'user',
         resourceId: user.id,
         metadata: {
@@ -162,8 +160,7 @@ export class AuthenticationService {
       if (!user) {
         // Create audit log for failed login attempt
         await createAuditLog({
-          userId: null,
-          action: AuditActions.VIEW,
+          action: 'LOGIN' as any,
           resource: 'auth',
           resourceId: 'login_failed',
           metadata: {
@@ -194,7 +191,7 @@ export class AuthenticationService {
 
         await createAuditLog({
           userId: user.id,
-          action: AuditActions.VIEW,
+          action: 'LOGIN' as any,
           resource: 'auth',
           resourceId: 'login_failed',
           metadata: {
@@ -233,7 +230,7 @@ export class AuthenticationService {
       // Create audit log for successful login
       await createAuditLog({
         userId: user.id,
-        action: AuditActions.VIEW,
+        action: 'LOGIN' as any,
         resource: 'auth',
         resourceId: 'login_success',
         metadata: {
@@ -295,7 +292,7 @@ export class AuthenticationService {
             where: { id: user.id },
             data: {
               googleId: googleData.googleId,
-              authProvider: AuthProvider.GOOGLE,
+              authProvider: 'GOOGLE',
               isEmailVerified: true,
               lastLoginAt: new Date()
             }
@@ -310,12 +307,12 @@ export class AuthenticationService {
               username,
               displayName: googleData.name,
               googleId: googleData.googleId,
-              authProvider: AuthProvider.GOOGLE,
+              authProvider: 'GOOGLE',
               avatar: googleData.picture,
-              role: UserRole.SUBSCRIBER,
+              role: 'SUBSCRIBER',
               isActive: true,
               isEmailVerified: true,
-              subscriptionStatus: SubscriptionStatus.FREE,
+              subscriptionStatus: 'FREE',
               lastLoginAt: new Date()
             }
           });
@@ -338,7 +335,7 @@ export class AuthenticationService {
       // Create audit log
       await createAuditLog({
         userId: user.id,
-        action: AuditActions.VIEW,
+        action: 'LOGIN' as any,
         resource: 'auth',
         resourceId: 'google_login',
         metadata: {
@@ -374,7 +371,7 @@ export class AuthenticationService {
   }
 
   /**
-   * Update user profile with blob storage for images
+   * Update user profile
    */
   async updateProfile(
     userId: string,
@@ -387,9 +384,9 @@ export class AuthenticationService {
       emailNotifications?: boolean;
       pushNotifications?: boolean;
       marketingEmails?: boolean;
-    },
-    avatarFile?: Express.Multer.File,
-    coverImageFile?: Express.Multer.File
+      avatar?: string;
+      coverImage?: string;
+    }
   ): Promise<AuthResponse> {
     try {
       const user = await prisma.user.findUnique({
@@ -403,36 +400,11 @@ export class AuthenticationService {
         };
       }
 
-      let avatarUrl = user.avatar;
-      let coverImageUrl = user.coverImage;
-
-      // Upload avatar to Vercel Blob if provided
-      if (avatarFile) {
-        const avatarUpload = await vercelBlobStorage.uploadFile(avatarFile, {
-          userId,
-          category: 'avatar',
-          metadata: { type: 'user_avatar' }
-        });
-        avatarUrl = avatarUpload.blobUrl;
-      }
-
-      // Upload cover image to Vercel Blob if provided
-      if (coverImageFile) {
-        const coverUpload = await vercelBlobStorage.uploadFile(coverImageFile, {
-          userId,
-          category: 'cover',
-          metadata: { type: 'user_cover' }
-        });
-        coverImageUrl = coverUpload.blobUrl;
-      }
-
       // Update user in PostgreSQL
       const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
           ...updates,
-          avatar: avatarUrl,
-          coverImage: coverImageUrl,
           updatedAt: new Date()
         }
       });
@@ -440,21 +412,17 @@ export class AuthenticationService {
       // Create audit log
       await createAuditLog({
         userId,
-        action: AuditActions.UPDATE,
+        action: 'UPDATE' as any,
         resource: 'user',
         resourceId: userId,
         metadata: {
-          updates: Object.keys(updates),
-          hasAvatar: !!avatarFile,
-          hasCoverImage: !!coverImageFile
+          updates: Object.keys(updates)
         }
       });
 
       logger.info('User profile updated', {
         userId,
-        updates: Object.keys(updates),
-        hasAvatar: !!avatarFile,
-        hasCoverImage: !!coverImageFile
+        updates: Object.keys(updates)
       });
 
       return {
@@ -476,7 +444,7 @@ export class AuthenticationService {
   }
 
   /**
-   * Delete user account and cleanup blob storage
+   * Delete user account
    */
   async deleteAccount(userId: string, password?: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
@@ -492,28 +460,12 @@ export class AuthenticationService {
       }
 
       // Verify password for email/password users
-      if (user.authProvider === AuthProvider.EMAIL && password) {
+      if (user.authProvider === 'EMAIL' && password) {
         if (!user.password || !await bcrypt.compare(password, user.password)) {
           return {
             success: false,
             error: 'Invalid password'
           };
-        }
-      }
-
-      // Get all user files from blob storage
-      const userFiles = await vercelBlobStorage.getUserFiles(userId);
-      
-      // Delete all user files from blob storage
-      for (const file of userFiles.files) {
-        try {
-          await vercelBlobStorage.deleteFile(file.id, userId);
-        } catch (error) {
-          logger.warn('Failed to delete user file during account deletion', {
-            userId,
-            fileId: file.id,
-            error: error.message
-          });
         }
       }
 
@@ -525,21 +477,19 @@ export class AuthenticationService {
       // Create audit log
       await createAuditLog({
         userId,
-        action: AuditActions.DELETE,
+        action: 'DELETE' as any,
         resource: 'user',
         resourceId: userId,
         metadata: {
           email: user.email,
-          username: user.username,
-          deletedFilesCount: userFiles.files.length
+          username: user.username
         }
       });
 
       logger.info('User account deleted', {
         userId,
         email: user.email,
-        username: user.username,
-        deletedFilesCount: userFiles.files.length
+        username: user.username
       });
 
       return {
@@ -596,7 +546,7 @@ export class AuthenticationService {
 
   // Private helper methods
 
-  private async findUserByEmailOrUsername(email: string, username: string): Promise<User | null> {
+  private async findUserByEmailOrUsername(email: string, username: string): Promise<any | null> {
     return await prisma.user.findFirst({
       where: {
         OR: [
@@ -629,7 +579,7 @@ export class AuthenticationService {
     });
   }
 
-  private generateToken(user: User): string {
+  private generateToken(user: any): string {
     return jwt.sign(
       {
         userId: user.id,
@@ -666,7 +616,7 @@ export class AuthenticationService {
     return username;
   }
 
-  private mapUserToAuthUser(user: User): AuthUser {
+  private mapUserToAuthUser(user: any): AuthUser {
     return {
       id: user.id,
       email: user.email,
