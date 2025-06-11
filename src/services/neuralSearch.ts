@@ -264,16 +264,61 @@ class NeuralSearchEngine {
     const words = query.toLowerCase().split(' ');
     const baseVector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
     
+    // Track if we have category/type specific search
+    let hasTypeSpecifier = false;
+    let typeVector = null;
+    
     // Simple keyword-based vector generation
     const keywords = {
+      // Content keywords
       'art': [0.9, 0.7, 0.6, 0.4, 0.5, 0.3, 0.8, 0.2],
       'digital': [0.8, 0.8, 0.5, 0.6, 0.4, 0.7, 0.3, 0.9],
       'animation': [0.6, 0.9, 0.8, 0.7, 0.5, 0.4, 0.6, 0.8],
       'tutorial': [0.7, 0.6, 0.9, 0.8, 0.7, 0.5, 0.4, 0.6],
       'character': [0.8, 0.7, 0.6, 0.9, 0.8, 0.6, 0.5, 0.4],
-      'fursuit': [0.5, 0.4, 0.6, 0.7, 0.9, 0.8, 0.7, 0.6]
+      'fursuit': [0.5, 0.4, 0.6, 0.7, 0.9, 0.8, 0.7, 0.6],
+      
+      // Category/type keywords
+      'help': [0.85, 0.75, 0.65, 0.55, 0.8, 0.7, 0.6, 0.5],
+      'article': [0.8, 0.75, 0.7, 0.65, 0.75, 0.7, 0.65, 0.6],
+      'creator': [0.7, 0.6, 0.5, 0.4, 0.9, 0.8, 0.7, 0.6],
+      'content': [0.6, 0.7, 0.8, 0.9, 0.5, 0.6, 0.7, 0.8],
+      'tag': [0.5, 0.6, 0.7, 0.8, 0.4, 0.5, 0.6, 0.7],
+      
+      // Help article specific keywords
+      'account': [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2],
+      'security': [0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5],
+      'subscription': [0.7, 0.85, 0.75, 0.65, 0.6, 0.8, 0.7, 0.5],
+      'payment': [0.65, 0.7, 0.75, 0.8, 0.85, 0.7, 0.65, 0.6],
+      'privacy': [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.7, 0.65],
+      'messaging': [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.7],
+      'upload': [0.75, 0.65, 0.55, 0.45, 0.85, 0.75, 0.65, 0.55],
+      'mobile': [0.5, 0.6, 0.7, 0.8, 0.9, 0.8, 0.7, 0.6]
     };
 
+    // Check for type-specific searches
+    const typeKeywords = ['help', 'article', 'creator', 'content', 'tag'];
+    const typeMatches = words.filter(word => typeKeywords.includes(word));
+    
+    // Special handling for compound terms
+    if (query.includes('help article') || query.includes('help center')) {
+      hasTypeSpecifier = true;
+      typeVector = [0.85, 0.75, 0.65, 0.55, 0.8, 0.7, 0.6, 0.5]; // Help article vector
+    } else if (typeMatches.length > 0) {
+      hasTypeSpecifier = true;
+      // Create a combined vector for all matched type keywords
+      typeVector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
+      typeMatches.forEach(match => {
+        const matchVector = keywords[match];
+        if (matchVector) {
+          matchVector.forEach((val, idx) => {
+            typeVector[idx] = (typeVector[idx] + val) / 2;
+          });
+        }
+      });
+    }
+
+    // Apply regular keyword matching
     words.forEach(word => {
       if (keywords[word]) {
         keywords[word].forEach((val, idx) => {
@@ -281,6 +326,11 @@ class NeuralSearchEngine {
         });
       }
     });
+
+    // If we have a type specifier, blend it with the base vector
+    if (hasTypeSpecifier && typeVector) {
+      return baseVector.map((val, idx) => (val * 0.4) + (typeVector[idx] * 0.6));
+    }
 
     return baseVector;
   }
@@ -376,15 +426,56 @@ class NeuralSearchEngine {
   async neuralSearch(
     query: string, 
     context: SearchContext, 
-    options: { limit?: number; threshold?: number } = {}
+    options: { limit?: number; threshold?: number; categoryFilter?: string } = {}
   ): Promise<NeuralSearchResult[]> {
-    const { limit = 10, threshold = 0.1 } = options;
+    const { limit = 10, threshold = 0.1, categoryFilter } = options;
     
     const queryVector = this.queryToVector(query);
     const results: NeuralSearchResult[] = [];
+    
+    // Check for category/type specific searches in the query
+    const queryLower = query.toLowerCase();
+    const typeKeywords = {
+      'help': ['help', 'article', 'help article', 'help center'],
+      'creator': ['creator', 'artist', 'author'],
+      'content': ['content', 'post', 'artwork'],
+      'tag': ['tag', 'hashtag', 'topic']
+    };
+    
+    // Determine if query has type specifiers
+    let detectedTypes: string[] = [];
+    for (const [type, keywords] of Object.entries(typeKeywords)) {
+      if (keywords.some(keyword => queryLower.includes(keyword))) {
+        detectedTypes.push(type);
+      }
+    }
 
     // Process each vector
     for (const [id, vector] of this.vectors) {
+      // Skip if category filter is applied and doesn't match
+      if (categoryFilter && vector.metadata.category !== categoryFilter) {
+        continue;
+      }
+      
+      // Apply type-based filtering from query
+      if (detectedTypes.length > 0) {
+        const matchesType = detectedTypes.some(type => {
+          if (type === 'help' && vector.metadata.category === 'help') return true;
+          if (type === 'creator' && vector.metadata.category === 'creator') return true;
+          if (type === 'content' && ['tutorial', 'art', 'post'].includes(vector.metadata.category)) return true;
+          if (type === 'tag' && vector.metadata.tags.length > 0) return true;
+          return false;
+        });
+        
+        // Skip if no type match (unless it's a very high semantic match)
+        if (!matchesType) {
+          const semanticSimilarity = this.calculateSemanticSimilarity(query, vector.metadata.content);
+          if (semanticSimilarity < 0.8) {
+            continue;
+          }
+        }
+      }
+      
       // Vector similarity
       const vectorSimilarity = this.cosineSimilarity(queryVector, vector.embedding);
       
@@ -399,6 +490,17 @@ class NeuralSearchEngine {
       
       // Quality score
       const qualityScore = vector.metadata.quality_score;
+      
+      // Type match bonus (if query specifies a type)
+      let typeMatchBonus = 0;
+      if (detectedTypes.length > 0) {
+        if ((detectedTypes.includes('help') && vector.metadata.category === 'help') ||
+            (detectedTypes.includes('creator') && vector.metadata.category === 'creator') ||
+            (detectedTypes.includes('content') && ['tutorial', 'art', 'post'].includes(vector.metadata.category)) ||
+            (detectedTypes.includes('tag') && vector.metadata.tags.length > 0)) {
+          typeMatchBonus = 0.2; // 20% boost for matching the requested type
+        }
+      }
 
       // Calculate final relevance score
       const relevanceScore = 
@@ -406,15 +508,24 @@ class NeuralSearchEngine {
         (semanticSimilarity * this.weights.semantic_match) +
         (userAlignment * this.weights.user_preference) +
         (temporalRelevance * this.weights.temporal_relevance) +
-        (qualityScore * this.weights.quality_score);
+        (qualityScore * this.weights.quality_score) +
+        typeMatchBonus;
 
       // Calculate confidence based on score distribution
       const confidence = Math.min(1, relevanceScore * 1.2);
 
       if (relevanceScore >= threshold) {
         // Generate explanation
+        const isTypeMatch = detectedTypes.length > 0 && (
+          (detectedTypes.includes('help') && vector.metadata.category === 'help') ||
+          (detectedTypes.includes('creator') && vector.metadata.category === 'creator') ||
+          (detectedTypes.includes('content') && ['tutorial', 'art', 'post'].includes(vector.metadata.category)) ||
+          (detectedTypes.includes('tag') && vector.metadata.tags.length > 0)
+        );
+        
         const explanation = this.generateExplanation(
-          vectorSimilarity, semanticSimilarity, userAlignment, qualityScore
+          vectorSimilarity, semanticSimilarity, userAlignment, qualityScore, 
+          isTypeMatch, vector.metadata.category
         );
 
         // Generate personalization factors
@@ -453,7 +564,9 @@ class NeuralSearchEngine {
     vectorSim: number, 
     semanticSim: number, 
     userAlign: number, 
-    quality: number
+    quality: number,
+    typeMatch?: boolean,
+    category?: string
   ): string {
     const factors = [];
     
@@ -461,6 +574,17 @@ class NeuralSearchEngine {
     if (semanticSim > 0.6) factors.push('semantic relevance');
     if (userAlign > 0.5) factors.push('matches your interests');
     if (quality > 0.8) factors.push('high-quality content');
+    
+    // Add category-specific explanations
+    if (typeMatch) {
+      if (category === 'help') {
+        factors.push('help article match');
+      } else if (category === 'creator') {
+        factors.push('creator profile match');
+      } else if (['tutorial', 'art', 'post'].includes(category)) {
+        factors.push('content match');
+      }
+    }
 
     if (factors.length === 0) {
       return 'Basic relevance match';

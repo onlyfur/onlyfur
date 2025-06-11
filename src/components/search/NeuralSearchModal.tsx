@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, User, Hash, FileText, TrendingUp, Clock, X, Filter, 
-  Mic, MicOff, Sparkles, Calendar, Tag, SortAsc, RotateCcw,
-  AlertCircle, Volume2, Settings, Zap, Target, Brain, Eye,
+  Sparkles, Calendar, Tag, SortAsc, RotateCcw,
+  AlertCircle, Settings, Zap, Target, Brain, Eye,
   Image, Camera, Upload, Cpu, Users, Activity, BarChart3, Book
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -63,10 +63,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   const [searchMode, setSearchMode] = useState<'traditional' | 'neural' | 'visual' | 'api'>('neural');
   const [visualSearchFile, setVisualSearchFile] = useState<File | null>(null);
   
-  // Voice search states
-  const [isVoiceSearching, setIsVoiceSearching] = useState(false);
-  const [voiceError, setVoiceError] = useState<string | null>(null);
-  const [voiceTranscript, setVoiceTranscript] = useState('');
+  // Voice search removed
   
   // Neural search features
   const [enablePersonalization, setEnablePersonalization] = useState(true);
@@ -405,24 +402,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
     debouncedSearch(newQuery);
   };
 
-  const handleVoiceSearch = () => {
-    if (isVoiceSearching) {
-      setIsVoiceSearching(false);
-      setVoiceError(null);
-    } else {
-      setIsVoiceSearching(true);
-      setVoiceError(null);
-      // Voice search would be implemented here
-      setTimeout(() => {
-        setVoiceTranscript('Searching for furry art tutorials...');
-        setTimeout(() => {
-          setQuery('furry art tutorials');
-          performSearch('furry art tutorials', 'voice');
-          setIsVoiceSearching(false);
-        }, 2000);
-      }, 500);
-    }
-  };
+  // Voice search removed
 
   const handleResultClick = (result: SearchResult) => {
     navigate(result.url);
@@ -662,7 +642,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center">
             <Brain className="w-5 h-5 mr-2 text-blue-500" />
@@ -670,9 +650,9 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-visible">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-4 sticky top-0 z-10 bg-background">
               <TabsTrigger value="search">Search</TabsTrigger>
               <TabsTrigger value="insights" className="relative">
                 Insights
@@ -686,7 +666,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="search" className="flex-1 mt-4 overflow-hidden flex flex-col">
+            <TabsContent value="search" className="flex-1 mt-4 overflow-visible flex flex-col">
               {renderSearchModeSelector()}
               
               <form onSubmit={handleSearchSubmit} className="mb-4">
@@ -695,11 +675,16 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                   <Input
                     ref={inputRef}
                     type="text"
-                    placeholder="Neural search for creators, content, and more..."
+                    placeholder="Search for creators, content, help articles, and more..."
                     value={query}
                     onChange={handleInputChange}
                     className="pl-10 pr-20"
                   />
+                  {searchMode === 'neural' && !query && (
+                    <div className="absolute -bottom-6 left-0 text-xs text-muted-foreground">
+                      Try searching with tags: "help article security", "creator digital art", etc.
+                    </div>
+                  )}
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
                     {query && (
                       <Button
@@ -712,42 +697,21 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                         <X className="w-3 h-3" />
                       </Button>
                     )}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleVoiceSearch}
-                      className={`h-6 w-6 p-0 ${isVoiceSearching ? 'text-red-500' : ''}`}
-                    >
-                      {isVoiceSearching ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
-                    </Button>
                   </div>
                 </div>
               </form>
 
-              {isVoiceSearching && (
-                <Alert className="mb-4">
-                  <Volume2 className="w-4 h-4" />
-                  <AlertDescription>
-                    Listening... {voiceTranscript && `"${voiceTranscript}"`}
-                  </AlertDescription>
-                </Alert>
-              )}
+              {/* Voice search removed */}
 
-              {voiceError && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="w-4 h-4" />
-                  <AlertDescription>{voiceError}</AlertDescription>
-                </Alert>
-              )}
-
-              <div className="flex-1 overflow-auto">
+              <div className="flex-1 overflow-visible pb-4">
                 {isLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
                 ) : results.length > 0 ? (
-                  renderResults()
+                  <div className="max-h-[50vh] overflow-y-auto pr-1">
+                    {renderResults()}
+                  </div>
                 ) : query ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -780,15 +744,49 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                         </div>
                       </div>
                     )}
+                    
+                    {searchMode === 'neural' && (
+                      <div>
+                        <h3 className="text-sm font-medium mb-2 flex items-center">
+                          <Sparkles className="w-4 h-4 mr-2 text-blue-500" />
+                          Try These Searches
+                        </h3>
+                        <div className="space-y-1">
+                          {[
+                            "help article account security",
+                            "creator digital art",
+                            "help subscription management",
+                            "content tutorial animation",
+                            "help mobile app"
+                          ].map((suggestion, index) => (
+                            <Button
+                              key={index}
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setQuery(suggestion);
+                                performSearch(suggestion, 'suggestion');
+                              }}
+                              className="w-full justify-start text-sm"
+                            >
+                              <Sparkles className="w-3 h-3 mr-2 text-blue-500" />
+                              {suggestion}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="insights" className="mt-4 overflow-auto">
+            <TabsContent value="insights" className="mt-4 overflow-visible">
               {searchMode === 'neural' ? (
                 neuralResults.length > 0 ? (
-                  renderNeuralInsights()
+                  <div className="max-h-[60vh] overflow-y-auto pr-1 pb-4">
+                    {renderNeuralInsights()}
+                  </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
                     <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -810,12 +808,12 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
               )}
             </TabsContent>
 
-            <TabsContent value="filters" className="mt-4">
-              <div className="space-y-4">
+            <TabsContent value="filters" className="mt-4 overflow-visible">
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1 pb-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Content Type</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {['creator', 'content', 'tag'].map((type) => (
+                    {['creator', 'content', 'tag', 'help'].map((type) => (
                       <div key={type} className="flex items-center space-x-2">
                         <Checkbox
                           id={type}
@@ -861,8 +859,10 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
               </div>
             </TabsContent>
 
-            <TabsContent value="settings" className="mt-4">
-              {renderNeuralSettings()}
+            <TabsContent value="settings" className="mt-4 overflow-visible">
+              <div className="max-h-[60vh] overflow-y-auto pr-1 pb-4">
+                {renderNeuralSettings()}
+              </div>
             </TabsContent>
           </Tabs>
         </div>
