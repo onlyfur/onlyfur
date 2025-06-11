@@ -60,7 +60,13 @@ const HelpCenter: React.FC = () => {
       'Video quality and streaming': '/help/articles/video-quality',
       'Mobile app features and limitations': '/help/articles/mobile-app',
       'Browser compatibility': '/help/articles/browser-compatibility',
-      'Account security': '/help/articles/account-security'
+      'Account security': '/help/articles/account-security',
+      'Age Verification': '/help/articles/age-verification',
+      'Content Protection': '/help/articles/content-protection',
+      'Bulk Messaging': '/help/articles/bulk-messaging',
+      'Tax Information': '/help/articles/tax-information',
+      'Refund Policy': '/help/articles/refund-policy'
+
     };
     
     return articleLinks[article.title] || '/help';
@@ -99,7 +105,7 @@ const HelpCenter: React.FC = () => {
       description: 'New to OnlyFur? Start here!',
       color: 'text-blue-500',
       articles: [
-        {
+      {
           title: 'How to create your OnlyFur account',
           description: 'Step-by-step guide to joining our community',
           popular: true
@@ -289,6 +295,7 @@ const HelpCenter: React.FC = () => {
       ]
     }
   ];
+
 
   const popularArticles = [
     'How to create your OnlyFur account',

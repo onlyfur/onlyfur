@@ -126,6 +126,82 @@ class NeuralSearchEngine {
       }
     });
 
+    this.vectors.set('help-age-verification', {
+      id: 'help-age-verification',
+      embedding: [0.7, 0.6, 0.65, 0.7, 0.75, 0.7, 0.65, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Age verification process legal requirements government-issued ID privacy security',
+        category: 'help',
+        tags: ['age-verification', 'legal', 'privacy', 'security'],
+        quality_score: 0.9,
+        title: 'Age Verification Process',
+        description: 'How to verify your age to access adult content',
+        url: '/help/articles/age-verification'
+      }
+    });
+
+    this.vectors.set('help-content-protection', {
+      id: 'help-content-protection',
+      embedding: [0.65, 0.7, 0.75, 0.7, 0.65, 0.6, 0.7, 0.75],
+      metadata: {
+        type: 'text',
+        content: 'Content protection watermarking access controls reporting takedown unauthorized use',
+        category: 'help',
+        tags: ['content-protection', 'watermarking', 'access-control', 'reporting'],
+        quality_score: 0.9,
+        title: 'Content Protection for Creators',
+        description: 'Tools to protect your content from unauthorized use',
+        url: '/help/articles/content-protection'
+      }
+    });
+
+    this.vectors.set('help-bulk-messaging', {
+      id: 'help-bulk-messaging',
+      embedding: [0.6, 0.65, 0.7, 0.75, 0.7, 0.65, 0.6, 0.7],
+      metadata: {
+        type: 'text',
+        content: 'Bulk messaging messaging dashboard subscriber groups best practices',
+        category: 'help',
+        tags: ['bulk-messaging', 'messaging', 'subscribers', 'communication'],
+        quality_score: 0.88,
+        title: 'Bulk Messaging',
+        description: 'How to send messages to multiple subscribers efficiently',
+        url: '/help/articles/bulk-messaging'
+      }
+    });
+
+    this.vectors.set('help-tax-information', {
+      id: 'help-tax-information',
+      embedding: [0.7, 0.75, 0.7, 0.65, 0.6, 0.7, 0.75, 0.7],
+      metadata: {
+        type: 'text',
+        content: 'Tax information reporting income tax forms professional advice digital earnings',
+        category: 'help',
+        tags: ['tax', 'income', 'reporting', 'forms'],
+        quality_score: 0.9,
+        title: 'Tax Information for Creators',
+        description: 'Important tax considerations for creators',
+        url: '/help/articles/tax-information'
+      }
+    });
+
+    this.vectors.set('help-refund-policy', {
+      id: 'help-refund-policy',
+      embedding: [0.65, 0.7, 0.75, 0.7, 0.65, 0.6, 0.7, 0.65],
+      metadata: {
+        type: 'text',
+        content: 'Refund policy eligibility request processing time support team',
+        category: 'help',
+        tags: ['refund', 'policy', 'support', 'requests'],
+        quality_score: 0.88,
+        title: 'Refund Policy',
+        description: 'Guidelines on refunds and how to request them',
+        url: '/help/articles/refund-policy'
+      }
+    });
+
+
     this.vectors.set('help-subscription-management', {
       id: 'help-subscription-management',
       embedding: [0.7, 0.85, 0.75, 0.65, 0.6, 0.8, 0.7, 0.5],
@@ -1094,8 +1170,10 @@ class NeuralSearchEngine {
       total_searches: totalSearches,
       avg_relevance_score: avgRelevance,
       user_satisfaction: avgRating / 5, // Normalize to 0-1
-      personalization_effectiveness
+      personalization_effectiveness: personalizationEffectiveness
     };
+
+
   }
 }
 
