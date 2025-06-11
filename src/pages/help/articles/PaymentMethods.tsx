@@ -488,8 +488,8 @@ const PaymentMethods: React.FC = () => {
               </Button>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
