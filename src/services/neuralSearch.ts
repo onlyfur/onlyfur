@@ -122,7 +122,7 @@ class NeuralSearchEngine {
         quality_score: 0.95,
         title: 'How to Create Your OnlyFur Account',
         description: 'Step-by-step guide to creating your account and joining the OnlyFur community',
-        url: '/help/articles/HowToCreateAccount'
+        url: '/help/articles/how-to-create-account'
       }
     });
 
@@ -137,7 +137,7 @@ class NeuralSearchEngine {
         quality_score: 0.92,
         title: 'Subscription Management',
         description: 'Learn how to manage your subscriptions, billing, and payment methods',
-        url: '/help/articles/SubscriptionManagement'
+        url: '/help/articles/subscription-management'
       }
     });
 
@@ -152,7 +152,7 @@ class NeuralSearchEngine {
         quality_score: 0.9,
         title: 'Content Privacy Levels',
         description: 'Understanding the different privacy levels for your content',
-        url: '/help/articles/ContentPrivacyLevels'
+        url: '/help/articles/content-privacy-levels'
       }
     });
 
@@ -167,7 +167,7 @@ class NeuralSearchEngine {
         quality_score: 0.88,
         title: 'Messaging Creators',
         description: 'How to communicate with creators through the platform',
-        url: '/help/articles/MessagingCreators'
+        url: '/help/articles/messaging-creators'
       }
     });
 
@@ -182,7 +182,7 @@ class NeuralSearchEngine {
         quality_score: 0.91,
         title: 'Creator Earnings',
         description: 'Understanding how creators earn money and receive payments',
-        url: '/help/articles/CreatorEarnings'
+        url: '/help/articles/creator-earnings'
       }
     });
 
@@ -197,7 +197,7 @@ class NeuralSearchEngine {
         quality_score: 0.94,
         title: 'Account Security',
         description: 'Best practices for keeping your OnlyFur account secure',
-        url: '/help/articles/AccountSecurity'
+        url: '/help/articles/account-security'
       }
     });
 
@@ -212,7 +212,7 @@ class NeuralSearchEngine {
         quality_score: 0.89,
         title: 'Mobile App',
         description: 'Guide to using the OnlyFur mobile application',
-        url: '/help/articles/MobileApp'
+        url: '/help/articles/mobile-app'
       }
     });
 
@@ -227,7 +227,278 @@ class NeuralSearchEngine {
         quality_score: 0.93,
         title: 'Upload & Organize Content',
         description: 'How to upload and organize your content as a creator',
-        url: '/help/articles/UploadOrganizeContent'
+        url: '/help/articles/upload-organize-content'
+      }
+    });
+    
+    // Additional help articles
+    this.vectors.set('help-finding-creators', {
+      id: 'help-finding-creators',
+      embedding: [0.7, 0.6, 0.8, 0.7, 0.5, 0.6, 0.9, 0.8],
+      metadata: {
+        type: 'text',
+        content: 'Finding creators search discover follow recommendations browse categories tags interests',
+        category: 'help',
+        tags: ['search', 'discover', 'creators', 'tutorial'],
+        quality_score: 0.91,
+        title: 'Finding Creators',
+        description: 'How to discover and follow creators on OnlyFur',
+        url: '/help/articles/finding-creators'
+      }
+    });
+    
+    this.vectors.set('help-first-subscription', {
+      id: 'help-first-subscription',
+      embedding: [0.65, 0.75, 0.85, 0.6, 0.7, 0.8, 0.5, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'First subscription what to expect payment process content access tiers benefits',
+        category: 'help',
+        tags: ['subscription', 'payment', 'beginner', 'tutorial'],
+        quality_score: 0.9,
+        title: 'Your First Subscription',
+        description: 'What to expect when subscribing to a creator for the first time',
+        url: '/help/articles/first-subscription'
+      }
+    });
+    
+    this.vectors.set('help-subscription-tiers', {
+      id: 'help-subscription-tiers',
+      embedding: [0.7, 0.8, 0.9, 0.7, 0.6, 0.5, 0.8, 0.7],
+      metadata: {
+        type: 'text',
+        content: 'Subscription tiers pricing levels benefits features comparison basic premium vip',
+        category: 'help',
+        tags: ['subscription', 'tiers', 'pricing', 'tutorial'],
+        quality_score: 0.92,
+        title: 'Subscription Tiers Overview',
+        description: 'Understanding the different subscription levels and their benefits',
+        url: '/help/articles/subscription-tiers-overview'
+      }
+    });
+    
+    this.vectors.set('help-payment-methods', {
+      id: 'help-payment-methods',
+      embedding: [0.6, 0.7, 0.8, 0.9, 0.8, 0.7, 0.6, 0.5],
+      metadata: {
+        type: 'text',
+        content: 'Payment methods credit card paypal bank transfer billing information update payment',
+        category: 'help',
+        tags: ['payment', 'billing', 'financial', 'tutorial'],
+        quality_score: 0.9,
+        title: 'Payment Methods',
+        description: 'Managing your payment methods and billing information',
+        url: '/help/articles/payment-methods'
+      }
+    });
+    
+    this.vectors.set('help-payment-system', {
+      id: 'help-payment-system',
+      embedding: [0.65, 0.75, 0.85, 0.9, 0.8, 0.7, 0.6, 0.5],
+      metadata: {
+        type: 'text',
+        content: 'Payment system how payments work processing fees security encryption billing cycle',
+        category: 'help',
+        tags: ['payment', 'system', 'security', 'tutorial'],
+        quality_score: 0.93,
+        title: 'How Payments Work',
+        description: 'Understanding the OnlyFur payment system and security',
+        url: '/help/articles/payment-system'
+      }
+    });
+    
+    this.vectors.set('help-message-limits', {
+      id: 'help-message-limits',
+      embedding: [0.55, 0.65, 0.75, 0.7, 0.8, 0.9, 0.7, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Message limits subscription tier messaging restrictions frequency length attachments',
+        category: 'help',
+        tags: ['messaging', 'limits', 'communication', 'tutorial'],
+        quality_score: 0.88,
+        title: 'Message Limits',
+        description: 'Understanding messaging restrictions by subscription tier',
+        url: '/help/articles/message-limits'
+      }
+    });
+    
+    this.vectors.set('help-messaging-tips', {
+      id: 'help-messaging-tips',
+      embedding: [0.5, 0.6, 0.7, 0.8, 0.9, 0.8, 0.7, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Messaging tips sending tips through messages tipping creators appreciation donations',
+        category: 'help',
+        tags: ['messaging', 'tips', 'payment', 'tutorial'],
+        quality_score: 0.89,
+        title: 'Messaging Tips',
+        description: 'How to send tips to creators through messages',
+        url: '/help/articles/messaging-tips'
+      }
+    });
+    
+    this.vectors.set('help-report-user-content', {
+      id: 'help-report-user-content',
+      embedding: [0.8, 0.7, 0.6, 0.5, 0.9, 0.8, 0.7, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Report user content inappropriate behavior violation community guidelines moderation',
+        category: 'help',
+        tags: ['report', 'safety', 'moderation', 'tutorial'],
+        quality_score: 0.92,
+        title: 'Report User Content',
+        description: 'How to report inappropriate content or behavior',
+        url: '/help/articles/report-user-content'
+      }
+    });
+    
+    this.vectors.set('help-community-guidelines', {
+      id: 'help-community-guidelines',
+      embedding: [0.85, 0.75, 0.65, 0.55, 0.9, 0.8, 0.7, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Community guidelines rules standards behavior content moderation safety respect',
+        category: 'help',
+        tags: ['guidelines', 'rules', 'community', 'tutorial'],
+        quality_score: 0.95,
+        title: 'Community Guidelines',
+        description: 'Understanding our community standards and rules',
+        url: '/help/articles/community-guidelines'
+      }
+    });
+    
+    this.vectors.set('help-pricing-strategies', {
+      id: 'help-pricing-strategies',
+      embedding: [0.7, 0.8, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
+      metadata: {
+        type: 'text',
+        content: 'Pricing strategies subscription tiers pricing models revenue optimization creator income',
+        category: 'help',
+        tags: ['pricing', 'strategy', 'creator', 'tutorial'],
+        quality_score: 0.9,
+        title: 'Pricing Strategies',
+        description: 'Tips for setting subscription and tip prices as a creator',
+        url: '/help/articles/pricing-strategies'
+      }
+    });
+    
+    this.vectors.set('help-scheduling-features', {
+      id: 'help-scheduling-features',
+      embedding: [0.65, 0.75, 0.85, 0.75, 0.65, 0.55, 0.7, 0.8],
+      metadata: {
+        type: 'text',
+        content: 'Scheduling features content calendar planned posts automatic publishing timed release',
+        category: 'help',
+        tags: ['scheduling', 'content', 'creator', 'tutorial'],
+        quality_score: 0.89,
+        title: 'Scheduling Features',
+        description: 'How to schedule and plan your content releases',
+        url: '/help/articles/scheduling-features'
+      }
+    });
+    
+    this.vectors.set('help-understanding-analytics', {
+      id: 'help-understanding-analytics',
+      embedding: [0.6, 0.7, 0.8, 0.7, 0.6, 0.5, 0.9, 0.8],
+      metadata: {
+        type: 'text',
+        content: 'Understanding analytics metrics statistics insights performance tracking growth data',
+        category: 'help',
+        tags: ['analytics', 'metrics', 'creator', 'tutorial'],
+        quality_score: 0.91,
+        title: 'Understanding Analytics',
+        description: 'How to interpret and use creator analytics',
+        url: '/help/articles/understanding-analytics'
+      }
+    });
+    
+    this.vectors.set('help-custom-commissions', {
+      id: 'help-custom-commissions',
+      embedding: [0.55, 0.65, 0.75, 0.85, 0.75, 0.65, 0.55, 0.45],
+      metadata: {
+        type: 'text',
+        content: 'Custom commissions personalized content requests pricing negotiation delivery process',
+        category: 'help',
+        tags: ['commissions', 'custom', 'creator', 'tutorial'],
+        quality_score: 0.88,
+        title: 'Custom Commissions',
+        description: 'How to offer and manage personalized content requests',
+        url: '/help/articles/custom-commissions'
+      }
+    });
+    
+    this.vectors.set('help-setting-up-creator-profile', {
+      id: 'help-setting-up-creator-profile',
+      embedding: [0.8, 0.7, 0.6, 0.5, 0.7, 0.8, 0.9, 0.7],
+      metadata: {
+        type: 'text',
+        content: 'Setting up creator profile bio description images banner profile picture tags categories',
+        category: 'help',
+        tags: ['profile', 'setup', 'creator', 'tutorial'],
+        quality_score: 0.92,
+        title: 'Setting Up Creator Profile',
+        description: 'Complete guide to creating an attractive creator profile',
+        url: '/help/articles/setting-up-creator-profile'
+      }
+    });
+    
+    this.vectors.set('help-supported-formats', {
+      id: 'help-supported-formats',
+      embedding: [0.7, 0.6, 0.5, 0.4, 0.8, 0.9, 0.7, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Supported file formats sizes image video audio text limitations restrictions upload',
+        category: 'help',
+        tags: ['formats', 'technical', 'upload', 'tutorial'],
+        quality_score: 0.9,
+        title: 'Supported Formats',
+        description: 'File formats and sizes supported on OnlyFur',
+        url: '/help/articles/supported-formats'
+      }
+    });
+    
+    this.vectors.set('help-upload-troubleshooting', {
+      id: 'help-upload-troubleshooting',
+      embedding: [0.65, 0.55, 0.45, 0.35, 0.75, 0.85, 0.95, 0.75],
+      metadata: {
+        type: 'text',
+        content: 'Upload troubleshooting problems errors failed uploads solutions fixes common issues',
+        category: 'help',
+        tags: ['troubleshooting', 'upload', 'technical', 'tutorial'],
+        quality_score: 0.88,
+        title: 'Upload Troubleshooting',
+        description: 'Solutions for common upload problems',
+        url: '/help/articles/upload-troubleshooting'
+      }
+    });
+    
+    this.vectors.set('help-video-quality', {
+      id: 'help-video-quality',
+      embedding: [0.6, 0.5, 0.4, 0.3, 0.7, 0.8, 0.9, 0.8],
+      metadata: {
+        type: 'text',
+        content: 'Video quality streaming resolution bitrate encoding compression optimization playback',
+        category: 'help',
+        tags: ['video', 'quality', 'technical', 'tutorial'],
+        quality_score: 0.89,
+        title: 'Video Quality',
+        description: 'Optimizing video content for the platform',
+        url: '/help/articles/video-quality'
+      }
+    });
+    
+    this.vectors.set('help-browser-compatibility', {
+      id: 'help-browser-compatibility',
+      embedding: [0.55, 0.45, 0.35, 0.25, 0.65, 0.75, 0.85, 0.95],
+      metadata: {
+        type: 'text',
+        content: 'Browser compatibility supported browsers chrome firefox safari edge requirements',
+        category: 'help',
+        tags: ['browser', 'compatibility', 'technical', 'tutorial'],
+        quality_score: 0.87,
+        title: 'Browser Compatibility',
+        description: 'Supported browsers and technical requirements',
+        url: '/help/articles/browser-compatibility'
       }
     });
   }

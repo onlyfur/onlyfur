@@ -28,9 +28,9 @@ const HelpCenter: React.FC = () => {
 
   const getArticleLink = (article: any) => {
     const articleLinks: { [key: string]: string } = {
-      'How to create your OnlyFur account': '/help/articles/create-account',
+      'How to create your OnlyFur account': '/help/articles/how-to-create-account',
       'Setting up your profile as a creator': '/help/articles/setting-up-creator-profile',
-      'Understanding subscription tiers': '/help/articles/subscription-tiers',
+      'Understanding subscription tiers': '/help/articles/subscription-tiers-overview',
       'Finding and following creators': '/help/articles/finding-creators',
       'Your first subscription - what to expect': '/help/articles/first-subscription',
       'Uploading and organizing your content': '/help/articles/upload-organize-content',
@@ -48,18 +48,19 @@ const HelpCenter: React.FC = () => {
       'How to message creators': '/help/articles/messaging-creators',
       'Message limits by subscription tier': '/help/articles/message-limits',
       'Sending tips through messages': '/help/articles/messaging-tips',
-      'Blocking and reporting users': '/help/articles/blocking-reporting',
+      'Blocking and reporting users': '/help/articles/report-user-content',
       'Creator bulk messaging features': '/help/articles/bulk-messaging',
       'Community guidelines overview': '/help/articles/community-guidelines',
       'Privacy settings and controls': '/help/articles/privacy-settings',
       'Content protection for creators': '/help/articles/content-protection',
-      'Reporting inappropriate content or behavior': '/help/articles/reporting-content',
+      'Reporting inappropriate content or behavior': '/help/articles/report-user-content',
       'Age verification process': '/help/articles/age-verification',
       'Supported file formats and sizes': '/help/articles/supported-formats',
       'Troubleshooting upload issues': '/help/articles/upload-troubleshooting',
       'Video quality and streaming': '/help/articles/video-quality',
       'Mobile app features and limitations': '/help/articles/mobile-app',
-      'Browser compatibility': '/help/articles/browser-compatibility'
+      'Browser compatibility': '/help/articles/browser-compatibility',
+      'Account security': '/help/articles/account-security'
     };
     
     return articleLinks[article.title] || '/help';
@@ -67,10 +68,16 @@ const HelpCenter: React.FC = () => {
 
   const getPopularArticleLink = (article: string) => {
     const popularLinks: { [key: string]: string } = {
-      'How to create your OnlyFur account': '/help/articles/create-account',
+      'How to create your OnlyFur account': '/help/articles/how-to-create-account',
       'Uploading and organizing your content': '/help/articles/upload-organize-content',
       'How payments work on OnlyFur': '/help/articles/payment-system',
-      'Community guidelines overview': '/help/articles/community-guidelines'
+      'Community guidelines overview': '/help/articles/community-guidelines',
+      'Creator earnings and payouts': '/help/articles/creator-earnings',
+      'Subscription renewal and cancellation': '/help/articles/subscription-management',
+      'How to message creators': '/help/articles/messaging-creators',
+      'Setting content privacy levels': '/help/articles/content-privacy-levels',
+      'Mobile app features and limitations': '/help/articles/mobile-app',
+      'Account security': '/help/articles/account-security'
     };
     
     return popularLinks[article] || '/help';
@@ -112,6 +119,11 @@ const HelpCenter: React.FC = () => {
         {
           title: 'Your first subscription - what to expect',
           description: 'Guide for new subscribers'
+        },
+        {
+          title: 'Account security',
+          description: 'Best practices for keeping your OnlyFur account secure',
+          popular: true
         }
       ]
     },
@@ -129,7 +141,8 @@ const HelpCenter: React.FC = () => {
         },
         {
           title: 'Setting content privacy levels',
-          description: 'Control who can see your content'
+          description: 'Control who can see your content',
+          popular: true
         },
         {
           title: 'Pricing strategies for creators',
@@ -146,6 +159,11 @@ const HelpCenter: React.FC = () => {
         {
           title: 'Custom content and commissions',
           description: 'Offer personalized content to subscribers'
+        },
+        {
+          title: 'Creator earnings and payouts',
+          description: 'Understanding how creators earn money and receive payments',
+          popular: true
         }
       ]
     },
@@ -166,12 +184,9 @@ const HelpCenter: React.FC = () => {
           description: 'Change credit cards and payment details'
         },
         {
-          title: 'Creator earnings and payouts',
-          description: 'How creators receive their earnings'
-        },
-        {
           title: 'Subscription renewal and cancellation',
-          description: 'Manage your subscription settings'
+          description: 'Manage your subscription settings',
+          popular: true
         },
         {
           title: 'Refund policy and requests',
@@ -192,7 +207,8 @@ const HelpCenter: React.FC = () => {
       articles: [
         {
           title: 'How to message creators',
-          description: 'Start conversations with your favorite creators'
+          description: 'Start conversations with your favorite creators',
+          popular: true
         },
         {
           title: 'Message limits by subscription tier',
@@ -263,7 +279,8 @@ const HelpCenter: React.FC = () => {
         },
         {
           title: 'Mobile app features and limitations',
-          description: 'Using OnlyFur on mobile devices'
+          description: 'Using OnlyFur on mobile devices',
+          popular: true
         },
         {
           title: 'Browser compatibility',
@@ -277,7 +294,13 @@ const HelpCenter: React.FC = () => {
     'How to create your OnlyFur account',
     'Uploading and organizing your content',
     'How payments work on OnlyFur',
-    'Community guidelines overview'
+    'Community guidelines overview',
+    'Creator earnings and payouts',
+    'Subscription renewal and cancellation',
+    'How to message creators',
+    'Setting content privacy levels',
+    'Mobile app features and limitations',
+    'Account security'
   ];
 
   const quickLinks = [
