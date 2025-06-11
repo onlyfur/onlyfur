@@ -4,7 +4,7 @@ import {
   Search, User, Hash, FileText, TrendingUp, Clock, X, Filter, 
   Mic, MicOff, Sparkles, Calendar, Tag, SortAsc, RotateCcw,
   AlertCircle, Volume2, Settings, Zap, Target, Brain, Eye,
-  Image, Camera, Upload, Cpu, Users, Activity, BarChart3
+  Image, Camera, Upload, Cpu, Users, Activity, BarChart3, Book
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ import { neuralSearchEngine, type NeuralSearchResult, type SearchContext } from 
 
 interface SearchResult {
   id: string;
-  type: 'creator' | 'content' | 'tag' | 'general';
+  type: 'creator' | 'content' | 'tag' | 'general' | 'help';
   title: string;
   subtitle?: string;
   thumbnail?: string;
@@ -35,6 +35,7 @@ interface SearchResult {
   createdAt?: string;
   tags?: string[];
   creatorType?: string;
+  description?: string;
 }
 
 interface SearchFilters {
@@ -330,6 +331,32 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
             result.relevanceScore = (result.relevanceScore || 0) * (1 + neuralMatch.relevance_score);
           }
         });
+        
+        // Add help center articles from neural search results
+        const helpArticles = neuralSearchResults
+          .filter(result => result.id.startsWith('help-'))
+          .map(result => {
+            const vector = neuralSearchEngine.getVectorById(result.id);
+            if (vector && vector.metadata.category === 'help') {
+              return {
+                id: result.id,
+                type: 'help' as const,
+                title: vector.metadata.title || 'Help Article',
+                description: vector.metadata.description || '',
+                subtitle: `Help Center • ${vector.metadata.tags.join(', ')}`,
+                url: vector.metadata.url || '/help',
+                badge: 'Help Article',
+                relevanceScore: result.relevance_score * 100,
+                tags: vector.metadata.tags,
+                thumbnail: '/images/branding/fox-mascot.webp'
+              };
+            }
+            return null;
+          })
+          .filter(Boolean) as SearchResult[];
+          
+        // Add help articles to search results
+        searchResults.push(...helpArticles);
       }
 
       // Apply neural boost scoring
@@ -504,14 +531,24 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
               <Avatar className="w-10 h-10">
                 <AvatarImage src={result.thumbnail} />
                 <AvatarFallback>
-                  {result.type === 'creator' ? <User className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                  {result.type === 'creator' ? (
+                    <User className="w-5 h-5" />
+                  ) : result.type === 'help' ? (
+                    <Book className="w-5 h-5 text-blue-500" />
+                  ) : (
+                    <FileText className="w-5 h-5" />
+                  )}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
                   <h3 className="font-medium text-sm truncate">{result.title}</h3>
                   {result.badge && (
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge 
+                      variant={result.type === 'help' ? "outline" : "secondary"} 
+                      className={`text-xs ${result.type === 'help' ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700' : ''}`}
+                    >
+                      {result.type === 'help' && <Book className="w-3 h-3 mr-1" />}
                       {result.badge}
                     </Badge>
                   )}
@@ -530,6 +567,11 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                 {result.subtitle && (
                   <p className="text-xs text-muted-foreground truncate mt-1">
                     {result.subtitle}
+                  </p>
+                )}
+                {result.type === 'help' && result.description && (
+                  <p className="text-xs text-blue-600 mt-1">
+                    {result.description}
                   </p>
                 )}
                 {searchMode === 'neural' && neuralMatch && neuralMatch.explanation && (

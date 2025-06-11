@@ -262,7 +262,7 @@ const Landing: React.FC = () => {
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2" asChild>
                   <Link to="/register">
-                    Start Creating Free
+                    Start Creating for Free
                   </Link>
                 </Button>
               </div>

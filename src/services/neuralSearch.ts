@@ -7,6 +7,9 @@ interface NeuralSearchVector {
     category: string;
     tags: string[];
     quality_score: number;
+    title?: string;
+    description?: string;
+    url?: string;
   };
 }
 
@@ -104,6 +107,127 @@ class NeuralSearchEngine {
         category: 'tutorial',
         tags: ['fursuit', 'tutorial', 'crafting'],
         quality_score: 0.85
+      }
+    });
+
+    // Help center articles
+    this.vectors.set('help-account-creation', {
+      id: 'help-account-creation',
+      embedding: [0.85, 0.75, 0.65, 0.55, 0.8, 0.7, 0.6, 0.5],
+      metadata: {
+        type: 'text',
+        content: 'How to create your OnlyFur account registration sign up email verification username password profile',
+        category: 'help',
+        tags: ['account', 'registration', 'getting-started', 'tutorial'],
+        quality_score: 0.95,
+        title: 'How to Create Your OnlyFur Account',
+        description: 'Step-by-step guide to creating your account and joining the OnlyFur community',
+        url: '/help/articles/HowToCreateAccount'
+      }
+    });
+
+    this.vectors.set('help-subscription-management', {
+      id: 'help-subscription-management',
+      embedding: [0.7, 0.85, 0.75, 0.65, 0.6, 0.8, 0.7, 0.5],
+      metadata: {
+        type: 'text',
+        content: 'Managing subscriptions billing payment methods cancel subscription renew subscription tiers pricing',
+        category: 'help',
+        tags: ['subscription', 'billing', 'payment', 'tutorial'],
+        quality_score: 0.92,
+        title: 'Subscription Management',
+        description: 'Learn how to manage your subscriptions, billing, and payment methods',
+        url: '/help/articles/SubscriptionManagement'
+      }
+    });
+
+    this.vectors.set('help-content-privacy', {
+      id: 'help-content-privacy',
+      embedding: [0.65, 0.75, 0.85, 0.7, 0.6, 0.5, 0.8, 0.7],
+      metadata: {
+        type: 'text',
+        content: 'Content privacy levels public private subscribers only premium content exclusive content',
+        category: 'help',
+        tags: ['privacy', 'content', 'security', 'tutorial'],
+        quality_score: 0.9,
+        title: 'Content Privacy Levels',
+        description: 'Understanding the different privacy levels for your content',
+        url: '/help/articles/ContentPrivacyLevels'
+      }
+    });
+
+    this.vectors.set('help-messaging-creators', {
+      id: 'help-messaging-creators',
+      embedding: [0.6, 0.7, 0.8, 0.85, 0.75, 0.65, 0.55, 0.45],
+      metadata: {
+        type: 'text',
+        content: 'Messaging creators direct messages chat communication limits tips etiquette',
+        category: 'help',
+        tags: ['messaging', 'communication', 'creators', 'tutorial'],
+        quality_score: 0.88,
+        title: 'Messaging Creators',
+        description: 'How to communicate with creators through the platform',
+        url: '/help/articles/MessagingCreators'
+      }
+    });
+
+    this.vectors.set('help-creator-earnings', {
+      id: 'help-creator-earnings',
+      embedding: [0.55, 0.65, 0.75, 0.85, 0.8, 0.7, 0.6, 0.5],
+      metadata: {
+        type: 'text',
+        content: 'Creator earnings revenue payout payment methods subscription income tips donations',
+        category: 'help',
+        tags: ['earnings', 'revenue', 'creator', 'tutorial'],
+        quality_score: 0.91,
+        title: 'Creator Earnings',
+        description: 'Understanding how creators earn money and receive payments',
+        url: '/help/articles/CreatorEarnings'
+      }
+    });
+
+    this.vectors.set('help-account-security', {
+      id: 'help-account-security',
+      embedding: [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2],
+      metadata: {
+        type: 'text',
+        content: 'Account security password two-factor authentication 2FA email verification secure login',
+        category: 'help',
+        tags: ['security', 'account', 'privacy', 'tutorial'],
+        quality_score: 0.94,
+        title: 'Account Security',
+        description: 'Best practices for keeping your OnlyFur account secure',
+        url: '/help/articles/AccountSecurity'
+      }
+    });
+
+    this.vectors.set('help-mobile-app', {
+      id: 'help-mobile-app',
+      embedding: [0.5, 0.6, 0.7, 0.8, 0.9, 0.8, 0.7, 0.6],
+      metadata: {
+        type: 'text',
+        content: 'Mobile app iOS Android smartphone tablet features notifications settings',
+        category: 'help',
+        tags: ['mobile', 'app', 'ios', 'android', 'tutorial'],
+        quality_score: 0.89,
+        title: 'Mobile App',
+        description: 'Guide to using the OnlyFur mobile application',
+        url: '/help/articles/MobileApp'
+      }
+    });
+
+    this.vectors.set('help-upload-content', {
+      id: 'help-upload-content',
+      embedding: [0.75, 0.65, 0.55, 0.45, 0.85, 0.75, 0.65, 0.55],
+      metadata: {
+        type: 'text',
+        content: 'Upload organize content photos videos text posts scheduling folders tags',
+        category: 'help',
+        tags: ['upload', 'content', 'creator', 'tutorial'],
+        quality_score: 0.93,
+        title: 'Upload & Organize Content',
+        description: 'How to upload and organize your content as a creator',
+        url: '/help/articles/UploadOrganizeContent'
       }
     });
   }
@@ -408,6 +532,11 @@ class NeuralSearchEngine {
     } else {
       return 'General relevance to your search query';
     }
+  }
+
+  // Get vector by ID (public method for external use)
+  getVectorById(id: string): NeuralSearchVector | undefined {
+    return this.vectors.get(id);
   }
 
   // Update user model based on interactions
