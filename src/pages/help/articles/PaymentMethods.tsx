@@ -485,6 +485,12 @@ const PaymentMethods: React.FC = () => {
                   <Receipt className="mr-2 h-4 w-4" />
                   Manage Billing
                 </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
