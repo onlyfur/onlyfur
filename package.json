@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-  "build": "tsc --noEmit --pretty && vite build",
+    "build": "tsc --noEmit --pretty && vite build",
     "preview": "vite preview",
     "server:dev": "ts-node-dev --respawn --transpile-only server/production-server.ts",
     "server:prod": "node dist/server/production-server.js",
@@ -42,6 +42,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.4",
+    "framer-motion": "^12.17.0",
     "google-auth-library": "^10.0.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
