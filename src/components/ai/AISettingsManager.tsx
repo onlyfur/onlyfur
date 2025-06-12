@@ -843,4 +843,4 @@ export default function AISettingsManager() {
                             <IconComponent className={`w-5 h-5 ${model.enabled ? 'text-green-600' : 'text-gray-600'}`} />
                           </div>
                           <div>
-                            <h
+                            <h3></h3>
