@@ -40,7 +40,7 @@ const SearchFeatures: React.FC = () => {
       icon: Sparkles,
       title: 'Personalized Results',
       description: 'Results tailored to your interests',
-      details: 'Our search engine learns from your interactions to deliver more personalized results over time, helping you discover content you'll love.'
+      details: 'Our search engine learns from your interactions to deliver more personalized results over time, helping you discover content you\'ll love.'
     }
   ];
 
