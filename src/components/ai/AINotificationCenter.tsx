@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import {
   Bell,
   BellOff,
@@ -77,8 +76,7 @@ export default function AINotificationCenter() {
   const [activeTab, setActiveTab] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock AI notifications
-  const generateAINotifications = (): AINotification[] => {
+  const generateAINotifications = useCallback((): AINotification[] => {
     return [
       {
         id: '1',
@@ -189,7 +187,7 @@ export default function AINotificationCenter() {
         }
       }
     ];
-  };
+  }, []);
 
   useEffect(() => {
     // Simulate loading AI notifications
@@ -197,9 +195,9 @@ export default function AINotificationCenter() {
       setNotifications(generateAINotifications());
       setIsLoading(false);
     }, 1000);
-  }, []);
+  }, [generateAINotifications]);
 
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = useCallback((type: string) => {
     switch (type) {
       case 'insight': return Brain;
       case 'opportunity': return TrendingUp;
@@ -208,9 +206,9 @@ export default function AINotificationCenter() {
       case 'recommendation': return Lightbulb;
       default: return Bell;
     }
-  };
+  }, []);
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority) {
       case 'urgent': return 'border-red-500 bg-red-50';
       case 'high': return 'border-orange-500 bg-orange-50';
@@ -218,9 +216,9 @@ export default function AINotificationCenter() {
       case 'low': return 'border-gray-500 bg-gray-50';
       default: return 'border-gray-300 bg-white';
     }
-  };
+  }, []);
 
-  const getPriorityBadgeColor = (priority: string) => {
+  const getPriorityBadgeColor = useCallback((priority: string) => {
     switch (priority) {
       case 'urgent': return 'bg-red-100 text-red-800';
       case 'high': return 'bg-orange-100 text-orange-800';
@@ -228,9 +226,9 @@ export default function AINotificationCenter() {
       case 'low': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
+  }, []);
 
-  const formatTimeAgo = (timestamp: Date) => {
+  const formatTimeAgo = useCallback((timestamp: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - timestamp.getTime();
     const diffMins = Math.floor(diffMs / (1000 * 60));
@@ -244,24 +242,37 @@ export default function AINotificationCenter() {
     } else {
       return `${diffDays}d ago`;
     }
-  };
+  }, []);
 
-  const markAsRead = (id: string) => {
+  const markAsRead = useCallback((id: string) => {
     setNotifications(prev => prev.map(notif =>
       notif.id === id ? { ...notif, read: true } : notif
     ));
-  };
+  }, []);
 
-  const dismissNotification = (id: string) => {
+  const dismissNotification = useCallback((id: string) => {
     setNotifications(prev => prev.map(notif =>
       notif.id === id ? { ...notif, dismissed: true } : notif
     ));
-  };
+  }, []);
 
-  const filterNotifications = (filter: string) => {
+  const filterNotifications = useCallback((filter: string) => {
     if (filter === 'all') return notifications.filter(n => !n.dismissed);
     return notifications.filter(n => n.type === filter && !n.dismissed);
-  };
+  }, [notifications]);
+
+  const handleActionClick = useCallback((notification: AINotification) => {
+    if (notification.action?.handler) {
+      notification.action.handler();
+    } else if (notification.action?.url) {
+      console.log('Navigate to:', notification.action.url);
+    }
+    markAsRead(notification.id);
+  }, [markAsRead]);
+
+  const handleSettingChange = useCallback((key: string, checked: boolean) => {
+    setSettings(prev => ({ ...prev, [key]: checked }));
+  }, []);
 
   const unreadCount = notifications.filter(n => !n.read && !n.dismissed).length;
   const urgentCount = notifications.filter(n => n.priority === 'urgent' && !n.dismissed).length;
@@ -279,6 +290,15 @@ export default function AINotificationCenter() {
       </div>
     );
   }
+
+  const tabOptions = [
+    { value: 'all', label: 'All', icon: Bell },
+    { value: 'insight', label: 'Insights', icon: Brain },
+    { value: 'opportunity', label: 'Opportunities', icon: TrendingUp },
+    { value: 'alert', label: 'Alerts', icon: AlertTriangle },
+    { value: 'achievement', label: 'Achievements', icon: Award },
+    { value: 'recommendation', label: 'Tips', icon: Lightbulb }
+  ];
 
   return (
     <div className="space-y-6">
@@ -313,146 +333,140 @@ export default function AINotificationCenter() {
         </Button>
       </motion.div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="insight">Insights</TabsTrigger>
-          <TabsTrigger value="opportunity">Opportunities</TabsTrigger>
-          <TabsTrigger value="alert">Alerts</TabsTrigger>
-          <TabsTrigger value="achievement">Achievements</TabsTrigger>
-          <TabsTrigger value="recommendation">Tips</TabsTrigger>
-        </TabsList>
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-2">
+        {tabOptions.map(({ value, label, icon: Icon }) => (
+          <Button
+            key={value}
+            variant={activeTab === value ? 'default' : 'outline'}
+            onClick={() => setActiveTab(value)}
+            className="flex items-center space-x-2"
+            size="sm"
+          >
+            <Icon className="w-4 h-4" />
+            <span>{label}</span>
+          </Button>
+        ))}
+      </div>
 
-        {/* Notifications List */}
-        {['all', 'insight', 'opportunity', 'alert', 'achievement', 'recommendation'].map(tabValue => (
-          <TabsContent key={tabValue} value={tabValue} className="space-y-4">
-            <AnimatePresence>
-              {filterNotifications(tabValue).length === 0 ? (
+      {/* Notifications List */}
+      <div className="space-y-4">
+        <AnimatePresence>
+          {filterNotifications(activeTab).length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                No notifications
+              </h3>
+              <p className="text-gray-500">
+                Your AI assistant will notify you of important insights and opportunities.
+              </p>
+            </motion.div>
+          ) : (
+            filterNotifications(activeTab).map((notification, index) => {
+              const IconComponent = getNotificationIcon(notification.type);
+              return (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-12"
+                  key={notification.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -300 }}
+                  transition={{ delay: index * 0.05 }}
+                  className={`border-l-4 ${getPriorityColor(notification.priority)} ${!notification.read ? 'bg-opacity-100' : 'bg-opacity-50'}`}
                 >
-                  <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                    No notifications
-                  </h3>
-                  <p className="text-gray-500">
-                    Your AI assistant will notify you of important insights and opportunities.
-                  </p>
-                </motion.div>
-              ) : (
-                filterNotifications(tabValue).map((notification, index) => {
-                  const IconComponent = getNotificationIcon(notification.type);
-                  return (
-                    <motion.div
-                      key={notification.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -300 }}
-                      transition={{ delay: index * 0.05 }}
-                      className={`border-l-4 ${getPriorityColor(notification.priority)} ${!notification.read ? 'bg-opacity-100' : 'bg-opacity-50'}`}
-                    >
-                      <Card className="border-l-0">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-3">
-                              <div className={`p-2 rounded-full ${notification.priority === 'urgent' ? 'bg-red-100' : 'bg-purple-100'}`}>
-                                <IconComponent className={`w-5 h-5 ${notification.priority === 'urgent' ? 'text-red-600' : 'text-purple-600'}`} />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-1">
-                                  <CardTitle className="text-lg">{notification.title}</CardTitle>
-                                  <Badge className={getPriorityBadgeColor(notification.priority)}>
-                                    {notification.priority}
-                                  </Badge>
-                                  {notification.metadata?.confidence && (
-                                    <Badge variant="secondary" className="text-xs">
-                                      {notification.metadata.confidence}% confidence
-                                    </Badge>
-                                  )}
-                                </div>
-                                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                                  <Clock className="w-3 h-3" />
-                                  <span>{formatTimeAgo(notification.timestamp)}</span>
-                                  <span>•</span>
-                                  <span className="capitalize">{notification.type}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              {!notification.read && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => markAsRead(notification.id)}
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <CheckCircle className="w-4 h-4" />
-                                </Button>
+                  <Card className="border-l-0">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3">
+                          <div className={`p-2 rounded-full ${notification.priority === 'urgent' ? 'bg-red-100' : 'bg-purple-100'}`}>
+                            <IconComponent className={`w-5 h-5 ${notification.priority === 'urgent' ? 'text-red-600' : 'text-purple-600'}`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <CardTitle className="text-lg">{notification.title}</CardTitle>
+                              <Badge className={getPriorityBadgeColor(notification.priority)}>
+                                {notification.priority}
+                              </Badge>
+                              {notification.metadata?.confidence && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {notification.metadata.confidence}% confidence
+                                </Badge>
                               )}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => dismissNotification(notification.id)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
+                            </div>
+                            <div className="flex items-center space-x-2 text-sm text-gray-500">
+                              <Clock className="w-3 h-3" />
+                              <span>{formatTimeAgo(notification.timestamp)}</span>
+                              <span>•</span>
+                              <span className="capitalize">{notification.type}</span>
                             </div>
                           </div>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <p className="text-gray-700 mb-4">{notification.message}</p>
-                          
-                          {/* Metadata */}
-                          {notification.metadata && (
-                            <div className="flex items-center space-x-4 mb-4 text-sm">
-                              {notification.metadata.change && (
-                                <div className="flex items-center space-x-1">
-                                  {notification.metadata.trend === 'up' ? (
-                                    <TrendingUp className="w-4 h-4 text-green-600" />
-                                  ) : (
-                                    <TrendingUp className="w-4 h-4 text-red-600 rotate-180" />
-                                  )}
-                                  <span className={notification.metadata.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
-                                    {notification.metadata.change > 0 ? '+' : ''}{notification.metadata.change}
-                                    {notification.metadata.metric?.includes('revenue') ? '$' : '%'}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Action Button */}
-                          {notification.actionable && notification.action && (
-                            <Button 
-                              className="w-full sm:w-auto"
-                              onClick={() => {
-                                if (notification.action?.handler) {
-                                  notification.action.handler();
-                                } else if (notification.action?.url) {
-                                  // Navigate to URL
-                                  console.log('Navigate to:', notification.action.url);
-                                }
-                                markAsRead(notification.id);
-                              }}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {!notification.read && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => markAsRead(notification.id)}
+                              className="h-8 w-8 p-0"
                             >
-                              <Zap className="w-4 h-4 mr-2" />
-                              {notification.action.label}
+                              <CheckCircle className="w-4 h-4" />
                             </Button>
                           )}
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  );
-                })
-              )}
-            </AnimatePresence>
-          </TabsContent>
-        ))}
-      </Tabs>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => dismissNotification(notification.id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <p className="text-gray-700 mb-4">{notification.message}</p>
+                      
+                      {/* Metadata */}
+                      {notification.metadata && (
+                        <div className="flex items-center space-x-4 mb-4 text-sm">
+                          {notification.metadata.change && (
+                            <div className="flex items-center space-x-1">
+                              {notification.metadata.trend === 'up' ? (
+                                <TrendingUp className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <TrendingUp className="w-4 h-4 text-red-600 rotate-180" />
+                              )}
+                              <span className={notification.metadata.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+                                {notification.metadata.change > 0 ? '+' : ''}{notification.metadata.change}
+                                {notification.metadata.metric?.includes('revenue') ? '$' : '%'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Action Button */}
+                      {notification.actionable && notification.action && (
+                        <Button 
+                          className="w-full sm:w-auto"
+                          onClick={() => handleActionClick(notification)}
+                        >
+                          <Zap className="w-4 h-4 mr-2" />
+                          {notification.action.label}
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Quick Settings */}
       <Card>
@@ -474,9 +488,7 @@ export default function AINotificationCenter() {
                 </label>
                 <Switch
                   checked={value}
-                  onCheckedChange={(checked) => 
-                    setSettings(prev => ({ ...prev, [key]: checked }))
-                  }
+                  onCheckedChange={(checked) => handleSettingChange(key, checked)}
                 />
               </div>
             ))}

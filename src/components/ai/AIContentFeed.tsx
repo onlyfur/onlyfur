@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Progress } from '../ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import {
   Brain,
   Sparkles,
@@ -69,11 +68,9 @@ export default function AIContentFeed() {
   const [content, setContent] = useState<AIContent[]>([]);
   const [filter, setFilter] = useState('all');
 
-  // Simulate fetching content
-  const fetchContent = async () => {
+  const fetchContent = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Simulated API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       const mockContent: AIContent[] = [
@@ -121,7 +118,49 @@ export default function AIContentFeed() {
           trending: true,
           createdAt: '2024-01-19T15:45:00Z'
         },
-        // Add more mock content items as needed
+        {
+          id: '3',
+          type: 'text',
+          title: 'AI-Generated Story',
+          description: 'An engaging story created with AI assistance',
+          creator: {
+            name: 'StoryTeller',
+            avatar: '/avatars/writer1.jpg',
+            verified: false
+          },
+          tags: ['story', 'fiction', 'ai-writing'],
+          stats: {
+            likes: 890,
+            comments: 67,
+            shares: 23,
+            views: 8500
+          },
+          aiScore: 88,
+          trending: false,
+          createdAt: '2024-01-18T09:15:00Z'
+        },
+        {
+          id: '4',
+          type: 'audio',
+          title: 'AI Music Composition',
+          description: 'Beautiful ambient music created with AI',
+          creator: {
+            name: 'MusicAI',
+            avatar: '/avatars/musician1.jpg',
+            verified: true
+          },
+          thumbnail: '/thumbnails/music1.jpg',
+          tags: ['music', 'ambient', 'ai-composition'],
+          stats: {
+            likes: 1560,
+            comments: 98,
+            shares: 67,
+            views: 12000
+          },
+          aiScore: 91,
+          trending: true,
+          createdAt: '2024-01-17T14:30:00Z'
+        }
       ];
 
       setContent(mockContent);
@@ -130,13 +169,13 @@ export default function AIContentFeed() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchContent();
-  }, [activeTab, filter]);
+  }, [fetchContent, activeTab, filter]);
 
-  const formatNumber = (num: number): string => {
+  const formatNumber = useCallback((num: number): string => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
     }
@@ -144,9 +183,9 @@ export default function AIContentFeed() {
       return (num / 1000).toFixed(1) + 'K';
     }
     return num.toString();
-  };
+  }, []);
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = useCallback((type: string) => {
     switch (type) {
       case 'image': return <ImageIcon className="w-4 h-4" />;
       case 'video': return <VideoIcon className="w-4 h-4" />;
@@ -154,7 +193,35 @@ export default function AIContentFeed() {
       case 'audio': return <Mic className="w-4 h-4" />;
       default: return <FileText className="w-4 h-4" />;
     }
-  };
+  }, []);
+
+  const handleFilterChange = useCallback((newFilter: string) => {
+    setFilter(newFilter);
+  }, []);
+
+  const handleTabChange = useCallback((newTab: string) => {
+    setActiveTab(newTab);
+  }, []);
+
+  const filteredContent = useCallback(() => {
+    if (filter === 'all') return content;
+    return content.filter(item => item.type === filter);
+  }, [content, filter]);
+
+  const tabOptions = [
+    { value: 'trending', label: 'Trending', icon: TrendingUp },
+    { value: 'latest', label: 'Latest', icon: Clock },
+    { value: 'following', label: 'Following', icon: Users },
+    { value: 'favorites', label: 'Favorites', icon: Star }
+  ];
+
+  const filterOptions = [
+    { value: 'all', label: 'All' },
+    { value: 'image', label: 'Images' },
+    { value: 'video', label: 'Videos' },
+    { value: 'text', label: 'Text' },
+    { value: 'audio', label: 'Audio' }
+  ];
 
   return (
     <div className="space-y-6">
@@ -176,66 +243,40 @@ export default function AIContentFeed() {
         </p>
       </motion.div>
 
-      {/* Tabs and Filters */}
+      {/* Tab Navigation */}
       <div className="space-y-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="trending" className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>Trending</span>
-            </TabsTrigger>
-            <TabsTrigger value="latest" className="flex items-center space-x-2">
-              <Clock className="w-4 h-4" />
-              <span>Latest</span>
-            </TabsTrigger>
-            <TabsTrigger value="following" className="flex items-center space-x-2">
-              <Users className="w-4 h-4" />
-              <span>Following</span>
-            </TabsTrigger>
-            <TabsTrigger value="favorites" className="flex items-center space-x-2">
-              <Star className="w-4 h-4" />
-              <span>Favorites</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex flex-wrap gap-2">
+          {tabOptions.map(({ value, label, icon: Icon }) => (
+            <Button
+              key={value}
+              variant={activeTab === value ? 'default' : 'outline'}
+              onClick={() => handleTabChange(value)}
+              className="flex items-center space-x-2"
+              size="sm"
+            >
+              <Icon className="w-4 h-4" />
+              <span>{label}</span>
+            </Button>
+          ))}
+        </div>
 
+        {/* Filter Options */}
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center space-x-2"
-            onClick={() => setFilter('all')}
-          >
-            <Filter className="w-4 h-4" />
-            <span>Filter</span>
-            <ChevronDown className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Filter className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-600">Filter:</span>
+          </div>
           
-          <Badge variant={filter === 'all' ? 'default' : 'secondary'} 
-                className="cursor-pointer"
-                onClick={() => setFilter('all')}>
-            All
-          </Badge>
-          <Badge variant={filter === 'image' ? 'default' : 'secondary'}
-                className="cursor-pointer"
-                onClick={() => setFilter('image')}>
-            Images
-          </Badge>
-          <Badge variant={filter === 'video' ? 'default' : 'secondary'}
-                className="cursor-pointer"
-                onClick={() => setFilter('video')}>
-            Videos
-          </Badge>
-          <Badge variant={filter === 'text' ? 'default' : 'secondary'}
-                className="cursor-pointer"
-                onClick={() => setFilter('text')}>
-            Text
-          </Badge>
-          <Badge variant={filter === 'audio' ? 'default' : 'secondary'}
-                className="cursor-pointer"
-                onClick={() => setFilter('audio')}>
-            Audio
-          </Badge>
+          {filterOptions.map(({ value, label }) => (
+            <Badge
+              key={value}
+              variant={filter === value ? 'default' : 'secondary'}
+              className="cursor-pointer hover:bg-opacity-80 transition-colors"
+              onClick={() => handleFilterChange(value)}
+            >
+              {label}
+            </Badge>
+          ))}
         </div>
       </div>
 
@@ -251,7 +292,7 @@ export default function AIContentFeed() {
             animate={{ opacity: 1 }}
             className="grid grid-cols-1 gap-6"
           >
-            {content.map((item, index) => (
+            {filteredContent().map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -270,12 +311,26 @@ export default function AIContentFeed() {
                           <div className="flex items-center space-x-2">
                             <CardTitle className="text-lg">{item.creator.name}</CardTitle>
                             {item.creator.verified && (
-                              <Badge variant="secondary">
+                              <Badge variant="secondary" className="flex items-center space-x-1">
                                 <CheckCircle className="w-3 h-3" />
+                                <span className="text-xs">Verified</span>
+                              </Badge>
+                            )}
+                            {item.trending && (
+                              <Badge className="bg-orange-100 text-orange-800 flex items-center space-x-1">
+                                <TrendingUp className="w-3 h-3" />
+                                <span className="text-xs">Trending</span>
                               </Badge>
                             )}
                           </div>
-                          <CardDescription>{new Date(item.createdAt).toLocaleDateString()}</CardDescription>
+                          <div className="flex items-center space-x-2 text-sm text-gray-500">
+                            <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                            <span>•</span>
+                            <div className="flex items-center space-x-1">
+                              {getTypeIcon(item.type)}
+                              <span className="capitalize">{item.type}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <Button variant="ghost" size="icon">
@@ -296,10 +351,21 @@ export default function AIContentFeed() {
                           src={item.thumbnail}
                           alt={item.title}
                           className="object-cover w-full h-full"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://via.placeholder.com/600x400/f3f4f6/9ca3af?text=${item.type.toUpperCase()}`;
+                          }}
                         />
                         {item.type === 'video' && (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <Button size="icon" variant="secondary" className="w-12 h-12 rounded-full">
+                            <Button size="icon" variant="secondary" className="w-12 h-12 rounded-full bg-white/90 hover:bg-white">
+                              <Play className="w-6 h-6" />
+                            </Button>
+                          </div>
+                        )}
+                        {item.type === 'audio' && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                            <Button size="icon" variant="secondary" className="w-12 h-12 rounded-full bg-white/90 hover:bg-white">
                               <Play className="w-6 h-6" />
                             </Button>
                           </div>
@@ -310,7 +376,7 @@ export default function AIContentFeed() {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-2">
                       {item.tags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge key={tag} variant="secondary" className="text-xs hover:bg-purple-100 cursor-pointer">
                           #{tag}
                         </Badge>
                       ))}
@@ -319,15 +385,15 @@ export default function AIContentFeed() {
                     {/* Stats and Actions */}
                     <div className="flex items-center justify-between pt-4">
                       <div className="flex items-center space-x-4">
-                        <Button variant="ghost" size="sm" className="space-x-2">
+                        <Button variant="ghost" size="sm" className="space-x-2 hover:text-red-500">
                           <Heart className="w-4 h-4" />
                           <span>{formatNumber(item.stats.likes)}</span>
                         </Button>
-                        <Button variant="ghost" size="sm" className="space-x-2">
+                        <Button variant="ghost" size="sm" className="space-x-2 hover:text-blue-500">
                           <MessageSquare className="w-4 h-4" />
                           <span>{formatNumber(item.stats.comments)}</span>
                         </Button>
-                        <Button variant="ghost" size="sm" className="space-x-2">
+                        <Button variant="ghost" size="sm" className="space-x-2 hover:text-green-500">
                           <Share2 className="w-4 h-4" />
                           <span>{formatNumber(item.stats.shares)}</span>
                         </Button>
@@ -337,7 +403,7 @@ export default function AIContentFeed() {
                           <Eye className="w-4 h-4" />
                           <span>{formatNumber(item.stats.views)}</span>
                         </div>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="hover:text-yellow-500">
                           <Bookmark className="w-4 h-4" />
                         </Button>
                       </div>
@@ -345,10 +411,16 @@ export default function AIContentFeed() {
 
                     {/* AI Score */}
                     {item.aiScore > 0 && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600 bg-purple-50 p-3 rounded-lg">
                         <Brain className="w-4 h-4 text-purple-600" />
-                        <span>AI Score: {item.aiScore}%</span>
+                        <span className="font-medium">AI Quality Score: {item.aiScore}%</span>
                         <Progress value={item.aiScore} className="w-24 h-2" />
+                        {item.aiScore >= 90 && (
+                          <Badge className="bg-purple-100 text-purple-800 text-xs">
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            Excellent
+                          </Badge>
+                        )}
                       </div>
                     )}
                   </CardContent>
@@ -360,22 +432,45 @@ export default function AIContentFeed() {
       </AnimatePresence>
 
       {/* Load More Button */}
-      <div className="flex justify-center pt-6">
-        <Button
-          variant="outline"
-          size="lg"
-          className="space-x-2"
-          onClick={() => fetchContent()}
-          disabled={isLoading}
+      {!isLoading && filteredContent().length > 0 && (
+        <div className="flex justify-center pt-6">
+          <Button
+            variant="outline"
+            size="lg"
+            className="space-x-2"
+            onClick={fetchContent}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
+            <span>Load More Content</span>
+          </Button>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && filteredContent().length === 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-12"
         >
-          {isLoading ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
-          ) : (
-            <RefreshCw className="w-4 h-4" />
-          )}
-          <span>Load More</span>
-        </Button>
-      </div>
+          <Brain className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">
+            No content found
+          </h3>
+          <p className="text-gray-500 mb-4">
+            Try adjusting your filters or check back later for new content.
+          </p>
+          <Button onClick={fetchContent} variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh Feed
+          </Button>
+        </motion.div>
+      )}
     </div>
   );
 }
