@@ -25,10 +25,21 @@ const toastVariants = cva(
   }
 )
 
+const toastState = {
+  toasts: [] as ToastProps[],
+  setToasts: (toasts: ToastProps[]) => {
+    toastState.toasts = toasts;
+  }
+};
+
+export const toast = ({ title, description, variant = "default" }: ToastProps) => {
+  toastState.setToasts([...toastState.toasts, { title, description, variant }]);
+};
+
 export function useToast() {
   const [toasts, setToasts] = React.useState<ToastProps[]>([])
 
-  const toast = React.useCallback(({ title, description, variant = "default" }: ToastProps) => {
+  const toastFn = React.useCallback(({ title, description, variant = "default" }: ToastProps) => {
     setToasts((prev) => [...prev, { title, description, variant }])
   }, [])
 
@@ -57,5 +68,5 @@ export function useToast() {
     )
   }
 
-  return { toast, Toaster }
+  return { toast: toastFn, Toaster }
 }

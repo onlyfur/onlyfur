@@ -103,6 +103,7 @@ import CreatorEarnings from '@/pages/help/articles/CreatorEarnings';
 import LiveStreamingStudio from '@/pages/creator/LiveStreamingStudio';
 import AdvancedAnalyticsV2 from '@/pages/creator/AdvancedAnalyticsV2';
 import AIContentAssistant from '@/pages/creator/AIContentAssistant';
+import AIContentCreationStudio from '@/components/ai/AIContentCreationStudio';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -408,6 +409,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AIContentAssistant />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="creator/ai-studio"
+                element={
+                  <ProtectedRoute>
+                    <AIContentCreationStudio />
                   </ProtectedRoute>
                 }
               />

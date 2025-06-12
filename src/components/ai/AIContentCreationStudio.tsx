@@ -25,7 +25,7 @@ import {
   Clock,
   Zap
 } from 'lucide-react';
-import { AnimatedLoader } from '../ui/AnimatedLoader';
+import AnimatedLoader from '../ui/AnimatedLoader';
 
 interface ContentSuggestion {
   id: string;
@@ -221,4 +221,327 @@ export default function AIContentCreationStudio() {
   };
 
   return (
-    <div className=\"space-y-6\">\n      {/* Header */}\n      <motion.div\n        initial={{ opacity: 0, y: 20 }}\n        animate={{ opacity: 1, y: 0 }}\n        className=\"text-center space-y-4\"\n      >\n        <div className=\"flex items-center justify-center space-x-2\">\n          <Wand2 className=\"w-8 h-8 text-purple-600\" />\n          <h1 className=\"text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent\">\n            AI Content Creation Studio\n          </h1>\n          <Sparkles className=\"w-8 h-8 text-purple-600\" />\n        </div>\n        <p className=\"text-gray-600 max-w-2xl mx-auto\">\n          Powered by advanced AI, get personalized content suggestions, analyze your ideas, \n          and optimize your content strategy for maximum engagement and revenue.\n        </p>\n      </motion.div>\n\n      {/* Main Content */}\n      <Tabs value={activeTab} onValueChange={setActiveTab} className=\"w-full\">\n        <TabsList className=\"grid w-full grid-cols-3\">\n          <TabsTrigger value=\"suggestions\" className=\"flex items-center space-x-2\">\n            <Sparkles className=\"w-4 h-4\" />\n            <span>AI Suggestions</span>\n          </TabsTrigger>\n          <TabsTrigger value=\"analyzer\" className=\"flex items-center space-x-2\">\n            <BarChart3 className=\"w-4 h-4\" />\n            <span>Content Analyzer</span>\n          </TabsTrigger>\n          <TabsTrigger value=\"planner\" className=\"flex items-center space-x-2\">\n            <Clock className=\"w-4 h-4\" />\n            <span>Content Planner</span>\n          </TabsTrigger>\n        </TabsList>\n\n        {/* AI Suggestions Tab */}\n        <TabsContent value=\"suggestions\" className=\"space-y-6\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Zap className=\"w-5 h-5\" />\n                <span>Generate New Ideas</span>\n              </CardTitle>\n              <CardDescription>\n                Describe your interests or let AI surprise you with trending content ideas\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-4\">\n              <div className=\"flex space-x-2\">\n                <Input\n                  placeholder=\"Enter topic, character type, or leave blank for trending suggestions...\"\n                  value={userInput}\n                  onChange={(e) => setUserInput(e.target.value)}\n                  onKeyDown={(e) => e.key === 'Enter' && generateContentSuggestions(userInput)}\n                />\n                <Button \n                  onClick={() => generateContentSuggestions(userInput)}\n                  disabled={isGenerating}\n                >\n                  {isGenerating ? <RefreshCw className=\"w-4 h-4 animate-spin\" /> : <Wand2 className=\"w-4 h-4\" />}\n                  Generate\n                </Button>\n              </div>\n              \n              {isGenerating && (\n                <div className=\"space-y-2\">\n                  <div className=\"flex items-center justify-between text-sm\">\n                    <span>AI is generating personalized suggestions...</span>\n                    <span>{Math.round(generationProgress)}%</span>\n                  </div>\n                  <Progress value={generationProgress} className=\"h-2\" />\n                </div>\n              )}\n            </CardContent>\n          </Card>\n\n          {/* Content Suggestions */}\n          <AnimatePresence>\n            {contentSuggestions.length > 0 && (\n              <motion.div\n                initial={{ opacity: 0 }}\n                animate={{ opacity: 1 }}\n                className=\"grid grid-cols-1 md:grid-cols-2 gap-4\"\n              >\n                {contentSuggestions.map((suggestion, index) => {\n                  const IconComponent = getContentTypeIcon(suggestion.type);\n                  return (\n                    <motion.div\n                      key={suggestion.id}\n                      initial={{ opacity: 0, y: 20 }}\n                      animate={{ opacity: 1, y: 0 }}\n                      transition={{ delay: index * 0.1 }}\n                    >\n                      <Card className=\"hover:shadow-lg transition-shadow cursor-pointer\">\n                        <CardHeader>\n                          <div className=\"flex items-start justify-between\">\n                            <div className=\"flex items-center space-x-2\">\n                              <IconComponent className=\"w-5 h-5 text-purple-600\" />\n                              <CardTitle className=\"text-lg\">{suggestion.title}</CardTitle>\n                            </div>\n                            <Badge className={getDifficultyColor(suggestion.difficulty)}>\n                              {suggestion.difficulty}\n                            </Badge>\n                          </div>\n                          <CardDescription>{suggestion.description}</CardDescription>\n                        </CardHeader>\n                        <CardContent className=\"space-y-4\">\n                          {/* Tags */}\n                          <div className=\"flex flex-wrap gap-1\">\n                            {suggestion.tags.map(tag => (\n                              <Badge key={tag} variant=\"secondary\" className=\"text-xs\">\n                                #{tag}\n                              </Badge>\n                            ))}\n                          </div>\n                          \n                          {/* Metrics */}\n                          <div className=\"grid grid-cols-2 gap-4 text-sm\">\n                            <div className=\"flex items-center space-x-1\">\n                              <TrendingUpIcon className=\"w-4 h-4 text-green-600\" />\n                              <span>Engagement: {suggestion.estimatedEngagement}%</span>\n                            </div>\n                            <div className=\"flex items-center space-x-1\">\n                              <DollarSign className=\"w-4 h-4 text-green-600\" />\n                              <span>Revenue: ${suggestion.estimatedRevenue}</span>\n                            </div>\n                            <div className=\"flex items-center space-x-1\">\n                              <BarChart3 className=\"w-4 h-4 text-blue-600\" />\n                              <span>Trend: {suggestion.trendScore}%</span>\n                            </div>\n                            <div className=\"flex items-center space-x-1\">\n                              <CheckCircle className=\"w-4 h-4 text-purple-600\" />\n                              <span>AI: {suggestion.aiConfidence}%</span>\n                            </div>\n                          </div>\n                          \n                          <Button className=\"w-full\" size=\"sm\">\n                            <PlusCircle className=\"w-4 h-4 mr-2\" />\n                            Use This Idea\n                          </Button>\n                        </CardContent>\n                      </Card>\n                    </motion.div>\n                  );\n                })}\n              </motion.div>\n            )}\n          </AnimatePresence>\n        </TabsContent>\n\n        {/* Content Analyzer Tab */}\n        <TabsContent value=\"analyzer\" className=\"space-y-6\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <BarChart3 className=\"w-5 h-5\" />\n                <span>Content Performance Analyzer</span>\n              </CardTitle>\n              <CardDescription>\n                Analyze your content ideas to optimize for engagement and revenue\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-4\">\n              <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n                <div className=\"space-y-2\">\n                  <label className=\"text-sm font-medium\">Content Title</label>\n                  <Input\n                    placeholder=\"Enter your content title...\"\n                    value={analysisInput.title}\n                    onChange={(e) => setAnalysisInput({...analysisInput, title: e.target.value})}\n                  />\n                </div>\n                <div className=\"space-y-2\">\n                  <label className=\"text-sm font-medium\">Tags (comma separated)</label>\n                  <Input\n                    placeholder=\"furry, art, character, etc...\"\n                    value={analysisInput.tags}\n                    onChange={(e) => setAnalysisInput({...analysisInput, tags: e.target.value})}\n                  />\n                </div>\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Content Description</label>\n                <Textarea\n                  placeholder=\"Describe your content in detail...\"\n                  value={analysisInput.description}\n                  onChange={(e) => setAnalysisInput({...analysisInput, description: e.target.value})}\n                  className=\"min-h-[100px]\"\n                />\n              </div>\n              \n              <Button \n                onClick={analyzeContent}\n                disabled={!analysisInput.title || isGenerating}\n                className=\"w-full\"\n              >\n                {isGenerating ? (\n                  <AnimatedLoader type=\"ai\" size=\"sm\" />\n                ) : (\n                  <BarChart3 className=\"w-4 h-4 mr-2\" />\n                )}\n                Analyze Content\n              </Button>\n            </CardContent>\n          </Card>\n\n          {/* Analysis Results */}\n          <AnimatePresence>\n            {contentAnalysis && (\n              <motion.div\n                initial={{ opacity: 0, y: 20 }}\n                animate={{ opacity: 1, y: 0 }}\n                className=\"space-y-4\"\n              >\n                {/* Performance Scores */}\n                <Card>\n                  <CardHeader>\n                    <CardTitle>Performance Prediction</CardTitle>\n                  </CardHeader>\n                  <CardContent>\n                    <div className=\"grid grid-cols-1 md:grid-cols-3 gap-6\">\n                      <div className=\"space-y-2\">\n                        <div className=\"flex items-center justify-between\">\n                          <span className=\"text-sm font-medium\">SEO Score</span>\n                          <span className=\"text-sm\">{contentAnalysis.seoScore}%</span>\n                        </div>\n                        <Progress value={contentAnalysis.seoScore} className=\"h-2\" />\n                      </div>\n                      <div className=\"space-y-2\">\n                        <div className=\"flex items-center justify-between\">\n                          <span className=\"text-sm font-medium\">Engagement</span>\n                          <span className=\"text-sm\">{contentAnalysis.engagementPrediction}%</span>\n                        </div>\n                        <Progress value={contentAnalysis.engagementPrediction} className=\"h-2\" />\n                      </div>\n                      <div className=\"space-y-2\">\n                        <div className=\"flex items-center justify-between\">\n                          <span className=\"text-sm font-medium\">Revenue Potential</span>\n                          <span className=\"text-sm\">{contentAnalysis.monetizationPotential}%</span>\n                        </div>\n                        <Progress value={contentAnalysis.monetizationPotential} className=\"h-2\" />\n                      </div>\n                    </div>\n                  </CardContent>\n                </Card>\n\n                {/* Improvements */}\n                <Card>\n                  <CardHeader>\n                    <CardTitle className=\"flex items-center space-x-2\">\n                      <AlertCircle className=\"w-5 h-5\" />\n                      <span>AI Recommendations</span>\n                    </CardTitle>\n                  </CardHeader>\n                  <CardContent>\n                    <ul className=\"space-y-2\">\n                      {contentAnalysis.improvements.map((improvement, index) => (\n                        <motion.li\n                          key={index}\n                          initial={{ opacity: 0, x: -20 }}\n                          animate={{ opacity: 1, x: 0 }}\n                          transition={{ delay: index * 0.1 }}\n                          className=\"flex items-start space-x-2\"\n                        >\n                          <CheckCircle className=\"w-4 h-4 text-green-600 mt-0.5 flex-shrink-0\" />\n                          <span className=\"text-sm\">{improvement}</span>\n                        </motion.li>\n                      ))}\n                    </ul>\n                  </CardContent>\n                </Card>\n\n                {/* Target Audience */}\n                <Card>\n                  <CardHeader>\n                    <CardTitle className=\"flex items-center space-x-2\">\n                      <Users className=\"w-5 h-5\" />\n                      <span>Target Audience Analysis</span>\n                    </CardTitle>\n                  </CardHeader>\n                  <CardContent>\n                    <div className=\"space-y-2\">\n                      {contentAnalysis.targetAudience.map((audience, index) => (\n                        <div key={index} className=\"flex items-center space-x-2\">\n                          <div className=\"w-2 h-2 bg-purple-600 rounded-full\"></div>\n                          <span className=\"text-sm\">{audience}</span>\n                        </div>\n                      ))}\n                    </div>\n                  </CardContent>\n                </Card>\n              </motion.div>\n            )}\n          </AnimatePresence>\n        </TabsContent>\n\n        {/* Content Planner Tab */}\n        <TabsContent value=\"planner\" className=\"space-y-6\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Clock className=\"w-5 h-5\" />\n                <span>AI Content Planner</span>\n              </CardTitle>\n              <CardDescription>\n                Generate and schedule content plans optimized for your audience\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"text-center py-12\">\n              <Clock className=\"w-12 h-12 text-gray-400 mx-auto mb-4\" />\n              <h3 className=\"text-lg font-semibold mb-2\">Coming Soon</h3>\n              <p className=\"text-gray-600\">\n                AI-powered content scheduling and calendar management is coming in the next update.\n              </p>\n            </CardContent>\n          </Card>\n        </TabsContent>\n      </Tabs>\n    </div>\n  );\n}"
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-4"
+      >
+        <div className="flex items-center justify-center space-x-2">
+          <Wand2 className="w-8 h-8 text-purple-600" />
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            AI Content Creation Studio
+          </h1>
+          <Sparkles className="w-8 h-8 text-purple-600" />
+        </div>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Powered by advanced AI, get personalized content suggestions, analyze your ideas, 
+          and optimize your content strategy for maximum engagement and revenue.
+        </p>
+      </motion.div>
+
+      {/* Main Content */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="suggestions" className="flex items-center space-x-2">
+            <Sparkles className="w-4 h-4" />
+            <span>AI Suggestions</span>
+          </TabsTrigger>
+          <TabsTrigger value="analyzer" className="flex items-center space-x-2">
+            <BarChart3 className="w-4 h-4" />
+            <span>Content Analyzer</span>
+          </TabsTrigger>
+          <TabsTrigger value="planner" className="flex items-center space-x-2">
+            <Clock className="w-4 h-4" />
+            <span>Content Planner</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* AI Suggestions Tab */}
+        <TabsContent value="suggestions" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Zap className="w-5 h-5" />
+                <span>Generate New Ideas</span>
+              </CardTitle>
+              <CardDescription>
+                Describe your interests or let AI surprise you with trending content ideas
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Enter topic, character type, or leave blank for trending suggestions..."
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && generateContentSuggestions(userInput)}
+                />
+                <Button 
+                  onClick={() => generateContentSuggestions(userInput)}
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                  Generate
+                </Button>
+              </div>
+              
+              {isGenerating && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>AI is generating personalized suggestions...</span>
+                    <span>{Math.round(generationProgress)}%</span>
+                  </div>
+                  <Progress value={generationProgress} className="h-2" />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Content Suggestions */}
+          <AnimatePresence>
+            {contentSuggestions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                {contentSuggestions.map((suggestion, index) => {
+                  const IconComponent = getContentTypeIcon(suggestion.type);
+                  return (
+                    <motion.div
+                      key={suggestion.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center space-x-2">
+                              <IconComponent className="w-5 h-5 text-purple-600" />
+                              <CardTitle className="text-lg">{suggestion.title}</CardTitle>
+                            </div>
+                            <Badge className={getDifficultyColor(suggestion.difficulty)}>
+                              {suggestion.difficulty}
+                            </Badge>
+                          </div>
+                          <CardDescription>{suggestion.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {/* Tags */}
+                          <div className="flex flex-wrap gap-1">
+                            {suggestion.tags.map(tag => (
+                              <Badge key={tag} variant="secondary" className="text-xs">
+                                #{tag}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          {/* Metrics */}
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="flex items-center space-x-1">
+                              <TrendingUpIcon className="w-4 h-4 text-green-600" />
+                              <span>Engagement: {suggestion.estimatedEngagement}%</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <DollarSign className="w-4 h-4 text-green-600" />
+                              <span>Revenue: ${suggestion.estimatedRevenue}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <BarChart3 className="w-4 h-4 text-blue-600" />
+                              <span>Trend: {suggestion.trendScore}%</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <CheckCircle className="w-4 h-4 text-purple-600" />
+                              <span>AI: {suggestion.aiConfidence}%</span>
+                            </div>
+                          </div>
+                          
+                          <Button className="w-full" size="sm">
+                            <PlusCircle className="w-4 h-4 mr-2" />
+                            Use This Idea
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </TabsContent>
+
+        {/* Content Analyzer Tab */}
+        <TabsContent value="analyzer" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="w-5 h-5" />
+                <span>Content Performance Analyzer</span>
+              </CardTitle>
+              <CardDescription>
+                Analyze your content ideas to optimize for engagement and revenue
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Content Title</label>
+                  <Input
+                    placeholder="Enter your content title..."
+                    value={analysisInput.title}
+                    onChange={(e) => setAnalysisInput({...analysisInput, title: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tags (comma separated)</label>
+                  <Input
+                    placeholder="furry, art, character, etc..."
+                    value={analysisInput.tags}
+                    onChange={(e) => setAnalysisInput({...analysisInput, tags: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Content Description</label>
+                <Textarea
+                  placeholder="Describe your content in detail..."
+                  value={analysisInput.description}
+                  onChange={(e) => setAnalysisInput({...analysisInput, description: e.target.value})}
+                  className="min-h-[100px]"
+                />
+              </div>
+              
+              <Button 
+                onClick={analyzeContent}
+                disabled={!analysisInput.title || isGenerating}
+                className="w-full"
+              >
+                {isGenerating ? (
+                  <AnimatedLoader type="ai" size="sm" />
+                ) : (
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                )}
+                Analyze Content
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Analysis Results */}
+          <AnimatePresence>
+            {contentAnalysis && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                {/* Performance Scores */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Performance Prediction</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">SEO Score</span>
+                          <span className="text-sm">{contentAnalysis.seoScore}%</span>
+                        </div>
+                        <Progress value={contentAnalysis.seoScore} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Engagement</span>
+                          <span className="text-sm">{contentAnalysis.engagementPrediction}%</span>
+                        </div>
+                        <Progress value={contentAnalysis.engagementPrediction} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Revenue Potential</span>
+                          <span className="text-sm">{contentAnalysis.monetizationPotential}%</span>
+                        </div>
+                        <Progress value={contentAnalysis.monetizationPotential} className="h-2" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Improvements */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <AlertCircle className="w-5 h-5" />
+                      <span>AI Recommendations</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {contentAnalysis.improvements.map((improvement, index) => (
+                        <motion.li
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-start space-x-2"
+                        >
+                          <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{improvement}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Target Audience */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Users className="w-5 h-5" />
+                      <span>Target Audience Analysis</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {contentAnalysis.targetAudience.map((audience, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                          <span className="text-sm">{audience}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </TabsContent>
+
+        {/* Content Planner Tab */}
+        <TabsContent value="planner" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Clock className="w-5 h-5" />
+                <span>AI Content Planner</span>
+              </CardTitle>
+              <CardDescription>
+                Generate and schedule content plans optimized for your audience
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center py-12">
+              <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
+              <p className="text-gray-600">
+                AI-powered content scheduling and calendar management is coming in the next update.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
