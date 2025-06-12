@@ -44,9 +44,10 @@ import {
   Upload,
   Calendar,
   Megaphone,
-  Activity
+  Activity,
+  Lightbulb
 } from 'lucide-react';
-import { AnimatedLoader } from '../ui/AnimatedLoader';
+import AnimatedLoader from '../ui/AnimatedLoader';
 
 interface CommunityMember {
   id: string;

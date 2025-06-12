@@ -37,7 +37,7 @@ import {
   Settings,
   Wand2
 } from 'lucide-react';
-import { AnimatedLoader } from '../ui/AnimatedLoader';
+import AnimatedLoader from '../ui/AnimatedLoader';
 
 interface ContentAnalysis {
   overall_score: number;

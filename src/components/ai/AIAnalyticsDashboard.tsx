@@ -31,7 +31,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart as RechartsBarChart, Bar, AreaChart, Area } from 'recharts';
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, BarChart as RechartsBarChart, Bar, AreaChart, Area } from 'recharts';
 
 interface AnalyticsData {
   overview: {

@@ -928,7 +928,7 @@ class NeuralSearchEngine {
         factors.push('help article match');
       } else if (category === 'creator') {
         factors.push('creator profile match');
-      } else if (['tutorial', 'art', 'post'].includes(category)) {
+      } else if (category && ['tutorial', 'art', 'post'].includes(category)) {
         factors.push('content match');
       }
     }

@@ -257,7 +257,7 @@ class SearchAPIService {
       // Validate request
       const validation = this.validateSearchRequest(request);
       if (!validation.valid) {
-        return this.createErrorResponse(requestId, 'INVALID_REQUEST', validation.error);
+        return this.createErrorResponse(requestId, 'INVALID_REQUEST', validation.error || 'Invalid request parameters');
       }
 
       // Process search

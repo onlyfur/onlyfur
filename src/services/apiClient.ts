@@ -320,6 +320,31 @@ class ApiClient {
     return this.makeRequest('/health');
   }
 
+  // HTTP methods
+  async get<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endpoint, { ...options, method: 'GET' });
+  }
+
+  async post<T>(endpoint: string, data?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async put<T>(endpoint: string, data?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async delete<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endpoint, { ...options, method: 'DELETE' });
+  }
+
   // Generic request method for custom endpoints
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     return this.makeRequest<T>(endpoint, options);

@@ -180,7 +180,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
   return verifyToken(token);
 };
 
-export const logout = (): void => {
+export const logout = (redirectPath?: string): void => {
   localStorage.removeItem('onlyfur-auth-token');
 };
 

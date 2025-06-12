@@ -328,7 +328,7 @@ export interface NavItem {
   title: string;
   href: string;
   icon?: string;
-  badge?: number;
+  badge?: number | string;
   disabled?: boolean;
   external?: boolean;
 }
