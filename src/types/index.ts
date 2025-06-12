@@ -10,8 +10,16 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   subscriptionTier?: UserSubscriptionTier;
+  subscriptionStatus?: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'EXPIRED';
   authProvider?: 'email' | 'google';
   googleId?: string;
+  bio?: string;
+  coverImage?: string;
+  socialLinks?: {
+    twitter?: string;
+    instagram?: string;
+    youtube?: string;
+  };
 }
 
 // Subscription Tier Types for Users

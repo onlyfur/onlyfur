@@ -84,7 +84,77 @@ class MockAuthDatabase {
         role: userData.role.toLowerCase() as 'creator' | 'subscriber',
         isVerified: false,
         authProvider: 'email',
-        subscriptionTier: userData.role === 'CREATOR' ? 'basic-creator' : 'basic-subscriber',
+        subscriptionTier: userData.role === 'CREATOR' ? {
+          id: 'basic-creator',
+          name: 'Basic Creator',
+          type: 'creator',
+          level: 'basic',
+          price: 0,
+          features: ['Basic creator access'],
+          messagingFeatures: {
+            canMessageCreators: true,
+            allowedCreatorTiers: [],
+            maxConversationsPerDay: 10,
+            canSendMedia: false,
+            canReceivePrioritySupport: false,
+            canSendBulkMessages: false,
+            maxFileSize: 5,
+            allowedFileTypes: ['image/jpeg', 'image/png']
+          },
+          contentAccess: {
+            canViewPremiumContent: false,
+            canViewExclusiveContent: false,
+            downloadPermissions: false,
+            earlyAccess: false,
+            canViewLiveStreams: false,
+            qualityLimits: 'sd'
+          },
+          creatorFeatures: {
+            maxUploadsPerDay: 5,
+            maxSubscribers: 100,
+            analyticsAccess: 'basic',
+            customBranding: false,
+            liveStreamingEnabled: false,
+            bulkMessageLimit: 10,
+            platformFeePercentage: 15,
+            canSetContentTiers: false,
+            canCreateCollections: false,
+            maxStorageGB: 10,
+            advancedScheduling: false,
+            customPricing: false
+          },
+          maxConversations: 10,
+          supportLevel: 'basic',
+          status: 'active'
+        } : {
+          id: 'basic-subscriber',
+          name: 'Basic Subscriber',
+          type: 'subscriber',
+          level: 'basic',
+          price: 0,
+          features: ['Basic access'],
+          messagingFeatures: {
+            canMessageCreators: true,
+            allowedCreatorTiers: [],
+            maxConversationsPerDay: 10,
+            canSendMedia: false,
+            canReceivePrioritySupport: false,
+            canSendBulkMessages: false,
+            maxFileSize: 5,
+            allowedFileTypes: ['image/jpeg', 'image/png']
+          },
+          contentAccess: {
+            canViewPremiumContent: false,
+            canViewExclusiveContent: false,
+            downloadPermissions: false,
+            earlyAccess: false,
+            canViewLiveStreams: false,
+            qualityLimits: 'sd'
+          },
+          maxConversations: 10,
+          supportLevel: 'basic',
+          status: 'active'
+        },
         subscriptionStatus: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -233,7 +303,77 @@ class MockAuthDatabase {
           isVerified: googleUser.email_verified,
           authProvider: 'google',
           googleId: googleUser.sub,
-          subscriptionTier: userType === 'creator' ? 'basic-creator' : 'basic-subscriber',
+          subscriptionTier: userType === 'creator' ? {
+            id: 'basic-creator',
+            name: 'Basic Creator',
+            type: 'creator',
+            level: 'basic',
+            price: 0,
+            features: ['Basic creator access'],
+            messagingFeatures: {
+              canMessageCreators: true,
+              allowedCreatorTiers: [],
+              maxConversationsPerDay: 10,
+              canSendMedia: false,
+              canReceivePrioritySupport: false,
+              canSendBulkMessages: false,
+              maxFileSize: 5,
+              allowedFileTypes: ['image/jpeg', 'image/png']
+            },
+            contentAccess: {
+              canViewPremiumContent: false,
+              canViewExclusiveContent: false,
+              downloadPermissions: false,
+              earlyAccess: false,
+              canViewLiveStreams: false,
+              qualityLimits: 'sd'
+            },
+            creatorFeatures: {
+              maxUploadsPerDay: 5,
+              maxSubscribers: 100,
+              analyticsAccess: 'basic',
+              customBranding: false,
+              liveStreamingEnabled: false,
+              bulkMessageLimit: 10,
+              platformFeePercentage: 15,
+              canSetContentTiers: false,
+              canCreateCollections: false,
+              maxStorageGB: 10,
+              advancedScheduling: false,
+              customPricing: false
+            },
+            maxConversations: 10,
+            supportLevel: 'basic',
+            status: 'active'
+          } : {
+            id: 'basic-subscriber',
+            name: 'Basic Subscriber',
+            type: 'subscriber',
+            level: 'basic',
+            price: 0,
+            features: ['Basic access'],
+            messagingFeatures: {
+              canMessageCreators: true,
+              allowedCreatorTiers: [],
+              maxConversationsPerDay: 10,
+              canSendMedia: false,
+              canReceivePrioritySupport: false,
+              canSendBulkMessages: false,
+              maxFileSize: 5,
+              allowedFileTypes: ['image/jpeg', 'image/png']
+            },
+            contentAccess: {
+              canViewPremiumContent: false,
+              canViewExclusiveContent: false,
+              downloadPermissions: false,
+              earlyAccess: false,
+              canViewLiveStreams: false,
+              qualityLimits: 'sd'
+            },
+            maxConversations: 10,
+            supportLevel: 'basic',
+            status: 'active'
+          },
           subscriptionStatus: 'ACTIVE',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -278,7 +418,49 @@ class MockAuthDatabase {
           avatar: '/images/branding/fox-mascot.webp',
           isVerified: true,
           authProvider: 'email',
-          subscriptionTier: 'pro-creator',
+          subscriptionTier: {
+            id: 'pro-creator',
+            name: 'Pro Creator',
+            type: 'creator',
+            level: 'pro',
+            price: 2999,
+            features: ['Pro access', 'Content creation'],
+            messagingFeatures: {
+              canMessageCreators: true,
+              allowedCreatorTiers: ['basic', 'pro'],
+              maxConversationsPerDay: 50,
+              canSendMedia: true,
+              canReceivePrioritySupport: true,
+              canSendBulkMessages: true,
+              maxFileSize: 100,
+              allowedFileTypes: ['image/jpeg', 'image/png', 'video/mp4']
+            },
+            contentAccess: {
+              canViewPremiumContent: true,
+              canViewExclusiveContent: true,
+              downloadPermissions: true,
+              earlyAccess: true,
+              canViewLiveStreams: true,
+              qualityLimits: 'hd'
+            },
+            creatorFeatures: {
+              maxUploadsPerDay: 20,
+              maxSubscribers: 1000,
+              analyticsAccess: 'advanced',
+              customBranding: true,
+              liveStreamingEnabled: true,
+              bulkMessageLimit: 100,
+              platformFeePercentage: 10,
+              canSetContentTiers: true,
+              canCreateCollections: true,
+              maxStorageGB: 100,
+              advancedScheduling: true,
+              customPricing: true
+            },
+            maxConversations: 50,
+            supportLevel: 'priority',
+            status: 'active'
+          },
           subscriptionStatus: 'ACTIVE',
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date(),
@@ -292,154 +474,14 @@ class MockAuthDatabase {
           role: 'subscriber',
           isVerified: true,
           authProvider: 'email',
-          subscriptionTier: 'premium-subscriber',
-          subscriptionStatus: 'ACTIVE',
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date(),
-        }
-      ];
-
-      this.saveUsers(demoUsers);
-    }
-  }
-}
-
-// Create singleton instance
-const mockDB = new MockAuthDatabase();
-
-// Enhanced Auth Service
-export class AuthService {
-  private isDevelopment = import.meta.env.DEV;
-
-  constructor() {
-    // Initialize demo users in development
-    if (this.isDevelopment) {
-      mockDB.initializeDemoUsers();
-    }
-  }
-
-  async register(userData: {
-    email: string;
-    username: string;
-    displayName: string;
-    password: string;
-    role: 'SUBSCRIBER' | 'CREATOR';
-  }): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
-    if (this.isDevelopment) {
-      return mockDB.register(userData);
-    } else {
-      // Real API call would go here
-      throw new Error('Production API not implemented');
-    }
-  }
-
-  async login(credentials: { 
-    email: string; 
-    password: string; 
-  }): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
-    if (this.isDevelopment) {
-      return mockDB.login(credentials);
-    } else {
-      // Real API call would go here
-      throw new Error('Production API not implemented');
-    }
-  }
-
-  async getProfile(token: string): Promise<{ success: boolean; user?: User; error?: string }> {
-    if (this.isDevelopment) {
-      return mockDB.getProfile(token);
-    } else {
-      // Real API call would go here
-      throw new Error('Production API not implemented');
-    }
-  }
-
-  async logout(token: string): Promise<{ success: boolean }> {
-    if (this.isDevelopment) {
-      return mockDB.logout(token);
-    } else {
-      // Real API call would go here
-      return { success: true };
-    }
-  }
-
-  async loginWithGoogle(
-    googleUser: {
-      sub: string;
-      email: string;
-      name: string;
-      picture?: string;
-      email_verified: boolean;
-    }, 
-    userType: 'creator' | 'subscriber'
-  ): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
-    if (this.isDevelopment) {
-      return mockDB.registerOrLoginWithGoogle(googleUser, userType);
-    } else {
-      // Real API call would go here
-      throw new Error('Production API not implemented');
-    }
-  }
-
-  // Session management
-  setSession(token: string, rememberMe: boolean = false): void {
-    setSessionCookie('auth_token', token, rememberMe);
-    localStorage.setItem('auth_token', token);
-  }
-
-  getSession(): string | null {
-    // Try cookie first, then localStorage
-    return getCookie('auth_token') || localStorage.getItem('auth_token');
-  }
-
-  clearSession(): void {
-    deleteCookie('auth_token');
-    localStorage.removeItem('auth_token');
-  }
-
-  // Enhanced password utilities with automatic features
-  getSavedCredentials(): { email: string; password: string; lastUsed?: string } | null {
-    try {
-      const saved = localStorage.getItem('onlyfur_saved_credentials');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  }
-
-  saveCredentials(email: string, password: string): void {
-    const credentials = {
-      email,
-      password,
-      lastUsed: new Date().toISOString(),
-      autoSave: true
-    };
-    localStorage.setItem('onlyfur_saved_credentials', JSON.stringify(credentials));
-  }
-
-  clearSavedCredentials(): void {
-    localStorage.removeItem('onlyfur_saved_credentials');
-  }
-
-  // Auto-login with saved credentials
-  async tryAutoLogin(): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
-    try {
-      const savedCredentials = this.getSavedCredentials();
-      if (!savedCredentials) {
-        return { success: false, error: 'No saved credentials' };
-      }
-
-      // Attempt automatic login
-      const result = await this.login({
-        email: savedCredentials.email,
-        password: savedCredentials.password
-      });
-
-      if (result.success) {
-        // Update last used timestamp
-        this.saveCredentials(savedCredentials.email, savedCredentials.password);
-      }
-
+          subscriptionTier: {
+            id: 'premium-subscriber',
+            name: 'Premium Subscriber',
+            type: 'subscriber',
+            level: 'premium',
+            price: 999,
+            features: ['Premium access'],
+            messagingFeatures: {
       return result;
     } catch (error) {
       return { success: false, error: 'Auto-login failed' };
