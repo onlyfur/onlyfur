@@ -65,7 +65,7 @@ const Header: React.FC = () => {
     }
   };
 
-  const navigation = [
+  const navigation: Array<{ name: string; href: string; icon: LucideIcon; badge?: string | number }> = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Feed', href: '/feed', icon: Heart },
     { name: 'Explore', href: '/explore', icon: Search },
@@ -134,7 +134,7 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <>
                 {/* Upload Button for Creators */}
-                {(user?.role === 'creator' || user?.role === 'CREATOR') && (
+                {(user?.role?.toLowerCase() === 'creator') && (
                   <Button size="sm" className="hidden sm:flex" asChild>
                     <Link to="/content/upload">
                       <Upload className="h-4 w-4 mr-2" />
@@ -186,7 +186,7 @@ const Header: React.FC = () => {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    {(user?.role === 'creator' || user?.role === 'CREATOR') && (
+                    {(user?.role?.toLowerCase() === 'creator') && (
                       <DropdownMenuItem asChild>
                         <Link to="/creator-dashboard" className="flex items-center">
                           <Crown className="mr-2 h-4 w-4" />

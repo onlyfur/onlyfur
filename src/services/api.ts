@@ -9,9 +9,24 @@ const getAuthHeaders = () => {
   };
 };
 
+// Helper function to build URL with query parameters
+const buildUrl = (endpoint: string, params?: Record<string, any>) => {
+  const url = new URL(`${API_BASE_URL}/api${endpoint}`);
+  
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, String(value));
+      }
+    });
+  }
+  
+  return url.toString();
+};
+
 // Generic API request function
-const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-  const url = `${API_BASE_URL}/api${endpoint}`;
+const apiRequest = async (endpoint: string, options: RequestInit = {}, params?: Record<string, any>) => {
+  const url = buildUrl(endpoint, params);
   
   const response = await fetch(url, {
     ...options,
@@ -271,27 +286,35 @@ export const healthCheck = async () => {
 
 // Create apiService object with common HTTP methods
 export const apiService = {
-  get: (endpoint: string, options?: RequestInit) => 
-    apiRequest(endpoint, { method: 'GET', ...options }),
+  get: (endpoint: string, options?: { params?: Record<string, any>, [key: string]: any }) => {
+    const { params, ...restOptions } = options || {};
+    return apiRequest(endpoint, { method: 'GET', ...restOptions }, params);
+  },
   
-  post: (endpoint: string, data?: any, options?: RequestInit) => 
-    apiRequest(endpoint, { 
+  post: (endpoint: string, data?: any, options?: { params?: Record<string, any>, [key: string]: any }) => {
+    const { params, ...restOptions } = options || {};
+    return apiRequest(endpoint, { 
       method: 'POST', 
       body: data instanceof FormData ? data : JSON.stringify(data),
       headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },
-      ...options 
-    }),
+      ...restOptions 
+    }, params);
+  },
   
-  put: (endpoint: string, data?: any, options?: RequestInit) => 
-    apiRequest(endpoint, { 
+  put: (endpoint: string, data?: any, options?: { params?: Record<string, any>, [key: string]: any }) => {
+    const { params, ...restOptions } = options || {};
+    return apiRequest(endpoint, { 
       method: 'PUT', 
       body: data instanceof FormData ? data : JSON.stringify(data),
       headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },
-      ...options 
-    }),
+      ...restOptions 
+    }, params);
+  },
   
-  delete: (endpoint: string, options?: RequestInit) => 
-    apiRequest(endpoint, { method: 'DELETE', ...options }),
+  delete: (endpoint: string, options?: { params?: Record<string, any>, [key: string]: any }) => {
+    const { params, ...restOptions } = options || {};
+    return apiRequest(endpoint, { method: 'DELETE', ...restOptions }, params);
+  },
 };
 
 export default {

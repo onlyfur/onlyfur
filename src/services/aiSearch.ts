@@ -58,7 +58,7 @@ class AISearchService {
     'creator': ['creater', 'creatoor', 'creator']
   };
 
-  private readonly SYNONYMS = {
+  private readonly SYNONYMS: Record<string, string[]> = {
     'art': ['artwork', 'drawing', 'illustration', 'painting', 'design'],
     'tutorial': ['guide', 'lesson', 'walkthrough', 'howto', 'instruction'],
     'creator': ['artist', 'user', 'maker', 'designer'],
@@ -304,9 +304,9 @@ class AISearchService {
     
     // Find synonyms and related terms
     words.forEach(word => {
-      if (this.SYNONYMS[word]) {
+      if (word in this.SYNONYMS) {
         const synonyms = this.SYNONYMS[word];
-        synonyms.forEach(synonym => {
+        synonyms.forEach((synonym: string) => {
           const relatedQuery = query.replace(word, synonym);
           if (relatedQuery !== query) {
             related.push(relatedQuery);

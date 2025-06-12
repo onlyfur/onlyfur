@@ -252,6 +252,7 @@ const EnhancedContentUpload: React.FC = () => {
         ...data,
         tags: data.tags.split(',').map(tag => tag.trim()).filter(Boolean),
         files: uploadedFiles,
+        scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : undefined,
       };
 
       await createContent(contentData);
@@ -360,7 +361,7 @@ const EnhancedContentUpload: React.FC = () => {
                         Max file size: {user?.subscriptionTier?.messagingFeatures?.maxFileSize || 5}MB
                       </span>
                       <span>
-                        Types: {fileValidation.supportedImageTypes.concat(fileValidation.supportedVideoTypes).join(', ')}
+                        Types: {[...fileValidation.supportedImageTypes, ...fileValidation.supportedVideoTypes].join(', ')}
                       </span>
                     </div>
                   </div>
