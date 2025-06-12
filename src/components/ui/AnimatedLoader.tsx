@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 interface AnimatedLoaderProps {
-  type?: 'default' | 'ai' | 'upload' | 'search' | 'processing' | 'hearts' | 'dots' | 'pulse' | 'bounce' | 'slide';
+  type?: 'default' | 'ai' | 'upload' | 'search' | 'processing' | 'hearts' | 'dots' | 'pulse' | 'bounce' | 'slide' | 'messaging';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   color?: 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'error';
   message?: string;
@@ -28,7 +28,7 @@ interface AnimatedLoaderProps {
   className?: string;
 }
 
-const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
+export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
   type = 'default',
   size = 'md',
   color = 'primary',
@@ -282,7 +282,7 @@ const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
     </motion.div>
   );
 
-  const DotsLoader = () => (
+  const InternalDotsLoader = () => (
     <motion.div
       variants={containerVariants}
       animate="animate"
@@ -364,10 +364,11 @@ const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
       case 'search': return <SearchLoader />;
       case 'processing': return <ProcessingLoader />;
       case 'hearts': return <HeartsLoader />;
-      case 'dots': return <DotsLoader />;
+      case 'dots': return <InternalDotsLoader />;
       case 'pulse': return <PulseLoader />;
       case 'bounce': return <BounceLoader />;
       case 'slide': return <SlideLoader />;
+      case 'messaging': return <SearchLoader />; // Use SearchLoader for messaging type
       default: return <DefaultLoader />;
     }
   };
@@ -423,6 +424,55 @@ const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
 };
 
 export default AnimatedLoader;
+
+// Standalone DotsLoader component for external use
+export const DotsLoader: React.FC<{ color?: AnimatedLoaderProps['color'] }> = ({ 
+  color = 'primary' 
+}) => {
+  const containerVariants = {
+    animate: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const dotVariants = {
+    animate: {
+      y: [-10, 10, -10],
+      transition: {
+        duration: 1.5,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const colorClasses = {
+    primary: 'bg-purple-600',
+    secondary: 'bg-blue-600',
+    accent: 'bg-pink-600',
+    success: 'bg-green-600',
+    warning: 'bg-yellow-600',
+    error: 'bg-red-600'
+  };
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      animate="animate"
+      className="flex space-x-1"
+    >
+      {[0, 1, 2, 3, 4].map((i) => (
+        <motion.div
+          key={i}
+          variants={dotVariants}
+          className={`w-3 h-3 rounded-full ${colorClasses[color]}`}
+        />
+      ))}
+    </motion.div>
+  );
+};
 
 // Specific loader components for common use cases
 export const AIThinkingLoader: React.FC<{ message?: string }> = ({ message = "AI is thinking..." }) => (

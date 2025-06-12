@@ -49,4 +49,4 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
-import { AnimatedLoader } from '../ui/AnimatedLoader';
+import AnimatedLoader from '../ui/AnimatedLoader';

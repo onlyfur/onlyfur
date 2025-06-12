@@ -39,7 +39,7 @@ import {
   Image,
   FileText
 } from 'lucide-react';
-import { AnimatedLoader } from '../components/ui/AnimatedLoader';
+import AnimatedLoader from '../components/ui/AnimatedLoader';
 
 interface AIInsight {
   category: 'performance' | 'optimization' | 'community' | 'trends' | 'monetization';
