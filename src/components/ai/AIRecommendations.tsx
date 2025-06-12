@@ -22,7 +22,7 @@ import {
   Target,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { api } from '@/lib/api';
+import apiClient from '@/services/apiClient';
 
 interface ContentRecommendation {
   contentId: string;
@@ -85,19 +85,23 @@ export default function AIRecommendations({
 
       if (type === 'content' || type === 'all') {
         promises.push(
-          api.post('/ai/recommendations', {
-            limit,
-            categories,
-          }).then((response: any) => {
-            setContentRecommendations(response.data.recommendations);
+          apiClient.request<{recommendations: ContentRecommendation[]}>('/ai/recommendations', {
+            method: 'POST',
+            body: JSON.stringify({ limit, categories })
+          }).then((response) => {
+            if (response.success && response.data) {
+              setContentRecommendations(response.data.recommendations);
+            }
           })
         );
       }
 
       if (type === 'creator' || type === 'all') {
         promises.push(
-          api.get('/ai/creator-insights').then((response: any) => {
-            setCreatorInsights(response.data);
+          apiClient.request<CreatorInsights>('/ai/creator-insights').then((response) => {
+            if (response.success && response.data) {
+              setCreatorInsights(response.data);
+            }
           })
         );
       }
@@ -217,6 +221,7 @@ export default function AIRecommendations({
             Refresh
           </Button>
         </div>
+      </div>
 
       {/* Content Sections */}
       {activeTab === 'recommendations' && (

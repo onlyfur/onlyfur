@@ -29,6 +29,7 @@ import {
   Award
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import AISearchAndDiscovery from '@/components/ai/AISearchAndDiscovery';
 
 interface Creator {
   id: string;
@@ -383,58 +384,49 @@ const ExploreV3: React.FC = () => {
               )}
             </div>
 
-            {/* Search and Filters */}
-            <div className="flex flex-col lg:flex-row gap-4">
-              <form onSubmit={handleSearch} className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input
-                    placeholder="Search creators, content, or tags..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </form>
-              
-              <div className="flex gap-3">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem key={category.name} value={category.name}>
-                        {category.name} ({category.creatorCount})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Search Form */}
+            <form onSubmit={handleSearch} className="flex-1">
+              <AISearchAndDiscovery />
+            </form>
 
-                <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="creators">Creators</SelectItem>
-                    <SelectItem value="content">Content</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Category and Type Filters */}
+            <div className="flex gap-3 mt-4">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.name} value={category.name}>
+                      {category.name} ({category.creatorCount})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="recommended">Recommended</SelectItem>
-                    <SelectItem value="trending">Trending</SelectItem>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="popular">Most Popular</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="creators">Creators</SelectItem>
+                  <SelectItem value="content">Content</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recommended">Recommended</SelectItem>
+                  <SelectItem value="trending">Trending</SelectItem>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="popular">Most Popular</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

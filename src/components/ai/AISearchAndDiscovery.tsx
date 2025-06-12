@@ -1,1 +1,658 @@
-import React, { useState, useEffect } from 'react';\nimport { motion, AnimatePresence } from 'framer-motion';\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';\nimport { Button } from '../ui/button';\nimport { Input } from '../ui/input';\nimport { Badge } from '../ui/badge';\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';\nimport { \n  Search,\n  Brain,\n  Sparkles,\n  Filter,\n  SortAsc,\n  Eye,\n  Heart,\n  MessageSquare,\n  Share,\n  Clock,\n  TrendingUp,\n  Users,\n  Star,\n  Zap,\n  Target,\n  Sliders,\n  X,\n  ChevronDown,\n  Image,\n  Video,\n  FileText,\n  Mic,\n  Camera,\n  Play\n} from 'lucide-react';\nimport { AnimatedLoader } from '../ui/AnimatedLoader';\n\ninterface SearchResult {\n  id: string;\n  type: 'creator' | 'content' | 'community';\n  title: string;\n  description: string;\n  thumbnail?: string;\n  creator: {\n    name: string;\n    avatar: string;\n    verified: boolean;\n    followers: number;\n  };\n  stats: {\n    views?: number;\n    likes?: number;\n    comments?: number;\n    shares?: number;\n  };\n  tags: string[];\n  relevanceScore: number;\n  aiInsights: {\n    whyRelevant: string;\n    similarityScore: number;\n    engagementPrediction: number;\n  };\n  contentType?: 'image' | 'video' | 'text' | 'audio';\n  duration?: string;\n  publishedAt: Date;\n}\n\ninterface AISearchFilters {\n  contentType: string[];\n  timeRange: string;\n  sortBy: string;\n  minEngagement: number;\n  creators: string[];\n  tags: string[];\n  aiPersonalized: boolean;\n}\n\ninterface SearchSuggestion {\n  query: string;\n  type: 'trending' | 'personalized' | 'semantic';\n  confidence: number;\n  explanation: string;\n}\n\nexport default function AISearchAndDiscovery() {\n  const [searchQuery, setSearchQuery] = useState('');\n  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);\n  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);\n  const [isSearching, setIsSearching] = useState(false);\n  const [activeTab, setActiveTab] = useState('all');\n  const [showFilters, setShowFilters] = useState(false);\n  const [filters, setFilters] = useState<AISearchFilters>({\n    contentType: [],\n    timeRange: 'all',\n    sortBy: 'relevance',\n    minEngagement: 0,\n    creators: [],\n    tags: [],\n    aiPersonalized: true\n  });\n\n  // Mock search suggestions\n  const generateSearchSuggestions = (query: string): SearchSuggestion[] => {\n    if (!query) {\n      return [\n        {\n          query: 'fursuit photography',\n          type: 'trending',\n          confidence: 95,\n          explanation: 'Trending in your community this week'\n        },\n        {\n          query: 'character design tips',\n          type: 'personalized',\n          confidence: 88,\n          explanation: 'Based on your recent interests'\n        },\n        {\n          query: 'anthro art commission',\n          type: 'trending',\n          confidence: 92,\n          explanation: 'Popular search among creators'\n        }\n      ];\n    }\n\n    return [\n      {\n        query: `${query} tutorials`,\n        type: 'semantic',\n        confidence: 87,\n        explanation: 'AI-enhanced search expansion'\n      },\n      {\n        query: `${query} community`,\n        type: 'semantic',\n        confidence: 82,\n        explanation: 'Related community content'\n      }\n    ];\n  };\n\n  // Mock search results\n  const generateSearchResults = (query: string): SearchResult[] => {\n    const mockResults: SearchResult[] = [\n      {\n        id: '1',\n        type: 'content',\n        title: 'Fursuit Photography in Golden Hour',\n        description: 'Professional outdoor fursuit photography session showcasing lighting techniques and poses that bring characters to life.',\n        thumbnail: '/api/placeholder/300/200',\n        creator: {\n          name: 'PhotoPaws Studio',\n          avatar: '/api/placeholder/40/40',\n          verified: true,\n          followers: 15420\n        },\n        stats: {\n          views: 28500,\n          likes: 2150,\n          comments: 342,\n          shares: 156\n        },\n        tags: ['fursuit', 'photography', 'golden hour', 'outdoor'],\n        relevanceScore: 95,\n        aiInsights: {\n          whyRelevant: 'Matches your interest in fursuit photography and follows trending visual styles',\n          similarityScore: 92,\n          engagementPrediction: 89\n        },\n        contentType: 'image',\n        publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)\n      },\n      {\n        id: '2',\n        type: 'creator',\n        title: 'FurryArtist - Digital Character Designer',\n        description: 'Specialized in anthropomorphic character design and digital art commissions. 8+ years experience in the furry community.',\n        thumbnail: '/api/placeholder/300/200',\n        creator: {\n          name: 'FurryArtist',\n          avatar: '/api/placeholder/40/40',\n          verified: true,\n          followers: 45200\n        },\n        stats: {\n          views: 125000,\n          likes: 8900,\n          comments: 1240\n        },\n        tags: ['artist', 'commissions', 'character design', 'digital art'],\n        relevanceScore: 88,\n        aiInsights: {\n          whyRelevant: 'Popular creator in your preferred art style with high engagement rates',\n          similarityScore: 85,\n          engagementPrediction: 91\n        },\n        publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)\n      },\n      {\n        id: '3',\n        type: 'content',\n        title: 'Character Design Process: From Sketch to Finished Art',\n        description: 'Complete walkthrough of my character design process, including ideation, sketching, and digital rendering techniques.',\n        thumbnail: '/api/placeholder/300/200',\n        creator: {\n          name: 'DigitalPaws',\n          avatar: '/api/placeholder/40/40',\n          verified: false,\n          followers: 8750\n        },\n        stats: {\n          views: 15600,\n          likes: 1340,\n          comments: 198,\n          shares: 87\n        },\n        tags: ['tutorial', 'character design', 'digital art', 'process'],\n        relevanceScore: 82,\n        aiInsights: {\n          whyRelevant: 'Educational content matching your learning preferences',\n          similarityScore: 78,\n          engagementPrediction: 84\n        },\n        contentType: 'video',\n        duration: '24:15',\n        publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)\n      },\n      {\n        id: '4',\n        type: 'community',\n        title: 'Fursuit Makers Guild - Community Discussion',\n        description: 'Active community of fursuit makers sharing techniques, materials, and collaboration opportunities.',\n        creator: {\n          name: 'Fursuit Makers Guild',\n          avatar: '/api/placeholder/40/40',\n          verified: true,\n          followers: 23000\n        },\n        stats: {\n          views: 45000,\n          likes: 3200,\n          comments: 892\n        },\n        tags: ['community', 'fursuit making', 'techniques', 'collaboration'],\n        relevanceScore: 76,\n        aiInsights: {\n          whyRelevant: 'Active community discussions on topics you engage with',\n          similarityScore: 73,\n          engagementPrediction: 79\n        },\n        publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)\n      }\n    ];\n\n    // Filter based on query\n    if (query) {\n      return mockResults.filter(result => \n        result.title.toLowerCase().includes(query.toLowerCase()) ||\n        result.description.toLowerCase().includes(query.toLowerCase()) ||\n        result.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))\n      );\n    }\n\n    return mockResults;\n  };\n\n  const handleSearch = async (query: string) => {\n    if (!query.trim()) return;\n    \n    setIsSearching(true);\n    \n    try {\n      // Simulate AI search processing\n      await new Promise(resolve => setTimeout(resolve, 800));\n      \n      const results = generateSearchResults(query);\n      setSearchResults(results);\n    } catch (error) {\n      console.error('Search failed:', error);\n    } finally {\n      setIsSearching(false);\n    }\n  };\n\n  const handleInputChange = (value: string) => {\n    setSearchQuery(value);\n    setSuggestions(generateSearchSuggestions(value));\n  };\n\n  const formatNumber = (num: number): string => {\n    if (num >= 1000000) {\n      return (num / 1000000).toFixed(1) + 'M';\n    } else if (num >= 1000) {\n      return (num / 1000).toFixed(1) + 'K';\n    }\n    return num.toString();\n  };\n\n  const getContentTypeIcon = (type?: string) => {\n    switch (type) {\n      case 'image': return Image;\n      case 'video': return Video;\n      case 'text': return FileText;\n      case 'audio': return Mic;\n      default: return FileText;\n    }\n  };\n\n  const filteredResults = searchResults.filter(result => {\n    if (activeTab === 'all') return true;\n    return result.type === activeTab;\n  });\n\n  useEffect(() => {\n    setSuggestions(generateSearchSuggestions(''));\n  }, []);\n\n  return (\n    <div className=\"space-y-6\">\n      {/* Header */}\n      <motion.div\n        initial={{ opacity: 0, y: 20 }}\n        animate={{ opacity: 1, y: 0 }}\n        className=\"text-center space-y-4\"\n      >\n        <div className=\"flex items-center justify-center space-x-2\">\n          <Brain className=\"w-8 h-8 text-purple-600\" />\n          <h1 className=\"text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent\">\n            AI-Powered Discovery\n          </h1>\n          <Sparkles className=\"w-8 h-8 text-purple-600\" />\n        </div>\n        <p className=\"text-gray-600 max-w-2xl mx-auto\">\n          Discover content, creators, and communities with intelligent search that understands context and your preferences.\n        </p>\n      </motion.div>\n\n      {/* Search Interface */}\n      <Card>\n        <CardContent className=\"p-6\">\n          <div className=\"space-y-4\">\n            {/* Search Input */}\n            <div className=\"relative\">\n              <div className=\"flex space-x-2\">\n                <div className=\"relative flex-1\">\n                  <Search className=\"absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5\" />\n                  <Input\n                    placeholder=\"Search for creators, content, or communities...\"\n                    value={searchQuery}\n                    onChange={(e) => handleInputChange(e.target.value)}\n                    onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchQuery)}\n                    className=\"pl-10 pr-4 h-12 text-lg\"\n                  />\n                  {isSearching && (\n                    <div className=\"absolute right-3 top-1/2 transform -translate-y-1/2\">\n                      <AnimatedLoader type=\"search\" size=\"sm\" />\n                    </div>\n                  )}\n                </div>\n                <Button \n                  onClick={() => handleSearch(searchQuery)}\n                  disabled={isSearching}\n                  className=\"h-12 px-6\"\n                >\n                  {isSearching ? (\n                    <AnimatedLoader type=\"search\" size=\"sm\" />\n                  ) : (\n                    <Search className=\"w-5 h-5\" />\n                  )}\n                  Search\n                </Button>\n                <Button \n                  variant=\"outline\"\n                  onClick={() => setShowFilters(!showFilters)}\n                  className=\"h-12 px-4\"\n                >\n                  <Filter className=\"w-5 h-5\" />\n                </Button>\n              </div>\n            </div>\n\n            {/* Search Suggestions */}\n            <AnimatePresence>\n              {suggestions.length > 0 && searchQuery.length < 3 && (\n                <motion.div\n                  initial={{ opacity: 0, height: 0 }}\n                  animate={{ opacity: 1, height: 'auto' }}\n                  exit={{ opacity: 0, height: 0 }}\n                  className=\"space-y-2\"\n                >\n                  <p className=\"text-sm font-medium text-gray-700\">AI Suggestions:</p>\n                  <div className=\"flex flex-wrap gap-2\">\n                    {suggestions.map((suggestion, index) => (\n                      <motion.button\n                        key={index}\n                        initial={{ opacity: 0, scale: 0.8 }}\n                        animate={{ opacity: 1, scale: 1 }}\n                        transition={{ delay: index * 0.05 }}\n                        onClick={() => {\n                          setSearchQuery(suggestion.query);\n                          handleSearch(suggestion.query);\n                        }}\n                        className=\"flex items-center space-x-2 px-3 py-2 bg-purple-50 hover:bg-purple-100 rounded-full text-sm transition-colors\"\n                      >\n                        {suggestion.type === 'trending' && <TrendingUp className=\"w-3 h-3 text-purple-600\" />}\n                        {suggestion.type === 'personalized' && <Target className=\"w-3 h-3 text-purple-600\" />}\n                        {suggestion.type === 'semantic' && <Brain className=\"w-3 h-3 text-purple-600\" />}\n                        <span>{suggestion.query}</span>\n                        <Badge variant=\"secondary\" className=\"text-xs\">\n                          {suggestion.confidence}%\n                        </Badge>\n                      </motion.button>\n                    ))}\n                  </div>\n                </motion.div>\n              )}\n            </AnimatePresence>\n\n            {/* Advanced Filters */}\n            <AnimatePresence>\n              {showFilters && (\n                <motion.div\n                  initial={{ opacity: 0, height: 0 }}\n                  animate={{ opacity: 1, height: 'auto' }}\n                  exit={{ opacity: 0, height: 0 }}\n                  className=\"border-t pt-4 space-y-4\"\n                >\n                  <div className=\"grid grid-cols-1 md:grid-cols-4 gap-4\">\n                    <div>\n                      <label className=\"text-sm font-medium mb-2 block\">Content Type</label>\n                      <div className=\"space-y-1\">\n                        {['image', 'video', 'text', 'audio'].map(type => (\n                          <label key={type} className=\"flex items-center space-x-2 text-sm\">\n                            <input \n                              type=\"checkbox\" \n                              className=\"rounded\" \n                              checked={filters.contentType.includes(type)}\n                              onChange={(e) => {\n                                if (e.target.checked) {\n                                  setFilters(prev => ({\n                                    ...prev,\n                                    contentType: [...prev.contentType, type]\n                                  }));\n                                } else {\n                                  setFilters(prev => ({\n                                    ...prev,\n                                    contentType: prev.contentType.filter(t => t !== type)\n                                  }));\n                                }\n                              }}\n                            />\n                            <span className=\"capitalize\">{type}</span>\n                          </label>\n                        ))}\n                      </div>\n                    </div>\n                    <div>\n                      <label className=\"text-sm font-medium mb-2 block\">Time Range</label>\n                      <select \n                        value={filters.timeRange}\n                        onChange={(e) => setFilters(prev => ({ ...prev, timeRange: e.target.value }))}\n                        className=\"w-full p-2 border rounded text-sm\"\n                      >\n                        <option value=\"all\">All Time</option>\n                        <option value=\"day\">Past Day</option>\n                        <option value=\"week\">Past Week</option>\n                        <option value=\"month\">Past Month</option>\n                        <option value=\"year\">Past Year</option>\n                      </select>\n                    </div>\n                    <div>\n                      <label className=\"text-sm font-medium mb-2 block\">Sort By</label>\n                      <select \n                        value={filters.sortBy}\n                        onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}\n                        className=\"w-full p-2 border rounded text-sm\"\n                      >\n                        <option value=\"relevance\">Relevance</option>\n                        <option value=\"recent\">Most Recent</option>\n                        <option value=\"popular\">Most Popular</option>\n                        <option value=\"engagement\">Highest Engagement</option>\n                      </select>\n                    </div>\n                    <div>\n                      <label className=\"text-sm font-medium mb-2 block\">AI Personalized</label>\n                      <label className=\"flex items-center space-x-2 text-sm\">\n                        <input \n                          type=\"checkbox\" \n                          className=\"rounded\" \n                          checked={filters.aiPersonalized}\n                          onChange={(e) => setFilters(prev => ({ ...prev, aiPersonalized: e.target.checked }))}\n                        />\n                        <span>Use AI personalization</span>\n                      </label>\n                    </div>\n                  </div>\n                </motion.div>\n              )}\n            </AnimatePresence>\n          </div>\n        </CardContent>\n      </Card>\n\n      {/* Results */}\n      {searchResults.length > 0 && (\n        <div className=\"space-y-4\">\n          {/* Results Tabs */}\n          <Tabs value={activeTab} onValueChange={setActiveTab}>\n            <TabsList>\n              <TabsTrigger value=\"all\">All ({searchResults.length})</TabsTrigger>\n              <TabsTrigger value=\"content\">Content ({searchResults.filter(r => r.type === 'content').length})</TabsTrigger>\n              <TabsTrigger value=\"creator\">Creators ({searchResults.filter(r => r.type === 'creator').length})</TabsTrigger>\n              <TabsTrigger value=\"community\">Communities ({searchResults.filter(r => r.type === 'community').length})</TabsTrigger>\n            </TabsList>\n\n            {/* Results Content */}\n            <TabsContent value={activeTab} className=\"mt-6\">\n              <AnimatePresence>\n                <div className=\"space-y-4\">\n                  {filteredResults.map((result, index) => {\n                    const ContentIcon = getContentTypeIcon(result.contentType);\n                    return (\n                      <motion.div\n                        key={result.id}\n                        initial={{ opacity: 0, y: 20 }}\n                        animate={{ opacity: 1, y: 0 }}\n                        transition={{ delay: index * 0.05 }}\n                      >\n                        <Card className=\"hover:shadow-lg transition-shadow cursor-pointer\">\n                          <CardContent className=\"p-6\">\n                            <div className=\"flex space-x-4\">\n                              {/* Thumbnail */}\n                              <div className=\"w-32 h-24 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center relative\">\n                                {result.contentType === 'video' && (\n                                  <Play className=\"w-8 h-8 text-white absolute z-10\" />\n                                )}\n                                <ContentIcon className=\"w-8 h-8 text-gray-400\" />\n                              </div>\n                              \n                              {/* Content */}\n                              <div className=\"flex-1 space-y-3\">\n                                {/* Header */}\n                                <div className=\"flex items-start justify-between\">\n                                  <div>\n                                    <h3 className=\"text-lg font-semibold\">{result.title}</h3>\n                                    <div className=\"flex items-center space-x-2 text-sm text-gray-600\">\n                                      <img \n                                        src={result.creator.avatar} \n                                        alt={result.creator.name}\n                                        className=\"w-5 h-5 rounded-full\"\n                                      />\n                                      <span>{result.creator.name}</span>\n                                      {result.creator.verified && (\n                                        <Star className=\"w-4 h-4 text-blue-500\" />\n                                      )}\n                                      <span>•</span>\n                                      <span>{formatNumber(result.creator.followers)} followers</span>\n                                    </div>\n                                  </div>\n                                  <div className=\"flex items-center space-x-2\">\n                                    <Badge className=\"bg-purple-100 text-purple-800\">\n                                      {result.relevanceScore}% match\n                                    </Badge>\n                                    <Badge variant=\"secondary\" className=\"capitalize\">\n                                      {result.type}\n                                    </Badge>\n                                  </div>\n                                </div>\n                                \n                                {/* Description */}\n                                <p className=\"text-gray-700 text-sm\">{result.description}</p>\n                                \n                                {/* Tags */}\n                                <div className=\"flex flex-wrap gap-1\">\n                                  {result.tags.map(tag => (\n                                    <Badge key={tag} variant=\"outline\" className=\"text-xs\">\n                                      #{tag}\n                                    </Badge>\n                                  ))}\n                                </div>\n                                \n                                {/* Stats and AI Insights */}\n                                <div className=\"flex items-center justify-between\">\n                                  <div className=\"flex items-center space-x-4 text-sm text-gray-600\">\n                                    {result.stats.views && (\n                                      <div className=\"flex items-center space-x-1\">\n                                        <Eye className=\"w-4 h-4\" />\n                                        <span>{formatNumber(result.stats.views)}</span>\n                                      </div>\n                                    )}\n                                    {result.stats.likes && (\n                                      <div className=\"flex items-center space-x-1\">\n                                        <Heart className=\"w-4 h-4\" />\n                                        <span>{formatNumber(result.stats.likes)}</span>\n                                      </div>\n                                    )}\n                                    {result.stats.comments && (\n                                      <div className=\"flex items-center space-x-1\">\n                                        <MessageSquare className=\"w-4 h-4\" />\n                                        <span>{formatNumber(result.stats.comments)}</span>\n                                      </div>\n                                    )}\n                                    {result.duration && (\n                                      <div className=\"flex items-center space-x-1\">\n                                        <Clock className=\"w-4 h-4\" />\n                                        <span>{result.duration}</span>\n                                      </div>\n                                    )}\n                                  </div>\n                                  \n                                  <div className=\"text-xs text-gray-500\">\n                                    <div className=\"flex items-center space-x-1\">\n                                      <Brain className=\"w-3 h-3\" />\n                                      <span>{result.aiInsights.whyRelevant}</span>\n                                    </div>\n                                  </div>\n                                </div>\n                              </div>\n                            </div>\n                          </CardContent>\n                        </Card>\n                      </motion.div>\n                    );\n                  })}\n                </div>\n              </AnimatePresence>\n            </TabsContent>\n          </Tabs>\n        </div>\n      )}\n\n      {/* Empty State */}\n      {searchResults.length === 0 && !isSearching && searchQuery && (\n        <motion.div\n          initial={{ opacity: 0 }}\n          animate={{ opacity: 1 }}\n          className=\"text-center py-12\"\n        >\n          <Search className=\"w-12 h-12 text-gray-400 mx-auto mb-4\" />\n          <h3 className=\"text-lg font-semibold text-gray-600 mb-2\">\n            No results found\n          </h3>\n          <p className=\"text-gray-500 mb-4\">\n            Try adjusting your search terms or filters, or explore our AI suggestions.\n          </p>\n          <Button \n            onClick={() => {\n              setSearchQuery('');\n              setSearchResults([]);\n            }}\n            variant=\"outline\"\n          >\n            Clear Search\n          </Button>\n        </motion.div>\n      )}\n    </div>\n  );\n}"
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Badge } from '../ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { 
+  Search,
+  Brain,
+  Sparkles,
+  Filter,
+  SortAsc,
+  Eye,
+  Heart,
+  MessageSquare,
+  Share,
+  Clock,
+  TrendingUp,
+  Users,
+  Star,
+  Zap,
+  Target,
+  Sliders,
+  X,
+  ChevronDown,
+  Image,
+  Video,
+  FileText,
+  Mic,
+  Camera,
+  Play
+} from 'lucide-react';
+import AnimatedLoader from '../ui/AnimatedLoader';
+
+interface SearchResult {
+  id: string;
+  type: 'creator' | 'content' | 'community';
+  title: string;
+  description: string;
+  thumbnail?: string;
+  creator: {
+    name: string;
+    avatar: string;
+    verified: boolean;
+    followers: number;
+  };
+  stats: {
+    views?: number;
+    likes?: number;
+    comments?: number;
+    shares?: number;
+  };
+  tags: string[];
+  relevanceScore: number;
+  aiInsights: {
+    whyRelevant: string;
+    similarityScore: number;
+    engagementPrediction: number;
+  };
+  contentType?: 'image' | 'video' | 'text' | 'audio';
+  duration?: string;
+  publishedAt: Date;
+}
+
+interface AISearchFilters {
+  contentType: string[];
+  timeRange: string;
+  sortBy: string;
+  minEngagement: number;
+  creators: string[];
+  tags: string[];
+  aiPersonalized: boolean;
+}
+
+interface SearchSuggestion {
+  query: string;
+  type: 'trending' | 'personalized' | 'semantic';
+  confidence: number;
+  explanation: string;
+}
+
+export default function AISearchAndDiscovery() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<AISearchFilters>({
+    contentType: [],
+    timeRange: 'all',
+    sortBy: 'relevance',
+    minEngagement: 0,
+    creators: [],
+    tags: [],
+    aiPersonalized: true
+  });
+
+  // Mock search suggestions
+  const generateSearchSuggestions = (query: string): SearchSuggestion[] => {
+    if (!query) {
+      return [
+        {
+          query: 'fursuit photography',
+          type: 'trending',
+          confidence: 95,
+          explanation: 'Trending in your community this week'
+        },
+        {
+          query: 'character design tips',
+          type: 'personalized',
+          confidence: 88,
+          explanation: 'Based on your recent interests'
+        },
+        {
+          query: 'anthro art commission',
+          type: 'trending',
+          confidence: 92,
+          explanation: 'Popular search among creators'
+        }
+      ];
+    }
+
+    return [
+      {
+        query: `${query} tutorials`,
+        type: 'semantic',
+        confidence: 87,
+        explanation: 'AI-enhanced search expansion'
+      },
+      {
+        query: `${query} community`,
+        type: 'semantic',
+        confidence: 82,
+        explanation: 'Related community content'
+      }
+    ];
+  };
+
+  // Mock search results
+  const generateSearchResults = (query: string): SearchResult[] => {
+    const mockResults: SearchResult[] = [
+      {
+        id: '1',
+        type: 'content',
+        title: 'Fursuit Photography in Golden Hour',
+        description: 'Professional outdoor fursuit photography session showcasing lighting techniques and poses that bring characters to life.',
+        thumbnail: '/api/placeholder/300/200',
+        creator: {
+          name: 'PhotoPaws Studio',
+          avatar: '/api/placeholder/40/40',
+          verified: true,
+          followers: 15420
+        },
+        stats: {
+          views: 28500,
+          likes: 2150,
+          comments: 342,
+          shares: 156
+        },
+        tags: ['fursuit', 'photography', 'golden hour', 'outdoor'],
+        relevanceScore: 95,
+        aiInsights: {
+          whyRelevant: 'Matches your interest in fursuit photography and follows trending visual styles',
+          similarityScore: 92,
+          engagementPrediction: 89
+        },
+        contentType: 'image',
+        publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: '2',
+        type: 'creator',
+        title: 'FurryArtist - Digital Character Designer',
+        description: 'Specialized in anthropomorphic character design and digital art commissions. 8+ years experience in the furry community.',
+        thumbnail: '/api/placeholder/300/200',
+        creator: {
+          name: 'FurryArtist',
+          avatar: '/api/placeholder/40/40',
+          verified: true,
+          followers: 45200
+        },
+        stats: {
+          views: 125000,
+          likes: 8900,
+          comments: 1240
+        },
+        tags: ['artist', 'commissions', 'character design', 'digital art'],
+        relevanceScore: 88,
+        aiInsights: {
+          whyRelevant: 'Popular creator in your preferred art style with high engagement rates',
+          similarityScore: 85,
+          engagementPrediction: 91
+        },
+        publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: '3',
+        type: 'content',
+        title: 'Character Design Process: From Sketch to Finished Art',
+        description: 'Complete walkthrough of my character design process, including ideation, sketching, and digital rendering techniques.',
+        thumbnail: '/api/placeholder/300/200',
+        creator: {
+          name: 'DigitalPaws',
+          avatar: '/api/placeholder/40/40',
+          verified: false,
+          followers: 8750
+        },
+        stats: {
+          views: 15600,
+          likes: 1340,
+          comments: 198,
+          shares: 87
+        },
+        tags: ['tutorial', 'character design', 'digital art', 'process'],
+        relevanceScore: 82,
+        aiInsights: {
+          whyRelevant: 'Educational content matching your learning preferences',
+          similarityScore: 78,
+          engagementPrediction: 84
+        },
+        contentType: 'video',
+        duration: '24:15',
+        publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: '4',
+        type: 'community',
+        title: 'Fursuit Makers Guild - Community Discussion',
+        description: 'Active community of fursuit makers sharing techniques, materials, and collaboration opportunities.',
+        creator: {
+          name: 'Fursuit Makers Guild',
+          avatar: '/api/placeholder/40/40',
+          verified: true,
+          followers: 23000
+        },
+        stats: {
+          views: 45000,
+          likes: 3200,
+          comments: 892
+        },
+        tags: ['community', 'fursuit making', 'techniques', 'collaboration'],
+        relevanceScore: 76,
+        aiInsights: {
+          whyRelevant: 'Active community discussions on topics you engage with',
+          similarityScore: 73,
+          engagementPrediction: 79
+        },
+        publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+      }
+    ];
+
+    // Filter based on query
+    if (query) {
+      return mockResults.filter(result => 
+        result.title.toLowerCase().includes(query.toLowerCase()) ||
+        result.description.toLowerCase().includes(query.toLowerCase()) ||
+        result.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      );
+    }
+
+    return mockResults;
+  };
+
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) return;
+    
+    setIsSearching(true);
+    
+    try {
+      // Simulate AI search processing
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const results = generateSearchResults(query);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleInputChange = (value: string) => {
+    setSearchQuery(value);
+    setSuggestions(generateSearchSuggestions(value));
+  };
+
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
+  };
+
+  const getContentTypeIcon = (type?: string) => {
+    switch (type) {
+      case 'image': return Image;
+      case 'video': return Video;
+      case 'text': return FileText;
+      case 'audio': return Mic;
+      default: return FileText;
+    }
+  };
+
+  const filteredResults = searchResults.filter(result => {
+    if (activeTab === 'all') return true;
+    return result.type === activeTab;
+  });
+
+  useEffect(() => {
+    setSuggestions(generateSearchSuggestions(''));
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-4"
+      >
+        <div className="flex items-center justify-center space-x-2">
+          <Brain className="w-8 h-8 text-purple-600" />
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            AI-Powered Discovery
+          </h1>
+          <Sparkles className="w-8 h-8 text-purple-600" />
+        </div>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Discover content, creators, and communities with intelligent search that understands context and your preferences.
+        </p>
+      </motion.div>
+
+      {/* Search Interface */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            {/* Search Input */}
+            <div className="relative">
+              <div className="flex space-x-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Input
+                    placeholder="Search for creators, content, or communities..."
+                    value={searchQuery}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
+                    className="pl-10 pr-4 h-12 text-lg"
+                  />
+                  {isSearching && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <AnimatedLoader type="search" size="sm" />
+                    </div>
+                  )}
+                </div>
+                <Button 
+                  onClick={() => handleSearch(searchQuery)}
+                  disabled={isSearching}
+                  className="h-12 px-6"
+                >
+                  {isSearching ? (
+                    <AnimatedLoader type="search" size="sm" />
+                  ) : (
+                    <Search className="w-5 h-5" />
+                  )}
+                  Search
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="h-12 px-4"
+                >
+                  <Filter className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Search Suggestions */}
+            <AnimatePresence>
+              {suggestions.length > 0 && searchQuery.length < 3 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-2"
+                >
+                  <p className="text-sm font-medium text-gray-700">AI Suggestions:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {suggestions.map((suggestion, index) => (
+                      <motion.button
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.05 }}
+                        onClick={() => {
+                          setSearchQuery(suggestion.query);
+                          handleSearch(suggestion.query);
+                        }}
+                        className="flex items-center space-x-2 px-3 py-2 bg-purple-50 hover:bg-purple-100 rounded-full text-sm transition-colors"
+                      >
+                        {suggestion.type === 'trending' && <TrendingUp className="w-3 h-3 text-purple-600" />}
+                        {suggestion.type === 'personalized' && <Target className="w-3 h-3 text-purple-600" />}
+                        {suggestion.type === 'semantic' && <Brain className="w-3 h-3 text-purple-600" />}
+                        <span>{suggestion.query}</span>
+                        <Badge variant="secondary" className="text-xs">
+                          {suggestion.confidence}%
+                        </Badge>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Advanced Filters */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="border-t pt-4 space-y-4"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Content Type</label>
+                      <div className="space-y-1">
+                        {['image', 'video', 'text', 'audio'].map(type => (
+                          <label key={type} className="flex items-center space-x-2 text-sm">
+                            <input 
+                              type="checkbox" 
+                              className="rounded" 
+                              checked={filters.contentType.includes(type)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFilters(prev => ({
+                                    ...prev,
+                                    contentType: [...prev.contentType, type]
+                                  }));
+                                } else {
+                                  setFilters(prev => ({
+                                    ...prev,
+                                    contentType: prev.contentType.filter(t => t !== type)
+                                  }));
+                                }
+                              }}
+                            />
+                            <span className="capitalize">{type}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Time Range</label>
+                      <select 
+                        value={filters.timeRange}
+                        onChange={(e) => setFilters(prev => ({ ...prev, timeRange: e.target.value }))}
+                        className="w-full p-2 border rounded text-sm"
+                      >
+                        <option value="all">All Time</option>
+                        <option value="day">Past Day</option>
+                        <option value="week">Past Week</option>
+                        <option value="month">Past Month</option>
+                        <option value="year">Past Year</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Sort By</label>
+                      <select 
+                        value={filters.sortBy}
+                        onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
+                        className="w-full p-2 border rounded text-sm"
+                      >
+                        <option value="relevance">Relevance</option>
+                        <option value="recent">Most Recent</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="engagement">Highest Engagement</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">AI Personalized</label>
+                      <label className="flex items-center space-x-2 text-sm">
+                        <input 
+                          type="checkbox" 
+                          className="rounded" 
+                          checked={filters.aiPersonalized}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiPersonalized: e.target.checked }))}
+                        />
+                        <span>Use AI personalization</span>
+                      </label>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Results */}
+      {searchResults.length > 0 && (
+        <div className="space-y-4">
+          {/* Results Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="all">All ({searchResults.length})</TabsTrigger>
+              <TabsTrigger value="content">Content ({searchResults.filter(r => r.type === 'content').length})</TabsTrigger>
+              <TabsTrigger value="creator">Creators ({searchResults.filter(r => r.type === 'creator').length})</TabsTrigger>
+              <TabsTrigger value="community">Communities ({searchResults.filter(r => r.type === 'community').length})</TabsTrigger>
+            </TabsList>
+
+            {/* Results Content */}
+            <TabsContent value={activeTab} className="mt-6">
+              <AnimatePresence>
+                <div className="space-y-4">
+                  {filteredResults.map((result, index) => {
+                    const ContentIcon = getContentTypeIcon(result.contentType);
+                    return (
+                      <motion.div
+                        key={result.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                          <CardContent className="p-6">
+                            <div className="flex space-x-4">
+                              {/* Thumbnail */}
+                              <div className="w-32 h-24 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center relative">
+                                {result.contentType === 'video' && (
+                                  <Play className="w-8 h-8 text-white absolute z-10" />
+                                )}
+                                <ContentIcon className="w-8 h-8 text-gray-400" />
+                              </div>
+                              
+                              {/* Content */}
+                              <div className="flex-1 space-y-3">
+                                {/* Header */}
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <h3 className="text-lg font-semibold">{result.title}</h3>
+                                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                      <img 
+                                        src={result.creator.avatar} 
+                                        alt={result.creator.name}
+                                        className="w-5 h-5 rounded-full"
+                                      />
+                                      <span>{result.creator.name}</span>
+                                      {result.creator.verified && (
+                                        <Star className="w-4 h-4 text-blue-500" />
+                                      )}
+                                      <span>•</span>
+                                      <span>{formatNumber(result.creator.followers)} followers</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Badge className="bg-purple-100 text-purple-800">
+                                      {result.relevanceScore}% match
+                                    </Badge>
+                                    <Badge variant="secondary" className="capitalize">
+                                      {result.type}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                
+                                {/* Description */}
+                                <p className="text-gray-700 text-sm">{result.description}</p>
+                                
+                                {/* Tags */}
+                                <div className="flex flex-wrap gap-1">
+                                  {result.tags.map(tag => (
+                                    <Badge key={tag} variant="outline" className="text-xs">
+                                      #{tag}
+                                    </Badge>
+                                  ))}
+                                </div>
+                                
+                                {/* Stats and AI Insights */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                    {result.stats.views && (
+                                      <div className="flex items-center space-x-1">
+                                        <Eye className="w-4 h-4" />
+                                        <span>{formatNumber(result.stats.views)}</span>
+                                      </div>
+                                    )}
+                                    {result.stats.likes && (
+                                      <div className="flex items-center space-x-1">
+                                        <Heart className="w-4 h-4" />
+                                        <span>{formatNumber(result.stats.likes)}</span>
+                                      </div>
+                                    )}
+                                    {result.stats.comments && (
+                                      <div className="flex items-center space-x-1">
+                                        <MessageSquare className="w-4 h-4" />
+                                        <span>{formatNumber(result.stats.comments)}</span>
+                                      </div>
+                                    )}
+                                    {result.duration && (
+                                      <div className="flex items-center space-x-1">
+                                        <Clock className="w-4 h-4" />
+                                        <span>{result.duration}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="text-xs text-gray-500">
+                                    <div className="flex items-center space-x-1">
+                                      <Brain className="w-3 h-3" />
+                                      <span>{result.aiInsights.whyRelevant}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </AnimatePresence>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {searchResults.length === 0 && !isSearching && searchQuery && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-12"
+        >
+          <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">
+            No results found
+          </h3>
+          <p className="text-gray-500 mb-4">
+            Try adjusting your search terms or filters, or explore our AI suggestions.
+          </p>
+          <Button 
+            onClick={() => {
+              setSearchQuery('');
+              setSearchResults([]);
+            }}
+            variant="outline"
+          >
+            Clear Search
+          </Button>
+        </motion.div>
+      )}
+    </div>
+  );
+}
