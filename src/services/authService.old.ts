@@ -10,6 +10,54 @@ interface AuthResult {
   error?: string;
 }
 
+// Define StoredUser interface
+interface StoredUser extends User {
+  password: string;
+  googleId?: string;
+}
+
+// Mock database for development
+class MockAuthDatabase {
+  private generateId(): string {
+    return Math.random().toString(36).substring(2, 15);
+  }
+
+  private generateToken(): string {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
+
+  private getUsers(): StoredUser[] {
+    try {
+      const usersJson = localStorage.getItem('mock_users');
+      return usersJson ? JSON.parse(usersJson) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private saveUsers(users: StoredUser[]): void {
+    localStorage.setItem('mock_users', JSON.stringify(users));
+  }
+
+  private getSessions(): Record<string, { userId: string; expiresAt: number }> {
+    try {
+      const sessionsJson = localStorage.getItem('mock_sessions');
+      return sessionsJson ? JSON.parse(sessionsJson) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  private saveSessions(sessions: Record<string, { userId: string; expiresAt: number }>): void {
+    localStorage.setItem('mock_sessions', JSON.stringify(sessions));
+  }
+
+  private userToPublic(user: StoredUser): User {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...publicUser } = user;
+    return publicUser;
+  }
+
   async register(userData: {
     email: string;
     username: string;
@@ -146,13 +194,16 @@ interface AuthResult {
     }
   }
 
-  async registerOrLoginWithGoogle(googleUser: {
-    sub: string;
-    email: string;
-    name: string;
-    picture?: string;
-    email_verified: boolean;
-  }, userType: 'creator' | 'subscriber'): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
+  async registerOrLoginWithGoogle(
+    googleUser: {
+      sub: string;
+      email: string;
+      name: string;
+      picture?: string;
+      email_verified: boolean;
+    }, 
+    userType: 'creator' | 'subscriber'
+  ): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
     try {
       const users = this.getUsers();
       
@@ -312,13 +363,16 @@ export class AuthService {
     }
   }
 
-  async loginWithGoogle(googleUser: {
-    sub: string;
-    email: string;
-    name: string;
-    picture?: string;
-    email_verified: boolean;
-  }, userType: 'creator' | 'subscriber'): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
+  async loginWithGoogle(
+    googleUser: {
+      sub: string;
+      email: string;
+      name: string;
+      picture?: string;
+      email_verified: boolean;
+    }, 
+    userType: 'creator' | 'subscriber'
+  ): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
     if (this.isDevelopment) {
       return mockDB.registerOrLoginWithGoogle(googleUser, userType);
     } else {
@@ -409,6 +463,24 @@ export class AuthService {
 
     return true; // Default to trying auto-login
   }
+}
+
+// Cookie utility functions
+function setSessionCookie(name: string, value: string, rememberMe: boolean = false): void {
+  const expires = rememberMe 
+    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+    : undefined; // Session cookie
+  
+  document.cookie = `${name}=${value}${expires ? `;expires=${expires.toUTCString()}` : ''};path=/;SameSite=Strict`;
+}
+
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : null;
+}
+
+function deleteCookie(name: string): void {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
 }
 
 // Export singleton instance
