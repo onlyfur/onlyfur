@@ -1,1 +1,846 @@
-import React, { useState, useEffect } from 'react';\nimport { motion, AnimatePresence } from 'framer-motion';\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';\nimport { Button } from '../ui/button';\nimport { Switch } from '../ui/switch';\nimport { Slider } from '../ui/slider';\nimport { Badge } from '../ui/badge';\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';\nimport { Input } from '../ui/input';\nimport { Textarea } from '../ui/textarea';\nimport { \n  Settings,\n  Brain,\n  Shield,\n  Target,\n  Zap,\n  Eye,\n  MessageSquare,\n  TrendingUp,\n  Users,\n  Clock,\n  Filter,\n  Lightbulb,\n  AlertTriangle,\n  CheckCircle,\n  RefreshCw,\n  Save,\n  Trash2,\n  Plus,\n  X\n} from 'lucide-react';\nimport { AnimatedLoader } from '../ui/AnimatedLoader';\n\ninterface AISettings {\n  personalization: {\n    enabled: boolean;\n    learningRate: number;\n    privacyLevel: 'basic' | 'moderate' | 'strict';\n    dataRetention: number; // days\n  };\n  recommendations: {\n    enabled: boolean;\n    diversityFactor: number;\n    exploreVsExploit: number;\n    contextAware: boolean;\n    realTimeUpdates: boolean;\n  };\n  contentModeration: {\n    enabled: boolean;\n    strictness: number;\n    autoAction: boolean;\n    humanReview: boolean;\n    categories: string[];\n  };\n  analytics: {\n    enabled: boolean;\n    detailLevel: 'basic' | 'detailed' | 'comprehensive';\n    predictions: boolean;\n    insights: boolean;\n    sharing: boolean;\n  };\n  notifications: {\n    aiInsights: boolean;\n    recommendations: boolean;\n    warnings: boolean;\n    achievements: boolean;\n    frequency: 'real-time' | 'daily' | 'weekly';\n  };\n  privacy: {\n    dataCollection: boolean;\n    behaviorTracking: boolean;\n    crossPlatform: boolean;\n    anonymization: boolean;\n    dataExport: boolean;\n  };\n}\n\ninterface AIModel {\n  id: string;\n  name: string;\n  type: 'recommendation' | 'moderation' | 'analytics' | 'personalization';\n  version: string;\n  accuracy: number;\n  speed: number;\n  enabled: boolean;\n  description: string;\n}\n\nexport default function AISettingsManager() {\n  const [settings, setSettings] = useState<AISettings>({\n    personalization: {\n      enabled: true,\n      learningRate: 0.7,\n      privacyLevel: 'moderate',\n      dataRetention: 90\n    },\n    recommendations: {\n      enabled: true,\n      diversityFactor: 0.3,\n      exploreVsExploit: 0.4,\n      contextAware: true,\n      realTimeUpdates: true\n    },\n    contentModeration: {\n      enabled: true,\n      strictness: 0.6,\n      autoAction: false,\n      humanReview: true,\n      categories: ['harassment', 'spam', 'explicit']\n    },\n    analytics: {\n      enabled: true,\n      detailLevel: 'detailed',\n      predictions: true,\n      insights: true,\n      sharing: false\n    },\n    notifications: {\n      aiInsights: true,\n      recommendations: true,\n      warnings: true,\n      achievements: true,\n      frequency: 'daily'\n    },\n    privacy: {\n      dataCollection: true,\n      behaviorTracking: true,\n      crossPlatform: false,\n      anonymization: true,\n      dataExport: true\n    }\n  });\n  \n  const [models, setModels] = useState<AIModel[]>([\n    {\n      id: 'rec-v4',\n      name: 'Recommendation Engine v4.2',\n      type: 'recommendation',\n      version: '4.2.1',\n      accuracy: 94,\n      speed: 98,\n      enabled: true,\n      description: 'Advanced hybrid recommendation system with real-time learning'\n    },\n    {\n      id: 'mod-v3',\n      name: 'Content Moderator v3.8',\n      type: 'moderation',\n      version: '3.8.2',\n      accuracy: 96,\n      speed: 99,\n      enabled: true,\n      description: 'Multi-modal content safety analysis with context understanding'\n    },\n    {\n      id: 'ana-v2',\n      name: 'Analytics Predictor v2.5',\n      type: 'analytics',\n      version: '2.5.3',\n      accuracy: 89,\n      speed: 95,\n      enabled: true,\n      description: 'Predictive analytics with audience behavior modeling'\n    },\n    {\n      id: 'per-v1',\n      name: 'Personalization Engine v1.9',\n      type: 'personalization',\n      version: '1.9.4',\n      accuracy: 92,\n      speed: 97,\n      enabled: true,\n      description: 'Adaptive user preference learning with privacy protection'\n    }\n  ]);\n  \n  const [activeTab, setActiveTab] = useState('personalization');\n  const [isSaving, setIsSaving] = useState(false);\n  const [lastSaved, setLastSaved] = useState<Date | null>(null);\n  const [blockedKeywords, setBlockedKeywords] = useState<string[]>(['spam', 'hate']);\n  const [newKeyword, setNewKeyword] = useState('');\n\n  const handleSaveSettings = async () => {\n    setIsSaving(true);\n    try {\n      // Simulate API call\n      await new Promise(resolve => setTimeout(resolve, 1000));\n      setLastSaved(new Date());\n      // In real implementation, save to backend\n    } catch (error) {\n      console.error('Failed to save settings:', error);\n    } finally {\n      setIsSaving(false);\n    }\n  };\n\n  const handleModelToggle = (modelId: string) => {\n    setModels(prev => prev.map(model => \n      model.id === modelId ? { ...model, enabled: !model.enabled } : model\n    ));\n  };\n\n  const addBlockedKeyword = () => {\n    if (newKeyword.trim() && !blockedKeywords.includes(newKeyword.trim())) {\n      setBlockedKeywords(prev => [...prev, newKeyword.trim()]);\n      setNewKeyword('');\n    }\n  };\n\n  const removeBlockedKeyword = (keyword: string) => {\n    setBlockedKeywords(prev => prev.filter(k => k !== keyword));\n  };\n\n  const getModelTypeIcon = (type: string) => {\n    switch (type) {\n      case 'recommendation': return Target;\n      case 'moderation': return Shield;\n      case 'analytics': return TrendingUp;\n      case 'personalization': return Users;\n      default: return Brain;\n    }\n  };\n\n  return (\n    <div className=\"space-y-6\">\n      {/* Header */}\n      <motion.div\n        initial={{ opacity: 0, y: 20 }}\n        animate={{ opacity: 1, y: 0 }}\n        className=\"flex items-center justify-between\"\n      >\n        <div>\n          <div className=\"flex items-center space-x-3\">\n            <Settings className=\"w-6 h-6 text-purple-600\" />\n            <h1 className=\"text-2xl font-bold\">AI Settings & Configuration</h1>\n          </div>\n          <p className=\"text-gray-600 mt-1\">\n            Customize your AI experience, privacy settings, and model preferences\n          </p>\n        </div>\n        <div className=\"flex items-center space-x-2\">\n          {lastSaved && (\n            <div className=\"text-sm text-gray-500\">\n              Last saved: {lastSaved.toLocaleTimeString()}\n            </div>\n          )}\n          <Button \n            onClick={handleSaveSettings}\n            disabled={isSaving}\n            className=\"flex items-center space-x-2\"\n          >\n            {isSaving ? (\n              <AnimatedLoader type=\"default\" size=\"sm\" />\n            ) : (\n              <Save className=\"w-4 h-4\" />\n            )}\n            <span>{isSaving ? 'Saving...' : 'Save Settings'}</span>\n          </Button>\n        </div>\n      </motion.div>\n\n      {/* Settings Tabs */}\n      <Tabs value={activeTab} onValueChange={setActiveTab}>\n        <TabsList className=\"grid w-full grid-cols-6\">\n          <TabsTrigger value=\"personalization\">Personalization</TabsTrigger>\n          <TabsTrigger value=\"recommendations\">Recommendations</TabsTrigger>\n          <TabsTrigger value=\"moderation\">Moderation</TabsTrigger>\n          <TabsTrigger value=\"analytics\">Analytics</TabsTrigger>\n          <TabsTrigger value=\"privacy\">Privacy</TabsTrigger>\n          <TabsTrigger value=\"models\">AI Models</TabsTrigger>\n        </TabsList>\n\n        {/* Personalization Tab */}\n        <TabsContent value=\"personalization\" className=\"space-y-4\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Users className=\"w-5 h-5\" />\n                <span>Personalization Settings</span>\n              </CardTitle>\n              <CardDescription>\n                Control how AI learns from your behavior and preferences\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-6\">\n              <div className=\"flex items-center justify-between\">\n                <div>\n                  <label className=\"text-sm font-medium\">Enable AI Personalization</label>\n                  <p className=\"text-sm text-gray-500\">Allow AI to learn from your interactions</p>\n                </div>\n                <Switch\n                  checked={settings.personalization.enabled}\n                  onCheckedChange={(checked) => \n                    setSettings(prev => ({\n                      ...prev,\n                      personalization: { ...prev.personalization, enabled: checked }\n                    }))\n                  }\n                />\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Learning Rate</label>\n                <div className=\"px-3\">\n                  <Slider\n                    value={[settings.personalization.learningRate]}\n                    onValueChange={(value) => \n                      setSettings(prev => ({\n                        ...prev,\n                        personalization: { ...prev.personalization, learningRate: value[0] }\n                      }))\n                    }\n                    max={1}\n                    min={0}\n                    step={0.1}\n                    className=\"w-full\"\n                  />\n                  <div className=\"flex justify-between text-xs text-gray-500 mt-1\">\n                    <span>Conservative</span>\n                    <span>Adaptive</span>\n                    <span>Aggressive</span>\n                  </div>\n                </div>\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Privacy Level</label>\n                <select \n                  value={settings.personalization.privacyLevel}\n                  onChange={(e) => \n                    setSettings(prev => ({\n                      ...prev,\n                      personalization: { \n                        ...prev.personalization, \n                        privacyLevel: e.target.value as 'basic' | 'moderate' | 'strict'\n                      }\n                    }))\n                  }\n                  className=\"w-full p-2 border rounded\"\n                >\n                  <option value=\"basic\">Basic - Full personalization</option>\n                  <option value=\"moderate\">Moderate - Balanced approach</option>\n                  <option value=\"strict\">Strict - Minimal data usage</option>\n                </select>\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Data Retention (days)</label>\n                <Input\n                  type=\"number\"\n                  value={settings.personalization.dataRetention}\n                  onChange={(e) => \n                    setSettings(prev => ({\n                      ...prev,\n                      personalization: { \n                        ...prev.personalization, \n                        dataRetention: parseInt(e.target.value) || 90\n                      }\n                    }))\n                  }\n                  min={1}\n                  max={365}\n                />\n              </div>\n            </CardContent>\n          </Card>\n        </TabsContent>\n\n        {/* Recommendations Tab */}\n        <TabsContent value=\"recommendations\" className=\"space-y-4\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Target className=\"w-5 h-5\" />\n                <span>Recommendation Engine</span>\n              </CardTitle>\n              <CardDescription>\n                Configure how AI suggests content and creators\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-6\">\n              <div className=\"flex items-center justify-between\">\n                <div>\n                  <label className=\"text-sm font-medium\">Enable Recommendations</label>\n                  <p className=\"text-sm text-gray-500\">Get AI-powered content suggestions</p>\n                </div>\n                <Switch\n                  checked={settings.recommendations.enabled}\n                  onCheckedChange={(checked) => \n                    setSettings(prev => ({\n                      ...prev,\n                      recommendations: { ...prev.recommendations, enabled: checked }\n                    }))\n                  }\n                />\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Diversity Factor</label>\n                <p className=\"text-xs text-gray-500\">Higher values show more varied content</p>\n                <div className=\"px-3\">\n                  <Slider\n                    value={[settings.recommendations.diversityFactor]}\n                    onValueChange={(value) => \n                      setSettings(prev => ({\n                        ...prev,\n                        recommendations: { ...prev.recommendations, diversityFactor: value[0] }\n                      }))\n                    }\n                    max={1}\n                    min={0}\n                    step={0.1}\n                    className=\"w-full\"\n                  />\n                </div>\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Exploration vs Exploitation</label>\n                <p className=\"text-xs text-gray-500\">Balance between familiar and new content</p>\n                <div className=\"px-3\">\n                  <Slider\n                    value={[settings.recommendations.exploreVsExploit]}\n                    onValueChange={(value) => \n                      setSettings(prev => ({\n                        ...prev,\n                        recommendations: { ...prev.recommendations, exploreVsExploit: value[0] }\n                      }))\n                    }\n                    max={1}\n                    min={0}\n                    step={0.1}\n                    className=\"w-full\"\n                  />\n                  <div className=\"flex justify-between text-xs text-gray-500 mt-1\">\n                    <span>Familiar</span>\n                    <span>Balanced</span>\n                    <span>Exploratory</span>\n                  </div>\n                </div>\n              </div>\n              \n              <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Context Aware</label>\n                    <p className=\"text-xs text-gray-500\">Consider time and activity</p>\n                  </div>\n                  <Switch\n                    checked={settings.recommendations.contextAware}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        recommendations: { ...prev.recommendations, contextAware: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Real-time Updates</label>\n                    <p className=\"text-xs text-gray-500\">Immediate adaptation</p>\n                  </div>\n                  <Switch\n                    checked={settings.recommendations.realTimeUpdates}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        recommendations: { ...prev.recommendations, realTimeUpdates: checked }\n                      }))\n                    }\n                  />\n                </div>\n              </div>\n            </CardContent>\n          </Card>\n        </TabsContent>\n\n        {/* Content Moderation Tab */}\n        <TabsContent value=\"moderation\" className=\"space-y-4\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Shield className=\"w-5 h-5\" />\n                <span>Content Moderation</span>\n              </CardTitle>\n              <CardDescription>\n                Configure AI content safety and moderation settings\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-6\">\n              <div className=\"flex items-center justify-between\">\n                <div>\n                  <label className=\"text-sm font-medium\">Enable AI Moderation</label>\n                  <p className=\"text-sm text-gray-500\">Automatic content safety analysis</p>\n                </div>\n                <Switch\n                  checked={settings.contentModeration.enabled}\n                  onCheckedChange={(checked) => \n                    setSettings(prev => ({\n                      ...prev,\n                      contentModeration: { ...prev.contentModeration, enabled: checked }\n                    }))\n                  }\n                />\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Moderation Strictness</label>\n                <div className=\"px-3\">\n                  <Slider\n                    value={[settings.contentModeration.strictness]}\n                    onValueChange={(value) => \n                      setSettings(prev => ({\n                        ...prev,\n                        contentModeration: { ...prev.contentModeration, strictness: value[0] }\n                      }))\n                    }\n                    max={1}\n                    min={0}\n                    step={0.1}\n                    className=\"w-full\"\n                  />\n                  <div className=\"flex justify-between text-xs text-gray-500 mt-1\">\n                    <span>Lenient</span>\n                    <span>Moderate</span>\n                    <span>Strict</span>\n                  </div>\n                </div>\n              </div>\n              \n              <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Auto Action</label>\n                    <p className=\"text-xs text-gray-500\">Automatic content actions</p>\n                  </div>\n                  <Switch\n                    checked={settings.contentModeration.autoAction}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        contentModeration: { ...prev.contentModeration, autoAction: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Human Review</label>\n                    <p className=\"text-xs text-gray-500\">Flag for human review</p>\n                  </div>\n                  <Switch\n                    checked={settings.contentModeration.humanReview}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        contentModeration: { ...prev.contentModeration, humanReview: checked }\n                      }))\n                    }\n                  />\n                </div>\n              </div>\n              \n              {/* Blocked Keywords */}\n              <div className=\"space-y-3\">\n                <label className=\"text-sm font-medium\">Blocked Keywords</label>\n                <div className=\"flex space-x-2\">\n                  <Input\n                    placeholder=\"Add keyword to block...\"\n                    value={newKeyword}\n                    onChange={(e) => setNewKeyword(e.target.value)}\n                    onKeyDown={(e) => e.key === 'Enter' && addBlockedKeyword()}\n                  />\n                  <Button onClick={addBlockedKeyword} size=\"sm\">\n                    <Plus className=\"w-4 h-4\" />\n                  </Button>\n                </div>\n                <div className=\"flex flex-wrap gap-2\">\n                  {blockedKeywords.map(keyword => (\n                    <Badge \n                      key={keyword} \n                      variant=\"secondary\" \n                      className=\"flex items-center space-x-1\"\n                    >\n                      <span>{keyword}</span>\n                      <button \n                        onClick={() => removeBlockedKeyword(keyword)}\n                        className=\"ml-1 hover:text-red-600\"\n                      >\n                        <X className=\"w-3 h-3\" />\n                      </button>\n                    </Badge>\n                  ))}\n                </div>\n              </div>\n            </CardContent>\n          </Card>\n        </TabsContent>\n\n        {/* Analytics Tab */}\n        <TabsContent value=\"analytics\" className=\"space-y-4\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <TrendingUp className=\"w-5 h-5\" />\n                <span>Analytics & Insights</span>\n              </CardTitle>\n              <CardDescription>\n                Configure AI analytics and prediction settings\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-6\">\n              <div className=\"flex items-center justify-between\">\n                <div>\n                  <label className=\"text-sm font-medium\">Enable AI Analytics</label>\n                  <p className=\"text-sm text-gray-500\">Get AI-powered insights and predictions</p>\n                </div>\n                <Switch\n                  checked={settings.analytics.enabled}\n                  onCheckedChange={(checked) => \n                    setSettings(prev => ({\n                      ...prev,\n                      analytics: { ...prev.analytics, enabled: checked }\n                    }))\n                  }\n                />\n              </div>\n              \n              <div className=\"space-y-2\">\n                <label className=\"text-sm font-medium\">Detail Level</label>\n                <select \n                  value={settings.analytics.detailLevel}\n                  onChange={(e) => \n                    setSettings(prev => ({\n                      ...prev,\n                      analytics: { \n                        ...prev.analytics, \n                        detailLevel: e.target.value as 'basic' | 'detailed' | 'comprehensive'\n                      }\n                    }))\n                  }\n                  className=\"w-full p-2 border rounded\"\n                >\n                  <option value=\"basic\">Basic - Key metrics only</option>\n                  <option value=\"detailed\">Detailed - Enhanced analytics</option>\n                  <option value=\"comprehensive\">Comprehensive - Full analysis</option>\n                </select>\n              </div>\n              \n              <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Predictions</label>\n                    <p className=\"text-xs text-gray-500\">Future performance forecasts</p>\n                  </div>\n                  <Switch\n                    checked={settings.analytics.predictions}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        analytics: { ...prev.analytics, predictions: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">AI Insights</label>\n                    <p className=\"text-xs text-gray-500\">Contextual recommendations</p>\n                  </div>\n                  <Switch\n                    checked={settings.analytics.insights}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        analytics: { ...prev.analytics, insights: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Data Sharing</label>\n                    <p className=\"text-xs text-gray-500\">Anonymous platform insights</p>\n                  </div>\n                  <Switch\n                    checked={settings.analytics.sharing}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        analytics: { ...prev.analytics, sharing: checked }\n                      }))\n                    }\n                  />\n                </div>\n              </div>\n            </CardContent>\n          </Card>\n        </TabsContent>\n\n        {/* Privacy Tab */}\n        <TabsContent value=\"privacy\" className=\"space-y-4\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Shield className=\"w-5 h-5\" />\n                <span>Privacy & Data Protection</span>\n              </CardTitle>\n              <CardDescription>\n                Control your data privacy and AI processing preferences\n              </CardDescription>\n            </CardHeader>\n            <CardContent className=\"space-y-6\">\n              <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">\n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Data Collection</label>\n                    <p className=\"text-xs text-gray-500\">Allow AI to collect interaction data</p>\n                  </div>\n                  <Switch\n                    checked={settings.privacy.dataCollection}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        privacy: { ...prev.privacy, dataCollection: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Behavior Tracking</label>\n                    <p className=\"text-xs text-gray-500\">Track usage patterns for AI</p>\n                  </div>\n                  <Switch\n                    checked={settings.privacy.behaviorTracking}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        privacy: { ...prev.privacy, behaviorTracking: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Cross-Platform</label>\n                    <p className=\"text-xs text-gray-500\">Share data across platforms</p>\n                  </div>\n                  <Switch\n                    checked={settings.privacy.crossPlatform}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        privacy: { ...prev.privacy, crossPlatform: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Data Anonymization</label>\n                    <p className=\"text-xs text-gray-500\">Remove personal identifiers</p>\n                  </div>\n                  <Switch\n                    checked={settings.privacy.anonymization}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        privacy: { ...prev.privacy, anonymization: checked }\n                      }))\n                    }\n                  />\n                </div>\n                \n                <div className=\"flex items-center justify-between\">\n                  <div>\n                    <label className=\"text-sm font-medium\">Data Export</label>\n                    <p className=\"text-xs text-gray-500\">Allow data export requests</p>\n                  </div>\n                  <Switch\n                    checked={settings.privacy.dataExport}\n                    onCheckedChange={(checked) => \n                      setSettings(prev => ({\n                        ...prev,\n                        privacy: { ...prev.privacy, dataExport: checked }\n                      }))\n                    }\n                  />\n                </div>\n              </div>\n              \n              <div className=\"border-t pt-4\">\n                <div className=\"flex items-center justify-between mb-4\">\n                  <h3 className=\"text-lg font-semibold\">Data Management</h3>\n                </div>\n                <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4\">\n                  <Button variant=\"outline\" className=\"flex items-center space-x-2\">\n                    <Eye className=\"w-4 h-4\" />\n                    <span>View My Data</span>\n                  </Button>\n                  <Button variant=\"outline\" className=\"flex items-center space-x-2\">\n                    <RefreshCw className=\"w-4 h-4\" />\n                    <span>Export Data</span>\n                  </Button>\n                  <Button variant=\"destructive\" className=\"flex items-center space-x-2\">\n                    <Trash2 className=\"w-4 h-4\" />\n                    <span>Delete All Data</span>\n                  </Button>\n                </div>\n              </div>\n            </CardContent>\n          </Card>\n        </TabsContent>\n\n        {/* AI Models Tab */}\n        <TabsContent value=\"models\" className=\"space-y-4\">\n          <Card>\n            <CardHeader>\n              <CardTitle className=\"flex items-center space-x-2\">\n                <Brain className=\"w-5 h-5\" />\n                <span>AI Models & Performance</span>\n              </CardTitle>\n              <CardDescription>\n                Manage AI models and their performance settings\n              </CardDescription>\n            </CardHeader>\n            <CardContent>\n              <div className=\"space-y-4\">\n                {models.map((model, index) => {\n                  const IconComponent = getModelTypeIcon(model.type);\n                  return (\n                    <motion.div\n                      key={model.id}\n                      initial={{ opacity: 0, y: 20 }}\n                      animate={{ opacity: 1, y: 0 }}\n                      transition={{ delay: index * 0.1 }}\n                      className={`border rounded-lg p-4 ${model.enabled ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}\n                    >\n                      <div className=\"flex items-center justify-between\">\n                        <div className=\"flex items-center space-x-3\">\n                          <div className={`p-2 rounded-full ${model.enabled ? 'bg-green-100' : 'bg-gray-100'}`}>\n                            <IconComponent className={`w-5 h-5 ${model.enabled ? 'text-green-600' : 'text-gray-600'}`} />\n                          </div>\n                          <div>\n                            <h3 className=\"font-semibold\">{model.name}</h3>\n                            <p className=\"text-sm text-gray-600\">{model.description}</p>\n                            <div className=\"flex items-center space-x-4 mt-1\">\n                              <Badge variant=\"outline\">v{model.version}</Badge>\n                              <Badge className=\"capitalize\">{model.type}</Badge>\n                            </div>\n                          </div>\n                        </div>\n                        <div className=\"flex items-center space-x-4\">\n                          <div className=\"text-right text-sm\">\n                            <div className=\"flex items-center space-x-2\">\n                              <span>Accuracy:</span>\n                              <Badge className={model.accuracy > 90 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>\n                                {model.accuracy}%\n                              </Badge>\n                            </div>\n                            <div className=\"flex items-center space-x-2 mt-1\">\n                              <span>Speed:</span>\n                              <Badge className={model.speed > 95 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>\n                                {model.speed}%\n                              </Badge>\n                            </div>\n                          </div>\n                          <Switch\n                            checked={model.enabled}\n                            onCheckedChange={() => handleModelToggle(model.id)}\n                          />\n                        </div>\n                      </div>\n                    </motion.div>\n                  );\n                })}\n              </div>\n            </CardContent>\n          </Card>\n        </TabsContent>\n      </Tabs>\n    </div>\n  );\n}"
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Switch } from '../ui/switch';
+import { Slider } from '../ui/slider';
+import { Badge } from '../ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Input } from '../ui/input';
+import { 
+  Settings,
+  Brain,
+  Shield,
+  Target,
+  Eye,
+  TrendingUp,
+  Users,
+  RefreshCw,
+  Save,
+  Trash2,
+  Plus,
+  X
+} from 'lucide-react';
+import AnimatedLoader from '../ui/AnimatedLoader';
+
+interface AISettings {
+  personalization: {
+    enabled: boolean;
+    learningRate: number;
+    privacyLevel: 'basic' | 'moderate' | 'strict';
+    dataRetention: number; // days
+  };
+  recommendations: {
+    enabled: boolean;
+    diversityFactor: number;
+    exploreVsExploit: number;
+    contextAware: boolean;
+    realTimeUpdates: boolean;
+  };
+  contentModeration: {
+    enabled: boolean;
+    strictness: number;
+    autoAction: boolean;
+    humanReview: boolean;
+    categories: string[];
+  };
+  analytics: {
+    enabled: boolean;
+    detailLevel: 'basic' | 'detailed' | 'comprehensive';
+    predictions: boolean;
+    insights: boolean;
+    sharing: boolean;
+  };
+  notifications: {
+    aiInsights: boolean;
+    recommendations: boolean;
+    warnings: boolean;
+    achievements: boolean;
+    frequency: 'real-time' | 'daily' | 'weekly';
+  };
+  privacy: {
+    dataCollection: boolean;
+    behaviorTracking: boolean;
+    crossPlatform: boolean;
+    anonymization: boolean;
+    dataExport: boolean;
+  };
+}
+
+interface AIModel {
+  id: string;
+  name: string;
+  type: 'recommendation' | 'moderation' | 'analytics' | 'personalization';
+  version: string;
+  accuracy: number;
+  speed: number;
+  enabled: boolean;
+  description: string;
+}
+
+export default function AISettingsManager() {
+  const [settings, setSettings] = useState<AISettings>({
+    personalization: {
+      enabled: true,
+      learningRate: 0.7,
+      privacyLevel: 'moderate',
+      dataRetention: 90
+    },
+    recommendations: {
+      enabled: true,
+      diversityFactor: 0.3,
+      exploreVsExploit: 0.4,
+      contextAware: true,
+      realTimeUpdates: true
+    },
+    contentModeration: {
+      enabled: true,
+      strictness: 0.6,
+      autoAction: false,
+      humanReview: true,
+      categories: ['harassment', 'spam', 'explicit']
+    },
+    analytics: {
+      enabled: true,
+      detailLevel: 'detailed',
+      predictions: true,
+      insights: true,
+      sharing: false
+    },
+    notifications: {
+      aiInsights: true,
+      recommendations: true,
+      warnings: true,
+      achievements: true,
+      frequency: 'daily'
+    },
+    privacy: {
+      dataCollection: true,
+      behaviorTracking: true,
+      crossPlatform: false,
+      anonymization: true,
+      dataExport: true
+    }
+  });
+  
+  const [models, setModels] = useState<AIModel[]>([
+    {
+      id: 'rec-v4',
+      name: 'Recommendation Engine v4.2',
+      type: 'recommendation',
+      version: '4.2.1',
+      accuracy: 94,
+      speed: 98,
+      enabled: true,
+      description: 'Advanced hybrid recommendation system with real-time learning'
+    },
+    {
+      id: 'mod-v3',
+      name: 'Content Moderator v3.8',
+      type: 'moderation',
+      version: '3.8.2',
+      accuracy: 96,
+      speed: 99,
+      enabled: true,
+      description: 'Multi-modal content safety analysis with context understanding'
+    },
+    {
+      id: 'ana-v2',
+      name: 'Analytics Predictor v2.5',
+      type: 'analytics',
+      version: '2.5.3',
+      accuracy: 89,
+      speed: 95,
+      enabled: true,
+      description: 'Predictive analytics with audience behavior modeling'
+    },
+    {
+      id: 'per-v1',
+      name: 'Personalization Engine v1.9',
+      type: 'personalization',
+      version: '1.9.4',
+      accuracy: 92,
+      speed: 97,
+      enabled: true,
+      description: 'Adaptive user preference learning with privacy protection'
+    }
+  ]);
+  
+  const [activeTab, setActiveTab] = useState('personalization');
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [blockedKeywords, setBlockedKeywords] = useState<string[]>(['spam', 'hate']);
+  const [newKeyword, setNewKeyword] = useState('');
+
+  const handleSaveSettings = async () => {
+    setIsSaving(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setLastSaved(new Date());
+      // In real implementation, save to backend
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleModelToggle = (modelId: string) => {
+    setModels(prev => prev.map(model => 
+      model.id === modelId ? { ...model, enabled: !model.enabled } : model
+    ));
+  };
+
+  const addBlockedKeyword = () => {
+    if (newKeyword.trim() && !blockedKeywords.includes(newKeyword.trim())) {
+      setBlockedKeywords(prev => [...prev, newKeyword.trim()]);
+      setNewKeyword('');
+    }
+  };
+
+  const removeBlockedKeyword = (keyword: string) => {
+    setBlockedKeywords(prev => prev.filter(k => k !== keyword));
+  };
+
+  const getModelTypeIcon = (type: 'recommendation' | 'moderation' | 'analytics' | 'personalization') => {
+    switch (type) {
+      case 'recommendation': return Target;
+      case 'moderation': return Shield;
+      case 'analytics': return TrendingUp;
+      case 'personalization': return Users;
+      default: return Brain;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
+        <div>
+          <div className="flex items-center space-x-3">
+            <Settings className="w-6 h-6 text-purple-600" />
+            <h1 className="text-2xl font-bold">AI Settings & Configuration</h1>
+          </div>
+          <p className="text-gray-600 mt-1">
+            Customize your AI experience, privacy settings, and model preferences
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          {lastSaved && (
+            <div className="text-sm text-gray-500">
+              Last saved: {lastSaved.toLocaleTimeString()}
+            </div>
+          )}
+          <Button 
+            onClick={handleSaveSettings}
+            disabled={isSaving}
+            className="flex items-center space-x-2"
+          >
+            {isSaving ? (
+              <AnimatedLoader type="default" size="sm" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span>{isSaving ? 'Saving...' : 'Save Settings'}</span>
+          </Button>
+        </div>
+      </motion.div>
+
+      {/* Settings Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="personalization">Personalization</TabsTrigger>
+          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+          <TabsTrigger value="moderation">Moderation</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="privacy">Privacy</TabsTrigger>
+          <TabsTrigger value="models">AI Models</TabsTrigger>
+        </TabsList>
+
+        {/* Personalization Tab */}
+        <TabsContent value="personalization" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5" />
+                <span>Personalization Settings</span>
+              </CardTitle>
+              <CardDescription>
+                Control how AI learns from your behavior and preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">Enable AI Personalization</label>
+                  <p className="text-sm text-gray-500">Allow AI to learn from your interactions</p>
+                </div>
+                <Switch
+                  checked={settings.personalization.enabled}
+                  onCheckedChange={(checked) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      personalization: { ...prev.personalization, enabled: checked }
+                    }))
+                  }
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Learning Rate</label>
+                <div className="px-3">
+                  <Slider
+                    value={[settings.personalization.learningRate]}
+                    onValueChange={(value) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        personalization: { ...prev.personalization, learningRate: value[0] }
+                      }))
+                    }
+                    max={1}
+                    min={0}
+                    step={0.1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Conservative</span>
+                    <span>Adaptive</span>
+                    <span>Aggressive</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Privacy Level</label>
+                <select 
+                  value={settings.personalization.privacyLevel}
+                  onChange={(e) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      personalization: { 
+                        ...prev.personalization, 
+                        privacyLevel: e.target.value as 'basic' | 'moderate' | 'strict'
+                      }
+                    }))
+                  }
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="basic">Basic - Full personalization</option>
+                  <option value="moderate">Moderate - Balanced approach</option>
+                  <option value="strict">Strict - Minimal data usage</option>
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Data Retention (days)</label>
+                <Input
+                  type="number"
+                  value={settings.personalization.dataRetention}
+                  onChange={(e) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      personalization: { 
+                        ...prev.personalization, 
+                        dataRetention: parseInt(e.target.value) || 90
+                      }
+                    }))
+                  }
+                  min={1}
+                  max={365}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Recommendations Tab */}
+        <TabsContent value="recommendations" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Target className="w-5 h-5" />
+                <span>Recommendation Engine</span>
+              </CardTitle>
+              <CardDescription>
+                Configure how AI suggests content and creators
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">Enable Recommendations</label>
+                  <p className="text-sm text-gray-500">Get AI-powered content suggestions</p>
+                </div>
+                <Switch
+                  checked={settings.recommendations.enabled}
+                  onCheckedChange={(checked) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      recommendations: { ...prev.recommendations, enabled: checked }
+                    }))
+                  }
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Diversity Factor</label>
+                <p className="text-xs text-gray-500">Higher values show more varied content</p>
+                <div className="px-3">
+                  <Slider
+                    value={[settings.recommendations.diversityFactor]}
+                    onValueChange={(value) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        recommendations: { ...prev.recommendations, diversityFactor: value[0] }
+                      }))
+                    }
+                    max={1}
+                    min={0}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Exploration vs Exploitation</label>
+                <p className="text-xs text-gray-500">Balance between familiar and new content</p>
+                <div className="px-3">
+                  <Slider
+                    value={[settings.recommendations.exploreVsExploit]}
+                    onValueChange={(value) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        recommendations: { ...prev.recommendations, exploreVsExploit: value[0] }
+                      }))
+                    }
+                    max={1}
+                    min={0}
+                    step={0.1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Familiar</span>
+                    <span>Balanced</span>
+                    <span>Exploratory</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Context Aware</label>
+                    <p className="text-xs text-gray-500">Consider time and activity</p>
+                  </div>
+                  <Switch
+                    checked={settings.recommendations.contextAware}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        recommendations: { ...prev.recommendations, contextAware: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Real-time Updates</label>
+                    <p className="text-xs text-gray-500">Immediate adaptation</p>
+                  </div>
+                  <Switch
+                    checked={settings.recommendations.realTimeUpdates}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        recommendations: { ...prev.recommendations, realTimeUpdates: checked }
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Content Moderation Tab */}
+        <TabsContent value="moderation" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Shield className="w-5 h-5" />
+                <span>Content Moderation</span>
+              </CardTitle>
+              <CardDescription>
+                Configure AI content safety and moderation settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">Enable AI Moderation</label>
+                  <p className="text-sm text-gray-500">Automatic content safety analysis</p>
+                </div>
+                <Switch
+                  checked={settings.contentModeration.enabled}
+                  onCheckedChange={(checked) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      contentModeration: { ...prev.contentModeration, enabled: checked }
+                    }))
+                  }
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Moderation Strictness</label>
+                <div className="px-3">
+                  <Slider
+                    value={[settings.contentModeration.strictness]}
+                    onValueChange={(value) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        contentModeration: { ...prev.contentModeration, strictness: value[0] }
+                      }))
+                    }
+                    max={1}
+                    min={0}
+                    step={0.1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Lenient</span>
+                    <span>Moderate</span>
+                    <span>Strict</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Auto Action</label>
+                    <p className="text-xs text-gray-500">Automatic content actions</p>
+                  </div>
+                  <Switch
+                    checked={settings.contentModeration.autoAction}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        contentModeration: { ...prev.contentModeration, autoAction: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Human Review</label>
+                    <p className="text-xs text-gray-500">Flag for human review</p>
+                  </div>
+                  <Switch
+                    checked={settings.contentModeration.humanReview}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        contentModeration: { ...prev.contentModeration, humanReview: checked }
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+              
+              {/* Blocked Keywords */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Blocked Keywords</label>
+                <div className="flex space-x-2">
+                  <Input
+                    placeholder="Add keyword to block..."
+                    value={newKeyword}
+                    onChange={(e) => setNewKeyword(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addBlockedKeyword()}
+                  />
+                  <Button onClick={addBlockedKeyword} size="sm">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {blockedKeywords.map(keyword => (
+                    <Badge 
+                      key={keyword} 
+                      variant="secondary" 
+                      className="flex items-center space-x-1"
+                    >
+                      <span>{keyword}</span>
+                      <button 
+                        onClick={() => removeBlockedKeyword(keyword)}
+                        className="ml-1 hover:text-red-600"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5" />
+                <span>Analytics & Insights</span>
+              </CardTitle>
+              <CardDescription>
+                Configure AI analytics and prediction settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">Enable AI Analytics</label>
+                  <p className="text-sm text-gray-500">Get AI-powered insights and predictions</p>
+                </div>
+                <Switch
+                  checked={settings.analytics.enabled}
+                  onCheckedChange={(checked) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      analytics: { ...prev.analytics, enabled: checked }
+                    }))
+                  }
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Detail Level</label>
+                <select 
+                  value={settings.analytics.detailLevel}
+                  onChange={(e) => 
+                    setSettings(prev => ({
+                      ...prev,
+                      analytics: { 
+                        ...prev.analytics, 
+                        detailLevel: e.target.value as 'basic' | 'detailed' | 'comprehensive'
+                      }
+                    }))
+                  }
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="basic">Basic - Key metrics only</option>
+                  <option value="detailed">Detailed - Enhanced analytics</option>
+                  <option value="comprehensive">Comprehensive - Full analysis</option>
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Predictions</label>
+                    <p className="text-xs text-gray-500">Future performance forecasts</p>
+                  </div>
+                  <Switch
+                    checked={settings.analytics.predictions}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        analytics: { ...prev.analytics, predictions: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">AI Insights</label>
+                    <p className="text-xs text-gray-500">Contextual recommendations</p>
+                  </div>
+                  <Switch
+                    checked={settings.analytics.insights}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        analytics: { ...prev.analytics, insights: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Data Sharing</label>
+                    <p className="text-xs text-gray-500">Anonymous platform insights</p>
+                  </div>
+                  <Switch
+                    checked={settings.analytics.sharing}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        analytics: { ...prev.analytics, sharing: checked }
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Privacy Tab */}
+        <TabsContent value="privacy" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Shield className="w-5 h-5" />
+                <span>Privacy & Data Protection</span>
+              </CardTitle>
+              <CardDescription>
+                Control your data privacy and AI processing preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Data Collection</label>
+                    <p className="text-xs text-gray-500">Allow AI to collect interaction data</p>
+                  </div>
+                  <Switch
+                    checked={settings.privacy.dataCollection}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        privacy: { ...prev.privacy, dataCollection: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Behavior Tracking</label>
+                    <p className="text-xs text-gray-500">Track usage patterns for AI</p>
+                  </div>
+                  <Switch
+                    checked={settings.privacy.behaviorTracking}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        privacy: { ...prev.privacy, behaviorTracking: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Cross-Platform</label>
+                    <p className="text-xs text-gray-500">Share data across platforms</p>
+                  </div>
+                  <Switch
+                    checked={settings.privacy.crossPlatform}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        privacy: { ...prev.privacy, crossPlatform: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Data Anonymization</label>
+                    <p className="text-xs text-gray-500">Remove personal identifiers</p>
+                  </div>
+                  <Switch
+                    checked={settings.privacy.anonymization}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        privacy: { ...prev.privacy, anonymization: checked }
+                      }))
+                    }
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Data Export</label>
+                    <p className="text-xs text-gray-500">Allow data export requests</p>
+                  </div>
+                  <Switch
+                    checked={settings.privacy.dataExport}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        privacy: { ...prev.privacy, dataExport: checked }
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+              
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Data Management</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Eye className="w-4 h-4" />
+                    <span>View My Data</span>
+                  </Button>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Export Data</span>
+                  </Button>
+                  <Button variant="destructive" className="flex items-center space-x-2">
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete All Data</span>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* AI Models Tab */}
+        <TabsContent value="models" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Brain className="w-5 h-5" />
+                <span>AI Models & Performance</span>
+              </CardTitle>
+              <CardDescription>
+                Manage AI models and their performance settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {models.map((model, index) => {
+                  const IconComponent = getModelTypeIcon(model.type);
+                  return (
+                    <motion.div
+                      key={model.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`border rounded-lg p-4 ${model.enabled ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-full ${model.enabled ? 'bg-green-100' : 'bg-gray-100'}`}>
+                            <IconComponent className={`w-5 h-5 ${model.enabled ? 'text-green-600' : 'text-gray-600'}`} />
+                          </div>
+                          <div>
+                            <h
