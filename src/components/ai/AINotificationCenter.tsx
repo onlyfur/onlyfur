@@ -1,1 +1,488 @@
-import React, { useState, useEffect } from 'react';\nimport { motion, AnimatePresence } from 'framer-motion';\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';\nimport { Button } from '../ui/button';\nimport { Badge } from '../ui/badge';\nimport { Switch } from '../ui/switch';\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';\nimport { \n  Bell, \n  BellOff,\n  Brain,\n  TrendingUp,\n  DollarSign,\n  Users,\n  AlertTriangle,\n  CheckCircle,\n  Clock,\n  Zap,\n  MessageSquare,\n  Heart,\n  Share,\n  Eye,\n  Settings,\n  X,\n  Lightbulb,\n  Target,\n  Award,\n  Calendar\n} from 'lucide-react';\n\ninterface AINotification {\n  id: string;\n  type: 'insight' | 'opportunity' | 'alert' | 'achievement' | 'recommendation';\n  priority: 'low' | 'medium' | 'high' | 'urgent';\n  title: string;\n  message: string;\n  timestamp: Date;\n  actionable: boolean;\n  action?: {\n    label: string;\n    url?: string;\n    handler?: () => void;\n  };\n  metadata?: {\n    metric?: string;\n    change?: number;\n    trend?: 'up' | 'down' | 'stable';\n    confidence?: number;\n  };\n  dismissed?: boolean;\n  read?: boolean;\n}\n\ninterface NotificationSettings {\n  insights: boolean;\n  opportunities: boolean;\n  alerts: boolean;\n  achievements: boolean;\n  recommendations: boolean;\n  realTime: boolean;\n  email: boolean;\n  push: boolean;\n}\n\nexport default function AINotificationCenter() {\n  const [notifications, setNotifications] = useState<AINotification[]>([]);\n  const [settings, setSettings] = useState<NotificationSettings>({\n    insights: true,\n    opportunities: true,\n    alerts: true,\n    achievements: true,\n    recommendations: true,\n    realTime: true,\n    email: false,\n    push: true\n  });\n  const [activeTab, setActiveTab] = useState('all');\n  const [isLoading, setIsLoading] = useState(true);\n\n  // Mock AI notifications\n  const generateAINotifications = (): AINotification[] => {\n    return [\n      {\n        id: '1',\n        type: 'insight',\n        priority: 'high',\n        title: 'Engagement Peak Detected',\n        message: 'Your content performs 78% better when posted between 7-9 PM on weekdays.',\n        timestamp: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago\n        actionable: true,\n        action: {\n          label: 'Schedule Content',\n          url: '/creator-dashboard-v3?tab=scheduler'\n        },\n        metadata: {\n          metric: 'engagement_rate',\n          change: 78,\n          trend: 'up',\n          confidence: 94\n        }\n      },\n      {\n        id: '2',\n        type: 'opportunity',\n        priority: 'medium',\n        title: 'Revenue Opportunity Identified',\n        message: 'Subscribers are requesting more behind-the-scenes content. This could increase revenue by ~$350/month.',\n        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago\n        actionable: true,\n        action: {\n          label: 'Create BTS Content',\n          url: '/content-upload?type=bts'\n        },\n        metadata: {\n          metric: 'potential_revenue',\n          change: 350,\n          trend: 'up',\n          confidence: 87\n        }\n      },\n      {\n        id: '3',\n        type: 'alert',\n        priority: 'urgent',\n        title: 'Unusual Activity Detected',\n        message: 'Multiple failed login attempts detected. Your account security may be at risk.',\n        timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago\n        actionable: true,\n        action: {\n          label: 'Review Security',\n          url: '/security-settings'\n        },\n        metadata: {\n          confidence: 96\n        }\n      },\n      {\n        id: '4',\n        type: 'achievement',\n        priority: 'medium',\n        title: 'Milestone Reached!',\n        message: 'Congratulations! You\\'ve reached 1,000 followers. Your engagement rate is 23% above average.',\n        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago\n        actionable: true,\n        action: {\n          label: 'Celebrate with Post',\n          url: '/content-upload?template=milestone'\n        },\n        metadata: {\n          metric: 'followers',\n          change: 1000,\n          trend: 'up',\n          confidence: 100\n        }\n      },\n      {\n        id: '5',\n        type: 'recommendation',\n        priority: 'low',\n        title: 'Content Suggestion',\n        message: 'Based on your audience preferences, fursuit photography content could boost engagement by 45%.',\n        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago\n        actionable: true,\n        action: {\n          label: 'Generate Ideas',\n          url: '/ai-studio?type=photography'\n        },\n        metadata: {\n          metric: 'engagement_boost',\n          change: 45,\n          trend: 'up',\n          confidence: 82\n        }\n      },\n      {\n        id: '6',\n        type: 'insight',\n        priority: 'medium',\n        title: 'Audience Analysis Update',\n        message: 'Your core audience age shifted: 67% are now 22-28 years old. Consider adjusting content tone.',\n        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago\n        actionable: true,\n        action: {\n          label: 'View Analytics',\n          url: '/analytics?section=demographics'\n        },\n        metadata: {\n          confidence: 91\n        }\n      }\n    ];\n  };\n\n  useEffect(() => {\n    // Simulate loading AI notifications\n    setTimeout(() => {\n      setNotifications(generateAINotifications());\n      setIsLoading(false);\n    }, 1000);\n  }, []);\n\n  const getNotificationIcon = (type: string) => {\n    switch (type) {\n      case 'insight': return Brain;\n      case 'opportunity': return TrendingUp;\n      case 'alert': return AlertTriangle;\n      case 'achievement': return Award;\n      case 'recommendation': return Lightbulb;\n      default: return Bell;\n    }\n  };\n\n  const getPriorityColor = (priority: string) => {\n    switch (priority) {\n      case 'urgent': return 'border-red-500 bg-red-50';\n      case 'high': return 'border-orange-500 bg-orange-50';\n      case 'medium': return 'border-blue-500 bg-blue-50';\n      case 'low': return 'border-gray-500 bg-gray-50';\n      default: return 'border-gray-300 bg-white';\n    }\n  };\n\n  const getPriorityBadgeColor = (priority: string) => {\n    switch (priority) {\n      case 'urgent': return 'bg-red-100 text-red-800';\n      case 'high': return 'bg-orange-100 text-orange-800';\n      case 'medium': return 'bg-blue-100 text-blue-800';\n      case 'low': return 'bg-gray-100 text-gray-800';\n      default: return 'bg-gray-100 text-gray-800';\n    }\n  };\n\n  const formatTimeAgo = (timestamp: Date) => {\n    const now = new Date();\n    const diffMs = now.getTime() - timestamp.getTime();\n    const diffMins = Math.floor(diffMs / (1000 * 60));\n    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));\n    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));\n\n    if (diffMins < 60) {\n      return `${diffMins}m ago`;\n    } else if (diffHours < 24) {\n      return `${diffHours}h ago`;\n    } else {\n      return `${diffDays}d ago`;\n    }\n  };\n\n  const markAsRead = (id: string) => {\n    setNotifications(prev => prev.map(notif => \n      notif.id === id ? { ...notif, read: true } : notif\n    ));\n  };\n\n  const dismissNotification = (id: string) => {\n    setNotifications(prev => prev.map(notif => \n      notif.id === id ? { ...notif, dismissed: true } : notif\n    ));\n  };\n\n  const filterNotifications = (filter: string) => {\n    if (filter === 'all') return notifications.filter(n => !n.dismissed);\n    return notifications.filter(n => n.type === filter && !n.dismissed);\n  };\n\n  const unreadCount = notifications.filter(n => !n.read && !n.dismissed).length;\n  const urgentCount = notifications.filter(n => n.priority === 'urgent' && !n.dismissed).length;\n\n  if (isLoading) {\n    return (\n      <div className=\"flex items-center justify-center p-8\">\n        <motion.div\n          animate={{ rotate: 360 }}\n          transition={{ duration: 1, repeat: Infinity, ease: \"linear\" }}\n        >\n          <Brain className=\"w-8 h-8 text-purple-600\" />\n        </motion.div>\n        <span className=\"ml-2 text-gray-600\">AI is analyzing your data...</span>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"space-y-6\">\n      {/* Header */}\n      <motion.div\n        initial={{ opacity: 0, y: 20 }}\n        animate={{ opacity: 1, y: 0 }}\n        className=\"flex items-center justify-between\"\n      >\n        <div>\n          <div className=\"flex items-center space-x-3\">\n            <Bell className=\"w-6 h-6 text-purple-600\" />\n            <h1 className=\"text-2xl font-bold\">AI Notification Center</h1>\n            {unreadCount > 0 && (\n              <Badge className=\"bg-red-500 text-white\">\n                {unreadCount} new\n              </Badge>\n            )}\n            {urgentCount > 0 && (\n              <Badge className=\"bg-red-600 text-white animate-pulse\">\n                {urgentCount} urgent\n              </Badge>\n            )}\n          </div>\n          <p className=\"text-gray-600 mt-1\">\n            AI-powered insights and recommendations for your content strategy\n          </p>\n        </div>\n        <Button variant=\"outline\" size=\"sm\">\n          <Settings className=\"w-4 h-4 mr-2\" />\n          Settings\n        </Button>\n      </motion.div>\n\n      {/* Tabs */}\n      <Tabs value={activeTab} onValueChange={setActiveTab}>\n        <TabsList className=\"grid w-full grid-cols-6\">\n          <TabsTrigger value=\"all\">All</TabsTrigger>\n          <TabsTrigger value=\"insight\">Insights</TabsTrigger>\n          <TabsTrigger value=\"opportunity\">Opportunities</TabsTrigger>\n          <TabsTrigger value=\"alert\">Alerts</TabsTrigger>\n          <TabsTrigger value=\"achievement\">Achievements</TabsTrigger>\n          <TabsTrigger value=\"recommendation\">Tips</TabsTrigger>\n        </TabsList>\n\n        {/* Notifications List */}\n        {['all', 'insight', 'opportunity', 'alert', 'achievement', 'recommendation'].map(tabValue => (\n          <TabsContent key={tabValue} value={tabValue} className=\"space-y-4\">\n            <AnimatePresence>\n              {filterNotifications(tabValue).length === 0 ? (\n                <motion.div\n                  initial={{ opacity: 0 }}\n                  animate={{ opacity: 1 }}\n                  className=\"text-center py-12\"\n                >\n                  <Bell className=\"w-12 h-12 text-gray-400 mx-auto mb-4\" />\n                  <h3 className=\"text-lg font-semibold text-gray-600 mb-2\">\n                    No notifications\n                  </h3>\n                  <p className=\"text-gray-500\">\n                    Your AI assistant will notify you of important insights and opportunities.\n                  </p>\n                </motion.div>\n              ) : (\n                filterNotifications(tabValue).map((notification, index) => {\n                  const IconComponent = getNotificationIcon(notification.type);\n                  return (\n                    <motion.div\n                      key={notification.id}\n                      initial={{ opacity: 0, y: 20 }}\n                      animate={{ opacity: 1, y: 0 }}\n                      exit={{ opacity: 0, x: -300 }}\n                      transition={{ delay: index * 0.05 }}\n                      className={`border-l-4 ${getPriorityColor(notification.priority)} ${!notification.read ? 'bg-opacity-100' : 'bg-opacity-50'}`}\n                    >\n                      <Card className=\"border-l-0\">\n                        <CardHeader className=\"pb-3\">\n                          <div className=\"flex items-start justify-between\">\n                            <div className=\"flex items-start space-x-3\">\n                              <div className={`p-2 rounded-full ${notification.priority === 'urgent' ? 'bg-red-100' : 'bg-purple-100'}`}>\n                                <IconComponent className={`w-5 h-5 ${notification.priority === 'urgent' ? 'text-red-600' : 'text-purple-600'}`} />\n                              </div>\n                              <div className=\"flex-1\">\n                                <div className=\"flex items-center space-x-2 mb-1\">\n                                  <CardTitle className=\"text-lg\">{notification.title}</CardTitle>\n                                  <Badge className={getPriorityBadgeColor(notification.priority)}>\n                                    {notification.priority}\n                                  </Badge>\n                                  {notification.metadata?.confidence && (\n                                    <Badge variant=\"secondary\" className=\"text-xs\">\n                                      {notification.metadata.confidence}% confidence\n                                    </Badge>\n                                  )}\n                                </div>\n                                <div className=\"flex items-center space-x-2 text-sm text-gray-500\">\n                                  <Clock className=\"w-3 h-3\" />\n                                  <span>{formatTimeAgo(notification.timestamp)}</span>\n                                  <span>•</span>\n                                  <span className=\"capitalize\">{notification.type}</span>\n                                </div>\n                              </div>\n                            </div>\n                            <div className=\"flex items-center space-x-1\">\n                              {!notification.read && (\n                                <Button\n                                  variant=\"ghost\"\n                                  size=\"sm\"\n                                  onClick={() => markAsRead(notification.id)}\n                                  className=\"h-8 w-8 p-0\"\n                                >\n                                  <CheckCircle className=\"w-4 h-4\" />\n                                </Button>\n                              )}\n                              <Button\n                                variant=\"ghost\"\n                                size=\"sm\"\n                                onClick={() => dismissNotification(notification.id)}\n                                className=\"h-8 w-8 p-0\"\n                              >\n                                <X className=\"w-4 h-4\" />\n                              </Button>\n                            </div>\n                          </div>\n                        </CardHeader>\n                        <CardContent className=\"pt-0\">\n                          <p className=\"text-gray-700 mb-4\">{notification.message}</p>\n                          \n                          {/* Metadata */}\n                          {notification.metadata && (\n                            <div className=\"flex items-center space-x-4 mb-4 text-sm\">\n                              {notification.metadata.change && (\n                                <div className=\"flex items-center space-x-1\">\n                                  {notification.metadata.trend === 'up' ? (\n                                    <TrendingUp className=\"w-4 h-4 text-green-600\" />\n                                  ) : (\n                                    <TrendingUp className=\"w-4 h-4 text-red-600 rotate-180\" />\n                                  )}\n                                  <span className={notification.metadata.trend === 'up' ? 'text-green-600' : 'text-red-600'}>\n                                    {notification.metadata.change > 0 ? '+' : ''}{notification.metadata.change}\n                                    {notification.metadata.metric?.includes('revenue') ? '$' : '%'}\n                                  </span>\n                                </div>\n                              )}\n                            </div>\n                          )}\n                          \n                          {/* Action Button */}\n                          {notification.actionable && notification.action && (\n                            <Button \n                              className=\"w-full sm:w-auto\"\n                              onClick={() => {\n                                if (notification.action?.handler) {\n                                  notification.action.handler();\n                                } else if (notification.action?.url) {\n                                  // Navigate to URL\n                                  console.log('Navigate to:', notification.action.url);\n                                }\n                                markAsRead(notification.id);\n                              }}\n                            >\n                              <Zap className=\"w-4 h-4 mr-2\" />\n                              {notification.action.label}\n                            </Button>\n                          )}\n                        </CardContent>\n                      </Card>\n                    </motion.div>\n                  );\n                })\n              )}\n            </AnimatePresence>\n          </TabsContent>\n        ))}\n      </Tabs>\n\n      {/* Quick Settings */}\n      <Card>\n        <CardHeader>\n          <CardTitle className=\"flex items-center space-x-2\">\n            <Settings className=\"w-5 h-5\" />\n            <span>Notification Preferences</span>\n          </CardTitle>\n          <CardDescription>\n            Control what AI insights and alerts you receive\n          </CardDescription>\n        </CardHeader>\n        <CardContent>\n          <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n            {Object.entries(settings).map(([key, value]) => (\n              <div key={key} className=\"flex items-center justify-between\">\n                <label className=\"text-sm font-medium capitalize\">\n                  {key.replace(/([A-Z])/g, ' $1').trim()}\n                </label>\n                <Switch\n                  checked={value}\n                  onCheckedChange={(checked) => \n                    setSettings(prev => ({ ...prev, [key]: checked }))\n                  }\n                />\n              </div>\n            ))}\n          </div>\n        </CardContent>\n      </Card>\n    </div>\n  );\n}"
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Switch } from '../ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import {
+  Bell,
+  BellOff,
+  Brain,
+  TrendingUp,
+  DollarSign,
+  Users,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Zap,
+  MessageSquare,
+  Heart,
+  Share,
+  Eye,
+  Settings,
+  X,
+  Lightbulb,
+  Target,
+  Award,
+  Calendar
+} from 'lucide-react';
+
+interface AINotification {
+  id: string;
+  type: 'insight' | 'opportunity' | 'alert' | 'achievement' | 'recommendation';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  title: string;
+  message: string;
+  timestamp: Date;
+  actionable: boolean;
+  action?: {
+    label: string;
+    url?: string;
+    handler?: () => void;
+  };
+  metadata?: {
+    metric?: string;
+    change?: number;
+    trend?: 'up' | 'down' | 'stable';
+    confidence?: number;
+  };
+  dismissed?: boolean;
+  read?: boolean;
+}
+
+interface NotificationSettings {
+  insights: boolean;
+  opportunities: boolean;
+  alerts: boolean;
+  achievements: boolean;
+  recommendations: boolean;
+  realTime: boolean;
+  email: boolean;
+  push: boolean;
+}
+
+export default function AINotificationCenter() {
+  const [notifications, setNotifications] = useState<AINotification[]>([]);
+  const [settings, setSettings] = useState<NotificationSettings>({
+    insights: true,
+    opportunities: true,
+    alerts: true,
+    achievements: true,
+    recommendations: true,
+    realTime: true,
+    email: false,
+    push: true
+  });
+  const [activeTab, setActiveTab] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Mock AI notifications
+  const generateAINotifications = (): AINotification[] => {
+    return [
+      {
+        id: '1',
+        type: 'insight',
+        priority: 'high',
+        title: 'Engagement Peak Detected',
+        message: 'Your content performs 78% better when posted between 7-9 PM on weekdays.',
+        timestamp: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
+        actionable: true,
+        action: {
+          label: 'Schedule Content',
+          url: '/creator-dashboard-v3?tab=scheduler'
+        },
+        metadata: {
+          metric: 'engagement_rate',
+          change: 78,
+          trend: 'up',
+          confidence: 94
+        }
+      },
+      {
+        id: '2',
+        type: 'opportunity',
+        priority: 'medium',
+        title: 'Revenue Opportunity Identified',
+        message: 'Subscribers are requesting more behind-the-scenes content. This could increase revenue by ~$350/month.',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        actionable: true,
+        action: {
+          label: 'Create BTS Content',
+          url: '/content-upload?type=bts'
+        },
+        metadata: {
+          metric: 'potential_revenue',
+          change: 350,
+          trend: 'up',
+          confidence: 87
+        }
+      },
+      {
+        id: '3',
+        type: 'alert',
+        priority: 'urgent',
+        title: 'Unusual Activity Detected',
+        message: 'Multiple failed login attempts detected. Your account security may be at risk.',
+        timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+        actionable: true,
+        action: {
+          label: 'Review Security',
+          url: '/security-settings'
+        },
+        metadata: {
+          confidence: 96
+        }
+      },
+      {
+        id: '4',
+        type: 'achievement',
+        priority: 'medium',
+        title: 'Milestone Reached!',
+        message: 'Congratulations! You\'ve reached 1,000 followers. Your engagement rate is 23% above average.',
+        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+        actionable: true,
+        action: {
+          label: 'Celebrate with Post',
+          url: '/content-upload?template=milestone'
+        },
+        metadata: {
+          metric: 'followers',
+          change: 1000,
+          trend: 'up',
+          confidence: 100
+        }
+      },
+      {
+        id: '5',
+        type: 'recommendation',
+        priority: 'low',
+        title: 'Content Suggestion',
+        message: 'Based on your audience preferences, fursuit photography content could boost engagement by 45%.',
+        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+        actionable: true,
+        action: {
+          label: 'Generate Ideas',
+          url: '/ai-studio?type=photography'
+        },
+        metadata: {
+          metric: 'engagement_boost',
+          change: 45,
+          trend: 'up',
+          confidence: 82
+        }
+      },
+      {
+        id: '6',
+        type: 'insight',
+        priority: 'medium',
+        title: 'Audience Analysis Update',
+        message: 'Your core audience age shifted: 67% are now 22-28 years old. Consider adjusting content tone.',
+        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+        actionable: true,
+        action: {
+          label: 'View Analytics',
+          url: '/analytics?section=demographics'
+        },
+        metadata: {
+          confidence: 91
+        }
+      }
+    ];
+  };
+
+  useEffect(() => {
+    // Simulate loading AI notifications
+    setTimeout(() => {
+      setNotifications(generateAINotifications());
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'insight': return Brain;
+      case 'opportunity': return TrendingUp;
+      case 'alert': return AlertTriangle;
+      case 'achievement': return Award;
+      case 'recommendation': return Lightbulb;
+      default: return Bell;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'border-red-500 bg-red-50';
+      case 'high': return 'border-orange-500 bg-orange-50';
+      case 'medium': return 'border-blue-500 bg-blue-50';
+      case 'low': return 'border-gray-500 bg-gray-50';
+      default: return 'border-gray-300 bg-white';
+    }
+  };
+
+  const getPriorityBadgeColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-orange-100 text-orange-800';
+      case 'medium': return 'bg-blue-100 text-blue-800';
+      case 'low': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatTimeAgo = (timestamp: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - timestamp.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 60) {
+      return `${diffMins}m ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours}h ago`;
+    } else {
+      return `${diffDays}d ago`;
+    }
+  };
+
+  const markAsRead = (id: string) => {
+    setNotifications(prev => prev.map(notif =>
+      notif.id === id ? { ...notif, read: true } : notif
+    ));
+  };
+
+  const dismissNotification = (id: string) => {
+    setNotifications(prev => prev.map(notif =>
+      notif.id === id ? { ...notif, dismissed: true } : notif
+    ));
+  };
+
+  const filterNotifications = (filter: string) => {
+    if (filter === 'all') return notifications.filter(n => !n.dismissed);
+    return notifications.filter(n => n.type === filter && !n.dismissed);
+  };
+
+  const unreadCount = notifications.filter(n => !n.read && !n.dismissed).length;
+  const urgentCount = notifications.filter(n => n.priority === 'urgent' && !n.dismissed).length;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <Brain className="w-8 h-8 text-purple-600" />
+        </motion.div>
+        <span className="ml-2 text-gray-600">AI is analyzing your data...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
+        <div>
+          <div className="flex items-center space-x-3">
+            <Bell className="w-6 h-6 text-purple-600" />
+            <h1 className="text-2xl font-bold">AI Notification Center</h1>
+            {unreadCount > 0 && (
+              <Badge className="bg-red-500 text-white">
+                {unreadCount} new
+              </Badge>
+            )}
+            {urgentCount > 0 && (
+              <Badge className="bg-red-600 text-white animate-pulse">
+                {urgentCount} urgent
+              </Badge>
+            )}
+          </div>
+          <p className="text-gray-600 mt-1">
+            AI-powered insights and recommendations for your content strategy
+          </p>
+        </div>
+        <Button variant="outline" size="sm">
+          <Settings className="w-4 h-4 mr-2" />
+          Settings
+        </Button>
+      </motion.div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="insight">Insights</TabsTrigger>
+          <TabsTrigger value="opportunity">Opportunities</TabsTrigger>
+          <TabsTrigger value="alert">Alerts</TabsTrigger>
+          <TabsTrigger value="achievement">Achievements</TabsTrigger>
+          <TabsTrigger value="recommendation">Tips</TabsTrigger>
+        </TabsList>
+
+        {/* Notifications List */}
+        {['all', 'insight', 'opportunity', 'alert', 'achievement', 'recommendation'].map(tabValue => (
+          <TabsContent key={tabValue} value={tabValue} className="space-y-4">
+            <AnimatePresence>
+              {filterNotifications(tabValue).length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                    No notifications
+                  </h3>
+                  <p className="text-gray-500">
+                    Your AI assistant will notify you of important insights and opportunities.
+                  </p>
+                </motion.div>
+              ) : (
+                filterNotifications(tabValue).map((notification, index) => {
+                  const IconComponent = getNotificationIcon(notification.type);
+                  return (
+                    <motion.div
+                      key={notification.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -300 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`border-l-4 ${getPriorityColor(notification.priority)} ${!notification.read ? 'bg-opacity-100' : 'bg-opacity-50'}`}
+                    >
+                      <Card className="border-l-0">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start space-x-3">
+                              <div className={`p-2 rounded-full ${notification.priority === 'urgent' ? 'bg-red-100' : 'bg-purple-100'}`}>
+                                <IconComponent className={`w-5 h-5 ${notification.priority === 'urgent' ? 'text-red-600' : 'text-purple-600'}`} />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <CardTitle className="text-lg">{notification.title}</CardTitle>
+                                  <Badge className={getPriorityBadgeColor(notification.priority)}>
+                                    {notification.priority}
+                                  </Badge>
+                                  {notification.metadata?.confidence && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {notification.metadata.confidence}% confidence
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <Clock className="w-3 h-3" />
+                                  <span>{formatTimeAgo(notification.timestamp)}</span>
+                                  <span>•</span>
+                                  <span className="capitalize">{notification.type}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              {!notification.read && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => markAsRead(notification.id)}
+                                  className="h-8 w-8 p-0"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => dismissNotification(notification.id)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-gray-700 mb-4">{notification.message}</p>
+                          
+                          {/* Metadata */}
+                          {notification.metadata && (
+                            <div className="flex items-center space-x-4 mb-4 text-sm">
+                              {notification.metadata.change && (
+                                <div className="flex items-center space-x-1">
+                                  {notification.metadata.trend === 'up' ? (
+                                    <TrendingUp className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <TrendingUp className="w-4 h-4 text-red-600 rotate-180" />
+                                  )}
+                                  <span className={notification.metadata.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+                                    {notification.metadata.change > 0 ? '+' : ''}{notification.metadata.change}
+                                    {notification.metadata.metric?.includes('revenue') ? '$' : '%'}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Action Button */}
+                          {notification.actionable && notification.action && (
+                            <Button 
+                              className="w-full sm:w-auto"
+                              onClick={() => {
+                                if (notification.action?.handler) {
+                                  notification.action.handler();
+                                } else if (notification.action?.url) {
+                                  // Navigate to URL
+                                  console.log('Navigate to:', notification.action.url);
+                                }
+                                markAsRead(notification.id);
+                              }}
+                            >
+                              <Zap className="w-4 h-4 mr-2" />
+                              {notification.action.label}
+                            </Button>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })
+              )}
+            </AnimatePresence>
+          </TabsContent>
+        ))}
+      </Tabs>
+
+      {/* Quick Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Settings className="w-5 h-5" />
+            <span>Notification Preferences</span>
+          </CardTitle>
+          <CardDescription>
+            Control what AI insights and alerts you receive
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Object.entries(settings).map(([key, value]) => (
+              <div key={key} className="flex items-center justify-between">
+                <label className="text-sm font-medium capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </label>
+                <Switch
+                  checked={value}
+                  onCheckedChange={(checked) => 
+                    setSettings(prev => ({ ...prev, [key]: checked }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -35,7 +35,8 @@ import {
   VideoIcon,
   FileText,
   Camera,
-  Mic
+  Mic,
+  CheckCircle
 } from 'lucide-react';
 import AnimatedLoader from '../ui/AnimatedLoader';
 
