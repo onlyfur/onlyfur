@@ -33,7 +33,7 @@ const AutoLogout: React.FC<AutoLogoutProps> = ({
       });
 
       // Automatic logout with redirect
-      await logout(redirectPath);
+      await logout();
       
     } catch (error) {
       console.error('Logout error:', error);

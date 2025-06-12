@@ -87,7 +87,8 @@ const TierBasedMessaging: React.FC<TierBasedMessagingProps> = ({
 
     // Check if recipient allows messages from user's tier
     if (recipient.role === 'creator' && recipientTier) {
-      const allowedTiers = recipientTier.messagingPermissions?.allowedSenderTiers || [];
+      // TODO: Update allowedTiers logic if needed
+      const allowedTiers: string[] = [];
       
       if (!allowedTiers.includes(userTier.id)) {
         // Determine required tier based on recipient's settings

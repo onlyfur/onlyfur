@@ -91,8 +91,8 @@ export const EnhancedSearchInterface: React.FC = () => {
   const loadTrendingSearches = async () => {
     try {
       const response = await apiClient.get('/api/search/trending');
-      if (response.data.success) {
-        setTrending(response.data.data);
+      if ((response.data as any).success) {
+        setTrending((response.data as any).data);
       }
     } catch (error) {
       console.error('Failed to load trending searches:', error);
@@ -102,8 +102,8 @@ export const EnhancedSearchInterface: React.FC = () => {
   const getSuggestions = async (searchQuery: string) => {
     try {
       const response = await apiClient.get(`/api/search/suggestions?query=${encodeURIComponent(searchQuery)}`);
-      if (response.data.success) {
-        setSuggestions(response.data.data);
+      if ((response.data as any).success) {
+        setSuggestions((response.data as any).data);
         setShowSuggestions(true);
       }
     } catch (error) {
@@ -121,11 +121,11 @@ export const EnhancedSearchInterface: React.FC = () => {
         pagination: { limit: 20, offset: 0 }
       });
       
-      if (response.data.success) {
-        setResults(response.data.data.results);
-        setTotalCount(response.data.data.totalCount);
-        setSearchTime(response.data.data.searchTime);
-        setSuggestions(response.data.data.suggestions || []);
+      if ((response.data as any).success) {
+        setResults((response.data as any).data.results);
+        setTotalCount((response.data as any).data.totalCount);
+        setSearchTime((response.data as any).data.searchTime);
+        setSuggestions((response.data as any).data.suggestions || []);
       }
     } catch (error) {
       console.error('Search failed:', error);

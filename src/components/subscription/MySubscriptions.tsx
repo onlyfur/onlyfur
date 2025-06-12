@@ -104,14 +104,14 @@ export const MySubscriptions: React.FC = () => {
         apiClient.get('/api/stripe/spending')
       ]);
 
-      if (subscriptionsRes.data.success) {
-        setSubscriptions(subscriptionsRes.data.data);
+      if ((subscriptionsRes.data as any).success) {
+        setSubscriptions((subscriptionsRes.data as any).data);
       }
-      if (invoicesRes.data.success) {
-        setInvoices(invoicesRes.data.data);
+      if ((invoicesRes.data as any).success) {
+        setInvoices((invoicesRes.data as any).data);
       }
-      if (spendingRes.data.success) {
-        setSpending(spendingRes.data.data);
+      if ((spendingRes.data as any).success) {
+        setSpending((spendingRes.data as any).data);
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load subscription data');
@@ -146,8 +146,8 @@ export const MySubscriptions: React.FC = () => {
     try {
       const response = await apiClient.get(`/api/stripe/invoices/${invoiceId}/download`);
       
-      if (response.data.success) {
-        window.open(response.data.data.url, '_blank');
+      if ((response.data as any).success) {
+        window.open((response.data as any).data.url, '_blank');
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to download invoice');

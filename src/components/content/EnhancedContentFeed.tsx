@@ -379,7 +379,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
                   </div>
                   {user?.subscriptionTier && (
                     <div className="text-center">
-                      <Badge className={user.subscriptionTier.color}>
+                      <Badge>
                         {user.subscriptionTier.name}
                       </Badge>
                       <div className="text-xs text-muted-foreground mt-1">Current Tier</div>

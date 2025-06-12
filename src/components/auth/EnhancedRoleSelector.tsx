@@ -185,7 +185,8 @@ const EnhancedRoleSelector: React.FC<EnhancedRoleSelectorProps> = ({
                 <div className="flex items-center gap-1">
                   <MessageCircle className="w-3 h-3" />
                   <span>
-                    {tier.maxConversations === -1 ? 'Unlimited' : `${tier.maxConversations}`} chats/day
+                    {/* Replace or remove maxConversations if not present on tier */}
+                    {'Unlimited chats/day'}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">

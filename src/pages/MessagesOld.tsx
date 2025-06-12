@@ -1,6 +1,48 @@
-import React from 'react';
+// Ensure correct JSX runtime for TypeScript
+// @jsxImportSource react
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import MessageInterface from '@/components/messaging/MessageInterface';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useMessaging } from '@/contexts/MessagingContext';
+import ConversationList from '@/components/messaging/ConversationList';
+import ChatInterface from '@/components/messaging/ChatInterface';
+import MessageSettings from '@/components/messaging/MessageSettings';
+import {
+  Button
+} from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem
+} from '@/components/ui/dropdown-menu';
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback
+} from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import {
+  Plus,
+  MoreHorizontal,
+  Settings,
+  Archive,
+  Radio,
+  Search,
+  Phone,
+  Video,
+  Info,
+  Pin,
+  Volume2,
+  VolumeX,
+  MessageCircle
+} from 'lucide-react';
+import type { Conversation } from '@/types';
 
 const Messages: React.FC = () => {
   const { conversationId } = useParams<{ conversationId?: string }>();
@@ -20,7 +62,7 @@ const Messages: React.FC = () => {
 
   useEffect(() => {
     if (conversationId) {
-      const conversation = conversations.find(c => c.id === conversationId);
+      const conversation = conversations.find((c: Conversation) => c.id === conversationId);
       if (conversation) {
         setActiveConversation(conversation);
         setShowMobileChat(true);
@@ -48,7 +90,7 @@ const Messages: React.FC = () => {
     handleConversationSelect(newConversation);
   };
 
-  const filteredConversations = conversations.filter(conv => {
+  const filteredConversations = conversations.filter((conv: Conversation) => {
     const matchesSearch = conv.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          conv.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -106,7 +148,7 @@ const Messages: React.FC = () => {
               <Input
                 placeholder="Search conversations..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -118,9 +160,9 @@ const Messages: React.FC = () => {
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="unread">
                 Unread
-                {conversations.filter(c => c.unreadCount > 0).length > 0 && (
+                {conversations.filter((c: Conversation) => c.unreadCount > 0).length > 0 && (
                   <Badge variant="destructive" className="ml-1 h-4 w-4 p-0 text-xs">
-                    {conversations.filter(c => c.unreadCount > 0).length}
+                    {conversations.filter((c: Conversation) => c.unreadCount > 0).length}
                   </Badge>
                 )}
               </TabsTrigger>
@@ -276,7 +318,7 @@ const Messages: React.FC = () => {
 
               <div className="space-y-3">
                 <h4 className="font-medium">Participants ({activeConversation.participants.length})</h4>
-                {activeConversation.participants.slice(0, 5).map((participant) => (
+                {activeConversation.participants.slice(0, 5).map((participant: { userId: string; role: string }) => (
                   <div key={participant.userId} className="flex items-center space-x-3">
                     <Avatar className="w-8 h-8">
                       <AvatarFallback className="text-xs">

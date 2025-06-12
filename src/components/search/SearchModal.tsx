@@ -119,14 +119,14 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onOpenChange }) => {
       const generalResults: SearchResult[] = [
         {
           id: 'general-creators',
-          type: 'general',
+          type: 'general' as 'general',
           title: 'Explore Creators',
           subtitle: 'Discover amazing content creators',
           url: '/explore'
         },
         {
           id: 'general-help',
-          type: 'general',
+          type: 'general' as 'general',
           title: 'Help Center',
           subtitle: 'Get help and support',
           url: '/help'

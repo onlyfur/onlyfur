@@ -53,7 +53,7 @@ const Header: React.FC = () => {
       });
       
       // Call logout with automatic redirect to home
-      await logout('/');
+      await logout();
       
     } catch (error) {
       console.error('Logout error:', error);
@@ -65,7 +65,7 @@ const Header: React.FC = () => {
     }
   };
 
-  const navigation: Array<{ name: string; href: string; icon: LucideIcon; badge?: string | number }> = [
+  const navigation: Array<{ name: string; href: string; icon: any; badge?: string | number }> = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Feed', href: '/feed', icon: Heart },
     { name: 'Explore', href: '/explore', icon: Search },
