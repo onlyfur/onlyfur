@@ -81,25 +81,6 @@ const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({ open, onOpenC
     };
     checkRealData();
   }, []);
-      tags: ['animation']
-    },
-    {
-      id: 'general-1',
-      type: 'general',
-      title: 'Creator Program - Join OnlyFur',
-      subtitle: 'Start earning with your creative content',
-      url: '/creator-program',
-      relevanceScore: 65
-    },
-    {
-      id: 'general-2',
-      type: 'general',
-      title: 'Help Center - Getting Started',
-      subtitle: 'Learn how to use OnlyFur effectively',
-      url: '/help',
-      relevanceScore: 60
-    }
-  ];
 
   // Load recent searches on mount
   useEffect(() => {
