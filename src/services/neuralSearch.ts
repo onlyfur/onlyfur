@@ -613,10 +613,10 @@ class NeuralSearchEngine {
     
     // Track if we have category/type specific search
     let hasTypeSpecifier = false;
-    let typeVector = null;
+    let typeVector: number[] | null = null;
     
     // Simple keyword-based vector generation
-    const keywords = {
+    const keywords: { [key: string]: number[] } = {
       // Content keywords
       'art': [0.9, 0.7, 0.6, 0.4, 0.5, 0.3, 0.8, 0.2],
       'digital': [0.8, 0.8, 0.5, 0.6, 0.4, 0.7, 0.3, 0.9],
@@ -654,12 +654,12 @@ class NeuralSearchEngine {
     } else if (typeMatches.length > 0) {
       hasTypeSpecifier = true;
       // Create a combined vector for all matched type keywords
-      typeVector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
+      typeVector = new Array(8).fill(0.5);
       typeMatches.forEach(match => {
         const matchVector = keywords[match];
         if (matchVector) {
-          matchVector.forEach((val, idx) => {
-            typeVector[idx] = (typeVector[idx] + val) / 2;
+          matchVector.forEach((val: number, idx: number) => {
+            typeVector![idx] = (typeVector![idx] + val) / 2;
           });
         }
       });
@@ -668,7 +668,7 @@ class NeuralSearchEngine {
     // Apply regular keyword matching
     words.forEach(word => {
       if (keywords[word]) {
-        keywords[word].forEach((val, idx) => {
+        keywords[word].forEach((val: number, idx: number) => {
           baseVector[idx] = (baseVector[idx] + val) / 2;
         });
       }
@@ -676,7 +676,7 @@ class NeuralSearchEngine {
 
     // If we have a type specifier, blend it with the base vector
     if (hasTypeSpecifier && typeVector) {
-      return baseVector.map((val, idx) => (val * 0.4) + (typeVector[idx] * 0.6));
+      return baseVector.map((val, idx) => (val * 0.4) + (typeVector![idx] * 0.6));
     }
 
     return baseVector;
@@ -1100,8 +1100,8 @@ class NeuralSearchEngine {
   }
 
   private getSearchHistory(): string[] {
-    const history = localStorage.getItem('onlyfur_recent_searches');
-    return history ? JSON.parse(history) : [];
+    const history = localStorage.getItem('onlyfur_recent_searches') || '[]';
+    return JSON.parse(history);
   }
 
   private getRecentInteractions(): string[] {
