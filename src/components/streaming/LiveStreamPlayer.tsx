@@ -541,7 +541,8 @@ export default function LiveStreamPlayer({
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <ScrollArea className="h-80 px-4" ref={chatScrollRef}>
+                <ScrollArea className="h-80">
+                  <div className="px-4" ref={chatScrollRef}>
                   <div className="space-y-3">
                     {chatMessages.map((message) => (
                       <div key={message.id} className="flex items-start space-x-2">
@@ -576,6 +577,7 @@ export default function LiveStreamPlayer({
                         </div>
                       </div>
                     ))}
+                  </div>
                   </div>
                 </ScrollArea>
                 

@@ -22,10 +22,39 @@ export interface UserSubscriptionTier {
   level: 'basic' | 'pro' | 'premium' | 'vip';
   price: number;
   features: string[];
-  messagingPermissions: MessagingPermissions;
-  contentAccessLevel: number;
-  canAccessPremiumContent: boolean;
-  canMessageCreators: boolean;
+  messagingFeatures: {
+    canMessageCreators: boolean;
+    allowedCreatorTiers: string[];
+    maxConversationsPerDay: number;
+    canSendMedia: boolean;
+    canReceivePrioritySupport: boolean;
+    canSendBulkMessages: boolean;
+    maxFileSize: number;
+    allowedFileTypes: string[];
+    allowedSenderTiers?: string[];
+  };
+  contentAccess: {
+    canViewPremiumContent: boolean;
+    canViewExclusiveContent: boolean;
+    downloadPermissions: boolean;
+    earlyAccess: boolean;
+    canViewLiveStreams: boolean;
+    qualityLimits: 'sd' | 'hd' | 'uhd';
+  };
+  creatorFeatures?: {
+    maxUploadsPerDay: number;
+    maxSubscribers: number;
+    analyticsAccess: 'basic' | 'advanced' | 'premium';
+    customBranding: boolean;
+    liveStreamingEnabled: boolean;
+    bulkMessageLimit: number;
+    platformFeePercentage: number;
+    canSetContentTiers: boolean;
+    canCreateCollections: boolean;
+    maxStorageGB: number;
+    advancedScheduling: boolean;
+    customPricing: boolean;
+  };
   maxConversations: number;
   supportLevel: 'basic' | 'priority' | 'premium';
   status: 'active' | 'cancelled' | 'expired';

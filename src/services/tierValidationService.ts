@@ -10,6 +10,23 @@ import {
   validateFileUpload
 } from '@/utils/permissionUtils';
 
+// Mock request object for server-side rendering compatibility
+const mockRequest = {
+  method: 'GET',
+  path: '/'
+};
+
+// Get request object (works in both browser and server environments)
+const getRequest = () => {
+  if (typeof window !== 'undefined' && window.location) {
+    return {
+      method: 'GET',
+      path: window.location.pathname
+    };
+  }
+  return mockRequest;
+};
+
 /**
  * Centralized tier validation service for the OnlyFur platform
  * Provides comprehensive permission checking and enforcement
@@ -128,7 +145,7 @@ export class TierValidationService {
 
     switch (feature) {
       case 'analytics':
-        if (features.analyticsAccess === 'basic' && feature !== 'basic') {
+        if (!features.analyticsAccess || (features.analyticsAccess === 'basic' && feature === 'analytics')) {
           return {
             allowed: false,
             reason: 'Advanced analytics requires Pro Creator or higher',
@@ -164,7 +181,7 @@ export class TierValidationService {
         break;
 
       case 'pricing':
-        if (!features.customPricing) {
+        if (features.customPricing === undefined || !features.customPricing) {
           return {
             allowed: false,
             reason: 'Custom pricing requires Pro Creator or higher',
@@ -397,8 +414,8 @@ export class TierValidationService {
 
     // Subscriber-specific recommendations
     if (user.role === 'subscriber') {
-      if (usage.dailyMessages && currentTier.maxConversations !== -1) {
-        const messageUtilization = usage.dailyMessages / currentTier.maxConversations;
+      if (usage.dailyMessages && currentTier.messagingFeatures.maxConversationsPerDay !== -1) {
+        const messageUtilization = usage.dailyMessages / currentTier.messagingFeatures.maxConversationsPerDay;
         if (messageUtilization > 0.8) {
           recommendations.push({
             feature: 'Messaging Limits',
