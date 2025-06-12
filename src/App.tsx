@@ -105,6 +105,9 @@ import AdvancedAnalyticsV2 from '@/pages/creator/AdvancedAnalyticsV2';
 import AIContentAssistant from '@/pages/creator/AIContentAssistant';
 import AIContentCreationStudio from '@/components/ai/AIContentCreationStudio';
 
+// AI Components
+import AISettingsManager from '@/components/ai/AISettingsManager';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -540,7 +543,7 @@ function App() {
                 path="admin/settings"
                 element={
                   <ProtectedRoute>
-                    <ComingSoon title="Platform Settings" />
+                    <AISettingsManager />
                   </ProtectedRoute>
                 }
               />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -296,7 +296,7 @@ export default function AISettingsManager() {
                 <div className="px-3">
                   <Slider
                     value={[settings.personalization.learningRate]}
-                    onValueChange={(value) => 
+                    onValueChange={(value: number[]) => 
                       setSettings(prev => ({
                         ...prev,
                         personalization: { ...prev.personalization, learningRate: value[0] }
@@ -393,7 +393,7 @@ export default function AISettingsManager() {
                 <div className="px-3">
                   <Slider
                     value={[settings.recommendations.diversityFactor]}
-                    onValueChange={(value) => 
+                    onValueChange={(value: number[]) => 
                       setSettings(prev => ({
                         ...prev,
                         recommendations: { ...prev.recommendations, diversityFactor: value[0] }
@@ -413,7 +413,7 @@ export default function AISettingsManager() {
                 <div className="px-3">
                   <Slider
                     value={[settings.recommendations.exploreVsExploit]}
-                    onValueChange={(value) => 
+                    onValueChange={(value: number[]) => 
                       setSettings(prev => ({
                         ...prev,
                         recommendations: { ...prev.recommendations, exploreVsExploit: value[0] }
@@ -503,7 +503,7 @@ export default function AISettingsManager() {
                 <div className="px-3">
                   <Slider
                     value={[settings.contentModeration.strictness]}
-                    onValueChange={(value) => 
+                    onValueChange={(value: number[]) => 
                       setSettings(prev => ({
                         ...prev,
                         contentModeration: { ...prev.contentModeration, strictness: value[0] }
@@ -843,4 +843,28 @@ export default function AISettingsManager() {
                             <IconComponent className={`w-5 h-5 ${model.enabled ? 'text-green-600' : 'text-gray-600'}`} />
                           </div>
                           <div>
-                            <h3></h3>
+                            <h3 className="font-semibold">{model.name}</h3>
+                            <p className="text-sm text-gray-500">{model.description}</p>
+                            <div className="flex items-center space-x-4 mt-2">
+                              <span className="text-xs text-gray-500">v{model.version}</span>
+                              <span className="text-xs text-gray-500">Accuracy: {model.accuracy}%</span>
+                              <span className="text-xs text-gray-500">Speed: {model.speed}%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Switch
+                          checked={model.enabled}
+                          onCheckedChange={() => handleModelToggle(model.id)}
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
