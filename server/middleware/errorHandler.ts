@@ -2,7 +2,21 @@ import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 
 export interface AsyncRequestHandler {
-  (req: Request, res: Response, next: NextFunction): Promise<void>;
+  (req: Request, res: Response, next: NextFunction): Promise<any>;
+}
+
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+export class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NotFoundError';
+  }
 }
 
 export const asyncHandler = (fn: AsyncRequestHandler) => {

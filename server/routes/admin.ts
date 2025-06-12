@@ -568,6 +568,245 @@ router.get('/transactions', asyncHandler(async (req: Request, res: Response) => 
   });
 }));
 
+// Moderation queue endpoints
+const reportSchema = z.object({
+  contentId: z.string(),
+  reason: z.string(),
+  customReason: z.string().optional(),
+  priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']).default('NORMAL')
+});
+
+const moderationActionSchema = z.object({
+  action: z.enum(['approve', 'remove', 'warn', 'dismiss']),
+  resolution: z.string()
+});
+
+/**
+ * @swagger
+ * /api/admin/moderation/queue:
+ *   get:
+ *     summary: Get moderation queue
+ *     tags: [Admin, Moderation]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PENDING, REVIEWING, RESOLVED, DISMISSED]
+ *     responses:
+ *       200:
+ *         description: List of reports in moderation queue
+ */
+router.get('/moderation/queue', asyncHandler(async (req: Request, res: Response) => {
+  const status = req.query.status as string;
+  
+  const whereClause: any = {};
+  if (status) whereClause.status = status;
+
+  const reports = await prisma.report.findMany({
+    where: whereClause,
+    include: {
+      content: {
+        select: {
+          id: true,
+          title: true,
+          type: true,
+          preview: true,
+          creator: {
+            select: {
+              id: true,
+              username: true,
+              avatar: true,
+              isVerified: true
+            }
+          }
+        }
+      },
+      reportedBy: {
+        select: {
+          id: true,
+          username: true,
+          avatar: true
+        }
+      },
+      reviewedBy: {
+        select: {
+          id: true,
+          username: true
+        }
+      }
+    },
+    orderBy: [
+      { priority: 'desc' },
+      { createdAt: 'asc' }
+    ]
+  });
+
+  res.json({
+    success: true,
+    reports
+  });
+}));
+
+/**
+ * @swagger
+ * /api/admin/moderation/stats:
+ *   get:
+ *     summary: Get moderation statistics
+ *     tags: [Admin, Moderation]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Moderation statistics
+ */
+router.get('/moderation/stats', asyncHandler(async (req: Request, res: Response) => {
+  const [
+    totalReports,
+    pendingReports,
+    resolvedToday,
+    averageResponseTime,
+    topReasons
+  ] = await Promise.all([
+    prisma.report.count(),
+    prisma.report.count({ where: { status: 'PENDING' } }),
+    prisma.report.count({
+      where: {
+        status: 'RESOLVED',
+        reviewedAt: {
+          gte: new Date(new Date().setHours(0, 0, 0, 0))
+        }
+      }
+    }),
+    prisma.report.aggregate({
+      where: { status: 'RESOLVED' },
+      _avg: {
+        responseTime: true
+      }
+    }),
+    prisma.report.groupBy({
+      by: ['reason'],
+      _count: true,
+      orderBy: {
+        _count: {
+          reason: 'desc'
+        }
+      },
+      take: 5
+    })
+  ]);
+
+  res.json({
+    success: true,
+    stats: {
+      totalReports,
+      pendingReports,
+      resolvedToday,
+      averageResponseTime: averageResponseTime._avg.responseTime || 0,
+      topReasons: topReasons.map((r: { reason: string; _count: number }) => ({
+        reason: r.reason,
+        count: r._count
+      })),
+      moderationQueue: pendingReports
+    }
+  });
+}));
+
+/**
+ * @swagger
+ * /api/admin/moderation/reports/{reportId}/action:
+ *   post:
+ *     summary: Take action on a report
+ *     tags: [Admin, Moderation]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: reportId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               action:
+ *                 type: string
+ *                 enum: [approve, remove, warn, dismiss]
+ *               resolution:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Action taken successfully
+ */
+router.post('/moderation/reports/:reportId/action', asyncHandler(async (req: Request, res: Response) => {
+  const { reportId } = req.params;
+  const validatedData = moderationActionSchema.parse(req.body);
+  const { action, resolution } = validatedData;
+
+  const report = await prisma.report.findUnique({
+    where: { id: reportId },
+    include: {
+      content: {
+        select: {
+          id: true,
+          creatorId: true
+        }
+      }
+    }
+  });
+
+  if (!report) {
+    throw new NotFoundError('Report not found');
+  }
+
+  // Calculate response time
+  const responseTime = Date.now() - new Date(report.createdAt).getTime();
+
+  // Update report status
+  const updatedReport = await prisma.report.update({
+    where: { id: reportId },
+    data: {
+      status: 'RESOLVED',
+      resolution,
+      reviewedAt: new Date(),
+      reviewedById: req.user!.userId,
+      responseTime
+    }
+  });
+
+  // Take action on content based on moderation decision
+  if (action === 'remove') {
+    await prisma.content.update({
+      where: { id: report.content.id },
+      data: { status: 'ARCHIVED' }
+    });
+  }
+
+  // Create audit log
+  await createAuditLog({
+    adminId: req.user!.userId,
+    action: AuditActions.MODERATION_ACTION,
+    resource: 'report',
+    resourceId: reportId,
+    metadata: { action, resolution },
+    ...extractRequestInfo(req)
+  });
+
+  // TODO: Send notification to content creator about moderation action
+
+  res.json({
+    success: true,
+    message: 'Moderation action completed successfully',
+    report: updatedReport
+  });
+}));
+
 // TODO: Add more admin endpoints
 // - Platform settings management
 // - Tier management (CRUD)
