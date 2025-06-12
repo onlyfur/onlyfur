@@ -244,7 +244,7 @@ class SearchPersonalizationEngine {
 
     return {
       original_result: result,
-      personalization_score,
+      personalization_score: personalizationScore,
       boost_factors: boostFactors,
       explanation,
       similar_users_liked: this.checkSimilarUsersLiked(result, profile),
@@ -414,7 +414,7 @@ class SearchPersonalizationEngine {
     } else if (result.creator && context.recent_activity.last_7_days.creators_followed.includes(result.creator.id)) {
       familiarityScore = 0.7; // Somewhat familiar
     } else if (result.metadata?.tags) {
-      const tagOverlap = result.metadata.tags.filter(tag => 
+      const tagOverlap = result.metadata.tags.filter((tag: string) => 
         context.recent_activity.last_7_days.tags_explored.includes(tag)
       ).length;
       familiarityScore = Math.min(1, tagOverlap / result.metadata.tags.length);
@@ -631,13 +631,13 @@ class SearchPersonalizationEngine {
 
     // Interest similarity
     const commonCategories = new Set([
-      ...profile1.interests.content_categories.keys(),
-      ...profile2.interests.content_categories.keys()
+      ...Array.from(profile1.interests.content_categories.keys()),
+      ...Array.from(profile2.interests.content_categories.keys())
     ]);
 
     for (const category of commonCategories) {
-      const interest1 = profile1.interests.content_categories.get(category) || 0;
-      const interest2 = profile2.interests.content_categories.get(category) || 0;
+      const interest1 = profile1.interests.content_categories.get(category) ?? 0;
+      const interest2 = profile2.interests.content_categories.get(category) ?? 0;
       similarity += 1 - Math.abs(interest1 - interest2);
       factors++;
     }

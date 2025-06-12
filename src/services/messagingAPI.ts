@@ -71,9 +71,13 @@ class MessagingAPIService {
     total: number;
   }> {
     try {
-      const response = await apiService.get(`/api/messages/conversations/${conversationId}/messages`, {
-        params: { page, limit }
+      const searchParams = new URLSearchParams({ 
+        page: page.toString(), 
+        limit: limit.toString() 
       });
+      const response = await apiService.get(
+        `/api/messages/conversations/${conversationId}/messages?${searchParams.toString()}`
+      );
       
       return {
         messages: response.data.messages || [],
@@ -215,9 +219,8 @@ class MessagingAPIService {
     messages: Message[];
   }> {
     try {
-      const response = await apiService.get('/api/messages/search', {
-        params: { query, type }
-      });
+      const searchParams = new URLSearchParams({ query, type });
+      const response = await apiService.get(`/api/messages/search?${searchParams.toString()}`);
       
       return {
         conversations: response.data.conversations || [],
