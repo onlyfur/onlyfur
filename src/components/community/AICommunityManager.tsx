@@ -290,7 +290,7 @@ export default function AICommunityManager() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <AnimatedLoader type="community" size="lg" message="Loading community data..." />
+        <AnimatedLoader type="default" size="lg" message="Loading community data..." />
       </div>
     );
   }

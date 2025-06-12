@@ -5,7 +5,7 @@ export interface User {
   username: string;
   displayName: string;
   avatar?: string;
-  role: 'creator' | 'subscriber' | 'admin';
+  role: 'creator' | 'subscriber' | 'admin' | 'CREATOR' | 'SUBSCRIBER' | 'ADMIN';
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
