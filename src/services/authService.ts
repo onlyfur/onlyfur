@@ -24,10 +24,9 @@ class AuthService {
     username: string;
     displayName: string;
     password: string;
-  role: 'subscriber' | 'creator';
+    role: 'subscriber' | 'creator';
   }): Promise<AuthResult> {
     try {
-      // Transform role to uppercase for API client
       const apiUserData = {
         ...userData,
         role: userData.role.toUpperCase() as 'CREATOR' | 'SUBSCRIBER'
@@ -469,11 +468,13 @@ class AuthService {
   }
 
   isCreator(): boolean {
-    return this.getCurrentUserRole() === 'creator';
+    const role = this.getCurrentUserRole();
+    return role === 'CREATOR' || role === 'creator';
   }
 
   isAdmin(): boolean {
-    return this.getCurrentUserRole() === 'admin';
+    const role = this.getCurrentUserRole();
+    return role === 'ADMIN' || role === 'admin';
   }
 
   // File upload helper
