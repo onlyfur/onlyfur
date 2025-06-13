@@ -273,7 +273,7 @@ const PricingModal: React.FC<PricingModalProps> = ({
 
         <Button 
           className="w-full mt-6" 
-          variant={tier.isPopular ? "default" : "outline-solid"}
+          variant={tier.isPopular ? "default" : "outline"}
           onClick={() => handleSelectTier(tier)}
         >
           {tier.price === 0 ? 'Get Started' : 'Subscribe Now'}

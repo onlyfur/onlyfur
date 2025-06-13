@@ -277,7 +277,7 @@ const SuccessStories: React.FC = () => {
                 <div className="text-center mb-4">
                   <div className="text-3xl mb-2">{subscriber.avatar}</div>
                   <h3 className="font-semibold">{subscriber.name}</h3>
-                  <Badge variant="outline" className="mt-1">{subscriber.subscription}</Badge>
+                  <Badge variant="outline-solid" className="mt-1">{subscriber.subscription}</Badge>
                   <p className="text-sm text-muted-foreground mt-1">{subscriber.duration} member</p>
                 </div>
                 

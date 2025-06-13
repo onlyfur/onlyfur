@@ -443,7 +443,7 @@ const Explore: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Badge variant="outline">{creator.category}</Badge>
+                  <Badge variant="outline-solid">{creator.category}</Badge>
                   <p className="text-sm text-muted-foreground line-clamp-2">{creator.description}</p>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">

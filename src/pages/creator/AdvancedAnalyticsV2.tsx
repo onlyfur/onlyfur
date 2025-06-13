@@ -590,7 +590,7 @@ const AdvancedAnalyticsV2: React.FC = () => {
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm">{new Date(growth.date).toLocaleDateString()}</span>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline">+{formatNumber(growth.newSubscribers)}</Badge>
+                          <Badge variant="outline-solid">+{formatNumber(growth.newSubscribers)}</Badge>
                           <TrendingUp className="w-4 h-4 text-green-500" />
                         </div>
                       </div>

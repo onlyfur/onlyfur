@@ -273,7 +273,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
         <CardContent className="p-4 bg-background border-t">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline-solid" className="text-xs">
                 {content.type}
               </Badge>
               <Badge className={`text-white text-xs ${tierInfo.color}`}>

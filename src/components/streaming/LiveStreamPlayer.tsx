@@ -493,7 +493,7 @@ export default function LiveStreamPlayer({
                 </div>
                 <div className="flex items-center space-x-2">
                   {stream.tags.map((tag) => (
-                    <Badge key={tag} variant="outline">
+                    <Badge key={tag} variant="outline-solid">
                       #{tag}
                     </Badge>
                   ))}
@@ -561,7 +561,7 @@ export default function LiveStreamPlayer({
                                 </Badge>
                               )}
                               {message.isModerator && (
-                                <Badge variant="outline" className="ml-1 text-xs">
+                                <Badge variant="outline-solid" className="ml-1 text-xs">
                                   Mod
                                 </Badge>
                               )}

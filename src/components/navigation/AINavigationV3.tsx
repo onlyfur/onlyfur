@@ -458,7 +458,7 @@ export default function AINavigationV3() {
                                     <FeatureIcon className="w-4 h-4" />
                                     <span>{feature.name}</span>
                                     {feature.badge && (
-                                      <Badge variant="outline" className="text-xs ml-auto">
+                                      <Badge variant="outline-solid" className="text-xs ml-auto">
                                         {feature.badge}
                                       </Badge>
                                     )}

@@ -198,7 +198,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </CardDescription>
               
               <div className="flex items-center justify-center gap-2 mt-2">
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline-solid" className="text-xs">
                   Error ID: {this.state.errorId}
                 </Badge>
                 {this.state.retryCount > 0 && (

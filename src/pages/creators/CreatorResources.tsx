@@ -293,7 +293,7 @@ const CreatorResources: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold">{tutorial.title}</h3>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline-solid" className="text-xs">
                         {tutorial.level}
                       </Badge>
                     </div>
@@ -355,7 +355,7 @@ const CreatorResources: React.FC = () => {
               <CardContent className="p-4 text-center">
                 <h3 className="font-medium mb-2">{template.name}</h3>
                 <p className="text-muted-foreground text-xs mb-3">{template.description}</p>
-                <Badge variant="outline" className="mb-3 text-xs">
+                <Badge variant="outline-solid" className="mb-3 text-xs">
                   {template.category}
                 </Badge>
                 <Button size="sm" className="w-full" asChild>

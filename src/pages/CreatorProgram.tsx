@@ -251,7 +251,7 @@ const CreatorProgram: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full mt-6" variant={tier.popular ? 'default' : 'outline-solid'}>
+                <Button className="w-full mt-6" variant={tier.popular ? 'default' : 'outline'}>
                   {tier.price === 'Free' ? 'Get Started' : 'Upgrade Now'}
                 </Button>
               </CardContent>
@@ -302,7 +302,7 @@ const CreatorProgram: React.FC = () => {
                 </div>
                 <CardTitle className="text-xl">{story.name}</CardTitle>
                 <div className="space-y-1">
-                  <Badge variant="outline">{story.specialty}</Badge>
+                  <Badge variant="outline-solid">{story.specialty}</Badge>
                   <div className="text-2xl font-bold text-green-500">{story.earnings}</div>
                 </div>
               </CardHeader>

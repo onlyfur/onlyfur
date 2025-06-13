@@ -118,19 +118,19 @@ const MessagingTips: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Small Appreciation</span>
-                  <Badge variant="outline">$2 - $5</Badge>
+                  <Badge variant="outline-solid">$2 - $5</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Standard Tip</span>
-                  <Badge variant="outline">$5 - $15</Badge>
+                  <Badge variant="outline-solid">$5 - $15</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Generous Tip</span>
-                  <Badge variant="outline">$15 - $50</Badge>
+                  <Badge variant="outline-solid">$15 - $50</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Super Supporter</span>
-                  <Badge variant="outline">$50+</Badge>
+                  <Badge variant="outline-solid">$50+</Badge>
                 </div>
               </div>
             </div>
@@ -324,10 +324,10 @@ const MessagingTips: React.FC = () => {
           </p>
           <Button>Contact Support</Button>
           <div className="flex gap-2 mt-4">
-            <Badge variant="outline">tips</Badge>
-            <Badge variant="outline">payments</Badge>
-            <Badge variant="outline">messaging</Badge>
-            <Badge variant="outline">support</Badge>
+            <Badge variant="outline-solid">tips</Badge>
+            <Badge variant="outline-solid">payments</Badge>
+            <Badge variant="outline-solid">messaging</Badge>
+            <Badge variant="outline-solid">support</Badge>
           </div>
         </CardContent>
       </Card>

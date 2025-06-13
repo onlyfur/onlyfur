@@ -292,7 +292,7 @@ const CreatorProgram: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant={tier.popular ? "default" : "outline-solid"}>
+                <Button className="w-full" variant={tier.popular ? "default" : "outline"}>
                   {tier.buttonText}
                 </Button>
               </CardContent>
@@ -346,7 +346,7 @@ const CreatorProgram: React.FC = () => {
           {successSteps.map((step, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
-                <Badge variant="outline" className="mb-4">Step {step.step}</Badge>
+                <Badge variant="outline-solid" className="mb-4">Step {step.step}</Badge>
                 <h3 className="text-lg font-semibold mb-3">{step.title}</h3>
                 <p className="text-muted-foreground mb-4">{step.description}</p>
                 <div className="space-y-2">

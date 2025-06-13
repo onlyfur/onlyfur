@@ -315,7 +315,7 @@ const Landing: React.FC = () => {
                   </ul>
                   <Button 
                     className="w-full mt-6" 
-                    variant={tier.popular ? 'default' : 'outline-solid'}
+                    variant={tier.popular ? 'default' : 'outline'}
                     asChild
                   >
                     <Link to="/register">

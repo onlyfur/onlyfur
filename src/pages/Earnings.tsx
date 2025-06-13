@@ -690,7 +690,7 @@ const Earnings: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge variant="outline-solid">
                           {transaction.type.toUpperCase()}
                         </Badge>
                       </TableCell>

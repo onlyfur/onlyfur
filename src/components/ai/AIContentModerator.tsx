@@ -353,7 +353,7 @@ const AIContentModerator: React.FC<AIContentModeratorProps> = ({
                     <Badge className={getRiskColor(moderationResult.riskLevel)}>
                       {moderationResult.riskLevel} risk
                     </Badge>
-                    <Badge variant="outline">
+                    <Badge variant="outline-solid">
                       <Brain className="w-3 h-3 mr-1" />
                       {Math.round(moderationResult.confidence)}% confident
                     </Badge>

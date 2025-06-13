@@ -255,7 +255,7 @@ const ExploreV3: React.FC = () => {
         
         <div className="flex flex-wrap gap-1 mb-3">
           {creator.categories?.slice(0, 2).map((category, index) => (
-            <Badge key={index} variant="outline" className="text-xs">
+            <Badge key={index} variant="outline-solid" className="text-xs">
               {category}
             </Badge>
           ))}
@@ -331,7 +331,7 @@ const ExploreV3: React.FC = () => {
         
         <div className="flex flex-wrap gap-1 mb-3">
           {item.tags?.slice(0, 2).map((tag, index) => (
-            <Badge key={index} variant="outline" className="text-xs">
+            <Badge key={index} variant="outline-solid" className="text-xs">
               {tag}
             </Badge>
           ))}

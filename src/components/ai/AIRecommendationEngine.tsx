@@ -225,7 +225,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 + 0.4 }}
               >
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline-solid" className="text-xs">
                   {category}
                 </Badge>
               </motion.div>

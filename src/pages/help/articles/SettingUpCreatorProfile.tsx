@@ -194,11 +194,11 @@ const SettingUpCreatorProfile: React.FC = () => {
                   Include relevant keywords that help people find your content through search.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">furry art</Badge>
-                  <Badge variant="outline">digital painting</Badge>
-                  <Badge variant="outline">character design</Badge>
-                  <Badge variant="outline">commissions</Badge>
-                  <Badge variant="outline">fantasy</Badge>
+                  <Badge variant="outline-solid">furry art</Badge>
+                  <Badge variant="outline-solid">digital painting</Badge>
+                  <Badge variant="outline-solid">character design</Badge>
+                  <Badge variant="outline-solid">commissions</Badge>
+                  <Badge variant="outline-solid">fantasy</Badge>
                 </div>
               </div>
             </CardContent>

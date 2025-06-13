@@ -235,25 +235,25 @@ const GettingStarted: React.FC = () => {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-green-50 border-green-200">
+              <Badge variant="outline-solid" className="bg-green-50 border-green-200">
                 ✓ Respectful
               </Badge>
               <span className="text-sm">Treat all community members with respect</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-blue-50 border-blue-200">
+              <Badge variant="outline-solid" className="bg-blue-50 border-blue-200">
                 ✓ Age-Appropriate
               </Badge>
               <span className="text-sm">All users must be 18+ and verify their age</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-purple-50 border-purple-200">
+              <Badge variant="outline-solid" className="bg-purple-50 border-purple-200">
                 ✓ Original Content
               </Badge>
               <span className="text-sm">Share only original content you have rights to</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-orange-50 border-orange-200">
+              <Badge variant="outline-solid" className="bg-orange-50 border-orange-200">
                 ✓ Safe Space
               </Badge>
               <span className="text-sm">Help maintain a safe, inclusive environment</span>

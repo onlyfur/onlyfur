@@ -560,7 +560,7 @@ const Billing: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge variant="outline-solid">
                           {transaction.type.replace('_', ' ').toUpperCase()}
                         </Badge>
                       </TableCell>
@@ -680,7 +680,7 @@ const Billing: React.FC = () => {
               <Label>Payment Method Type</Label>
               <div className="grid grid-cols-2 gap-3">
                 <Button
-                  variant={paymentMethodType === 'stripe' ? 'default' : 'outline-solid'}
+                  variant={paymentMethodType === 'stripe' ? 'default' : 'outline'}
                   onClick={() => setPaymentMethodType('stripe')}
                   className="h-12 flex flex-col items-center justify-center"
                 >
@@ -688,7 +688,7 @@ const Billing: React.FC = () => {
                   <span className="text-xs">Credit Card</span>
                 </Button>
                 <Button
-                  variant={paymentMethodType === 'paypal' ? 'default' : 'outline-solid'}
+                  variant={paymentMethodType === 'paypal' ? 'default' : 'outline'}
                   onClick={() => setPaymentMethodType('paypal')}
                   className="h-12 flex flex-col items-center justify-center"
                 >

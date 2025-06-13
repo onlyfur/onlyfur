@@ -220,10 +220,10 @@ const MessageLimits: React.FC = () => {
             If you're having trouble with messaging or subscription tiers, our support team is here to help.
           </p>
           <div className="flex gap-2">
-            <Badge variant="outline">messaging</Badge>
-            <Badge variant="outline">subscriptions</Badge>
-            <Badge variant="outline">tiers</Badge>
-            <Badge variant="outline">communication</Badge>
+            <Badge variant="outline-solid">messaging</Badge>
+            <Badge variant="outline-solid">subscriptions</Badge>
+            <Badge variant="outline-solid">tiers</Badge>
+            <Badge variant="outline-solid">communication</Badge>
           </div>
         </CardContent>
       </Card>

@@ -458,7 +458,7 @@ const CreatorDashboard: React.FC = () => {
                         
                         <div className="flex items-center gap-2">
                           {getPrivacyIcon(item.privacyLevel)}
-                          <Badge variant="outline" className="capitalize">
+                          <Badge variant="outline-solid" className="capitalize">
                             {item.privacyLevel}
                           </Badge>
                         </div>

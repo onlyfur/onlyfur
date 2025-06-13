@@ -441,7 +441,7 @@ const AIAnalyticsDashboard: React.FC<AIAnalyticsDashboardProps> = ({
             <CardTitle className="flex items-center space-x-2">
               <Target className="w-5 h-5 text-purple-600" />
               <span>AI Predictions</span>
-              <Badge variant="outline" className="ml-auto">
+              <Badge variant="outline-solid" className="ml-auto">
                 {analyticsData.predictions.confidence}% confident
               </Badge>
             </CardTitle>
@@ -603,7 +603,7 @@ const AIAnalyticsDashboard: React.FC<AIAnalyticsDashboardProps> = ({
                           {content.views.toLocaleString()} views • {content.engagement}% engagement
                         </p>
                       </div>
-                      <Badge variant="outline">${content.revenue}</Badge>
+                      <Badge variant="outline-solid">${content.revenue}</Badge>
                     </motion.div>
                   ))}
                 </CardContent>

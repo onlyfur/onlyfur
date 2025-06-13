@@ -486,7 +486,7 @@ const AIContentAssistant: React.FC = () => {
                             <p className="font-medium text-sm">Suggested Hashtags:</p>
                             <div className="flex flex-wrap gap-2">
                               {idea.hashtags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="cursor-pointer" onClick={() => copyToClipboard(tag)}>
+                                <Badge key={index} variant="outline-solid" className="cursor-pointer" onClick={() => copyToClipboard(tag)}>
                                   {tag}
                                 </Badge>
                               ))}
@@ -760,7 +760,7 @@ const AIContentAssistant: React.FC = () => {
                     {['#digitalart', '#aiart', '#characterdesign', '#fantasy', '#tutorial', '#process'].map((tag, index) => (
                       <Badge 
                         key={index} 
-                        variant="outline" 
+                        variant="outline-solid"
                         className="cursor-pointer hover:bg-gray-100"
                         onClick={() => copyToClipboard(tag)}
                       >

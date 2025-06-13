@@ -572,7 +572,7 @@ export default function AIDashboardV3() {
                             </div>
                             <div>
                               <h3 className="font-semibold">{suggestion.title}</h3>
-                              <Badge variant="outline">{suggestion.type.toUpperCase()}</Badge>
+                              <Badge variant="outline-solid">{suggestion.type.toUpperCase()}</Badge>
                             </div>
                           </div>
                           <div className="text-right">

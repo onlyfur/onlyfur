@@ -128,7 +128,7 @@ const UserManagement: React.FC = () => {
       case 'rejected':
         return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
       default:
-        return <Badge variant="outline"><AlertTriangle className="w-3 h-3 mr-1" />Unverified</Badge>;
+        return <Badge variant="outline-solid"><AlertTriangle className="w-3 h-3 mr-1" />Unverified</Badge>;
     }
   };
 
@@ -427,7 +427,7 @@ const UserManagement: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{user.role}</Badge>
+                        <Badge variant="outline-solid">{user.role}</Badge>
                       </TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
                       <TableCell>{getVerificationBadge(user.verificationStatus)}</TableCell>
@@ -621,7 +621,7 @@ const UserManagement: React.FC = () => {
                   <div className="flex items-center space-x-2 mt-2">
                     {getStatusBadge(selectedUser.status)}
                     {getVerificationBadge(selectedUser.verificationStatus)}
-                    <Badge variant="outline">{selectedUser.role}</Badge>
+                    <Badge variant="outline-solid">{selectedUser.role}</Badge>
                   </div>
                 </div>
               </div>

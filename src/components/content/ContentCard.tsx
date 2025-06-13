@@ -165,12 +165,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
         {content.tags && content.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {content.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <Badge key={index} variant="outline-solid" className="text-xs">
                 #{tag}
               </Badge>
             ))}
             {content.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline-solid" className="text-xs">
                 +{content.tags.length - 3} more
               </Badge>
             )}

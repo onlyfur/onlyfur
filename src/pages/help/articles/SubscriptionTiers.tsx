@@ -278,7 +278,7 @@ const SubscriptionTiers: React.FC = () => {
                       )}
                     </div>
                     
-                    <Button className="w-full mt-4" size="sm" variant={tier.popular ? "default" : "outline-solid"}>
+                    <Button className="w-full mt-4" size="sm" variant={tier.popular ? "default" : "outline"}>
                       Choose {tier.name}
                     </Button>
                   </div>
@@ -349,7 +349,7 @@ const SubscriptionTiers: React.FC = () => {
                       )}
                     </div>
                     
-                    <Button className="w-full mt-4" size="sm" variant={tier.popular ? "default" : "outline-solid"}>
+                    <Button className="w-full mt-4" size="sm" variant={tier.popular ? "default" : "outline"}>
                       Choose {tier.name}
                     </Button>
                   </div>

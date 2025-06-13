@@ -250,7 +250,7 @@ const HomeV3: React.FC = () => {
           {content.tags && content.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {content.tags.slice(0, 5).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
+                <Badge key={index} variant="outline-solid" className="text-xs">
                   #{tag}
                 </Badge>
               ))}

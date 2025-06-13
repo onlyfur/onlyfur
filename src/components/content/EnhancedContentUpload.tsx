@@ -580,7 +580,7 @@ const EnhancedContentUpload: React.FC = () => {
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-1">
                                 <h4 className="font-semibold">{option.label}</h4>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline-solid" className="text-xs">
                                   {option.audience}
                                 </Badge>
                               </div>

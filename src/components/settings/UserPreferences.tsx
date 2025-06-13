@@ -209,7 +209,7 @@ export default function UserPreferences() {
         
         <div className="flex items-center space-x-2">
           {hasChanges && (
-            <Badge variant="outline" className="bg-yellow-50">
+            <Badge variant="outline-solid" className="bg-yellow-50">
               <AlertTriangle className="h-3 w-3 mr-1" />
               Unsaved changes
             </Badge>

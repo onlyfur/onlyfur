@@ -507,7 +507,7 @@ const PaymentManagement: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{payment.type}</Badge>
+                          <Badge variant="outline-solid">{payment.type}</Badge>
                         </TableCell>
                         <TableCell>
                           {getPaymentMethodBadge(payment.paymentMethod)}

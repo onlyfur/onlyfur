@@ -339,7 +339,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
           <Button 
             className="w-full mt-4"
-            variant={isCurrentTier ? "outline-solid" : isSelected ? "default" : "outline-solid"}
+            variant={isCurrentTier ? "outline" : isSelected ? "default" : "outline"}
             onClick={() => handleTierSelect(tier.id)}
             disabled={isCurrentTier}
           >

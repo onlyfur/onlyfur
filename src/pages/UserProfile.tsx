@@ -348,7 +348,7 @@ const UserProfile: React.FC = () => {
                   </div>
                   <p className="text-muted-foreground mb-1">@{creator.username}</p>
                   <p className="text-sm text-muted-foreground">{creator.species}</p>
-                  <Badge variant="outline" className="mt-2">{creator.category}</Badge>
+                  <Badge variant="outline-solid" className="mt-2">{creator.category}</Badge>
                   
                   <div className="flex items-center justify-center md:justify-start gap-4 mt-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
@@ -522,7 +522,7 @@ const UserProfile: React.FC = () => {
                     
                     <div className="flex flex-wrap gap-1 mb-3">
                       {post.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} variant="outline-solid" className="text-xs">
                           #{tag}
                         </Badge>
                       ))}
@@ -592,7 +592,7 @@ const UserProfile: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {creator.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">
+                      <Badge key={tag} variant="outline-solid">
                         #{tag}
                       </Badge>
                     ))}

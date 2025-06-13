@@ -226,7 +226,7 @@ const HowItWorks: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full mt-6" variant={tier.popular ? 'default' : 'outline-solid'}>
+                <Button className="w-full mt-6" variant={tier.popular ? 'default' : 'outline'}>
                   Choose Plan
                 </Button>
               </CardContent>

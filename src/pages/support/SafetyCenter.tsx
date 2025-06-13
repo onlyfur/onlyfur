@@ -122,7 +122,7 @@ const SafetyCenter: React.FC = () => {
       case 'medium':
         return <Badge variant="secondary">Medium</Badge>;
       default:
-        return <Badge variant="outline">Low</Badge>;
+        return <Badge variant="outline-solid">Low</Badge>;
     }
   };
 
@@ -284,7 +284,7 @@ const SafetyCenter: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-lg font-mono mb-2">{contact.contact}</div>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline-solid" className="text-xs">
                     <Clock className="mr-1 h-3 w-3" />
                     Response: {contact.responseTime}
                   </Badge>

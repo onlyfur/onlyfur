@@ -612,7 +612,7 @@ const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({ open, onOpenC
                               </Badge>
                             )}
                             {result.relevanceScore && filters.sortBy === 'relevance' && (
-                              <Badge variant="outline" className="ml-2 text-xs">
+                              <Badge variant="outline-solid" className="ml-2 text-xs">
                                 {result.relevanceScore}% match
                               </Badge>
                             )}
@@ -682,7 +682,7 @@ const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({ open, onOpenC
                             <TrendingUp className="w-4 h-4 mr-3 text-muted-foreground" />
                             <span className="text-sm">{popular.query}</span>
                           </div>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline-solid" className="text-xs">
                             {popular.count}
                           </Badge>
                         </button>
@@ -724,7 +724,7 @@ const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({ open, onOpenC
                         <div key={index} className="flex items-center justify-between">
                           <span className="text-sm">{search.query}</span>
                           <div className="flex items-center">
-                            <Badge variant="outline" className="text-xs mr-2">
+                            <Badge variant="outline-solid" className="text-xs mr-2">
                               {search.count}
                             </Badge>
                             <TrendingUp className={`w-3 h-3 ${
@@ -802,7 +802,7 @@ const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({ open, onOpenC
                 <span>Hold <kbd className="px-1 py-0.5 text-xs bg-background border rounded">Ctrl+Space</kbd> for voice search</span>
               )}
             </div>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline-solid" className="text-xs">
               Powered by AI
             </Badge>
           </div>

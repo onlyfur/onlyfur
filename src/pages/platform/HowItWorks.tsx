@@ -202,7 +202,7 @@ const HowItWorks: React.FC = () => {
                 <div className={`w-12 h-12 rounded-full ${step.color} flex items-center justify-center text-white mb-4`}>
                   <step.icon className="w-6 h-6" />
                 </div>
-                <Badge variant="outline" className="mb-3">Step {step.step}</Badge>
+                <Badge variant="outline-solid" className="mb-3">Step {step.step}</Badge>
                 <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
                 <p className="text-muted-foreground text-sm">{step.description}</p>
               </CardContent>
@@ -232,7 +232,7 @@ const HowItWorks: React.FC = () => {
                 <div className={`w-12 h-12 rounded-full ${step.color} flex items-center justify-center text-white mb-4`}>
                   <step.icon className="w-6 h-6" />
                 </div>
-                <Badge variant="outline" className="mb-3">Step {step.step}</Badge>
+                <Badge variant="outline-solid" className="mb-3">Step {step.step}</Badge>
                 <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
                 <p className="text-muted-foreground text-sm">{step.description}</p>
               </CardContent>

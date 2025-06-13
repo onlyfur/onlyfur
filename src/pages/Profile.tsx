@@ -104,7 +104,7 @@ const Profile: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium">Account Type</p>
-                  <Badge variant="outline" className="capitalize">{user?.role}</Badge>
+                  <Badge variant="outline-solid" className="capitalize">{user?.role}</Badge>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Verification Status</p>
@@ -137,7 +137,7 @@ const Profile: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">SMS notifications</span>
-                    <Badge variant="outline">Disabled</Badge>
+                    <Badge variant="outline-solid">Disabled</Badge>
                   </div>
                   <Button variant="outline" size="sm" className="w-full">
                     Manage Preferences

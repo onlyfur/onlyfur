@@ -136,7 +136,7 @@ const About: React.FC = () => {
                   {member.avatar}
                 </div>
                 <CardTitle className="text-xl">{member.name}</CardTitle>
-                <Badge variant="outline" className="mx-auto">{member.role}</Badge>
+                <Badge variant="outline-solid" className="mx-auto">{member.role}</Badge>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">

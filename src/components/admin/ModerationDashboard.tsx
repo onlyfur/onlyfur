@@ -438,7 +438,7 @@ const ModerationDashboard: React.FC = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2 mb-2">
                             <h4 className="font-medium truncate">{report.contentTitle}</h4>
-                            <Badge variant="outline" className={getStatusColor(report.status)}>
+                            <Badge variant="outline-solid" className={getStatusColor(report.status)}>
                               {report.status}
                             </Badge>
                             <Badge variant="secondary">{report.contentType}</Badge>
@@ -476,7 +476,7 @@ const ModerationDashboard: React.FC = () => {
                             </div>
 
                             {report.aiConfidence && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline-solid" className="text-xs">
                                 AI: {Math.round(report.aiConfidence * 100)}%
                               </Badge>
                             )}

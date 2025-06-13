@@ -238,7 +238,7 @@ export default function AIContentCreationStudio() {
       <div className="w-full">
         <div className="flex space-x-2 mb-4">
           <Button
-            variant={activeTab === 'suggestions' ? 'default' : 'outline-solid'}
+            variant={activeTab === 'suggestions' ? 'default' : 'outline'}
             onClick={() => setActiveTab('suggestions')}
             className="flex items-center space-x-2"
           >
@@ -246,7 +246,7 @@ export default function AIContentCreationStudio() {
             <span>AI Suggestions</span>
           </Button>
           <Button
-            variant={activeTab === 'analyzer' ? 'default' : 'outline-solid'}
+            variant={activeTab === 'analyzer' ? 'default' : 'outline'}
             onClick={() => setActiveTab('analyzer')}
             className="flex items-center space-x-2"
           >
@@ -254,7 +254,7 @@ export default function AIContentCreationStudio() {
             <span>Content Analyzer</span>
           </Button>
           <Button
-            variant={activeTab === 'planner' ? 'default' : 'outline-solid'}
+            variant={activeTab === 'planner' ? 'default' : 'outline'}
             onClick={() => setActiveTab('planner')}
             className="flex items-center space-x-2"
           >

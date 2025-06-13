@@ -249,7 +249,7 @@ export default function AIContentFeed() {
           {tabOptions.map(({ value, label, icon: Icon }) => (
             <Button
               key={value}
-              variant={activeTab === value ? 'default' : 'outline-solid'}
+              variant={activeTab === value ? 'default' : 'outline'}
               onClick={() => handleTabChange(value)}
               className="flex items-center space-x-2"
               size="sm"

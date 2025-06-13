@@ -572,7 +572,7 @@ export default function AISearchAndDiscovery() {
                                 {/* Tags */}
                                 <div className="flex flex-wrap gap-1">
                                   {result.tags.map(tag => (
-                                    <Badge key={tag} variant="outline" className="text-xs">
+                                    <Badge key={tag} variant="outline-solid" className="text-xs">
                                       #{tag}
                                     </Badge>
                                   ))}

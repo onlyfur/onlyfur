@@ -535,7 +535,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                     </Badge>
                   )}
                   {searchMode === 'neural' && neuralMatch && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
+                    <Badge variant="outline-solid" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
                       <Brain className="w-3 h-3 mr-1" />
                       {Math.round(neuralMatch.confidence_score * 100)}%
                     </Badge>
@@ -564,7 +564,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                 {result.tags && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {result.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
+                      <Badge key={tag} variant="outline-solid" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
@@ -602,10 +602,10 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Match #{result.id}</span>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline-solid" className="text-xs">
                       Confidence: {Math.round(result.confidence_score * 100)}%
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline-solid" className="text-xs">
                       Relevance: {Math.round(result.relevance_score * 100)}%
                     </Badge>
                   </div>

@@ -259,7 +259,7 @@ const SearchAnalyticsDashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium">{source.count}</span>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline-solid" className="text-xs">
                         {analytics.length > 0 ? Math.round((source.count / analytics.length) * 100) : 0}%
                       </Badge>
                     </div>

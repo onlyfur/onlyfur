@@ -513,7 +513,7 @@ export default function AICommunityManager() {
                             <Badge className={getStatusColor(member.status)}>
                               {member.status}
                             </Badge>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline-solid" className="text-xs">
                               {member.role}
                             </Badge>
                             {member.tier === 'vip' && <Star className="w-4 h-4 text-yellow-500" />}
@@ -588,7 +588,7 @@ export default function AICommunityManager() {
                             <Badge className={getSeverityColor(report.severity)}>
                               {report.severity}
                             </Badge>
-                            <Badge variant="outline">{report.status}</Badge>
+                            <Badge variant="outline-solid">{report.status}</Badge>
                           </div>
                           <div className="text-sm text-gray-600">
                             Reported by @{report.reported_by} • {formatTimeAgo(report.reported_at)}
@@ -760,7 +760,7 @@ export default function AICommunityManager() {
                   {['#furryart', '#characterdesign', '#commission', '#fursuit', '#digitalart'].map((topic, index) => (
                     <div key={topic} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Badge variant="outline">{topic}</Badge>
+                        <Badge variant="outline-solid">{topic}</Badge>
                         <span className="text-sm text-gray-600">
                           {Math.floor(Math.random() * 500) + 100} mentions
                         </span>

@@ -247,7 +247,7 @@ const EnhancedRoleSelector: React.FC<EnhancedRoleSelectorProps> = ({
           )}
 
           <Button 
-            variant={isSelected ? "default" : "outline-solid"}
+            variant={isSelected ? "default" : "outline"}
             className="w-full mt-4"
             onClick={() => onTierSelect(tier.id)}
           >
@@ -348,7 +348,7 @@ const EnhancedRoleSelector: React.FC<EnhancedRoleSelectorProps> = ({
                 </div>
 
                 <Button 
-                  variant={isSelected ? "default" : "outline-solid"}
+                  variant={isSelected ? "default" : "outline"}
                   className="w-full mt-6"
                   onClick={() => onRoleSelect(role.id)}
                 >

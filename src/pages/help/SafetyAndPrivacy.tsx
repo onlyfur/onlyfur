@@ -186,7 +186,7 @@ const SafetyAndPrivacy: React.FC = () => {
                         <p className="font-medium text-sm">{option.setting}</p>
                         <p className="text-xs text-muted-foreground">{option.description}</p>
                       </div>
-                      <Badge variant="outline">Option</Badge>
+                      <Badge variant="outline-solid">Option</Badge>
                     </div>
                   ))}
                 </div>

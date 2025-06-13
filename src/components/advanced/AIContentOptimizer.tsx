@@ -473,7 +473,7 @@ export default function AIContentOptimizer() {
                     {contentData.target_audience.map(audience => (
                       <Badge
                         key={audience}
-                        variant="outline"
+                        variant="outline-solid"
                         className="cursor-pointer"
                         onClick={() => removeAudience(audience)}
                       >
@@ -748,7 +748,7 @@ export default function AIContentOptimizer() {
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline-solid" className="text-xs">
                             {suggestion.category}
                           </Badge>
                           <Badge 

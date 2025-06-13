@@ -133,7 +133,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
                 </div>
 
                 <Button 
-                  variant={isSelected ? "default" : "outline-solid"}
+                  variant={isSelected ? "default" : "outline"}
                   className="w-full mt-6"
                   onClick={() => onRoleSelect(role.id)}
                 >

@@ -561,7 +561,7 @@ export default function AIAssistant() {
                           <div className="text-xs text-gray-600">{personality.description}</div>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {personality.specialties.map(specialty => (
-                              <Badge key={specialty} variant="outline" className="text-xs">
+                              <Badge key={specialty} variant="outline-solid" className="text-xs">
                                 {specialty}
                               </Badge>
                             ))}

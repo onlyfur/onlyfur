@@ -207,13 +207,13 @@ export default function AIRecommendations({
         </div>
 
         <div className="flex items-center space-x-2">
-          <Button onClick={() => setActiveTab('recommendations')} variant={activeTab === 'recommendations' ? 'default' : 'outline-solid'} size="sm">
+          <Button onClick={() => setActiveTab('recommendations')} variant={activeTab === 'recommendations' ? 'default' : 'outline'} size="sm">
             Content
           </Button>
-          <Button onClick={() => setActiveTab('insights')} variant={activeTab === 'insights' ? 'default' : 'outline-solid'} size="sm">
+          <Button onClick={() => setActiveTab('insights')} variant={activeTab === 'insights' ? 'default' : 'outline'} size="sm">
             Insights
           </Button>
-          <Button onClick={() => setActiveTab('opportunities')} variant={activeTab === 'opportunities' ? 'default' : 'outline-solid'} size="sm">
+          <Button onClick={() => setActiveTab('opportunities')} variant={activeTab === 'opportunities' ? 'default' : 'outline'} size="sm">
             Growth
           </Button>
           <Button onClick={refreshRecommendations} disabled={isRefreshing} variant="outline" size="sm">
@@ -244,7 +244,7 @@ export default function AIRecommendations({
                     <div className="flex items-start justify-between">
                       <div className="space-y-2 flex-1">
                         <div className="flex items-center space-x-2">
-                          <Badge variant="outline">{rec.category}</Badge>
+                          <Badge variant="outline-solid">{rec.category}</Badge>
                           <span className={`text-sm font-medium ${getConfidenceColor(rec.confidence)}`}>
                             {Math.round(rec.confidence * 100)}% match
                           </span>
@@ -312,7 +312,7 @@ export default function AIRecommendations({
                               {Math.round(insight.confidence * 100)}% confident
                             </span>
                             {insight.actionable && (
-                              <Badge variant="outline" className="bg-green-50 text-green-700">
+                              <Badge variant="outline-solid" className="bg-green-50 text-green-700">
                                 <Zap className="h-3 w-3 mr-1" />
                                 Actionable
                               </Badge>
@@ -387,7 +387,7 @@ export default function AIRecommendations({
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center space-x-2">
-                            <Badge variant="outline">{opportunity.type.replace('_', ' ')}</Badge>
+                            <Badge variant="outline-solid">{opportunity.type.replace('_', ' ')}</Badge>
                             <Badge className={getEffortColor(opportunity.effort)}>{opportunity.effort} effort</Badge>
                           </div>
                           <p className="text-sm">{opportunity.description}</p>
@@ -441,7 +441,7 @@ export default function AIRecommendations({
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
                             <Badge
-                              variant="outline"
+                              variant="outline-solid"
                               className={`${
                                 warning.severity === 'high'
                                   ? 'border-red-300 text-red-700'

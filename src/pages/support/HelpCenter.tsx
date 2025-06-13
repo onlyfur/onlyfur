@@ -464,7 +464,7 @@ const HelpCenter: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Badge variant="outline">{category.articles.length} articles</Badge>
+                        <Badge variant="outline-solid">{category.articles.length} articles</Badge>
                         {openCategories.includes(category.id) ? (
                           <ChevronDown className="w-4 h-4" />
                         ) : (

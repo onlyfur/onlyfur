@@ -523,7 +523,7 @@ const ProfileV3: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: tagIndex * 0.1 + 0.4 }}
               >
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline-solid" className="text-xs">
                   {tag}
                 </Badge>
               </motion.div>
@@ -727,7 +727,7 @@ const ProfileV3: React.FC = () => {
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button
                         onClick={handleFollow}
-                        variant={isFollowing ? "outline-solid" : "default"}
+                        variant={isFollowing ? "outline" : "default"}
                         className={isFollowing ? "" : "bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"}
                       >
                         {isFollowing ? (
