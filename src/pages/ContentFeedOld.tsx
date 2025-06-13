@@ -16,7 +16,6 @@ import {
   Eye,
   Calendar,
   Tag,
-  User,
   ChevronLeft,
   ChevronRight,
   X,
@@ -25,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useContent } from '@/contexts/ContentContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Content, User } from '@/types';
+import { Content } from '@/types';
 import ContentCard from '@/components/content/ContentCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

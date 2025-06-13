@@ -64,6 +64,8 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   const [visualSearchFile, setVisualSearchFile] = useState<File | null>(null);
   
   // Voice search removed
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   
   // Neural search features
   const [enablePersonalization, setEnablePersonalization] = useState(true);

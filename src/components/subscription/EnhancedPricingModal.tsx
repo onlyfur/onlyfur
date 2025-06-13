@@ -288,7 +288,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
               <div className="flex items-center justify-center gap-1">
                 <MessageCircle className="w-3 h-3" />
                 <span className="text-xs">
-                  {tier.maxConversations === -1 ? '∞' : tier.maxConversations}
+                  {tier.messagingFeatures.maxConversationsPerDay === -1 ? '∞' : tier.messagingFeatures.maxConversationsPerDay}
                 </span>
               </div>
               <div className="text-xs text-muted-foreground">Chats/day</div>

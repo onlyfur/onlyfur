@@ -46,13 +46,21 @@ import { tierValidationService } from '@/services/tierValidationService';
 const contentSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
   description: z.string().max(1000, 'Description must be less than 1000 characters'),
-  tags: z.string(),
+  tags: z.array(z.string()),
   category: z.string().min(1, 'Category is required'),
   privacyLevel: z.enum(['public', 'subscribers', 'premium', 'private']),
-  requiresSubscription: z.boolean().default(false),
-  scheduledAt: z.string().optional(),
+  requiresSubscription: z.boolean(),
+  scheduledAt: z.preprocess(
+    (val) => {
+      if (!val) return undefined;
+      if (val instanceof Date) return val;
+      const d = new Date(val as string);
+      return isNaN(d.getTime()) ? undefined : d;
+    },
+    z.date().optional()
+  ),
   customPrice: z.number().optional(),
-  enableTips: z.boolean().default(true),
+  enableTips: z.boolean(),
 });
 
 type ContentFormValues = z.infer<typeof contentSchema>;
@@ -70,6 +78,7 @@ const EnhancedContentUpload: React.FC = () => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [tagsInput, setTagsInput] = useState('');
 
   const {
     register,
@@ -78,12 +87,13 @@ const EnhancedContentUpload: React.FC = () => {
     watch,
     formState: { errors },
   } = useForm<ContentFormValues>({
-    resolver: zodResolver(contentSchema),
+    resolver: zodResolver(contentSchema) as any, // workaround for resolver type mismatch
     defaultValues: {
       privacyLevel: 'public',
       requiresSubscription: false,
       category: '',
       enableTips: true,
+      tags: [],
     },
   });
 
@@ -236,10 +246,14 @@ const EnhancedContentUpload: React.FC = () => {
     return privacyOptions.find(option => option.value === privacyLevel);
   };
 
+  // Sync tagsInput with form value
+  React.useEffect(() => {
+    setValue('tags', tagsInput.split(',').map(tag => tag.trim()).filter(Boolean));
+  }, [tagsInput, setValue]);
+
   const onSubmit = async (data: ContentFormValues) => {
     setIsUploading(true);
     setUploadError(null);
-
     try {
       // Validate upload permissions
       const uploadCheck = tierValidationService.validateContentUpload(user);
@@ -247,14 +261,11 @@ const EnhancedContentUpload: React.FC = () => {
         setUploadError(uploadCheck.reason || 'Upload not allowed');
         return;
       }
-
       const contentData = {
         ...data,
-        tags: data.tags.split(',').map(tag => tag.trim()).filter(Boolean),
         files: uploadedFiles,
         scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : undefined,
       };
-
       await createContent(contentData);
       navigate('/content');
     } catch (error) {
@@ -506,14 +517,15 @@ const EnhancedContentUpload: React.FC = () => {
                     <Input
                       id="tags"
                       placeholder="furry, art, cute (comma separated)"
-                      {...register('tags')}
+                      value={tagsInput}
+                      onChange={e => setTagsInput(e.target.value)}
                     />
                   </div>
                 </div>
 
-                {tagsValue && (
+                {tagsInput && (
                   <div className="flex flex-wrap gap-2">
-                    {tagsValue.split(',').map((tag, index) => {
+                    {tagsInput.split(',').map((tag, index) => {
                       const trimmedTag = tag.trim();
                       if (!trimmedTag) return null;
                       return (

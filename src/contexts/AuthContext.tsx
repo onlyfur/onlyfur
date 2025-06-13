@@ -127,7 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         username: userData.username,
         displayName: userData.displayName,
         password: userData.password,
-        role: (userData.role as 'SUBSCRIBER' | 'CREATOR') || 'SUBSCRIBER',
+        role: (userData.role?.toLowerCase?.() as 'subscriber' | 'creator') || 'subscriber',
       });
       
       if (!result.success || !result.user || !result.token) {
@@ -179,7 +179,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const token = authService.getSession();
       if (token) {
-        await authService.logout(token);
+        await authService.logout();
       }
       
       // Stop online status tracking

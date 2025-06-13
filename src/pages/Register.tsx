@@ -32,12 +32,12 @@ const registerSchema = z.object({
     .min(8, 'Password must be at least 8 characters')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   confirmPassword: z.string(),
-  role: z.enum(['creator', 'subscriber']).default('subscriber'),
+  role: z.enum(['creator', 'subscriber']), // required
   selectedTier: z.string().optional(),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions',
   }),
-  newsletter: z.boolean().default(false),
+  newsletter: z.boolean(), // required
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -98,8 +98,7 @@ const Register: React.FC = () => {
         displayName: data.displayName,
         role: data.role,
         password: data.password,
-        selectedTier: data.selectedTier,
-        newsletter: data.newsletter,
+        // selectedTier and newsletter are not part of User, handle separately if needed
       });
       
       // Show success toast

@@ -18,13 +18,9 @@ const DEMO_USERS: User[] = [
     role: 'admin' as const,
     avatar: '/images/branding/onlyfur-logo.png',
     bio: 'Platform Administrator',
-    isEmailVerified: true,
-    isCreatorVerified: true,
-    subscription: {
-      tier: 'premium',
-      status: 'active' as const,
-      expiresAt: new Date('2025-12-31')
-    },
+    isVerified: true,
+    subscriptionTier: undefined,
+    subscriptionStatus: 'ACTIVE',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date()
   },
@@ -36,15 +32,9 @@ const DEMO_USERS: User[] = [
     role: 'creator' as const,
     avatar: '/images/branding/fox-mascot.webp',
     bio: 'Furry content creator and artist 🦊',
-    species: 'Fox',
-    fursona: 'Arctic Fox',
-    isEmailVerified: true,
-    isCreatorVerified: true,
-    subscription: {
-      tier: 'premium',
-      status: 'active' as const,
-      expiresAt: new Date('2025-12-31')
-    },
+    isVerified: true,
+    subscriptionTier: undefined,
+    subscriptionStatus: 'ACTIVE',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date()
   },
@@ -56,15 +46,9 @@ const DEMO_USERS: User[] = [
     role: 'creator' as const,
     avatar: '/images/branding/fursuit-icon.jpg',
     bio: 'Professional fursuit creator and photographer',
-    species: 'Wolf',
-    fursona: 'Timber Wolf',
-    isEmailVerified: true,
-    isCreatorVerified: true,
-    subscription: {
-      tier: 'basic',
-      status: 'active' as const,
-      expiresAt: new Date('2025-12-31')
-    },
+    isVerified: true,
+    subscriptionTier: undefined,
+    subscriptionStatus: 'ACTIVE',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date()
   }
@@ -126,15 +110,9 @@ export const registerUser = async (userData: Partial<User> & { password?: string
     role: 'subscriber' as const, // New users are subscribers by default
     avatar: userData.avatar || '/images/branding/paw-logo.jpg',
     bio: userData.bio || '',
-    species: userData.species || '',
-    fursona: userData.fursona || '',
-    isEmailVerified: false,
-    isCreatorVerified: false,
-    subscription: {
-      tier: 'free',
-      status: 'active' as const,
-      expiresAt: undefined
-    },
+    isVerified: false,
+    subscriptionTier: undefined,
+    subscriptionStatus: 'ACTIVE',
     createdAt: new Date(),
     updatedAt: new Date()
   };

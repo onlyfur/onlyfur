@@ -131,7 +131,9 @@ export const MySubscriptions: React.FC = () => {
         immediately
       });
 
-      if (response.data.success) {
+      // Type guard for response.data
+      const data = response.data as { success?: boolean };
+      if (data.success) {
         await loadData();
       }
     } catch (err: any) {
