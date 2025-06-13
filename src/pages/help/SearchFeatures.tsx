@@ -162,12 +162,12 @@ const SearchFeatures: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {searchFeatures.map((feature, index) => (
               <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <feature.icon className="w-6 h-6 text-primary" />
                   </div>
                 </div>
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="font-semibold mb-2">{feature.feature}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>

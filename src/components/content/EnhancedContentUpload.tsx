@@ -156,7 +156,7 @@ const EnhancedContentUpload: React.FC = () => {
       longDescription: 'Ultra-exclusive content for your biggest supporters',
       icon: Crown,
       color: 'text-yellow-500',
-      bgColor: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+      bgColor: 'bg-linear-to-r from-yellow-400 to-orange-500',
       gradient: 'from-yellow-500 to-orange-500',
       audience: 'VIP Subscribers Only',
       monetization: 'VIP subscription + Tips',
@@ -580,7 +580,7 @@ const EnhancedContentUpload: React.FC = () => {
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-1">
                                 <h4 className="font-semibold">{option.label}</h4>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline-solid" className="text-xs">
                                   {option.audience}
                                 </Badge>
                               </div>

@@ -58,7 +58,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
         return {
           icon: Crown,
           name: tierName,
-          color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+          color: 'bg-linear-to-r from-yellow-400 to-orange-500',
           gradient: 'from-yellow-500 to-orange-400',
           description: 'Exclusive VIP content'
         };
@@ -143,11 +143,11 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
           </div>
           
           {/* Enhanced overlay with gradient */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${tierInfo.gradient} bg-opacity-90 backdrop-blur-sm flex items-center justify-center`}>
+          <div className={`absolute inset-0 bg-linear-to-br ${tierInfo.gradient} bg-opacity-90 backdrop-blur-xs flex items-center justify-center`}>
             <div className="text-center p-6 max-w-sm mx-4">
               {/* Animated icon */}
               <div className="relative mb-6">
-                <div className="w-20 h-20 mx-auto rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4 animate-pulse">
+                <div className="w-20 h-20 mx-auto rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white mb-4 animate-pulse">
                   <Lock className="w-10 h-10" />
                 </div>
                 <div className="absolute -top-2 -right-2">
@@ -166,7 +166,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
               </p>
 
               {/* Tier requirement info */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 mb-4">
+              <div className="bg-white/10 backdrop-blur-xs rounded-lg p-3 mb-4">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <TierIcon className="w-5 h-5 text-white" />
                   <span className="text-white font-semibold text-sm">
@@ -180,7 +180,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
 
               {/* Current tier info for authenticated users */}
               {isAuthenticated && currentTier && (
-                <div className="bg-orange-500/20 backdrop-blur-sm rounded-lg p-2 mb-4">
+                <div className="bg-orange-500/20 backdrop-blur-xs rounded-lg p-2 mb-4">
                   <div className="text-white/90 text-xs">
                     Current tier: <span className="font-medium">{currentTier}</span>
                   </div>
@@ -203,7 +203,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
                     {!isAuthenticated && (
                       <Button 
                         variant="outline" 
-                        className="w-full text-white border-white/30 hover:bg-white/20 backdrop-blur-sm"
+                        className="w-full text-white border-white/30 hover:bg-white/20 backdrop-blur-xs"
                         onClick={() => window.location.href = '/login'}
                       >
                         Login to Access
@@ -233,7 +233,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
 
               {/* Expanded benefits info */}
               {showFullPrompt && !compactMode && (
-                <div className="mt-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 text-left">
+                <div className="mt-4 bg-white/10 backdrop-blur-xs rounded-lg p-3 text-left">
                   <h4 className="text-white font-medium text-sm mb-2">
                     What you'll get with {tierInfo.name}:
                   </h4>
@@ -273,7 +273,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
         <CardContent className="p-4 bg-background border-t">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline-solid" className="text-xs">
                 {content.type}
               </Badge>
               <Badge className={`text-white text-xs ${tierInfo.color}`}>

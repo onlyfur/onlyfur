@@ -451,12 +451,12 @@ const ContentModeration: React.FC = () => {
                     {content.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-3">
                         {content.tags.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
+                          <Badge key={tag} variant="outline-solid" className="text-xs">
                             {tag}
                           </Badge>
                         ))}
                         {content.tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline-solid" className="text-xs">
                             +{content.tags.length - 3}
                           </Badge>
                         )}
@@ -616,7 +616,7 @@ const ContentModeration: React.FC = () => {
                     <Label>Tags</Label>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {selectedItem.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} variant="outline-solid" className="text-xs">
                           {tag}
                         </Badge>
                       ))}

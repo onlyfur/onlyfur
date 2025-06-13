@@ -188,12 +188,12 @@ const PricingModal: React.FC<PricingModalProps> = ({
 
   const getTierGradient = (tier: PlatformSubscriptionTier) => {
     if (tier.level === 'vip' || tier.level === 'premium') {
-      return 'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500';
+      return 'bg-linear-to-br from-yellow-400 via-orange-500 to-red-500';
     }
     if (tier.level === 'pro') {
-      return 'bg-gradient-to-br from-purple-500 to-indigo-600';
+      return 'bg-linear-to-br from-purple-500 to-indigo-600';
     }
-    return 'bg-gradient-to-br from-blue-500 to-blue-600';
+    return 'bg-linear-to-br from-blue-500 to-blue-600';
   };
 
   const renderTierCard = (tier: PlatformSubscriptionTier) => (
@@ -230,7 +230,7 @@ const PricingModal: React.FC<PricingModalProps> = ({
           <h4 className="font-semibold text-sm uppercase tracking-wide">Features</h4>
           {tier.features.map((feature, index) => (
             <div key={index} className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <Check className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
               <span className="text-sm">{feature}</span>
             </div>
           ))}
@@ -264,7 +264,7 @@ const PricingModal: React.FC<PricingModalProps> = ({
             <h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Limitations</h4>
             {tier.limitations.map((limitation, index) => (
               <div key={index} className="flex items-start gap-3">
-                <span className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0">•</span>
+                <span className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0">•</span>
                 <span className="text-sm text-muted-foreground">{limitation}</span>
               </div>
             ))}

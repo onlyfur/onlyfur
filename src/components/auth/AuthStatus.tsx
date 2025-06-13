@@ -65,7 +65,7 @@ const AuthStatus: React.FC = () => {
             </div>
             <div className="flex justify-between">
               <span>Auth Provider:</span>
-              <Badge variant="outline">
+              <Badge variant="outline-solid">
                 {user?.authProvider}
               </Badge>
             </div>

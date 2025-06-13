@@ -200,7 +200,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
               {/* Creator Info */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center text-white font-semibold">
+                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-400 to-pink-400 flex items-center justify-center text-white font-semibold">
                     {creator.displayName.charAt(0)}
                   </div>
                   <div>
@@ -228,7 +228,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
                     </Badge>
                   )}
                   {!item.canAccess && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline-solid" className="text-xs">
                       <Lock className="w-3 h-3 mr-1" />
                       {item.requiredTier}
                     </Badge>
@@ -266,12 +266,12 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
                 {item.content.tags && item.content.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {item.content.tags.slice(0, 3).map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="outline" className="text-xs">
+                      <Badge key={tagIndex} variant="outline-solid" className="text-xs">
                         #{tag}
                       </Badge>
                     ))}
                     {item.content.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline-solid" className="text-xs">
                         +{item.content.tags.length - 3}
                       </Badge>
                     )}
@@ -325,7 +325,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
 
         {/* Subscription Notice for Non-Authenticated Users */}
         {!isAuthenticated && !compactMode && (
-          <Card className="mb-8 border-primary/20 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10">
+          <Card className="mb-8 border-primary/20 bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -365,7 +365,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
 
         {/* Access Status for Authenticated Users */}
         {isAuthenticated && !compactMode && (
-          <Card className="mb-6 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/10 dark:to-green-900/10">
+          <Card className="mb-6 bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900/10 dark:to-green-900/10">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -547,7 +547,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
                   <div key={index} className="p-4 border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold">{rec.tierName}</h4>
-                      <Badge variant="outline">{rec.contentCount} items</Badge>
+                      <Badge variant="outline-solid">{rec.contentCount} items</Badge>
                     </div>
                     <ul className="text-sm text-muted-foreground space-y-1 mb-3">
                       {rec.benefits.slice(0, 3).map((benefit: string, idx: number) => (

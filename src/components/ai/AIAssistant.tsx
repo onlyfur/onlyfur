@@ -298,7 +298,7 @@ export default function AIAssistant() {
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
-          className="rounded-full h-14 w-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg"
+          className="rounded-full h-14 w-14 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg"
         >
           <Bot className="w-6 h-6" />
         </Button>
@@ -561,7 +561,7 @@ export default function AIAssistant() {
                           <div className="text-xs text-gray-600">{personality.description}</div>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {personality.specialties.map(specialty => (
-                              <Badge key={specialty} variant="outline" className="text-xs">
+                              <Badge key={specialty} variant="outline-solid" className="text-xs">
                                 {specialty}
                               </Badge>
                             ))}

@@ -100,7 +100,7 @@ const MessageInterface: React.FC = () => {
   };
 
   const getTierColor = (tier: string) => {
-    if (tier.includes('vip') || tier.includes('premium')) return 'bg-gradient-to-r from-yellow-400 to-orange-500';
+    if (tier.includes('vip') || tier.includes('premium')) return 'bg-linear-to-r from-yellow-400 to-orange-500';
     if (tier.includes('pro')) return 'bg-purple-500';
     return 'bg-blue-500';
   };

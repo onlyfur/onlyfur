@@ -222,7 +222,7 @@ const LoginTroubleshooting: React.FC = () => {
                 <ol className="text-sm space-y-1">
                   {fix.steps.map((step, idx) => (
                     <li key={idx} className="flex items-start">
-                      <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5 flex-shrink-0">
+                      <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5 shrink-0">
                         {idx + 1}
                       </span>
                       {step}
@@ -339,7 +339,7 @@ const LoginTroubleshooting: React.FC = () => {
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Lock className="h-4 w-4 text-primary mr-2" />
@@ -354,7 +354,7 @@ const LoginTroubleshooting: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Shield className="h-4 w-4 text-primary mr-2" />
@@ -369,7 +369,7 @@ const LoginTroubleshooting: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Smartphone className="h-4 w-4 text-primary mr-2" />

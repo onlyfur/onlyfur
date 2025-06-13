@@ -179,12 +179,12 @@ const SuccessStories: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-4 py-2 rounded-full mb-6">
           <Star className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Success Stories</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-6">
           Real Stories, Real Success
         </h1>
         
@@ -277,7 +277,7 @@ const SuccessStories: React.FC = () => {
                 <div className="text-center mb-4">
                   <div className="text-3xl mb-2">{subscriber.avatar}</div>
                   <h3 className="font-semibold">{subscriber.name}</h3>
-                  <Badge variant="outline" className="mt-1">{subscriber.subscription}</Badge>
+                  <Badge variant="outline-solid" className="mt-1">{subscriber.subscription}</Badge>
                   <p className="text-sm text-muted-foreground mt-1">{subscriber.duration} member</p>
                 </div>
                 
@@ -314,7 +314,7 @@ const SuccessStories: React.FC = () => {
                 <ul className="space-y-3">
                   {category.achievements.map((achievement, idx) => (
                     <li key={idx} className="flex items-start space-x-2">
-                      <Star className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <Star className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{achievement}</span>
                     </li>
                   ))}
@@ -326,7 +326,7 @@ const SuccessStories: React.FC = () => {
       </div>
 
       {/* Featured Creator Spotlight */}
-      <Card className="mb-16 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 border-primary/20">
+      <Card className="mb-16 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 border-primary/20">
         <CardContent className="p-8">
           <div className="text-center mb-6">
             <Crown className="w-12 h-12 mx-auto mb-4 text-primary" />
@@ -362,7 +362,7 @@ const SuccessStories: React.FC = () => {
       </Card>
 
       {/* Call to Action */}
-      <Card className="text-center bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-yellow-500 to-orange-500 text-white border-0">
         <CardContent className="p-8">
           <h2 className="text-2xl font-bold mb-4">Ready to Write Your Own Success Story?</h2>
           <p className="text-lg mb-6 opacity-90">

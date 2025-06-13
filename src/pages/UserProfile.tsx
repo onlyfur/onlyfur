@@ -285,14 +285,14 @@ const UserProfile: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
       {/* Banner */}
-      <div className="relative h-64 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden">
+      <div className="relative h-64 bg-linear-to-r from-purple-600 to-pink-600 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${creator.banner})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
         
         {/* Age Warning for NSFW Content */}
         {creator.category === 'Murrsuit Content' && (
@@ -323,7 +323,7 @@ const UserProfile: React.FC = () => {
               {/* Avatar and Basic Info */}
               <div className="flex flex-col items-center md:items-start">
                 <div className="relative">
-                  <div className="w-32 h-32 text-6xl rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center border-4 border-white shadow-lg">
+                  <div className="w-32 h-32 text-6xl rounded-full bg-linear-to-r from-pink-500 to-purple-500 flex items-center justify-center border-4 border-white shadow-lg">
                     {creator.avatar}
                   </div>
                   {creator.isOnline && (
@@ -348,7 +348,7 @@ const UserProfile: React.FC = () => {
                   </div>
                   <p className="text-muted-foreground mb-1">@{creator.username}</p>
                   <p className="text-sm text-muted-foreground">{creator.species}</p>
-                  <Badge variant="outline" className="mt-2">{creator.category}</Badge>
+                  <Badge variant="outline-solid" className="mt-2">{creator.category}</Badge>
                   
                   <div className="flex items-center justify-center md:justify-start gap-4 mt-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
@@ -522,7 +522,7 @@ const UserProfile: React.FC = () => {
                     
                     <div className="flex flex-wrap gap-1 mb-3">
                       {post.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} variant="outline-solid" className="text-xs">
                           #{tag}
                         </Badge>
                       ))}
@@ -592,7 +592,7 @@ const UserProfile: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {creator.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">
+                      <Badge key={tag} variant="outline-solid">
                         #{tag}
                       </Badge>
                     ))}

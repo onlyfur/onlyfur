@@ -31,7 +31,7 @@ const SubscriptionTiersGuide: React.FC = () => {
       </div>
 
       {/* Tier Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200">
+      <Card className="mb-8 bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Subscription Tier System</h3>
           <p className="text-muted-foreground mb-4">
@@ -449,7 +449,7 @@ const SubscriptionTiersGuide: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help Choosing a Tier?</h3>
           <p className="mb-4 opacity-90">Our support team can help you find the right subscription level for your budget and interests.</p>

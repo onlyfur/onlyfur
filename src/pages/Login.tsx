@@ -95,7 +95,7 @@ const Login: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo and Header */}
         <div className="text-center mb-8">
@@ -111,7 +111,7 @@ const Login: React.FC = () => {
         {/* Auto-login prompt for saved credentials */}
         <AutoLoginPrompt redirectPath="/dashboard" />
 
-        <Card className="shadow-xl border-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <Card className="shadow-xl border-0 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
             <CardDescription>

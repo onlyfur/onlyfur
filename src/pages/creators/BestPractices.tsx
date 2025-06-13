@@ -77,7 +77,7 @@ const BestPractices: React.FC = () => {
               <ul className="space-y-3">
                 {practice.tips.map((tip, idx) => (
                   <li key={idx} className="flex items-start space-x-3">
-                    <Star className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                    <Star className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
                     <span>{tip}</span>
                   </li>
                 ))}

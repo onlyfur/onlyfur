@@ -265,14 +265,14 @@ export default function AIDashboardV3() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 flex items-center justify-center">
         <AnimatedLoader type="ai" size="lg" message="AI is preparing your personalized dashboard..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <motion.div
@@ -281,10 +281,10 @@ export default function AIDashboardV3() {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-full">
+            <div className="bg-linear-to-r from-purple-600 to-blue-600 p-3 rounded-full">
               <Brain className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               AI-Powered Creator Dashboard
             </h1>
             <Sparkles className="w-8 h-8 text-purple-600" />
@@ -572,7 +572,7 @@ export default function AIDashboardV3() {
                             </div>
                             <div>
                               <h3 className="font-semibold">{suggestion.title}</h3>
-                              <Badge variant="outline">{suggestion.type.toUpperCase()}</Badge>
+                              <Badge variant="outline-solid">{suggestion.type.toUpperCase()}</Badge>
                             </div>
                           </div>
                           <div className="text-right">
@@ -670,7 +670,7 @@ export default function AIDashboardV3() {
           transition={{ delay: 0.5 }}
           className="text-center py-8"
         >
-          <Card className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+          <Card className="bg-linear-to-r from-purple-600 to-blue-600 text-white">
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold mb-4">Supercharge Your Creative Journey</h2>
               <p className="text-lg mb-6 text-purple-100">

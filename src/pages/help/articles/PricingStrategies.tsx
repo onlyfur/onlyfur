@@ -31,7 +31,7 @@ const PricingStrategies: React.FC = () => {
       </div>
 
       {/* Pricing Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200">
+      <Card className="mb-8 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Strategic Pricing Principles</h3>
           <p className="text-muted-foreground mb-4">
@@ -551,7 +551,7 @@ const PricingStrategies: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-green-500 to-blue-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-green-500 to-blue-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with Pricing Strategy?</h3>
           <p className="mb-4 opacity-90">Our creator success team can help you optimize your pricing for maximum revenue and growth.</p>

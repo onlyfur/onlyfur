@@ -160,7 +160,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       className="group"
     >
-      <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30 hover:from-purple-50/50 hover:to-pink-50/50 dark:hover:from-purple-950/50 dark:hover:to-pink-950/50">
+      <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-linear-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30 hover:from-purple-50/50 hover:to-pink-50/50 dark:hover:from-purple-950/50 dark:hover:to-pink-950/50">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-3">
@@ -204,7 +204,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
             >
               <Badge 
                 variant="secondary" 
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0"
+                className="bg-linear-to-r from-purple-500 to-pink-500 text-white border-0"
               >
                 {Math.round(creator.matchScore)}% match
               </Badge>
@@ -225,7 +225,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 + 0.4 }}
               >
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline-solid" className="text-xs">
                   {category}
                 </Badge>
               </motion.div>
@@ -292,7 +292,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
             whileTap={{ scale: 0.98 }}
           >
             <Button 
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 group-hover:shadow-lg transition-all duration-300"
+              className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 group-hover:shadow-lg transition-all duration-300"
               size="sm"
             >
               <Heart className="w-4 h-4 mr-2" />
@@ -448,11 +448,11 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
               >
                 <Brain className="w-5 h-5 text-purple-600" />
               </motion.div>
-              <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h3 className="text-lg font-semibold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 AI Insights
               </h3>
             </div>
-            <Badge variant="secondary" className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
+            <Badge variant="secondary" className="bg-linear-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
               <Sparkles className="w-3 h-3 mr-1" />
               Powered by AI
             </Badge>
@@ -490,7 +490,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
             >
               <Sparkles className="w-5 h-5 text-purple-600" />
             </motion.div>
-            <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h3 className="text-lg font-semibold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               AI Recommendations
             </h3>
           </div>
@@ -546,7 +546,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="text-center p-8 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border-2 border-dashed border-purple-200 dark:border-purple-800">
+            <Card className="text-center p-8 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border-2 border-dashed border-purple-200 dark:border-purple-800">
               <CardContent className="space-y-4">
                 <motion.div
                   animate={{ 

@@ -324,7 +324,7 @@ export default function AISearchAndDiscovery() {
       >
         <div className="flex items-center justify-center space-x-2">
           <Brain className="w-8 h-8 text-purple-600" />
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             AI-Powered Discovery
           </h1>
           <Sparkles className="w-8 h-8 text-purple-600" />
@@ -529,7 +529,7 @@ export default function AISearchAndDiscovery() {
                           <CardContent className="p-6">
                             <div className="flex space-x-4">
                               {/* Thumbnail */}
-                              <div className="w-32 h-24 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center relative">
+                              <div className="w-32 h-24 bg-gray-200 rounded-lg shrink-0 flex items-center justify-center relative">
                                 {result.contentType === 'video' && (
                                   <Play className="w-8 h-8 text-white absolute z-10" />
                                 )}
@@ -572,7 +572,7 @@ export default function AISearchAndDiscovery() {
                                 {/* Tags */}
                                 <div className="flex flex-wrap gap-1">
                                   {result.tags.map(tag => (
-                                    <Badge key={tag} variant="outline" className="text-xs">
+                                    <Badge key={tag} variant="outline-solid" className="text-xs">
                                       #{tag}
                                     </Badge>
                                   ))}

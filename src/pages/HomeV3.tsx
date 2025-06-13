@@ -250,7 +250,7 @@ const HomeV3: React.FC = () => {
           {content.tags && content.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {content.tags.slice(0, 5).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
+                <Badge key={index} variant="outline-solid" className="text-xs">
                   #{tag}
                 </Badge>
               ))}
@@ -345,7 +345,7 @@ const HomeV3: React.FC = () => {
         )}
 
         <Link to={`/creator/${creator.username}`}>
-          <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+          <Button className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
             <UserPlus className="w-4 h-4 mr-2" />
             View Profile
           </Button>
@@ -381,7 +381,7 @@ const HomeV3: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
+      <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="mb-8">
             <Skeleton className="h-8 w-48 mb-2" />
@@ -394,13 +394,13 @@ const HomeV3: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 {user ? `Welcome back, ${user.displayName}!` : 'Welcome to OnlyFur'}
               </h1>
               <p className="text-muted-foreground">
@@ -412,7 +412,7 @@ const HomeV3: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2">
               {user && (
-                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600">
+                <Badge className="bg-linear-to-r from-purple-600 to-pink-600">
                   <Sparkles className="w-3 h-3 mr-1" />
                   AI Powered
                 </Badge>
@@ -429,7 +429,7 @@ const HomeV3: React.FC = () => {
           </div>
 
           {!user && (
-            <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+            <Card className="mb-6 bg-linear-to-r from-purple-500 to-pink-500 text-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>

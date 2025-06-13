@@ -207,7 +207,7 @@ const CreatorFeatures: React.FC = () => {
                 <ul className="space-y-2">
                   {feature.features.map((item, itemIndex) => (
                     <li key={itemIndex} className="flex items-center text-sm">
-                      <Star className="w-4 h-4 mr-2 text-yellow-500 flex-shrink-0" />
+                      <Star className="w-4 h-4 mr-2 text-yellow-500 shrink-0" />
                       {item}
                     </li>
                   ))}
@@ -268,7 +268,7 @@ const CreatorFeatures: React.FC = () => {
                     <ul className="space-y-1">
                       {tier.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-sm">
-                          <Star className="w-4 h-4 mr-2 text-yellow-500 flex-shrink-0" />
+                          <Star className="w-4 h-4 mr-2 text-yellow-500 shrink-0" />
                           {feature}
                         </li>
                       ))}

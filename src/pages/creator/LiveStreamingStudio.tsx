@@ -411,7 +411,7 @@ const LiveStreamingStudio: React.FC = () => {
                           {isLive ? (
                             <Badge className="bg-red-500 text-white animate-pulse">🔴 LIVE</Badge>
                           ) : (
-                            <Badge variant="outline">Offline</Badge>
+                            <Badge variant="outline-solid">Offline</Badge>
                           )}
                           {currentStream.title}
                         </CardTitle>

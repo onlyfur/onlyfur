@@ -197,11 +197,11 @@ const AIContentModerator: React.FC<AIContentModeratorProps> = ({
               >
                 <Shield className="w-6 h-6 text-blue-600" />
               </motion.div>
-              <h2 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-xl font-semibold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 AI Content Moderation Dashboard
               </h2>
             </div>
-            <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 border-0">
+            <Badge variant="secondary" className="bg-linear-to-r from-blue-100 to-purple-100 text-blue-700 border-0">
               <Brain className="w-3 h-3 mr-1" />
               AI Powered
             </Badge>
@@ -306,7 +306,7 @@ const AIContentModerator: React.FC<AIContentModeratorProps> = ({
             exit={{ opacity: 0, scale: 0.9 }}
             className="relative"
           >
-            <Card className="border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+            <Card className="border-2 border-blue-200 dark:border-blue-800 bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
               <CardContent className="p-8 text-center">
                 <motion.div
                   animate={{ 
@@ -353,7 +353,7 @@ const AIContentModerator: React.FC<AIContentModeratorProps> = ({
                     <Badge className={getRiskColor(moderationResult.riskLevel)}>
                       {moderationResult.riskLevel} risk
                     </Badge>
-                    <Badge variant="outline">
+                    <Badge variant="outline-solid">
                       <Brain className="w-3 h-3 mr-1" />
                       {Math.round(moderationResult.confidence)}% confident
                     </Badge>
@@ -485,7 +485,7 @@ const AIContentModerator: React.FC<AIContentModeratorProps> = ({
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.02 }}
         >
-          <Card className="text-center p-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-2 border-dashed border-blue-200 dark:border-blue-800">
+          <Card className="text-center p-8 bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-2 border-dashed border-blue-200 dark:border-blue-800">
             <CardContent className="space-y-4">
               <motion.div
                 animate={{ 
@@ -511,7 +511,7 @@ const AIContentModerator: React.FC<AIContentModeratorProps> = ({
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 
                   onClick={() => moderateContent()}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                  className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
                 >
                   <Brain className="w-4 h-4 mr-2" />
                   Run AI Analysis

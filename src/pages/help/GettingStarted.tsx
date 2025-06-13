@@ -120,18 +120,18 @@ const GettingStarted: React.FC = () => {
           <div className="space-y-6">
             {steps.map((step, index) => (
               <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                     <step.icon className="w-6 h-6 text-primary" />
                   </div>
                 </div>
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
                   <p className="text-muted-foreground mb-3">{step.description}</p>
                   <ul className="space-y-1">
                     {step.content.map((item, itemIndex) => (
                       <li key={itemIndex} className="flex items-center text-sm">
-                        <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                         {item}
                       </li>
                     ))}
@@ -155,7 +155,7 @@ const GettingStarted: React.FC = () => {
                     <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center`}>
                       <action.icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex-grow">
+                    <div className="grow">
                       <h3 className="font-semibold">{action.title}</h3>
                       <p className="text-sm text-muted-foreground">{action.description}</p>
                     </div>
@@ -235,25 +235,25 @@ const GettingStarted: React.FC = () => {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-green-50 border-green-200">
+              <Badge variant="outline-solid" className="bg-green-50 border-green-200">
                 ✓ Respectful
               </Badge>
               <span className="text-sm">Treat all community members with respect</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-blue-50 border-blue-200">
+              <Badge variant="outline-solid" className="bg-blue-50 border-blue-200">
                 ✓ Age-Appropriate
               </Badge>
               <span className="text-sm">All users must be 18+ and verify their age</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-purple-50 border-purple-200">
+              <Badge variant="outline-solid" className="bg-purple-50 border-purple-200">
                 ✓ Original Content
               </Badge>
               <span className="text-sm">Share only original content you have rights to</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-orange-50 border-orange-200">
+              <Badge variant="outline-solid" className="bg-orange-50 border-orange-200">
                 ✓ Safe Space
               </Badge>
               <span className="text-sm">Help maintain a safe, inclusive environment</span>

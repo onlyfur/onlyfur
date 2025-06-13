@@ -301,7 +301,7 @@ const TagManagement: React.FC = () => {
                         >
                           {tag.isActive ? 'Active' : 'Inactive'}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline-solid" className="text-xs">
                           {tag.category}
                         </Badge>
                       </div>

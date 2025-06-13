@@ -280,7 +280,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete, onCancel })
                 <div className="grid grid-cols-2 gap-2 text-sm font-mono">
                   {setupData.backupCodes.map((code, index) => (
                     <div key={index} className="text-center">
-                      <Badge variant="outline" className="font-mono">
+                      <Badge variant="outline-solid" className="font-mono">
                         {code}
                       </Badge>
                     </div>

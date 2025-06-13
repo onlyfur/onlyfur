@@ -34,7 +34,7 @@ const CreateAccount: React.FC = () => {
       {/* Main Content */}
       <div className="space-y-8">
         {/* Quick Overview */}
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
+        <Card className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold mb-3">Account Creation Overview</h3>
             <div className="grid md:grid-cols-3 gap-4">
@@ -374,7 +374,7 @@ const CreateAccount: React.FC = () => {
       </div>
 
       {/* Next Steps */}
-      <Card className="mt-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200">
+      <Card className="mt-8 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200">
         <CardHeader>
           <CardTitle>🎉 Welcome to OnlyFur!</CardTitle>
         </CardHeader>
@@ -429,7 +429,7 @@ const CreateAccount: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-blue-500 to-purple-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help Getting Started?</h3>
           <p className="mb-4 opacity-90">Our support team is here to help you create your account successfully.</p>

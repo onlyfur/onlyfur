@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
             <Avatar className="w-24 h-24">
               <AvatarImage src={user?.avatar} alt={user?.displayName} />
-              <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-2xl">
+              <AvatarFallback className="bg-linear-to-r from-pink-500 to-purple-500 text-white text-2xl">
                 {user?.displayName?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -104,7 +104,7 @@ const Profile: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium">Account Type</p>
-                  <Badge variant="outline" className="capitalize">{user?.role}</Badge>
+                  <Badge variant="outline-solid" className="capitalize">{user?.role}</Badge>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Verification Status</p>
@@ -137,7 +137,7 @@ const Profile: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">SMS notifications</span>
-                    <Badge variant="outline">Disabled</Badge>
+                    <Badge variant="outline-solid">Disabled</Badge>
                   </div>
                   <Button variant="outline" size="sm" className="w-full">
                     Manage Preferences

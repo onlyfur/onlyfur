@@ -69,7 +69,7 @@ const SubscriptionTiers: React.FC = () => {
       name: "VIP Subscriber",
       price: "$39.99/month", 
       icon: <Crown className="h-6 w-6" />,
-      color: "bg-gradient-to-r from-amber-500 to-orange-500",
+      color: "bg-linear-to-r from-amber-500 to-orange-500",
       features: [
         "All Pro Subscriber benefits",
         "Exclusive VIP-only content",
@@ -131,7 +131,7 @@ const SubscriptionTiers: React.FC = () => {
       name: "Premium Creator",
       price: "$59.99/month",
       icon: <Crown className="h-6 w-6" />,
-      color: "bg-gradient-to-r from-pink-500 to-red-500",
+      color: "bg-linear-to-r from-pink-500 to-red-500",
       features: [
         "All Pro Creator benefits", 
         "Reduced platform commission (5% vs 10%)",
@@ -256,7 +256,7 @@ const SubscriptionTiers: React.FC = () => {
                         <ul className="space-y-1">
                           {tier.features.map((feature, idx) => (
                             <li key={idx} className="flex items-start text-sm">
-                              <CheckCircle className="h-3 w-3 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <CheckCircle className="h-3 w-3 text-green-500 mr-2 mt-0.5 shrink-0" />
                               <span className="text-sm">{feature}</span>
                             </li>
                           ))}
@@ -327,7 +327,7 @@ const SubscriptionTiers: React.FC = () => {
                         <ul className="space-y-1">
                           {tier.features.map((feature, idx) => (
                             <li key={idx} className="flex items-start text-sm">
-                              <CheckCircle className="h-3 w-3 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <CheckCircle className="h-3 w-3 text-green-500 mr-2 mt-0.5 shrink-0" />
                               <span className="text-sm">{feature}</span>
                             </li>
                           ))}
@@ -467,7 +467,7 @@ const SubscriptionTiers: React.FC = () => {
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="hover:shadow-sm transition-shadow">
+            <Card className="hover:shadow-xs transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center">
                   <CreditCard className="h-4 w-4 text-primary mr-2" />
@@ -482,7 +482,7 @@ const SubscriptionTiers: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-sm transition-shadow">
+            <Card className="hover:shadow-xs transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center">
                   <Users className="h-4 w-4 text-primary mr-2" />
@@ -497,7 +497,7 @@ const SubscriptionTiers: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-sm transition-shadow">
+            <Card className="hover:shadow-xs transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center">
                   <Download className="h-4 w-4 text-primary mr-2" />

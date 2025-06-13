@@ -119,7 +119,7 @@ const TierBasedMessaging: React.FC<TierBasedMessagingProps> = ({
   };
 
   const getRequiredTierColor = (tierName: string) => {
-    if (tierName?.includes('VIP')) return 'bg-gradient-to-r from-yellow-400 to-orange-500';
+    if (tierName?.includes('VIP')) return 'bg-linear-to-r from-yellow-400 to-orange-500';
     if (tierName?.includes('Pro')) return 'bg-purple-500';
     return 'bg-blue-500';
   };

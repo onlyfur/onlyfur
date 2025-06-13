@@ -124,7 +124,7 @@ const Earnings: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline-solid"> = {
       'pending': 'secondary',
       'processing': 'secondary',
       'paid': 'default',
@@ -133,7 +133,7 @@ const Earnings: React.FC = () => {
     };
 
     return (
-      <Badge variant={variants[status] || 'outline'}>
+      <Badge variant={variants[status] || 'outline-solid'}>
         {status.toUpperCase()}
       </Badge>
     );
@@ -505,7 +505,7 @@ const Earnings: React.FC = () => {
                 {paymentAnalytics?.topEarningContent?.map((content, index) => (
                   <div key={content.contentId} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center text-white font-bold">
+                      <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center text-white font-bold">
                         {index + 1}
                       </div>
                       <div>
@@ -690,7 +690,7 @@ const Earnings: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge variant="outline-solid">
                           {transaction.type.toUpperCase()}
                         </Badge>
                       </TableCell>

@@ -190,12 +190,12 @@ const CreatorProgram: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
           <Crown className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">OnlyFur Creator Program</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
           Turn Your Passion Into Profit
         </h1>
         
@@ -204,7 +204,7 @@ const CreatorProgram: React.FC = () => {
           Share your art, photography, and creativity with fans who appreciate your work.
         </p>
 
-        <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600" asChild>
+        <Button size="lg" className="bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600" asChild>
           <Link to="/register">
             <Zap className="w-4 h-4 mr-2" />
             Start Creating Today
@@ -242,7 +242,7 @@ const CreatorProgram: React.FC = () => {
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white">
+                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white">
                     <type.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
@@ -271,7 +271,7 @@ const CreatorProgram: React.FC = () => {
             <Card key={index} className={`${tier.color} hover:shadow-lg transition-shadow relative`}>
               {tier.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
+                  <Badge className="bg-linear-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
                     Most Popular
                   </Badge>
                 </div>
@@ -287,7 +287,7 @@ const CreatorProgram: React.FC = () => {
                 <ul className="space-y-3 mb-6">
                   {tier.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
@@ -327,7 +327,7 @@ const CreatorProgram: React.FC = () => {
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200">
+        <Card className="bg-linear-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200">
           <CardContent className="p-6 text-center">
             <Target className="w-12 h-12 mx-auto mb-4 text-green-600" />
             <h3 className="text-xl font-semibold mb-2">Total Potential: $2,200+/month</h3>
@@ -346,7 +346,7 @@ const CreatorProgram: React.FC = () => {
           {successSteps.map((step, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
-                <Badge variant="outline" className="mb-4">Step {step.step}</Badge>
+                <Badge variant="outline-solid" className="mb-4">Step {step.step}</Badge>
                 <h3 className="text-lg font-semibold mb-3">{step.title}</h3>
                 <p className="text-muted-foreground mb-4">{step.description}</p>
                 <div className="space-y-2">
@@ -409,7 +409,7 @@ const CreatorProgram: React.FC = () => {
       </Card>
 
       {/* Call to Action */}
-      <Card className="text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-8">
           <h2 className="text-2xl font-bold mb-4">Ready to Start Your Creator Journey?</h2>
           <p className="text-lg mb-6 opacity-90">

@@ -47,7 +47,7 @@ const Logo: React.FC<LogoProps> = ({
   if (variant === 'text') {
     return (
       <span className={cn(
-        'font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-purple-600 bg-clip-text text-transparent',
+        'font-bold bg-linear-to-r from-orange-600 via-orange-500 to-purple-600 bg-clip-text text-transparent',
         currentSize.text,
         className
       )}>

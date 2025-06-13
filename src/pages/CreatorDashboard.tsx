@@ -113,7 +113,7 @@ const CreatorDashboard: React.FC = () => {
   };
 
   const getTierColor = (tier: string) => {
-    if (tier.includes('vip') || tier.includes('premium')) return 'bg-gradient-to-r from-yellow-400 to-orange-500';
+    if (tier.includes('vip') || tier.includes('premium')) return 'bg-linear-to-r from-yellow-400 to-orange-500';
     if (tier.includes('pro')) return 'bg-purple-500';
     return 'bg-blue-500';
   };
@@ -458,7 +458,7 @@ const CreatorDashboard: React.FC = () => {
                         
                         <div className="flex items-center gap-2">
                           {getPrivacyIcon(item.privacyLevel)}
-                          <Badge variant="outline" className="capitalize">
+                          <Badge variant="outline-solid" className="capitalize">
                             {item.privacyLevel}
                           </Badge>
                         </div>
@@ -616,7 +616,7 @@ const CreatorDashboard: React.FC = () => {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Badge className="text-white bg-gradient-to-r from-yellow-400 to-orange-500">
+                      <Badge className="text-white bg-linear-to-r from-yellow-400 to-orange-500">
                         <Crown className="w-3 h-3 mr-1" />
                         VIP
                       </Badge>

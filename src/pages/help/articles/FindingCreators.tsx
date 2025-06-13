@@ -379,7 +379,7 @@ const FindingCreators: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-blue-500 to-purple-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help Finding Creators?</h3>
           <p className="mb-4 opacity-90">Our community team can help you discover creators that match your interests.</p>

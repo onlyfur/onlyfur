@@ -31,7 +31,7 @@ const SupportedFormats: React.FC = () => {
       </div>
 
       {/* Format Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
+      <Card className="mb-8 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Format Support Overview</h3>
           <p className="text-muted-foreground mb-4">

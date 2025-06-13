@@ -183,7 +183,7 @@ const HowToCreateAccount: React.FC = () => {
             {steps.map((step, index) => (
               <div key={step.step} className="p-4">
                 <div className="flex items-start">
-                  <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-1 flex-shrink-0">
+                  <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-1 shrink-0">
                     {step.step}
                   </div>
                   <div>
@@ -218,19 +218,19 @@ const HowToCreateAccount: React.FC = () => {
               <h4 className="font-medium text-sm mb-3 text-green-700 dark:text-green-300">Good Password Practices:</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Use a mix of uppercase and lowercase letters
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Include numbers and special characters
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Make it at least 12 characters long
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Use a unique password for OnlyFur
                 </li>
               </ul>
@@ -239,19 +239,19 @@ const HowToCreateAccount: React.FC = () => {
               <h4 className="font-medium text-sm mb-3 text-red-700 dark:text-red-300">Avoid These Mistakes:</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Don't use personal information (birthday, name)
                 </li>
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Avoid common passwords like "password123"
                 </li>
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Don't reuse passwords from other sites
                 </li>
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Never share your password with anyone
                 </li>
               </ul>
@@ -312,7 +312,7 @@ const HowToCreateAccount: React.FC = () => {
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Shield className="h-4 w-4 text-primary mr-2" />
@@ -327,7 +327,7 @@ const HowToCreateAccount: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Eye className="h-4 w-4 text-primary mr-2" />
@@ -342,7 +342,7 @@ const HowToCreateAccount: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Mail className="h-4 w-4 text-primary mr-2" />

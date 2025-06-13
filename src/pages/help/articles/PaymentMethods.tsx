@@ -394,7 +394,7 @@ const PaymentMethods: React.FC = () => {
                     <ul className="space-y-1">
                       {item.solutions.map((solution, idx) => (
                         <li key={idx} className="text-sm flex items-start">
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                           {solution}
                         </li>
                       ))}
@@ -421,19 +421,19 @@ const PaymentMethods: React.FC = () => {
               <h4 className="font-medium text-sm mb-3 text-green-700 dark:text-green-300">✅ Best Practices:</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Keep payment methods up to date
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Set up backup payment methods
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Monitor billing statements regularly
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                   Enable billing notifications
                 </li>
               </ul>
@@ -442,19 +442,19 @@ const PaymentMethods: React.FC = () => {
               <h4 className="font-medium text-sm mb-3 text-red-700 dark:text-red-300">❌ Common Mistakes:</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Using expired or invalid cards
                 </li>
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Not updating billing address changes
                 </li>
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Ignoring failed payment notifications
                 </li>
                 <li className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 shrink-0" />
                   Using public Wi-Fi for payments
                 </li>
               </ul>

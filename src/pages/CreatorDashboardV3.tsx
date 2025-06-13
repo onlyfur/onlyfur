@@ -377,7 +377,7 @@ const CreatorDashboardV3: React.FC = () => {
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
-      <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30">
+      <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-linear-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className={`p-3 rounded-lg ${color}`}>
@@ -441,7 +441,7 @@ const CreatorDashboardV3: React.FC = () => {
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1"
+                  className="absolute -top-2 -right-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1"
                 >
                   <Brain className="w-3 h-3" />
                   <span>{content.aiScore}</span>
@@ -506,7 +506,7 @@ const CreatorDashboardV3: React.FC = () => {
   if (!stats) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-6">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <motion.div
@@ -515,7 +515,7 @@ const CreatorDashboardV3: React.FC = () => {
           className="flex items-center justify-between"
         >
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Creator Dashboard
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -568,14 +568,14 @@ const CreatorDashboardV3: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
+          <Card className="border-2 border-purple-200 dark:border-purple-800 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
                   <Brain className="w-5 h-5 text-purple-600" />
                   <span>AI Performance Insights</span>
                 </CardTitle>
-                <Badge variant="secondary" className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
+                <Badge variant="secondary" className="bg-linear-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
                   <Sparkles className="w-3 h-3 mr-1" />
                   Score: {stats.aiInsights.contentScore}%
                 </Badge>
@@ -597,7 +597,7 @@ const CreatorDashboardV3: React.FC = () => {
                         transition={{ delay: index * 0.1 + 0.3 }}
                         className="text-sm text-muted-foreground flex items-start space-x-2"
                       >
-                        <Zap className="w-3 h-3 text-yellow-500 mt-1 flex-shrink-0" />
+                        <Zap className="w-3 h-3 text-yellow-500 mt-1 shrink-0" />
                         <span>{suggestion}</span>
                       </motion.li>
                     ))}
@@ -617,7 +617,7 @@ const CreatorDashboardV3: React.FC = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 + 0.4 }}
                       >
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline-solid" className="text-xs">
                           {topic}
                         </Badge>
                       </motion.div>
@@ -866,7 +866,7 @@ const CreatorDashboardV3: React.FC = () => {
                             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {content.aiScore && (
-                            <div className="absolute top-2 left-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
+                            <div className="absolute top-2 left-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
                               <Brain className="w-3 h-3" />
                               <span>{content.aiScore}</span>
                             </div>

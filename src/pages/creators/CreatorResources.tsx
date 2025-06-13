@@ -200,12 +200,12 @@ const CreatorResources: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
           <Crown className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Creator Resources</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
           Everything You Need to Succeed
         </h1>
         
@@ -293,7 +293,7 @@ const CreatorResources: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold">{tutorial.title}</h3>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline-solid" className="text-xs">
                         {tutorial.level}
                       </Badge>
                     </div>
@@ -355,7 +355,7 @@ const CreatorResources: React.FC = () => {
               <CardContent className="p-4 text-center">
                 <h3 className="font-medium mb-2">{template.name}</h3>
                 <p className="text-muted-foreground text-xs mb-3">{template.description}</p>
-                <Badge variant="outline" className="mb-3 text-xs">
+                <Badge variant="outline-solid" className="mb-3 text-xs">
                   {template.category}
                 </Badge>
                 <Button size="sm" className="w-full" asChild>
@@ -371,7 +371,7 @@ const CreatorResources: React.FC = () => {
       </div>
 
       {/* Support CTA */}
-      <Card className="text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-8">
           <Users className="w-12 h-12 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Need Personal Help?</h2>

@@ -181,7 +181,7 @@ const EnhancedUserProfile: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <div className="relative h-64 bg-gradient-to-r from-orange-600 to-pink-600">
+      <div className="relative h-64 bg-linear-to-r from-orange-600 to-pink-600">
         {profile.coverImage && (
           <img
             src={profile.coverImage}

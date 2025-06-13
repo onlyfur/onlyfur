@@ -435,7 +435,7 @@ const ProfileV3: React.FC = () => {
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
       className="group"
     >
-      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30">
+      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-linear-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30">
         <div className="relative">
           <img
             src={content.thumbnail}
@@ -449,7 +449,7 @@ const ProfileV3: React.FC = () => {
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="absolute top-2 left-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1"
+              className="absolute top-2 left-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center space-x-1"
             >
               <Brain className="w-3 h-3" />
               <span>{content.aiScore}</span>
@@ -523,7 +523,7 @@ const ProfileV3: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: tagIndex * 0.1 + 0.4 }}
               >
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline-solid" className="text-xs">
                   {tag}
                 </Badge>
               </motion.div>
@@ -585,19 +585,19 @@ const ProfileV3: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
       {/* Banner Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative h-64 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden"
+        className="relative h-64 bg-linear-to-r from-purple-600 to-pink-600 overflow-hidden"
       >
         <img
           src={profile.banner}
           alt="Profile banner"
           className="w-full h-full object-cover opacity-80"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
         
         {/* AI Insights Toggle */}
         {profile.aiInsights && (
@@ -611,7 +611,7 @@ const ProfileV3: React.FC = () => {
               variant="secondary"
               size="sm"
               onClick={() => setShowAIInsights(!showAIInsights)}
-              className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              className="bg-white/10 backdrop-blur-xs border-white/20 text-white hover:bg-white/20"
             >
               <Brain className="w-4 h-4 mr-2" />
               AI Insights
@@ -627,7 +627,7 @@ const ProfileV3: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
+          <Card className="p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xs">
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
               <div className="relative">
                 <Avatar className="w-24 h-24 ring-4 ring-white dark:ring-gray-800">
@@ -728,7 +728,7 @@ const ProfileV3: React.FC = () => {
                       <Button
                         onClick={handleFollow}
                         variant={isFollowing ? "outline" : "default"}
-                        className={isFollowing ? "" : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"}
+                        className={isFollowing ? "" : "bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"}
                       >
                         {isFollowing ? (
                           <>
@@ -781,12 +781,12 @@ const ProfileV3: React.FC = () => {
               transition={{ duration: 0.3 }}
               className="mt-4"
             >
-              <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
+              <Card className="border-2 border-purple-200 dark:border-purple-800 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Brain className="w-5 h-5 text-purple-600" />
                     <span>AI Profile Insights</span>
-                    <Badge variant="secondary" className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
+                    <Badge variant="secondary" className="bg-linear-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
                       <Sparkles className="w-3 h-3 mr-1" />
                       AI Powered
                     </Badge>
@@ -934,7 +934,7 @@ const ProfileV3: React.FC = () => {
                                 transition={{ delay: perkIndex * 0.1 + index * 0.1 + 1 }}
                                 className="flex items-center space-x-2 text-sm"
                               >
-                                <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
                                 <span>{perk}</span>
                               </motion.li>
                             ))}
@@ -948,7 +948,7 @@ const ProfileV3: React.FC = () => {
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button
                                   onClick={() => handleSubscribe(tier.id)}
-                                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                                  className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                                   disabled={isSubscribed && selectedTier === tier.id}
                                 >
                                   {isSubscribed && selectedTier === tier.id ? (

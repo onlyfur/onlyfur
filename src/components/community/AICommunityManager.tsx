@@ -304,11 +304,11 @@ export default function AICommunityManager() {
         className="flex items-center justify-between"
       >
         <div className="flex items-center space-x-3">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+          <div className="bg-linear-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
             <Shield className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               AI Community Manager
             </h1>
             <p className="text-gray-600">Intelligent community moderation and insights</p>
@@ -513,7 +513,7 @@ export default function AICommunityManager() {
                             <Badge className={getStatusColor(member.status)}>
                               {member.status}
                             </Badge>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline-solid" className="text-xs">
                               {member.role}
                             </Badge>
                             {member.tier === 'vip' && <Star className="w-4 h-4 text-yellow-500" />}
@@ -588,7 +588,7 @@ export default function AICommunityManager() {
                             <Badge className={getSeverityColor(report.severity)}>
                               {report.severity}
                             </Badge>
-                            <Badge variant="outline">{report.status}</Badge>
+                            <Badge variant="outline-solid">{report.status}</Badge>
                           </div>
                           <div className="text-sm text-gray-600">
                             Reported by @{report.reported_by} • {formatTimeAgo(report.reported_at)}
@@ -760,7 +760,7 @@ export default function AICommunityManager() {
                   {['#furryart', '#characterdesign', '#commission', '#fursuit', '#digitalart'].map((topic, index) => (
                     <div key={topic} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Badge variant="outline">{topic}</Badge>
+                        <Badge variant="outline-solid">{topic}</Badge>
                         <span className="text-sm text-gray-600">
                           {Math.floor(Math.random() * 500) + 100} mentions
                         </span>

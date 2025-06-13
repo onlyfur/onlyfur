@@ -31,7 +31,7 @@ const ReportUserContent: React.FC = () => {
       </div>
 
       {/* Quick Reporting */}
-      <Card className="mb-8 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-red-200">
+      <Card className="mb-8 bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-red-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Emergency Reporting</h3>
           <p className="text-muted-foreground mb-4">
@@ -479,7 +479,7 @@ const ReportUserContent: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-red-500 to-orange-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-red-500 to-orange-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with Reporting?</h3>
           <p className="mb-4 opacity-90">Our safety team is here to help with urgent reports or complex situations.</p>

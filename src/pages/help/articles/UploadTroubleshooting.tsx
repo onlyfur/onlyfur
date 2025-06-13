@@ -31,7 +31,7 @@ const UploadTroubleshooting: React.FC = () => {
       </div>
 
       {/* Quick Solutions */}
-      <Card className="mb-8 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-orange-200">
+      <Card className="mb-8 bg-linear-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-orange-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Quick Solutions for Common Issues</h3>
           <p className="text-muted-foreground mb-4">
@@ -522,7 +522,7 @@ const UploadTroubleshooting: React.FC = () => {
         </Card>
 
         {/* Contact Support */}
-        <Card className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+        <Card className="bg-linear-to-r from-blue-500 to-purple-500 text-white">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Still Having Upload Issues?</h2>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">

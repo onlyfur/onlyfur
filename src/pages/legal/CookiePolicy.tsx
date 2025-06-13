@@ -44,7 +44,7 @@ const CookiePolicy: React.FC = () => {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="text-center mb-12">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-orange-900/20 dark:to-yellow-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-orange-100 to-yellow-100 dark:from-orange-900/20 dark:to-yellow-900/20 px-4 py-2 rounded-full mb-6">
           <Cookie className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Cookie Policy</span>
         </div>

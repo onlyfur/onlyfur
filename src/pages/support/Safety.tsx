@@ -169,12 +169,12 @@ const Safety: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/20 dark:to-blue-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-green-100 to-blue-100 dark:from-green-900/20 dark:to-blue-900/20 px-4 py-2 rounded-full mb-6">
           <Shield className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Safety Center</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-6">
           Your Safety is Our Priority
         </h1>
         
@@ -223,7 +223,7 @@ const Safety: React.FC = () => {
                 <ul className="space-y-3">
                   {category.tips.map((tip, idx) => (
                     <li key={idx} className="flex items-start space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{tip}</span>
                     </li>
                   ))}
@@ -284,9 +284,9 @@ const Safety: React.FC = () => {
                   {standard.items.map((item, idx) => (
                     <li key={idx} className="flex items-start space-x-2">
                       {standard.allowed ? (
-                        <CheckCircle className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />
+                        <CheckCircle className="w-3 h-3 text-green-500 mt-1 shrink-0" />
                       ) : (
-                        <XCircle className="w-3 h-3 text-red-500 mt-1 flex-shrink-0" />
+                        <XCircle className="w-3 h-3 text-red-500 mt-1 shrink-0" />
                       )}
                       <span className="text-sm">{item}</span>
                     </li>
@@ -354,7 +354,7 @@ const Safety: React.FC = () => {
       </div>
 
       {/* Call to Action */}
-      <Card className="text-center bg-gradient-to-r from-green-500 to-blue-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-green-500 to-blue-500 text-white border-0">
         <CardContent className="p-8">
           <Shield className="w-12 h-12 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Safety is a Shared Responsibility</h2>

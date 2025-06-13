@@ -31,7 +31,7 @@ const FirstSubscription: React.FC = () => {
       </div>
 
       {/* Quick Start Guide */}
-      <Card className="mb-8 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-pink-200">
+      <Card className="mb-8 bg-linear-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-pink-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Welcome to Your First Subscription! 🎉</h3>
           <p className="text-muted-foreground mb-4">
@@ -430,7 +430,7 @@ const FirstSubscription: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-pink-500 to-purple-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-pink-500 to-purple-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Questions About Your Subscription?</h3>
           <p className="mb-4 opacity-90">Our support team is here to help you make the most of your OnlyFur experience.</p>

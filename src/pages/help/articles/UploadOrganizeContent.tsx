@@ -194,30 +194,30 @@ const UploadOrganizeContent: React.FC = () => {
                 <div className="border rounded-lg p-3">
                   <p className="font-medium text-sm mb-1">Use Descriptive Tags:</p>
                   <div className="flex flex-wrap gap-1">
-                    <Badge variant="outline" className="text-xs">furry</Badge>
-                    <Badge variant="outline" className="text-xs">wolf</Badge>
-                    <Badge variant="outline" className="text-xs">digital-art</Badge>
-                    <Badge variant="outline" className="text-xs">commission</Badge>
-                    <Badge variant="outline" className="text-xs">fantasy</Badge>
+                    <Badge variant="outline-solid" className="text-xs">furry</Badge>
+                    <Badge variant="outline-solid" className="text-xs">wolf</Badge>
+                    <Badge variant="outline-solid" className="text-xs">digital-art</Badge>
+                    <Badge variant="outline-solid" className="text-xs">commission</Badge>
+                    <Badge variant="outline-solid" className="text-xs">fantasy</Badge>
                   </div>
                 </div>
                 <div className="border rounded-lg p-3">
                   <p className="font-medium text-sm mb-1">Character-Specific Tags:</p>
                   <div className="flex flex-wrap gap-1">
-                    <Badge variant="outline" className="text-xs">original-character</Badge>
-                    <Badge variant="outline" className="text-xs">fursona</Badge>
-                    <Badge variant="outline" className="text-xs">character-ref</Badge>
-                    <Badge variant="outline" className="text-xs">backstory</Badge>
+                    <Badge variant="outline-solid" className="text-xs">original-character</Badge>
+                    <Badge variant="outline-solid" className="text-xs">fursona</Badge>
+                    <Badge variant="outline-solid" className="text-xs">character-ref</Badge>
+                    <Badge variant="outline-solid" className="text-xs">backstory</Badge>
                   </div>
                 </div>
                 <div className="border rounded-lg p-3">
                   <p className="font-medium text-sm mb-1">Content Style Tags:</p>
                   <div className="flex flex-wrap gap-1">
-                    <Badge variant="outline" className="text-xs">cute</Badge>
-                    <Badge variant="outline" className="text-xs">realistic</Badge>
-                    <Badge variant="outline" className="text-xs">cartoon</Badge>
-                    <Badge variant="outline" className="text-xs">detailed</Badge>
-                    <Badge variant="outline" className="text-xs">colorful</Badge>
+                    <Badge variant="outline-solid" className="text-xs">cute</Badge>
+                    <Badge variant="outline-solid" className="text-xs">realistic</Badge>
+                    <Badge variant="outline-solid" className="text-xs">cartoon</Badge>
+                    <Badge variant="outline-solid" className="text-xs">detailed</Badge>
+                    <Badge variant="outline-solid" className="text-xs">colorful</Badge>
                   </div>
                 </div>
               </div>
@@ -417,7 +417,7 @@ const UploadOrganizeContent: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with Uploads?</h3>
           <p className="mb-4 opacity-90">Our technical support team can help with upload issues and content organization.</p>

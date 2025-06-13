@@ -536,7 +536,7 @@ const ContentManagement: React.FC = () => {
                 return (
                   <div key={content.id} className="p-4 flex items-center space-x-4">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 bg-muted rounded-md flex-shrink-0 relative">
+                    <div className="w-16 h-16 bg-muted rounded-md shrink-0 relative">
                       {content.mediaUrl ? (
                         <img
                           src={content.thumbnailUrl || content.mediaUrl}

@@ -149,7 +149,7 @@ const Register: React.FC = () => {
   const canProceedToStep2 = selectedRole !== null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
         {/* Logo and Header */}
         <div className="text-center mb-8">
@@ -175,7 +175,7 @@ const Register: React.FC = () => {
           </div>
         </div>
 
-        <Card className="shadow-xl border-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <Card className="shadow-xl border-0 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
           {/* Step 1: Role Selection */}
           {currentStep === 1 && (
             <>

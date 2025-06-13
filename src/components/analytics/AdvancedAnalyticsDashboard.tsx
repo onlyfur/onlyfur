@@ -330,7 +330,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      <Badge variant="outline">{content.type}</Badge>
+                      <Badge variant="outline-solid">{content.type}</Badge>
                     </div>
                   ))}
                 </div>

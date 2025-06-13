@@ -419,7 +419,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   };
 
   const renderSearchModeSelector = () => (
-    <div className="flex items-center space-x-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
+    <div className="flex items-center space-x-2 mb-4 p-3 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
       <Brain className={`w-4 h-4 ${searchMode === 'neural' ? 'text-blue-600' : 'text-blue-400'}`} />
       <span className="text-sm font-medium">Search Mode:</span>
       <Select value={searchMode} onValueChange={(value: any) => setSearchMode(value)}>
@@ -527,7 +527,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                   <h3 className="font-medium text-sm truncate">{result.title}</h3>
                   {result.badge && (
                     <Badge 
-                      variant={result.type === 'help' ? "outline" : "secondary"} 
+                      variant={result.type === 'help' ? "outline-solid" : "secondary"} 
                       className={`text-xs ${result.type === 'help' ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700' : ''}`}
                     >
                       {result.type === 'help' && <Book className="w-3 h-3 mr-1" />}
@@ -535,7 +535,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                     </Badge>
                   )}
                   {searchMode === 'neural' && neuralMatch && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
+                    <Badge variant="outline-solid" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
                       <Brain className="w-3 h-3 mr-1" />
                       {Math.round(neuralMatch.confidence_score * 100)}%
                     </Badge>
@@ -564,7 +564,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                 {result.tags && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {result.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
+                      <Badge key={tag} variant="outline-solid" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
@@ -602,10 +602,10 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Match #{result.id}</span>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline-solid" className="text-xs">
                       Confidence: {Math.round(result.confidence_score * 100)}%
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline-solid" className="text-xs">
                       Relevance: {Math.round(result.relevance_score * 100)}%
                     </Badge>
                   </div>

@@ -352,7 +352,7 @@ const AIContentAssistant: React.FC = () => {
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Brain className="w-8 h-8 text-purple-500" />
           AI Content Assistant
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+          <Badge className="bg-linear-to-r from-purple-500 to-pink-500 text-white">
             <Sparkles className="w-3 h-3 mr-1" />
             v3.9
           </Badge>
@@ -486,7 +486,7 @@ const AIContentAssistant: React.FC = () => {
                             <p className="font-medium text-sm">Suggested Hashtags:</p>
                             <div className="flex flex-wrap gap-2">
                               {idea.hashtags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="cursor-pointer" onClick={() => copyToClipboard(tag)}>
+                                <Badge key={index} variant="outline-solid" className="cursor-pointer" onClick={() => copyToClipboard(tag)}>
                                   {tag}
                                 </Badge>
                               ))}
@@ -760,7 +760,7 @@ const AIContentAssistant: React.FC = () => {
                     {['#digitalart', '#aiart', '#characterdesign', '#fantasy', '#tutorial', '#process'].map((tag, index) => (
                       <Badge 
                         key={index} 
-                        variant="outline" 
+                        variant="outline-solid"
                         className="cursor-pointer hover:bg-gray-100"
                         onClick={() => copyToClipboard(tag)}
                       >

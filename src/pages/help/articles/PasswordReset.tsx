@@ -138,7 +138,7 @@ const PasswordReset: React.FC = () => {
             {steps.map((step, index) => (
               <div key={step.step} className="p-4">
                 <div className="flex items-start">
-                  <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-1 flex-shrink-0">
+                  <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-1 shrink-0">
                     {step.step}
                   </div>
                   <div>
@@ -197,7 +197,7 @@ const PasswordReset: React.FC = () => {
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Related Help Articles</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Shield className="h-4 w-4 text-primary mr-2" />
@@ -212,7 +212,7 @@ const PasswordReset: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <Lock className="h-4 w-4 text-primary mr-2" />
@@ -227,7 +227,7 @@ const PasswordReset: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow">
+          <Card className="hover:shadow-xs transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center">
                 <AlertTriangle className="h-4 w-4 text-primary mr-2" />

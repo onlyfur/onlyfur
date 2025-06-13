@@ -422,7 +422,7 @@ export default function LiveStreamPlayer({
               />
               
               {/* Video Controls */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4">
                 <div className="flex items-center justify-between text-white">
                   <div className="flex items-center space-x-2">
                     <Button
@@ -493,7 +493,7 @@ export default function LiveStreamPlayer({
                 </div>
                 <div className="flex items-center space-x-2">
                   {stream.tags.map((tag) => (
-                    <Badge key={tag} variant="outline">
+                    <Badge key={tag} variant="outline-solid">
                       #{tag}
                     </Badge>
                   ))}
@@ -561,7 +561,7 @@ export default function LiveStreamPlayer({
                                 </Badge>
                               )}
                               {message.isModerator && (
-                                <Badge variant="outline" className="ml-1 text-xs">
+                                <Badge variant="outline-solid" className="ml-1 text-xs">
                                   Mod
                                 </Badge>
                               )}

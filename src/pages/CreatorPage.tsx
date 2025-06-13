@@ -184,7 +184,7 @@ const CreatorPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Cover Image */}
-      <div className="relative h-64 bg-gradient-to-r from-purple-500 to-pink-500">
+      <div className="relative h-64 bg-linear-to-r from-purple-500 to-pink-500">
         {creator.coverImage && (
           <img
             src={creator.coverImage}

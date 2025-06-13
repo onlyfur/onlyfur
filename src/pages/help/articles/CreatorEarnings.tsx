@@ -32,19 +32,19 @@ const CreatorEarnings: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Monthly Subscriptions</span>
-                  <Badge variant="outline">85% to creator</Badge>
+                  <Badge variant="outline-solid">85% to creator</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Direct Tips</span>
-                  <Badge variant="outline">90% to creator</Badge>
+                  <Badge variant="outline-solid">90% to creator</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Content Sales</span>
-                  <Badge variant="outline">85% to creator</Badge>
+                  <Badge variant="outline-solid">85% to creator</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Custom Commissions</span>
-                  <Badge variant="outline">90% to creator</Badge>
+                  <Badge variant="outline-solid">90% to creator</Badge>
                 </div>
               </div>
             </div>
@@ -158,7 +158,7 @@ const CreatorEarnings: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Minimum Payout:</span>
-                  <Badge variant="outline">$20.00</Badge>
+                  <Badge variant="outline-solid">$20.00</Badge>
                 </div>
               </div>
             </div>
@@ -344,10 +344,10 @@ const CreatorEarnings: React.FC = () => {
           </p>
           <Button>Contact Creator Support</Button>
           <div className="flex gap-2 mt-4">
-            <Badge variant="outline">earnings</Badge>
-            <Badge variant="outline">payouts</Badge>
-            <Badge variant="outline">creator-support</Badge>
-            <Badge variant="outline">taxes</Badge>
+            <Badge variant="outline-solid">earnings</Badge>
+            <Badge variant="outline-solid">payouts</Badge>
+            <Badge variant="outline-solid">creator-support</Badge>
+            <Badge variant="outline-solid">taxes</Badge>
           </div>
         </CardContent>
       </Card>

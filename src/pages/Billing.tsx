@@ -141,7 +141,7 @@ const Billing: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline-solid"> = {
       'active': 'default',
       'completed': 'default',
       'pending': 'secondary',
@@ -152,7 +152,7 @@ const Billing: React.FC = () => {
     };
 
     return (
-      <Badge variant={variants[status] || 'outline'}>
+      <Badge variant={variants[status] || 'outline-solid'}>
         {status.replace('_', ' ').toUpperCase()}
       </Badge>
     );
@@ -324,7 +324,7 @@ const Billing: React.FC = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                           <Crown className="w-6 h-6 text-white" />
                         </div>
                         <div>
@@ -560,7 +560,7 @@ const Billing: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge variant="outline-solid">
                           {transaction.type.replace('_', ' ').toUpperCase()}
                         </Badge>
                       </TableCell>

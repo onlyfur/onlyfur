@@ -300,11 +300,11 @@ export default function AIContentOptimizer() {
         className="flex items-center justify-between"
       >
         <div className="flex items-center space-x-3">
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
+          <div className="bg-linear-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
             <Brain className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               AI Content Optimizer
             </h1>
             <p className="text-gray-600">Maximize your content's reach and engagement with AI</p>
@@ -473,7 +473,7 @@ export default function AIContentOptimizer() {
                     {contentData.target_audience.map(audience => (
                       <Badge
                         key={audience}
-                        variant="outline"
+                        variant="outline-solid"
                         className="cursor-pointer"
                         onClick={() => removeAudience(audience)}
                       >
@@ -748,7 +748,7 @@ export default function AIContentOptimizer() {
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline-solid" className="text-xs">
                             {suggestion.category}
                           </Badge>
                           <Badge 

@@ -344,7 +344,7 @@ const Subscribe: React.FC = () => {
       {/* Creator Header */}
       <div className="relative mb-8">
         <div 
-          className="w-full h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg bg-cover bg-center"
+          className="w-full h-48 bg-linear-to-r from-blue-500 to-purple-600 rounded-lg bg-cover bg-center"
           style={{ backgroundImage: `url(${creatorData.coverImage})` }}
         >
           <div className="absolute inset-0 bg-black/50 rounded-lg" />

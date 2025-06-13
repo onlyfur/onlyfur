@@ -160,7 +160,7 @@ const CreatorProgram: React.FC = () => {
           <Crown className="h-4 w-4 text-primary" />
         </div>
         
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
           Turn Your Furry Passion Into Income
         </h1>
         
@@ -232,7 +232,7 @@ const CreatorProgram: React.FC = () => {
               )}
               
               <CardHeader className={tier.popular ? 'pt-12' : ''}>
-                <div className={`inline-flex p-4 rounded-full bg-gradient-to-r ${tier.color} text-white mb-4 mx-auto w-fit`}>
+                <div className={`inline-flex p-4 rounded-full bg-linear-to-r ${tier.color} text-white mb-4 mx-auto w-fit`}>
                   <Crown className="h-8 w-8" />
                 </div>
                 <CardTitle className="text-2xl text-center">{tier.name}</CardTitle>
@@ -246,7 +246,7 @@ const CreatorProgram: React.FC = () => {
                 <ul className="space-y-3">
                   {tier.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
@@ -272,7 +272,7 @@ const CreatorProgram: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           {steps.map((step, index) => (
             <div key={index} className="text-center">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+              <div className="bg-linear-to-r from-purple-500 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                 {step.number}
               </div>
               <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
@@ -297,12 +297,12 @@ const CreatorProgram: React.FC = () => {
           {successStories.map((story, index) => (
             <Card key={index} className="text-center">
               <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-linear-to-r from-purple-500 to-pink-500 flex items-center justify-center text-3xl mx-auto mb-4">
                   {story.avatar}
                 </div>
                 <CardTitle className="text-xl">{story.name}</CardTitle>
                 <div className="space-y-1">
-                  <Badge variant="outline">{story.specialty}</Badge>
+                  <Badge variant="outline-solid">{story.specialty}</Badge>
                   <div className="text-2xl font-bold text-green-500">{story.earnings}</div>
                 </div>
               </CardHeader>
@@ -318,7 +318,7 @@ const CreatorProgram: React.FC = () => {
 
       {/* CTA Section */}
       <div className="text-center">
-        <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-none max-w-4xl mx-auto">
+        <Card className="bg-linear-to-r from-purple-600 to-pink-600 text-white border-none max-w-4xl mx-auto">
           <CardContent className="py-12">
             <h2 className="text-3xl font-bold mb-4">Ready to Start Your Creator Journey?</h2>
             <p className="text-xl mb-8 text-purple-100">

@@ -77,7 +77,7 @@ class GoogleAuthService {
 
   // Render Google Sign-In button
   renderButton(element: HTMLElement, options: {
-    theme?: 'outline' | 'filled_blue' | 'filled_black';
+    theme?: 'outline-solid' | 'filled_blue' | 'filled_black';
     size?: 'large' | 'medium' | 'small';
     text?: 'signin_with' | 'signup_with' | 'continue_with' | 'signin';
     shape?: 'rectangular' | 'pill' | 'circle' | 'square';
@@ -90,7 +90,7 @@ class GoogleAuthService {
     }
 
     const defaultOptions = {
-      theme: 'outline' as const,
+      theme: 'outline-solid' as const,
       size: 'large' as const,
       text: 'signin_with' as const,
       shape: 'rectangular' as const,

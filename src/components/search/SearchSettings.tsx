@@ -483,9 +483,9 @@ const SearchSettings: React.FC = () => {
             <p className="font-medium">Coming Soon</p>
             <p className="text-sm">Advanced AI features will be available in future updates</p>
             <div className="flex justify-center mt-4 space-x-2">
-              <Badge variant="outline">Neural Search</Badge>
-              <Badge variant="outline">Semantic Understanding</Badge>
-              <Badge variant="outline">Context Awareness</Badge>
+              <Badge variant="outline-solid">Neural Search</Badge>
+              <Badge variant="outline-solid">Semantic Understanding</Badge>
+              <Badge variant="outline-solid">Context Awareness</Badge>
             </div>
           </div>
         </CardContent>
