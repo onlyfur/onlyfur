@@ -89,7 +89,8 @@
     "vaul": "^1.1.2",
     "vite": "^6.3.5",
     "@vitejs/plugin-react": "^4.5.2",
-    "zod": "^3.25.63"
+    "zod": "^3.25.63",
+    "@tailwindcss/postcss": "latest"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
