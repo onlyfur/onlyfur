@@ -73,4 +73,8 @@ module.exports = {
 		},
 	},
 	plugins: [require('tailwindcss-animate')],
+	safelist: [
+		'border-border',
+		'border-border/50',
+	],
 }
