@@ -117,28 +117,28 @@ const PaymentSystem: React.FC = () => {
 
             <div>
               <h4 className="font-semibold mb-2">Billing Cycle Explanation:</h4>
-              <div class="space-y-3">
-                <div class="border-l-4 border-blue-500 pl-4">
-                  <p class="font-medium text-sm">Initial Subscription</p>
-                  <p class="text-xs text-muted-foreground">Charged immediately upon subscribing. Access granted instantly.</p>
+              <div className="space-y-3">
+                <div className="border-l-4 border-blue-500 pl-4">
+                  <p className="font-medium text-sm">Initial Subscription</p>
+                  <p className="text-xs text-muted-foreground">Charged immediately upon subscribing. Access granted instantly.</p>
                 </div>
-                <div class="border-l-4 border-green-500 pl-4">
-                  <p class="font-medium text-sm">Monthly Renewal</p>
-                  <p class="text-xs text-muted-foreground">Automatic renewal on the same date each month (e.g., 15th to 15th)</p>
+                <div className="border-l-4 border-green-500 pl-4">
+                  <p className="font-medium text-sm">Monthly Renewal</p>
+                  <p className="text-xs text-muted-foreground">Automatic renewal on the same date each month (e.g., 15th to 15th)</p>
                 </div>
-                <div class="border-l-4 border-purple-500 pl-4">
-                  <p class="font-medium text-sm">Renewal Reminders</p>
-                  <p class="text-xs text-muted-foreground">Email notification sent 3 days before renewal date</p>
+                <div className="border-l-4 border-purple-500 pl-4">
+                  <p className="font-medium text-sm">Renewal Reminders</p>
+                  <p className="text-xs text-muted-foreground">Email notification sent 3 days before renewal date</p>
                 </div>
-                <div class="border-l-4 border-orange-500 pl-4">
-                  <p class="font-medium text-sm">Failed Payment Grace</p>
-                  <p class="text-xs text-muted-foreground">7-day grace period to update payment info if renewal fails</p>
+                <div className="border-l-4 border-orange-500 pl-4">
+                  <p className="font-medium text-sm">Failed Payment Grace</p>
+                  <p className="text-xs text-muted-foreground">7-day grace period to update payment info if renewal fails</p>
                 </div>
               </div>
             </div>
 
-            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <p class="text-sm"><strong>Payment Security:</strong> OnlyFur never stores your full credit card details. All payment processing is handled by PCI-compliant payment processors with bank-level encryption.</p>
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <p className="text-sm"><strong>Payment Security:</strong> OnlyFur never stores your full credit card details. All payment processing is handled by PCI-compliant payment processors with bank-level encryption.</p>
             </div>
           </CardContent>
         </Card>

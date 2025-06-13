@@ -117,7 +117,7 @@ interface ContentTrendAnalysis {
 class AdvancedAnalyticsEngine {
   private searchMetrics: SearchMetrics[] = [];
   private userBehaviorMetrics: Map<string, UserBehaviorMetrics> = new Map();
-  private systemMetrics: SystemPerformanceMetrics;
+  private systemMetrics!: SystemPerformanceMetrics;
   private insights: AnalyticsInsight[] = [];
   private realTimeMetrics: any = {};
   private alertThresholds: any = {};
@@ -611,7 +611,7 @@ class AdvancedAnalyticsEngine {
     const searches = this.getRecentSearches(days * 24);
     const dailyMetrics = new Map<string, any>();
 
-    searches.forEach(search => {
+    searches.forEach((search: any) => {
       const date = search.timestamp.split('T')[0];
       if (!dailyMetrics.has(date)) {
         dailyMetrics.set(date, {

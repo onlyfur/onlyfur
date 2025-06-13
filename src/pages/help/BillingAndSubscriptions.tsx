@@ -15,7 +15,8 @@ import {
   Info,
   Shield,
   Users,
-  Star
+  Star,
+  Settings
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

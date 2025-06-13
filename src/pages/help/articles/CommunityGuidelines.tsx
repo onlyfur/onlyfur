@@ -240,21 +240,21 @@ const CommunityGuidelines: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-2">Behaviors to Avoid:</h4>
               <div className="space-y-3">
-                <div class="border-l-4 border-red-500 pl-4">
-                  <p class="font-medium text-sm">Harassment & Bullying</p>
-                  <p class="text-xs text-muted-foreground">Persistent unwanted contact, intimidation, public shaming, coordinated harassment</p>
+                <div className="border-l-4 border-red-500 pl-4">
+                  <p className="font-medium text-sm">Harassment & Bullying</p>
+                  <p className="text-xs text-muted-foreground">Persistent unwanted contact, intimidation, public shaming, coordinated harassment</p>
                 </div>
-                <div class="border-l-4 border-orange-500 pl-4">
-                  <p class="font-medium text-sm">Inappropriate Solicitation</p>
-                  <p class="text-xs text-muted-foreground">Unsolicited personal requests, demanding free content, pressuring for personal information</p>
+                <div className="border-l-4 border-orange-500 pl-4">
+                  <p className="font-medium text-sm">Inappropriate Solicitation</p>
+                  <p className="text-xs text-muted-foreground">Unsolicited personal requests, demanding free content, pressuring for personal information</p>
                 </div>
-                <div class="border-l-4 border-yellow-500 pl-4">
-                  <p class="font-medium text-sm">Drama & Toxicity</p>
-                  <p class="text-xs text-muted-foreground">Starting or escalating conflicts, spreading rumors, public call-outs, revenge sharing</p>
+                <div className="border-l-4 border-yellow-500 pl-4">
+                  <p className="font-medium text-sm">Drama & Toxicity</p>
+                  <p className="text-xs text-muted-foreground">Starting or escalating conflicts, spreading rumors, public call-outs, revenge sharing</p>
                 </div>
-                <div class="border-l-4 border-purple-500 pl-4">
-                  <p class="font-medium text-sm">Platform Manipulation</p>
-                  <p class="text-xs text-muted-foreground">Fake accounts, vote manipulation, gaming algorithms, circumventing restrictions</p>
+                <div className="border-l-4 border-purple-500 pl-4">
+                  <p className="font-medium text-sm">Platform Manipulation</p>
+                  <p className="text-xs text-muted-foreground">Fake accounts, vote manipulation, gaming algorithms, circumventing restrictions</p>
                 </div>
               </div>
             </div>

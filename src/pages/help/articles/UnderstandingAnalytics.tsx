@@ -169,7 +169,7 @@ const UnderstandingAnalytics: React.FC = () => {
 
             <div>
               <h4 className="font-semibold mb-2">Content Performance Metrics:</h4>
-              <div class="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <h5 className="font-medium text-green-600 mb-2">Engagement Metrics</h5>
                   <ul className="text-sm space-y-1">

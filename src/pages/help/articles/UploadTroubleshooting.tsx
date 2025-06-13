@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, AlertTriangle, Upload, RefreshCw, Wifi, HardDrive, FileWarning, Clock } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Upload, RefreshCw, Wifi, HardDrive, FileWarning, Clock, Shield, FileText, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const UploadTroubleshooting: React.FC = () => {
