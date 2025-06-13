@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm set registry https://registry.npmjs.org/ && npm config set fetch-retry-maxtimeout 600000 && npm config set fetch-retry-mintimeout 10000 && npm config set fetch-retries 5 && npm ci && npm run build",
+  "buildCommand": "npm set registry https://registry.npmjs.org/ && npm config set fetch-retry-maxtimeout 600000 && npm config set fetch-retry-mintimeout 10000 && npm config set fetch-retries 5 && npm cache clean --force && npm ci && npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
