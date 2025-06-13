@@ -1,4 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+const withOpacity = variableName => ({
+	DEFAULT: `hsl(var(${variableName}))`,
+	95: `hsl(var(${variableName}) / 0.95)`,
+	90: `hsl(var(${variableName}) / 0.90)`,
+	80: `hsl(var(${variableName}) / 0.80)`,
+	75: `hsl(var(${variableName}) / 0.75)`,
+	60: `hsl(var(${variableName}) / 0.60)`,
+	50: `hsl(var(${variableName}) / 0.50)`,
+});
+
 module.exports = {
 	darkMode: ['class'],
 	content: [
@@ -20,7 +30,7 @@ module.exports = {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
+				background: withOpacity('--background'),
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: '#2B5D3A',
