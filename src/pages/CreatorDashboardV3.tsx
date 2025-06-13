@@ -50,7 +50,8 @@ import {
   Activity,
   Globe,
   Smartphone,
-  Monitor
+  Monitor,
+  Edit3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';

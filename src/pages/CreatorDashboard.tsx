@@ -38,12 +38,23 @@ import {
 
 // Interfaces imported from creatorDashboardAPI
 
+// Extend ContentItem to add privacyLevel and requiredTiers for dashboard UI
+interface DashboardContentItem extends ContentItem {
+  privacyLevel: string;
+  requiredTiers: string[];
+}
+
+// Extend Subscriber to add subscriptionDate for dashboard UI
+interface DashboardSubscriber extends Subscriber {
+  subscriptionDate: Date;
+}
+
 const CreatorDashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   
-  const [content, setContent] = useState<ContentItem[]>([]);
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [content, setContent] = useState<DashboardContentItem[]>([]);
+  const [subscribers, setSubscribers] = useState<DashboardSubscriber[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isCreatingContent, setIsCreatingContent] = useState(false);
@@ -58,6 +69,7 @@ const CreatorDashboard: React.FC = () => {
     loadCreatorData();
   }, []);
 
+  // Patch: Map API content to DashboardContentItem with default privacyLevel/requiredTiers
   const loadCreatorData = async () => {
     try {
       setIsLoading(true);
@@ -68,11 +80,18 @@ const CreatorDashboard: React.FC = () => {
 
       // Load creator content
       const contentResult = await creatorDashboardAPI.getCreatorContent(1, 20);
-      setContent(contentResult.content);
+      setContent(contentResult.content.map(item => ({
+        ...item,
+        privacyLevel: 'public', // fallback default
+        requiredTiers: []
+      })));
 
       // Load subscribers
       const subscribersResult = await creatorDashboardAPI.getSubscribers(1, 20);
-      setSubscribers(subscribersResult.subscribers);
+      setSubscribers(subscribersResult.subscribers.map(sub => ({
+        ...sub,
+        subscriptionDate: sub.subscribedAt
+      })));
 
     } catch (error) {
       console.error('Error loading creator data:', error);
@@ -123,25 +142,37 @@ const CreatorDashboard: React.FC = () => {
   const totalSubscribers = subscribers.filter(s => s.isActive).length;
 
   const ContentUploadModal: React.FC = () => {
-    const [newContent, setNewContent] = useState({
+    const [newContent, setNewContent] = useState<DashboardContentItem>({
+      id: '',
       title: '',
       description: '',
-      type: 'photo' as 'photo' | 'video' | 'text',
-      privacyLevel: 'public' as 'public' | 'subscribers' | 'premium' | 'private',
-      requiredTiers: [] as string[]
+      type: 'photo',
+      url: '',
+      thumbnailUrl: '',
+      tier: '',
+      price: 0,
+      status: 'published',
+      createdAt: new Date(),
+      stats: { views: 0, likes: 0, comments: 0, earnings: 0 },
+      privacyLevel: 'public',
+      requiredTiers: []
     });
 
     const handleUpload = () => {
-      const contentItem: ContentItem = {
+      const contentItem: DashboardContentItem = {
         id: `content-${Date.now()}`,
         title: newContent.title,
         description: newContent.description,
         type: newContent.type,
-        privacyLevel: newContent.privacyLevel,
-        requiredTiers: newContent.requiredTiers,
+        url: '',
+        thumbnailUrl: '',
+        tier: '',
+        price: 0,
         status: 'published',
         createdAt: new Date(),
-        stats: { views: 0, likes: 0, comments: 0, earnings: 0 }
+        stats: { views: 0, likes: 0, comments: 0, earnings: 0 },
+        privacyLevel: newContent.privacyLevel,
+        requiredTiers: newContent.requiredTiers
       };
 
       setContent(prev => [contentItem, ...prev]);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { creatorDashboardAPI } from '@/services/creatorDashboardAPI';
+import type { RevenueData } from '@/services/creatorDashboardAPI';
 import {
   BarChart,
   Bar,
@@ -78,7 +79,7 @@ const Earnings: React.FC = () => {
   const [paypalEmail, setPaypalEmail] = useState('');
 
   // Revenue data loaded from API
-  const [revenueData, setRevenueData] = useState([]);
+  const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
   const [isLoadingRevenue, setIsLoadingRevenue] = useState(false);
 
   // Load revenue data on component mount
@@ -313,8 +314,8 @@ const Earnings: React.FC = () => {
                         </div>
                         <div className="space-y-2">
                           <Label>Account Type</Label>
-                          <Select value={bankDetails.accountType} onValueChange={(value: 'checking' | 'savings') => 
-                            setBankDetails(prev => ({ ...prev, accountType: value }))
+                          <Select value={bankDetails.accountType} onValueChange={(value: string) =>
+                            setBankDetails(prev => ({ ...prev, accountType: value as 'checking' | 'savings' }))
                           }>
                             <SelectTrigger>
                               <SelectValue />
@@ -649,7 +650,7 @@ const Earnings: React.FC = () => {
                         </TableCell>
                       </TableRow>
                     ))
-                  )}
+                  }
                 </TableBody>
               </Table>
             </CardContent>

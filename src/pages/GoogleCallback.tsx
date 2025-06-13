@@ -41,7 +41,7 @@ const GoogleCallback: React.FC = () => {
         }
 
         // Exchange code for user credentials
-        await loginWithGoogle(code, userType, true); // true indicates this is a callback
+        await loginWithGoogle(code, userType); // removed third argument
         
         setRedirectPath(targetPath);
         

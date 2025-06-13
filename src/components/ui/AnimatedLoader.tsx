@@ -68,7 +68,7 @@ export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "easeInOut" as any
       }
     }
   };
@@ -80,7 +80,7 @@ export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "easeInOut" as any
       }
     }
   };
@@ -93,7 +93,7 @@ export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
         duration: 1.5,
         repeat: Infinity,
         delay: i * 0.2,
-        ease: "easeInOut"
+        ease: "easeInOut" as any
       }
     })
   };
@@ -104,7 +104,7 @@ export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "easeInOut" as any
       }
     }
   };
@@ -443,7 +443,7 @@ export const DotsLoader: React.FC<{ color?: AnimatedLoaderProps['color'] }> = ({
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "easeInOut" as any
       }
     }
   };

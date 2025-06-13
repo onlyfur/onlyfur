@@ -132,6 +132,28 @@ const Landing: React.FC = () => {
     },
   ];
 
+  // Features for the features section
+  const features = [
+    {
+      icon: Sparkles,
+      title: 'AI-Powered Tools',
+      description: 'Automate content creation, moderation, and analytics with advanced AI.',
+      gradient: 'from-purple-500 to-pink-500',
+    },
+    {
+      icon: Upload,
+      title: 'Unlimited Uploads',
+      description: 'Share photos, videos, and art with no storage limits.',
+      gradient: 'from-blue-500 to-cyan-500',
+    },
+    {
+      icon: Shield,
+      title: 'Privacy Controls',
+      description: 'Set custom privacy levels and control who sees your content.',
+      gradient: 'from-green-500 to-emerald-500',
+    },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

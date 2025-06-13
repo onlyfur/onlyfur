@@ -125,7 +125,7 @@ const Explore: React.FC = () => {
         creator.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
         creator.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         creator.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        creator.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        creator.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesCategory = selectedCategory === 'all' || creator.category === selectedCategory;
       const matchesSpecies = selectedSpecies === 'all' || creator.species === selectedSpecies;
