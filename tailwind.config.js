@@ -30,7 +30,10 @@ module.exports = {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: withOpacity('--background'),
+				background: ({ opacityValue }) =>
+					opacityValue === undefined
+						? 'hsl(var(--background))'
+						: `hsl(var(--background) / ${opacityValue})`,
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: '#2B5D3A',
