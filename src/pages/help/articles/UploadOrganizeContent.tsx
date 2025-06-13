@@ -417,7 +417,7 @@ const UploadOrganizeContent: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with Uploads?</h3>
           <p className="mb-4 opacity-90">Our technical support team can help with upload issues and content organization.</p>

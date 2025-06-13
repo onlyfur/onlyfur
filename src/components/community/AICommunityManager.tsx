@@ -304,11 +304,11 @@ export default function AICommunityManager() {
         className="flex items-center justify-between"
       >
         <div className="flex items-center space-x-3">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+          <div className="bg-linear-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
             <Shield className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               AI Community Manager
             </h1>
             <p className="text-gray-600">Intelligent community moderation and insights</p>

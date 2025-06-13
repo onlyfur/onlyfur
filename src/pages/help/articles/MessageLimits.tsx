@@ -87,7 +87,7 @@ const MessageLimits: React.FC = () => {
             <div className="border rounded-lg p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <Crown className="w-5 h-5 text-yellow-500" />
-                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">VIP Subscriber</Badge>
+                <Badge className="bg-linear-to-r from-yellow-400 to-orange-500 text-white">VIP Subscriber</Badge>
                 <span className="text-sm text-muted-foreground">$19.99/month</span>
               </div>
               <div className="space-y-2">

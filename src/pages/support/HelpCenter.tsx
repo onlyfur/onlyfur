@@ -368,12 +368,12 @@ const HelpCenter: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 px-4 py-2 rounded-full mb-6">
           <HelpCircle className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Help Center</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
           How Can We Help You?
         </h1>
         
@@ -525,7 +525,7 @@ const HelpCenter: React.FC = () => {
       </div>
 
       {/* Contact Support */}
-      <Card className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+      <Card className="bg-linear-to-r from-blue-500 to-purple-500 text-white border-0">
         <CardContent className="p-8 text-center">
           <h2 className="text-2xl font-bold mb-4">Still Need Help?</h2>
           <p className="text-lg mb-6 opacity-90">

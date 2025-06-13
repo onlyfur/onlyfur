@@ -261,7 +261,7 @@ const AIAnalyticsDashboard: React.FC<AIAnalyticsDashboardProps> = ({
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
-      <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30">
+      <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-linear-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/30">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="space-y-2">
@@ -414,12 +414,12 @@ const AIAnalyticsDashboard: React.FC<AIAnalyticsDashboardProps> = ({
           >
             <Brain className="w-6 h-6 text-purple-600" />
           </motion.div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             AI Analytics Dashboard
           </h2>
         </div>
         <div className="flex items-center space-x-3">
-          <Badge variant="secondary" className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
+          <Badge variant="secondary" className="bg-linear-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
             <Sparkles className="w-3 h-3 mr-1" />
             AI Insights Active
           </Badge>
@@ -436,7 +436,7 @@ const AIAnalyticsDashboard: React.FC<AIAnalyticsDashboardProps> = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
+        <Card className="border-2 border-purple-200 dark:border-purple-800 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="w-5 h-5 text-purple-600" />

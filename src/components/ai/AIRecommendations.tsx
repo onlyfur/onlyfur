@@ -197,7 +197,7 @@ export default function AIRecommendations({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+          <div className="p-2 bg-linear-to-r from-purple-500 to-pink-500 rounded-lg">
             <Sparkles className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -207,13 +207,13 @@ export default function AIRecommendations({
         </div>
 
         <div className="flex items-center space-x-2">
-          <Button onClick={() => setActiveTab('recommendations')} variant={activeTab === 'recommendations' ? 'default' : 'outline'} size="sm">
+          <Button onClick={() => setActiveTab('recommendations')} variant={activeTab === 'recommendations' ? 'default' : 'outline-solid'} size="sm">
             Content
           </Button>
-          <Button onClick={() => setActiveTab('insights')} variant={activeTab === 'insights' ? 'default' : 'outline'} size="sm">
+          <Button onClick={() => setActiveTab('insights')} variant={activeTab === 'insights' ? 'default' : 'outline-solid'} size="sm">
             Insights
           </Button>
-          <Button onClick={() => setActiveTab('opportunities')} variant={activeTab === 'opportunities' ? 'default' : 'outline'} size="sm">
+          <Button onClick={() => setActiveTab('opportunities')} variant={activeTab === 'opportunities' ? 'default' : 'outline-solid'} size="sm">
             Growth
           </Button>
           <Button onClick={refreshRecommendations} disabled={isRefreshing} variant="outline" size="sm">

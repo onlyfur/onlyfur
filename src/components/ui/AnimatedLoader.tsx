@@ -224,7 +224,7 @@ export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
               delay: i * 0.3,
               ease: "easeInOut"
             }}
-            className="w-1 h-6 bg-gradient-to-t from-purple-600 to-pink-600 rounded-full"
+            className="w-1 h-6 bg-linear-to-t from-purple-600 to-pink-600 rounded-full"
           />
         ))}
       </div>
@@ -408,12 +408,12 @@ export const AnimatedLoader: React.FC<AnimatedLoaderProps> = ({
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
               className={`h-full rounded-full ${
-                color === 'primary' ? 'bg-gradient-to-r from-purple-600 to-pink-600' :
-                color === 'secondary' ? 'bg-gradient-to-r from-blue-600 to-cyan-600' :
-                color === 'accent' ? 'bg-gradient-to-r from-pink-600 to-rose-600' :
-                color === 'success' ? 'bg-gradient-to-r from-green-600 to-emerald-600' :
-                color === 'warning' ? 'bg-gradient-to-r from-yellow-600 to-orange-600' :
-                'bg-gradient-to-r from-red-600 to-pink-600'
+                color === 'primary' ? 'bg-linear-to-r from-purple-600 to-pink-600' :
+                color === 'secondary' ? 'bg-linear-to-r from-blue-600 to-cyan-600' :
+                color === 'accent' ? 'bg-linear-to-r from-pink-600 to-rose-600' :
+                color === 'success' ? 'bg-linear-to-r from-green-600 to-emerald-600' :
+                color === 'warning' ? 'bg-linear-to-r from-yellow-600 to-orange-600' :
+                'bg-linear-to-r from-red-600 to-pink-600'
               }`}
             />
           </div>
@@ -528,7 +528,7 @@ export const HeartLoader: React.FC = () => (
 
 // Page-specific loaders
 export const PageLoader: React.FC<{ page?: string }> = ({ page = "page" }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+  <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
     <div className="text-center space-y-8 p-8">
       <motion.div
         animate={{
@@ -541,13 +541,13 @@ export const PageLoader: React.FC<{ page?: string }> = ({ page = "page" }) => (
           ease: "easeInOut"
         }}
       >
-        <div className="w-20 h-20 mx-auto bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+        <div className="w-20 h-20 mx-auto bg-linear-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
           <Sparkles className="w-10 h-10 text-white" />
         </div>
       </motion.div>
       
       <div className="space-y-4">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           Loading {page}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
@@ -569,7 +569,7 @@ export const FullScreenLoader: React.FC<{
   subMessage = "Please wait",
   type = "ai"
 }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-xs">
     <div className="text-center space-y-6 p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-md w-full mx-4">
       <AnimatedLoader
         type={type}

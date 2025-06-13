@@ -9,7 +9,7 @@ const DMCA: React.FC = () => {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="text-center mb-12">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 px-4 py-2 rounded-full mb-6">
           <Shield className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">DMCA Policy</span>
         </div>

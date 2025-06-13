@@ -78,7 +78,7 @@ const ContentTierManager: React.FC<ContentTierManagerProps> = ({
       id: 'vip-exclusive',
       name: 'VIP Exclusive',
       requiredTiers: ['vip-subscriber'],
-      color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+      color: 'bg-linear-to-r from-yellow-400 to-orange-500',
       icon: 'crown',
       description: 'Content only for VIP subscribers'
     }
@@ -111,7 +111,7 @@ const ContentTierManager: React.FC<ContentTierManagerProps> = ({
       label: 'VIP Exclusive',
       icon: Crown,
       description: 'Only for VIP subscribers',
-      color: 'bg-gradient-to-r from-yellow-400 to-orange-500'
+      color: 'bg-linear-to-r from-yellow-400 to-orange-500'
     }
   ];
 

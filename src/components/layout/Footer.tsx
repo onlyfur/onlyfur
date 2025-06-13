@@ -48,9 +48,9 @@ const Footer: React.FC = () => {
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <div className="relative">
                 <Crown className="h-8 w-8 text-primary" />
-                <div className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full animate-pulse" />
+                <div className="absolute -top-1 -right-1 h-3 w-3 bg-linear-to-r from-pink-500 to-purple-500 rounded-full animate-pulse" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-linear-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 OnlyFur
               </span>
             </Link>

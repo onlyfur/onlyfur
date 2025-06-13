@@ -422,7 +422,7 @@ export default function LiveStreamPlayer({
               />
               
               {/* Video Controls */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4">
                 <div className="flex items-center justify-between text-white">
                   <div className="flex items-center space-x-2">
                     <Button

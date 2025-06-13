@@ -132,7 +132,7 @@ const BillingAndSubscriptions: React.FC = () => {
                 <ul className="space-y-2">
                   {tier.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center text-sm">
-                      <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                       {feature}
                     </li>
                   ))}
@@ -158,12 +158,12 @@ const BillingAndSubscriptions: React.FC = () => {
           <div className="space-y-6">
             {paymentMethods.map((method, index) => (
               <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <method.icon className="w-6 h-6 text-primary" />
                   </div>
                 </div>
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="font-semibold mb-1">{method.name}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{method.description}</p>
                   <div className="flex flex-wrap gap-2">

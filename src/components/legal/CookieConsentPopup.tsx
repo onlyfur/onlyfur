@@ -94,12 +94,12 @@ const CookieConsentPopup: React.FC<CookieConsentPopupProps> = ({ onAccept, onDec
   return (
     <>
       {/* Main Cookie Banner */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/95 backdrop-blur-sm border-t shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/95 backdrop-blur-xs border-t shadow-lg">
         <div className="container mx-auto max-w-6xl">
           <Card className="border-2 border-primary/20">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="p-2 bg-primary/10 rounded-full">
                     <Cookie className="w-6 h-6 text-primary" />
                   </div>
@@ -213,7 +213,7 @@ const CookieConsentPopup: React.FC<CookieConsentPopupProps> = ({ onAccept, onDec
                       </p>
                     </div>
                     
-                    <div className="flex-shrink-0 ml-4">
+                    <div className="shrink-0 ml-4">
                       <Switch
                         checked={preferences[category.id as keyof CookiePreferences]}
                         onCheckedChange={(checked) => 

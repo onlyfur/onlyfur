@@ -101,7 +101,7 @@ const HowItWorks: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl sm:text-5xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
           How OnlyFur Works
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -127,7 +127,7 @@ const HowItWorks: React.FC = () => {
           {subscriberSteps.map((step, index) => (
             <div key={index} className="text-center">
               <div className="relative mb-6">
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="bg-linear-to-r from-purple-500 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <step.icon className="h-8 w-8" />
                 </div>
                 {index < subscriberSteps.length - 1 && (
@@ -168,7 +168,7 @@ const HowItWorks: React.FC = () => {
           {creatorSteps.map((step, index) => (
             <div key={index} className="text-center">
               <div className="relative mb-6">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="bg-linear-to-r from-orange-500 to-red-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <step.icon className="h-8 w-8" />
                 </div>
                 {index < creatorSteps.length - 1 && (
@@ -221,12 +221,12 @@ const HowItWorks: React.FC = () => {
                 <ul className="space-y-3">
                   {tier.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full mt-6" variant={tier.popular ? 'default' : 'outline'}>
+                <Button className="w-full mt-6" variant={tier.popular ? 'default' : 'outline-solid'}>
                   Choose Plan
                 </Button>
               </CardContent>
@@ -287,7 +287,7 @@ const HowItWorks: React.FC = () => {
 
       {/* CTA */}
       <div className="text-center">
-        <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-none max-w-4xl mx-auto">
+        <Card className="bg-linear-to-r from-purple-600 to-pink-600 text-white border-none max-w-4xl mx-auto">
           <CardContent className="py-12">
             <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
             <p className="text-xl mb-8 text-purple-100">

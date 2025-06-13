@@ -219,17 +219,17 @@ const SafetyAndPrivacy: React.FC = () => {
           <div className="space-y-6">
             {dataProtection.map((data, index) => (
               <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <data.icon className="w-6 h-6 text-primary" />
                   </div>
                 </div>
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="font-semibold mb-2">{data.type}</h3>
                   <ul className="space-y-1">
                     {data.protection.map((protection, protectionIndex) => (
                       <li key={protectionIndex} className="flex items-center text-sm">
-                        <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                         {protection}
                       </li>
                     ))}
@@ -303,23 +303,23 @@ const SafetyAndPrivacy: React.FC = () => {
               <h3 className="font-semibold mb-3 text-green-600">Do:</h3>
               <ul className="space-y-2">
                 <li className="flex items-center text-sm">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                   Use strong, unique passwords
                 </li>
                 <li className="flex items-center text-sm">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                   Enable two-factor authentication
                 </li>
                 <li className="flex items-center text-sm">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                   Report suspicious behavior
                 </li>
                 <li className="flex items-center text-sm">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                   Keep personal information private
                 </li>
                 <li className="flex items-center text-sm">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                   Use privacy settings effectively
                 </li>
               </ul>
@@ -328,23 +328,23 @@ const SafetyAndPrivacy: React.FC = () => {
               <h3 className="font-semibold mb-3 text-red-600">Don't:</h3>
               <ul className="space-y-2">
                 <li className="flex items-center text-sm">
-                  <XCircle className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
+                  <XCircle className="w-4 h-4 mr-2 text-red-500 shrink-0" />
                   Share login credentials
                 </li>
                 <li className="flex items-center text-sm">
-                  <XCircle className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
+                  <XCircle className="w-4 h-4 mr-2 text-red-500 shrink-0" />
                   Meet strangers in person
                 </li>
                 <li className="flex items-center text-sm">
-                  <XCircle className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
+                  <XCircle className="w-4 h-4 mr-2 text-red-500 shrink-0" />
                   Send money to other users
                 </li>
                 <li className="flex items-center text-sm">
-                  <XCircle className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
+                  <XCircle className="w-4 h-4 mr-2 text-red-500 shrink-0" />
                   Share personal documents
                 </li>
                 <li className="flex items-center text-sm">
-                  <XCircle className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
+                  <XCircle className="w-4 h-4 mr-2 text-red-500 shrink-0" />
                   Ignore suspicious messages
                 </li>
               </ul>

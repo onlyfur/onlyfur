@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 const Badge = React.forwardRef<
   HTMLSpanElement,
   React.HTMLAttributes<HTMLSpanElement> & { 
-    variant?: "default" | "outline" | "secondary" | "destructive" | "success" | "warning" 
+    variant?: "default" | "outline-solid" | "secondary" | "destructive" | "success" | "warning" 
   }
 >(({ className, variant = "default", ...props }, ref) => {
   return (
@@ -13,7 +13,7 @@ const Badge = React.forwardRef<
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
         variant === "default" && "bg-primary text-primary-foreground",
-        variant === "outline" && "border border-input bg-background text-muted-foreground",
+        variant === "outline-solid" && "border border-input bg-background text-muted-foreground",
         variant === "secondary" && "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         variant === "destructive" && "bg-destructive text-destructive-foreground",
         variant === "success" && "bg-green-100 text-green-800",

@@ -764,7 +764,7 @@ const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({ open, onOpenC
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Voice Search</span>
-                      <Badge variant={voiceSearchService.isSupported() ? "secondary" : "outline"}>
+                      <Badge variant={voiceSearchService.isSupported() ? "secondary" : "outline-solid"}>
                         {voiceSearchService.isSupported() ? "Available" : "Not Available"}
                       </Badge>
                     </div>

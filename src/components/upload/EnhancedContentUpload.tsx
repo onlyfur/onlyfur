@@ -187,7 +187,7 @@ const EnhancedContentUpload: React.FC = () => {
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-hidden focus:border-orange-500"
                 placeholder="Enter content title"
                 required
               />
@@ -198,7 +198,7 @@ const EnhancedContentUpload: React.FC = () => {
               <select
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-hidden focus:border-orange-500"
               >
                 <option value="">Select category</option>
                 {CATEGORIES.map(category => (
@@ -214,7 +214,7 @@ const EnhancedContentUpload: React.FC = () => {
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={4}
-              className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+              className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-hidden focus:border-orange-500"
               placeholder="Describe your content"
             />
           </div>
@@ -244,7 +244,7 @@ const EnhancedContentUpload: React.FC = () => {
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
+                className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:outline-hidden focus:border-orange-500"
                 placeholder="Add tag"
               />
               <button
@@ -293,7 +293,7 @@ const EnhancedContentUpload: React.FC = () => {
                   step="0.01"
                   value={formData.price}
                   onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-hidden focus:border-orange-500"
                   placeholder="0.00"
                 />
               </div>

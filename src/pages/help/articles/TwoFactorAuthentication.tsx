@@ -166,7 +166,7 @@ const TwoFactorAuthentication: React.FC = () => {
             
             <ol className="space-y-6">
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">1</span>
                 </div>
                 <div>
@@ -183,7 +183,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">2</span>
                 </div>
                 <div>
@@ -195,7 +195,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">3</span>
                 </div>
                 <div>
@@ -207,7 +207,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">4</span>
                 </div>
                 <div>
@@ -219,7 +219,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">5</span>
                 </div>
                 <div>
@@ -231,7 +231,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">6</span>
                 </div>
                 <div>
@@ -251,7 +251,7 @@ const TwoFactorAuthentication: React.FC = () => {
             
             <ol className="space-y-6">
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">1</span>
                 </div>
                 <div>
@@ -263,7 +263,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">2</span>
                 </div>
                 <div>
@@ -275,7 +275,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">3</span>
                 </div>
                 <div>
@@ -287,7 +287,7 @@ const TwoFactorAuthentication: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">4</span>
                 </div>
                 <div>

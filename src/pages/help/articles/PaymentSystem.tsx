@@ -31,7 +31,7 @@ const PaymentSystem: React.FC = () => {
       </div>
 
       {/* Payment Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200">
+      <Card className="mb-8 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Secure & Transparent Payment System</h3>
           <p className="text-muted-foreground mb-4">
@@ -514,7 +514,7 @@ const PaymentSystem: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-green-500 to-blue-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-green-500 to-blue-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Payment Issues?</h3>
           <p className="mb-4 opacity-90">Our payment support team is available 24/7 to help resolve any billing or payout issues.</p>

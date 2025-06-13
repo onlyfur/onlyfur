@@ -140,16 +140,16 @@ const BroadcastPanel: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline-solid"> = {
       'draft': 'secondary',
-      'scheduled': 'outline',
+      'scheduled': 'outline-solid',
       'sending': 'default',
       'sent': 'default',
       'failed': 'destructive',
     };
 
     return (
-      <Badge variant={variants[status] || 'outline'}>
+      <Badge variant={variants[status] || 'outline-solid'}>
         {status.toUpperCase()}
       </Badge>
     );

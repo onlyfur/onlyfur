@@ -31,7 +31,7 @@ const EmailVerification: React.FC = () => {
       </div>
 
       {/* Verification Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-blue-200">
+      <Card className="mb-8 bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-blue-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Why Email Verification Matters</h3>
           <p className="text-muted-foreground mb-4">
@@ -362,7 +362,7 @@ const EmailVerification: React.FC = () => {
         </Card>
 
         {/* Still Need Help */}
-        <Card className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+        <Card className="bg-linear-to-r from-blue-500 to-purple-500 text-white">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Still Having Verification Issues?</h2>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">

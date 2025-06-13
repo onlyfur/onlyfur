@@ -151,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         {/* User Info */}
         <div className="mb-6 p-3 rounded-lg bg-muted">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 rounded-full bg-linear-to-r from-pink-500 to-purple-500 flex items-center justify-center text-white font-semibold">
               {(user.displayName || user.username || 'U')?.charAt(0)?.toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">

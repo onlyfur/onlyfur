@@ -81,7 +81,7 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
   const getTierColor = (privacyLevel: string): string => {
     switch (privacyLevel) {
       case 'premium': return 'bg-purple-500';
-      case 'private': return 'bg-gradient-to-r from-yellow-400 to-orange-500';
+      case 'private': return 'bg-linear-to-r from-yellow-400 to-orange-500';
       default: return 'bg-blue-500';
     }
   };
@@ -179,9 +179,9 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
   if (variant === 'overlay') {
     return (
       <>
-        <div className={`absolute inset-0 bg-gradient-to-br ${tierInfo.gradient} bg-opacity-95 backdrop-blur-sm flex items-center justify-center z-10`}>
+        <div className={`absolute inset-0 bg-linear-to-br ${tierInfo.gradient} bg-opacity-95 backdrop-blur-xs flex items-center justify-center z-10`}>
           <div className="text-center p-6 max-w-sm mx-4">
-            <div className="w-16 h-16 mx-auto rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white mb-4">
               <Lock className="w-8 h-8" />
             </div>
             
@@ -193,7 +193,7 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
               {tierInfo.description}
             </p>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 mb-4">
+            <div className="bg-white/10 backdrop-blur-xs rounded-lg p-3 mb-4">
               <div className="text-white/80 text-xs">
                 Join {getSubscriberCount().toLocaleString()}+ subscribers
               </div>
@@ -257,7 +257,7 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
   // Full variant
   return (
     <>
-      <Card className={`${className} border-primary/20 bg-gradient-to-br from-background to-muted/30`}>
+      <Card className={`${className} border-primary/20 bg-linear-to-br from-background to-muted/30`}>
         <CardHeader className="text-center pb-4">
           <div className={`w-20 h-20 mx-auto rounded-full ${tierInfo.color} flex items-center justify-center text-white mb-4 shadow-lg`}>
             <TierIcon className="w-10 h-10" />

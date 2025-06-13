@@ -271,7 +271,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
             </h4>
             {tier.features.slice(0, 5).map((feature, index) => (
               <div key={index} className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                 <span className="text-sm">{feature}</span>
               </div>
             ))}
@@ -330,7 +330,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
               </h4>
               {tier.limitations.slice(0, 3).map((limitation, index) => (
                 <div key={index} className="flex items-start gap-2">
-                  <X className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                  <X className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
                   <span className="text-sm text-muted-foreground">{limitation}</span>
                 </div>
               ))}
@@ -339,7 +339,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
           <Button 
             className="w-full mt-4"
-            variant={isCurrentTier ? "outline" : isSelected ? "default" : "outline"}
+            variant={isCurrentTier ? "outline-solid" : isSelected ? "default" : "outline-solid"}
             onClick={() => handleTierSelect(tier.id)}
             disabled={isCurrentTier}
           >

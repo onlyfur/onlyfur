@@ -71,18 +71,18 @@ const Landing: React.FC = () => {
     <>
       <div className="min-h-screen">
         {/* Hero Section - Subscriber Focused */}
-        <section className="relative py-20 px-4 bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-orange-900/20 overflow-hidden">
+        <section className="relative py-20 px-4 bg-linear-to-br from-purple-100 via-pink-50 to-orange-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-orange-900/20 overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/branding/fox-mascot.webp')] bg-cover bg-center opacity-5"></div>
           <div className="relative container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
               {/* Subscriber Badge */}
-              <div className="inline-flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 px-4 py-2 rounded-full mb-8 shadow-lg backdrop-blur">
+              <div className="inline-flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 px-4 py-2 rounded-full mb-8 shadow-lg backdrop-blur-sm">
                 <Heart className="h-4 w-4 text-pink-500" />
                 <span className="text-sm font-medium">Join Our Growing Pack</span>
                 <Heart className="h-4 w-4 text-pink-500" />
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
                 Discover Amazing OnlyFur Content
               </h1>
               <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
@@ -93,7 +93,7 @@ const Landing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  className="text-lg px-8 py-6 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                   onClick={() => {
                     setSelectedPricingTab('subscriber');
                     setShowPricingModal(true);
@@ -142,9 +142,9 @@ const Landing: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {subscriberFeatures.map((feature, index) => (
                 <Card key={index} className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 text-center">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
+                  <div className={`absolute inset-0 bg-linear-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
                   <CardHeader className="relative pb-4">
-                    <div className={`inline-flex p-4 rounded-full bg-gradient-to-br ${feature.gradient} text-white mb-4 mx-auto w-fit`}>
+                    <div className={`inline-flex p-4 rounded-full bg-linear-to-br ${feature.gradient} text-white mb-4 mx-auto w-fit`}>
                       <feature.icon className="h-8 w-8" />
                     </div>
                     <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
@@ -195,7 +195,7 @@ const Landing: React.FC = () => {
                 <Card key={index} className="relative">
                   <CardHeader>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
+                      <div className="w-12 h-12 rounded-full bg-linear-to-r from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
                         {testimonial.avatar}
                       </div>
                       <div>
@@ -216,7 +216,7 @@ const Landing: React.FC = () => {
 
 
         {/* Creator Section - Bottom */}
-        <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-red-900/20">
+        <section className="py-20 bg-linear-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-red-900/20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <Badge className="mb-4 bg-orange-500">For Creators</Badge>
@@ -231,9 +231,9 @@ const Landing: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
               {creatorFeatures.map((feature, index) => (
                 <Card key={index} className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
+                  <div className={`absolute inset-0 bg-linear-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
                   <CardHeader className="relative">
-                    <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${feature.gradient} text-white mb-4 w-fit`}>
+                    <div className={`inline-flex p-3 rounded-lg bg-linear-to-br ${feature.gradient} text-white mb-4 w-fit`}>
                       <feature.icon className="h-6 w-6" />
                     </div>
                     <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
@@ -251,7 +251,7 @@ const Landing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                  className="text-lg px-8 py-6 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
                   onClick={() => {
                     setSelectedPricingTab('creator');
                     setShowPricingModal(true);

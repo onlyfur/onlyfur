@@ -233,7 +233,7 @@ export default function AIContentFeed() {
       >
         <div className="flex items-center justify-center space-x-2">
           <Brain className="w-8 h-8 text-purple-600" />
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             AI Content Feed
           </h1>
           <Sparkles className="w-8 h-8 text-purple-600" />
@@ -249,7 +249,7 @@ export default function AIContentFeed() {
           {tabOptions.map(({ value, label, icon: Icon }) => (
             <Button
               key={value}
-              variant={activeTab === value ? 'default' : 'outline'}
+              variant={activeTab === value ? 'default' : 'outline-solid'}
               onClick={() => handleTabChange(value)}
               className="flex items-center space-x-2"
               size="sm"
@@ -364,7 +364,7 @@ export default function AIContentFeed() {
                           </div>
                         )}
                         {item.type === 'audio' && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-purple-500/20 to-pink-500/20">
                             <Button size="icon" variant="secondary" className="w-12 h-12 rounded-full bg-white/90 hover:bg-white">
                               <Play className="w-6 h-6" />
                             </Button>

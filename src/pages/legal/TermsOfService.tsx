@@ -11,7 +11,7 @@ const TermsOfService: React.FC = () => {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="text-center mb-12">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-100 to-blue-100 dark:from-gray-900/20 dark:to-blue-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-gray-100 to-blue-100 dark:from-gray-900/20 dark:to-blue-900/20 px-4 py-2 rounded-full mb-6">
           <FileText className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Terms of Service</span>
         </div>

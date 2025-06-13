@@ -223,11 +223,11 @@ export default function AINavigationV3() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
+            <div className="bg-linear-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
               <Brain className="w-6 h-6 text-white" />
             </div>
             <div>
-              <div className="font-bold text-xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <div className="font-bold text-xl bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 OnlyFur AI
               </div>
               <div className="text-xs text-gray-500">v3.9 Platform</div>
@@ -278,7 +278,7 @@ export default function AINavigationV3() {
                               <NavigationMenuLink key={feature.name} asChild>
                                 <Link
                                   to={feature.route}
-                                  className={`block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-purple-50 focus:bg-purple-50 ${
+                                  className={`block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-purple-50 focus:bg-purple-50 ${
                                     isActive(feature.route) ? 'bg-purple-100' : ''
                                   }`}
                                 >

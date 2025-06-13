@@ -120,18 +120,18 @@ const GettingStarted: React.FC = () => {
           <div className="space-y-6">
             {steps.map((step, index) => (
               <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                     <step.icon className="w-6 h-6 text-primary" />
                   </div>
                 </div>
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
                   <p className="text-muted-foreground mb-3">{step.description}</p>
                   <ul className="space-y-1">
                     {step.content.map((item, itemIndex) => (
                       <li key={itemIndex} className="flex items-center text-sm">
-                        <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0" />
                         {item}
                       </li>
                     ))}
@@ -155,7 +155,7 @@ const GettingStarted: React.FC = () => {
                     <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center`}>
                       <action.icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex-grow">
+                    <div className="grow">
                       <h3 className="font-semibold">{action.title}</h3>
                       <p className="text-sm text-muted-foreground">{action.description}</p>
                     </div>

@@ -31,7 +31,7 @@ const MessagingCreators: React.FC = () => {
       </div>
 
       {/* Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
+      <Card className="mb-8 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Communication Guidelines</h3>
           <p className="text-muted-foreground mb-4">
@@ -550,7 +550,7 @@ const MessagingCreators: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-blue-500 to-purple-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with Messaging?</h3>
           <p className="mb-4 opacity-90">Our community team can help with messaging issues, safety concerns, or communication guidance.</p>

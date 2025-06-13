@@ -99,7 +99,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
               )}
 
               <CardHeader className="text-center pb-4">
-                <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${role.gradient} flex items-center justify-center text-white mb-4`}>
+                <div className={`w-16 h-16 mx-auto rounded-full bg-linear-to-br ${role.gradient} flex items-center justify-center text-white mb-4`}>
                   <Icon className="w-8 h-8" />
                 </div>
                 
@@ -114,7 +114,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
                   </h4>
                   {role.features.map((feature, index) => (
                     <div key={index} className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
                       <span className="text-sm">{feature}</span>
                     </div>
                   ))}
@@ -126,14 +126,14 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
                   </h4>
                   {role.benefits.map((benefit, index) => (
                     <div key={index} className="flex items-start gap-3">
-                      <Star className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <Star className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{benefit}</span>
                     </div>
                   ))}
                 </div>
 
                 <Button 
-                  variant={isSelected ? "default" : "outline"}
+                  variant={isSelected ? "default" : "outline-solid"}
                   className="w-full mt-6"
                   onClick={() => onRoleSelect(role.id)}
                 >

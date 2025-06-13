@@ -129,7 +129,7 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
       qualityLimits: 'uhd',
     },
     isPopular: false,
-    color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+    color: 'bg-linear-to-r from-yellow-400 to-orange-500',
     badge: 'VIP'
   }
 ];
@@ -309,7 +309,7 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
       customPricing: true,
     },
     isPopular: false,
-    color: 'bg-gradient-to-r from-purple-600 to-pink-600',
+    color: 'bg-linear-to-r from-purple-600 to-pink-600',
     badge: 'Premium Creator'
   }
 ];

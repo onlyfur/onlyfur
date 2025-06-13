@@ -171,12 +171,12 @@ const HowItWorks: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 px-4 py-2 rounded-full mb-6">
           <Zap className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">How OnlyFur Works</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
           Your Guide to OnlyFur
         </h1>
         
@@ -254,7 +254,7 @@ const HowItWorks: React.FC = () => {
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white">
+                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white">
                     <type.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
@@ -289,7 +289,7 @@ const HowItWorks: React.FC = () => {
                 <ul className="space-y-3">
                   {tier.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
@@ -317,7 +317,7 @@ const HowItWorks: React.FC = () => {
       </div>
 
       {/* Call to Action */}
-      <Card className="text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-blue-500 to-purple-500 text-white border-0">
         <CardContent className="p-8">
           <h2 className="text-2xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-lg mb-6 opacity-90">

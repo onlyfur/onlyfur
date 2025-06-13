@@ -31,7 +31,7 @@ const VideoQuality: React.FC = () => {
       </div>
 
       {/* Quick Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200">
+      <Card className="mb-8 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Video Quality at a Glance</h3>
           <p className="text-muted-foreground mb-4">
@@ -220,7 +220,7 @@ const VideoQuality: React.FC = () => {
                   <p className="text-xs text-muted-foreground">Good for content that will be shared on social media. Works well on both mobile and desktop.</p>
                 </div>
                 <div className="border rounded-lg p-4">
-                  <div className="w-2/3 mx-auto aspect-[9/16] bg-blue-100 dark:bg-blue-900/20 mb-3 flex items-center justify-center">
+                  <div className="w-2/3 mx-auto aspect-9/16 bg-blue-100 dark:bg-blue-900/20 mb-3 flex items-center justify-center">
                     <span className="text-xs font-medium">9:16</span>
                   </div>
                   <h5 className="font-medium text-sm mb-1">Portrait (9:16)</h5>
@@ -594,7 +594,7 @@ const VideoQuality: React.FC = () => {
         </Card>
 
         {/* Contact Support */}
-        <Card className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+        <Card className="bg-linear-to-r from-blue-500 to-purple-500 text-white">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Need Help With Video Quality?</h2>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">

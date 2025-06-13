@@ -273,7 +273,7 @@ const ExploreV3: React.FC = () => {
         </div>
         
         <Link to={`/creator/${creator.username}`}>
-          <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+          <Button className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
             <UserPlus className="w-4 h-4 mr-2" />
             View Profile
           </Button>
@@ -362,14 +362,14 @@ const ExploreV3: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-purple-900 dark:to-pink-900">
       {/* Header */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-purple-200 dark:border-purple-800 sticky top-0 z-40">
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xs border-b border-purple-200 dark:border-purple-800 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Explore OnlyFur
                 </h1>
                 <p className="text-muted-foreground">
@@ -377,7 +377,7 @@ const ExploreV3: React.FC = () => {
                 </p>
               </div>
               {user && recommendations.length > 0 && (
-                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600">
+                <Badge className="bg-linear-to-r from-purple-600 to-pink-600">
                   <Sparkles className="w-3 h-3 mr-1" />
                   AI Powered
                 </Badge>

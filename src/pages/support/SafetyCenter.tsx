@@ -127,16 +127,16 @@ const SafetyCenter: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
       <div className="container mx-auto px-6 py-12">
         
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full mb-6">
+          <div className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full mb-6">
             <Shield className="h-5 w-5" />
             <span className="font-semibold">Safety Center</span>
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
+          <h1 className="text-5xl font-bold bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
             Your Safety is Our Priority
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -171,7 +171,7 @@ const SafetyCenter: React.FC = () => {
                   <ul className="space-y-2">
                     {feature.features.map((item, idx) => (
                       <li key={idx} className="flex items-center text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 shrink-0" />
                         {item}
                       </li>
                     ))}
@@ -214,7 +214,7 @@ const SafetyCenter: React.FC = () => {
         </div>
 
         {/* Quick Safety Tips */}
-        <Card className="mb-16 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200 dark:border-green-800">
+        <Card className="mb-16 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-green-200 dark:border-green-800">
           <CardHeader>
             <CardTitle className="flex items-center text-green-800 dark:text-green-200">
               <Heart className="mr-2 h-5 w-5" />
@@ -227,19 +227,19 @@ const SafetyCenter: React.FC = () => {
                 <h4 className="font-semibold mb-3 text-green-700 dark:text-green-300">For Creators:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Set clear boundaries and content guidelines
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Use watermarks on exclusive content
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Keep personal information private
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Report suspicious subscriber behavior
                   </li>
                 </ul>
@@ -248,19 +248,19 @@ const SafetyCenter: React.FC = () => {
                 <h4 className="font-semibold mb-3 text-green-700 dark:text-green-300">For Subscribers:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Respect creator boundaries and guidelines
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Never share or redistribute creator content
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Report content that violates guidelines
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     Use secure payment methods only
                   </li>
                 </ul>
@@ -295,7 +295,7 @@ const SafetyCenter: React.FC = () => {
         </div>
 
         {/* Community Standards */}
-        <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <Card className="bg-linear-to-r from-blue-600 to-indigo-600 text-white">
           <CardContent className="p-8 lg:p-12 text-center">
             <h2 className="text-3xl font-bold mb-4">Community Standards</h2>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">

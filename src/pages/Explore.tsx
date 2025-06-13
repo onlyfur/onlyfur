@@ -231,7 +231,7 @@ const Explore: React.FC = () => {
           <Sparkles className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">Explore Furry Creators</span>
         </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
           Discover Amazing Furry Content
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -306,7 +306,7 @@ const Explore: React.FC = () => {
             {trendingCreators.map((creator) => (
               <Card key={creator.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardHeader className="text-center pb-4">
-                  <div className="relative w-20 h-20 mx-auto mb-3 text-4xl rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                  <div className="relative w-20 h-20 mx-auto mb-3 text-4xl rounded-full bg-linear-to-r from-pink-500 to-purple-500 flex items-center justify-center">
                     {creator.avatar}
                     <OnlineStatusIndicator userId={creator.id} size="md" position="bottom-right" />
                   </div>
@@ -413,7 +413,7 @@ const Explore: React.FC = () => {
               <Card key={creator.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
-                    <div className="relative w-12 h-12 text-2xl rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                    <div className="relative w-12 h-12 text-2xl rounded-full bg-linear-to-r from-pink-500 to-purple-500 flex items-center justify-center">
                       {creator.avatar}
                       <OnlineStatusIndicator userId={creator.id} size="sm" position="bottom-right" />
                     </div>
@@ -467,7 +467,7 @@ const Explore: React.FC = () => {
       </div>
 
       {/* CTA Section */}
-      <Card className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-none">
+      <Card className="bg-linear-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-none">
         <CardContent className="p-8 text-center">
           <div className="inline-flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
             <Crown className="h-4 w-4 text-primary" />
@@ -478,7 +478,7 @@ const Explore: React.FC = () => {
             Join hundreds of furry creators earning from their passion. Share your fursuits, art, stories, and more with fans who appreciate your work.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+            <Button size="lg" className="bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
               <Crown className="mr-2 h-4 w-4" />
               Become a Creator
             </Button>

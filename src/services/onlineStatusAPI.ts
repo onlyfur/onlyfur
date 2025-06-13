@@ -249,7 +249,7 @@ class OnlineStatusAPI {
       }
     });
 
-    window.addEventListener('blur', () => {
+    window.addEventListener('blur-sm', () => {
       if (this.isActive) {
         this.setActivityStatus(ActivityStatus.AWAY).catch(console.error);
       }

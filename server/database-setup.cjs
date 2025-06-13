@@ -139,7 +139,7 @@ class MockPrismaClient {
         },
         isPopular: false,
         isActive: true,
-        color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+        color: 'bg-linear-to-r from-yellow-400 to-orange-500',
         badge: 'VIP'
       },
       // Creator Tiers
@@ -286,7 +286,7 @@ class MockPrismaClient {
         },
         isPopular: false,
         isActive: true,
-        color: 'bg-gradient-to-r from-purple-600 to-pink-600',
+        color: 'bg-linear-to-r from-purple-600 to-pink-600',
         badge: 'Premium Creator'
       }
     ];

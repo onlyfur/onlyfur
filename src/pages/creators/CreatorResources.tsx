@@ -200,12 +200,12 @@ const CreatorResources: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
           <Crown className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Creator Resources</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
           Everything You Need to Succeed
         </h1>
         
@@ -371,7 +371,7 @@ const CreatorResources: React.FC = () => {
       </div>
 
       {/* Support CTA */}
-      <Card className="text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-8">
           <Users className="w-12 h-12 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Need Personal Help?</h2>

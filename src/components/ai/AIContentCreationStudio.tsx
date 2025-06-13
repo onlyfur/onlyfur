@@ -223,7 +223,7 @@ export default function AIContentCreationStudio() {
       >
         <div className="flex items-center justify-center space-x-2">
           <Wand2 className="w-8 h-8 text-purple-600" />
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             AI Content Creation Studio
           </h1>
           <Sparkles className="w-8 h-8 text-purple-600" />
@@ -238,7 +238,7 @@ export default function AIContentCreationStudio() {
       <div className="w-full">
         <div className="flex space-x-2 mb-4">
           <Button
-            variant={activeTab === 'suggestions' ? 'default' : 'outline'}
+            variant={activeTab === 'suggestions' ? 'default' : 'outline-solid'}
             onClick={() => setActiveTab('suggestions')}
             className="flex items-center space-x-2"
           >
@@ -246,7 +246,7 @@ export default function AIContentCreationStudio() {
             <span>AI Suggestions</span>
           </Button>
           <Button
-            variant={activeTab === 'analyzer' ? 'default' : 'outline'}
+            variant={activeTab === 'analyzer' ? 'default' : 'outline-solid'}
             onClick={() => setActiveTab('analyzer')}
             className="flex items-center space-x-2"
           >
@@ -254,7 +254,7 @@ export default function AIContentCreationStudio() {
             <span>Content Analyzer</span>
           </Button>
           <Button
-            variant={activeTab === 'planner' ? 'default' : 'outline'}
+            variant={activeTab === 'planner' ? 'default' : 'outline-solid'}
             onClick={() => setActiveTab('planner')}
             className="flex items-center space-x-2"
           >
@@ -496,7 +496,7 @@ export default function AIContentCreationStudio() {
                             transition={{ delay: index * 0.1 }}
                             className="flex items-start space-x-2"
                           >
-                            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                             <span className="text-sm">{improvement}</span>
                           </motion.li>
                         ))}

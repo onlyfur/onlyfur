@@ -36,7 +36,7 @@ const NeuralSearch: React.FC = () => {
             </p>
             
             <div className="flex items-center gap-4 p-4 bg-muted rounded-lg mb-6">
-              <Sparkles className="h-10 w-10 text-primary flex-shrink-0" />
+              <Sparkles className="h-10 w-10 text-primary shrink-0" />
               <div>
                 <h3 className="font-medium">How It's Different</h3>
                 <p className="text-sm text-muted-foreground">
@@ -110,7 +110,7 @@ const NeuralSearch: React.FC = () => {
             
             <ol className="space-y-6">
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">1</span>
                 </div>
                 <div>
@@ -122,7 +122,7 @@ const NeuralSearch: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">2</span>
                 </div>
                 <div>
@@ -134,7 +134,7 @@ const NeuralSearch: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">3</span>
                 </div>
                 <div>
@@ -146,7 +146,7 @@ const NeuralSearch: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">4</span>
                 </div>
                 <div>
@@ -158,7 +158,7 @@ const NeuralSearch: React.FC = () => {
               </li>
               
               <li className="flex gap-4">
-                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-[2rem]">
+                <div className="bg-primary/10 p-2 rounded-full h-fit flex items-center justify-center min-w-8">
                   <span className="font-medium">5</span>
                 </div>
                 <div>

@@ -253,7 +253,7 @@ const UserProfile: React.FC = () => {
             <div className="relative">
               <Avatar className="w-24 h-24">
                 <AvatarImage src={profile.avatar} alt={profile.displayName} />
-                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-2xl">
+                <AvatarFallback className="bg-linear-to-r from-pink-500 to-purple-500 text-white text-2xl">
                   {profile.displayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -368,7 +368,7 @@ const UserProfile: React.FC = () => {
                   </Dialog>
                 ) : (
                   <>
-                    <Button onClick={handleFollow} variant={profile.isFollowing ? "outline" : "default"}>
+                    <Button onClick={handleFollow} variant={profile.isFollowing ? "outline-solid" : "default"}>
                       {profile.isFollowing ? (
                         <><UserMinus className="w-4 h-4 mr-2" />Unfollow</>
                       ) : (

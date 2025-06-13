@@ -75,12 +75,12 @@ const About: React.FC = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
           <Crown className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">About OnlyFur</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
           Empowering the Furry Creative Community
         </h1>
         
@@ -91,9 +91,9 @@ const About: React.FC = () => {
       </div>
 
       {/* Mission Section */}
-      <Card className="mb-16 border-primary/20 bg-gradient-to-br from-background to-muted/30">
+      <Card className="mb-16 border-primary/20 bg-linear-to-br from-background to-muted/30">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white mb-4">
+          <div className="w-16 h-16 mx-auto rounded-full bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white mb-4">
             <Target className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl">Our Mission</CardTitle>
@@ -231,7 +231,7 @@ const About: React.FC = () => {
       </div>
 
       {/* Call to Action */}
-      <Card className="text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="text-center bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-8">
           <h2 className="text-2xl font-bold mb-4">Ready to Join Our Community?</h2>
           <p className="text-lg mb-6 opacity-90">

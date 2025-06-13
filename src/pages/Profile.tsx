@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
             <Avatar className="w-24 h-24">
               <AvatarImage src={user?.avatar} alt={user?.displayName} />
-              <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-2xl">
+              <AvatarFallback className="bg-linear-to-r from-pink-500 to-purple-500 text-white text-2xl">
                 {user?.displayName?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

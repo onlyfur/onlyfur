@@ -343,7 +343,7 @@ const AdvancedAnalyticsV2: React.FC = () => {
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <BarChart3 className="w-8 h-8 text-blue-500" />
             Advanced Analytics
-            <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+            <Badge className="bg-linear-to-r from-blue-500 to-purple-500 text-white">
               v3.9
             </Badge>
           </h1>
@@ -613,7 +613,7 @@ const AdvancedAnalyticsV2: React.FC = () => {
                     {analyticsData.content.topPerforming.map((content, index) => (
                       <div key={content.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex items-center gap-4">
-                          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
                             #{index + 1}
                           </div>
                           <div>

@@ -158,7 +158,7 @@ const Landing: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20">
+      <section className="relative overflow-hidden bg-linear-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="relative container mx-auto px-4 py-20 sm:py-32">
           <div className="text-center max-w-4xl mx-auto">
@@ -166,7 +166,7 @@ const Landing: React.FC = () => {
               <Sparkles className="w-4 h-4 mr-2" />
               Welcome to the Furry Creator Economy
             </Badge>
-            <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-linear-to-r from-orange-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
               Turn Your Furry Passion Into
               <br />
               <span className="text-5xl sm:text-7xl">Profit</span>
@@ -223,7 +223,7 @@ const Landing: React.FC = () => {
             {features.map((feature, index) => (
               <Card key={index} className="relative overflow-hidden group hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${feature.gradient} flex items-center justify-center mb-4`}>
+                  <div className={`w-12 h-12 rounded-lg bg-linear-to-r ${feature.gradient} flex items-center justify-center mb-4`}>
                     <feature.icon className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -255,7 +255,7 @@ const Landing: React.FC = () => {
               <Card key={index} className="relative">
                 <CardHeader>
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-2xl">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-r from-pink-500 to-purple-500 flex items-center justify-center text-2xl">
                       {testimonial.avatar}
                     </div>
                     <div>
@@ -292,7 +292,7 @@ const Landing: React.FC = () => {
               <Card key={index} className={`relative ${tier.popular ? 'border-primary shadow-lg scale-105' : ''}`}>
                 {tier.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-pink-500 to-purple-500">
+                    <Badge className="bg-linear-to-r from-pink-500 to-purple-500">
                       Most Popular
                     </Badge>
                   </div>
@@ -308,14 +308,14 @@ const Landing: React.FC = () => {
                   <ul className="space-y-3">
                     {tier.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                        <CheckCircle className="h-5 w-5 text-green-500 mr-3 shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <Button 
                     className="w-full mt-6" 
-                    variant={tier.popular ? 'default' : 'outline'}
+                    variant={tier.popular ? 'default' : 'outline-solid'}
                     asChild
                   >
                     <Link to="/register">
@@ -330,7 +330,7 @@ const Landing: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600">
+      <section className="py-20 bg-linear-to-r from-pink-600 via-purple-600 to-blue-600">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
             Ready to Start Your Creator Journey?

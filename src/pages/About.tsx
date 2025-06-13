@@ -62,7 +62,7 @@ const About: React.FC = () => {
           <Crown className="h-4 w-4 text-primary" />
         </div>
         
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
           Building the Future of Furry Content
         </h1>
         
@@ -74,9 +74,9 @@ const About: React.FC = () => {
 
       {/* Mission Section */}
       <div className="mb-16">
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-none">
+        <Card className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-none">
           <CardHeader className="text-center pb-4">
-            <div className="inline-flex p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white mb-4 mx-auto w-fit">
+            <div className="inline-flex p-3 rounded-full bg-linear-to-r from-purple-500 to-pink-500 text-white mb-4 mx-auto w-fit">
               <Sparkles className="h-6 w-6" />
             </div>
             <CardTitle className="text-2xl">Our Mission</CardTitle>
@@ -104,7 +104,7 @@ const About: React.FC = () => {
           {values.map((value, index) => (
             <Card key={index} className="text-center hover:shadow-lg transition-shadow">
               <CardHeader className="pb-4">
-                <div className={`inline-flex p-3 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 mb-4 mx-auto w-fit`}>
+                <div className={`inline-flex p-3 rounded-full bg-linear-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 mb-4 mx-auto w-fit`}>
                   <value.icon className={`h-6 w-6 ${value.color}`} />
                 </div>
                 <CardTitle className="text-lg">{value.title}</CardTitle>
@@ -132,7 +132,7 @@ const About: React.FC = () => {
           {teamMembers.map((member, index) => (
             <Card key={index} className="text-center">
               <CardHeader>
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-4xl mx-auto mb-4">
+                <div className="w-20 h-20 rounded-full bg-linear-to-r from-purple-500 to-pink-500 flex items-center justify-center text-4xl mx-auto mb-4">
                   {member.avatar}
                 </div>
                 <CardTitle className="text-xl">{member.name}</CardTitle>
@@ -150,7 +150,7 @@ const About: React.FC = () => {
 
       {/* Statistics Section */}
       <div className="mb-16">
-        <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-none">
+        <Card className="bg-linear-to-r from-purple-600 to-pink-600 text-white border-none">
           <CardContent className="py-12">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
               <div>

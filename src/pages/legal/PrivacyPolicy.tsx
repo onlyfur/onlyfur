@@ -30,7 +30,7 @@ const PrivacyPolicy: React.FC = () => {
     <div className="container mx-auto p-6 max-w-4xl">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-green-100 dark:from-blue-900/20 dark:to-green-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-100 to-green-100 dark:from-blue-900/20 dark:to-green-900/20 px-4 py-2 rounded-full mb-6">
           <Shield className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Privacy Policy</span>
         </div>

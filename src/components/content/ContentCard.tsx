@@ -50,7 +50,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
       case 'premium':
         return 'bg-purple-500';
       case 'private':
-        return 'bg-gradient-to-r from-yellow-400 to-orange-500';
+        return 'bg-linear-to-r from-yellow-400 to-orange-500';
       case 'subscribers':
         return 'bg-blue-500';
       default:

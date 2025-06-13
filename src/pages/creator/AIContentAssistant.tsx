@@ -352,7 +352,7 @@ const AIContentAssistant: React.FC = () => {
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Brain className="w-8 h-8 text-purple-500" />
           AI Content Assistant
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+          <Badge className="bg-linear-to-r from-purple-500 to-pink-500 text-white">
             <Sparkles className="w-3 h-3 mr-1" />
             v3.9
           </Badge>

@@ -31,7 +31,7 @@ const MobileApp: React.FC = () => {
       </div>
 
       {/* App Features Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
+      <Card className="mb-8 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Mobile App Benefits</h3>
           <p className="text-muted-foreground mb-4">
@@ -487,7 +487,7 @@ const MobileApp: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-blue-500 to-purple-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with the Mobile App?</h3>
           <p className="mb-4 opacity-90">Our mobile support team is here to help with app issues, features, and optimization.</p>

@@ -419,7 +419,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   };
 
   const renderSearchModeSelector = () => (
-    <div className="flex items-center space-x-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
+    <div className="flex items-center space-x-2 mb-4 p-3 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
       <Brain className={`w-4 h-4 ${searchMode === 'neural' ? 'text-blue-600' : 'text-blue-400'}`} />
       <span className="text-sm font-medium">Search Mode:</span>
       <Select value={searchMode} onValueChange={(value: any) => setSearchMode(value)}>
@@ -527,7 +527,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                   <h3 className="font-medium text-sm truncate">{result.title}</h3>
                   {result.badge && (
                     <Badge 
-                      variant={result.type === 'help' ? "outline" : "secondary"} 
+                      variant={result.type === 'help' ? "outline-solid" : "secondary"} 
                       className={`text-xs ${result.type === 'help' ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700' : ''}`}
                     >
                       {result.type === 'help' && <Book className="w-3 h-3 mr-1" />}

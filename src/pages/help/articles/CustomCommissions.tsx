@@ -31,7 +31,7 @@ const CustomCommissions: React.FC = () => {
       </div>
 
       {/* Commission Overview */}
-      <Card className="mb-8 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200">
+      <Card className="mb-8 bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-3">Commission System Benefits</h3>
           <p className="text-muted-foreground mb-4">
@@ -568,7 +568,7 @@ const CustomCommissions: React.FC = () => {
       </Card>
 
       {/* Contact Support */}
-      <Card className="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="mt-8 bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Need Help with Commission Setup?</h3>
           <p className="mb-4 opacity-90">Our creator success team can help you optimize your commission services and pricing strategy.</p>
