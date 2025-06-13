@@ -650,7 +650,7 @@ const Earnings: React.FC = () => {
                         </TableCell>
                       </TableRow>
                     ))
-                  }
+                 )}
                 </TableBody>
               </Table>
             </CardContent>
