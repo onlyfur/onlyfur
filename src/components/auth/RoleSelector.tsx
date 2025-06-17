@@ -5,14 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Crown, 
   Heart, 
-  Upload, 
-  DollarSign, 
-  Users, 
-  Camera, 
-  MessageCircle, 
-  TrendingUp,
-  Star,
-  Zap
+  Star
 } from 'lucide-react';
 
 interface RoleSelectorProps {
@@ -24,7 +17,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
   const roles = [
     {
       id: 'subscriber' as const,
-      title: 'Join as Subscriber',
+      title: 'For Furry Fans',
       description: 'Discover and support amazing furry creators',
       icon: Heart,
       features: [
@@ -35,8 +28,8 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
         'Get early access to new content'
       ],
       benefits: [
-        'Free and premium content access',
-        'Direct messaging with creators',
+        'Free & premium content',
+        'Direct messaging',
         'Community discussions',
         'Personalized recommendations'
       ],
@@ -45,7 +38,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
     },
     {
       id: 'creator' as const,
-      title: 'Join as Creator',
+      title: 'For Creators',
       description: 'Monetize your furry content and build your pack',
       icon: Crown,
       features: [
@@ -58,8 +51,8 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
       benefits: [
         'Multiple revenue streams',
         'Advanced analytics',
-        'Creator community access',
-        'Professional tools and features'
+        'Creator community',
+        'Pro tools & features'
       ],
       gradient: 'from-orange-500 to-red-600',
       popular: false
@@ -67,74 +60,60 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Choose Your Journey</h2>
-        <p className="text-muted-foreground">
-          Select how you'd like to experience the OnlyFur platform
-        </p>
+        <h2 className="text-3xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">Choose Your OnlyFur Experience</h2>
+        <p className="text-muted-foreground text-lg mb-4">Select how you'd like to experience the platform</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
         {roles.map((role) => {
           const Icon = role.icon;
           const isSelected = selectedRole === role.id;
-          
           return (
             <Card 
               key={role.id}
-              className={`relative cursor-pointer transition-all duration-300 hover:scale-105 ${
-                isSelected 
-                  ? 'ring-2 ring-primary border-primary shadow-lg' 
-                  : 'hover:border-primary/50'
-              }`}
+              className={`relative cursor-pointer group transition-all duration-300 border-2 ${isSelected ? 'border-primary shadow-2xl scale-105' : 'border-transparent hover:border-primary/40 hover:shadow-lg'} bg-gradient-to-br ${role.gradient} bg-opacity-10 backdrop-blur-md`}
               onClick={() => onRoleSelect(role.id)}
             >
               {role.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">
-                    Most Popular
-                  </Badge>
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                  <Badge className="bg-primary text-primary-foreground shadow">Most Popular</Badge>
                 </div>
               )}
-
-              <CardHeader className="text-center pb-4">
-                <div className={`w-16 h-16 mx-auto rounded-full bg-linear-to-br ${role.gradient} flex items-center justify-center text-white mb-4`}>
-                  <Icon className="w-8 h-8" />
+              <CardHeader className="text-center pb-2">
+                <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-lg bg-gradient-to-br ${role.gradient}`}> 
+                  <Icon className="w-8 h-8 text-white" />
                 </div>
-                
-                <CardTitle className="text-xl font-bold">{role.title}</CardTitle>
-                <CardDescription>{role.description}</CardDescription>
+                <CardTitle className="text-2xl font-bold mb-1">{role.title}</CardTitle>
+                <CardDescription className="text-base text-muted-foreground mb-2">{role.description}</CardDescription>
               </CardHeader>
-
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm uppercase tracking-wide">
-                    What You Can Do
-                  </h4>
-                  {role.features.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
+                <div>
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-primary mb-2">What You Get</h4>
+                  <ul className="space-y-1">
+                    {role.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center gap-2 text-sm">
+                        <span className="inline-block w-2 h-2 rounded-full bg-primary" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-
-                <div className="space-y-3 pt-4 border-t">
-                  <h4 className="font-semibold text-sm uppercase tracking-wide">
-                    Key Benefits
-                  </h4>
-                  {role.benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <Star className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
-                      <span className="text-sm">{benefit}</span>
-                    </div>
-                  ))}
+                <div>
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-yellow-600 mb-2">Key Benefits</h4>
+                  <ul className="space-y-1">
+                    {role.benefits.map((benefit, idx) => (
+                      <li key={idx} className="flex items-center gap-2 text-sm">
+                        <Star className="w-4 h-4 text-yellow-500" />
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-
                 <Button 
-                  variant={isSelected ? "default" : "outline"}
-                  className="w-full mt-6"
+                  variant={isSelected ? 'default' : 'outline'}
+                  className={`w-full mt-4 font-semibold text-lg transition-all duration-200 ${isSelected ? 'ring-2 ring-primary' : 'group-hover:ring-2 group-hover:ring-primary/50'}`}
                   onClick={() => onRoleSelect(role.id)}
                 >
                   {isSelected ? 'Selected' : `Choose ${role.id === 'creator' ? 'Creator' : 'Subscriber'}`}
@@ -146,10 +125,9 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
       </div>
 
       {selectedRole && (
-        <div className="text-center p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            You selected <strong>{selectedRole === 'creator' ? 'Creator' : 'Subscriber'}</strong>. 
-            You can always change this later in your profile settings.
+        <div className="text-center p-4 bg-muted rounded-lg border mt-6 max-w-xl mx-auto">
+          <p className="text-base text-muted-foreground">
+            You selected <strong>{selectedRole === 'creator' ? 'Creator' : 'Subscriber'}</strong>. You can always change this later in your profile settings.
           </p>
         </div>
       )}
