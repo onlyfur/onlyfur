@@ -338,7 +338,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
           )}
 
           <Button 
-            className="w-full mt-4"
+            className="w-full mt-4 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
             variant={isCurrentTier ? "outline" : isSelected ? "default" : "outline"}
             onClick={() => handleTierSelect(tier.id)}
             disabled={isCurrentTier}
@@ -418,27 +418,28 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
         <div className="space-y-6">
           {/* Annual/Monthly Toggle */}
           <div className="flex items-center justify-center gap-4">
-            <Label htmlFor="billing-toggle" className={!showAnnual ? 'font-semibold' : ''}>
+            <Label htmlFor="billing-toggle" className={!showAnnual ? 'font-semibold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent' : ''}>
               Monthly
             </Label>
             <Switch
               id="billing-toggle"
               checked={showAnnual}
               onCheckedChange={setShowAnnual}
+              className="border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-pink-500 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-pink-500"
             />
-            <Label htmlFor="billing-toggle" className={showAnnual ? 'font-semibold' : ''}>
+            <Label htmlFor="billing-toggle" className={showAnnual ? 'font-semibold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent' : ''}>
               Annual
               <Badge variant="secondary" className="ml-2">Save 20%</Badge>
             </Label>
           </div>
 
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="subscriber" className="flex items-center gap-2">
+            <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-purple-500 to-pink-500 p-1 rounded-md">
+              <TabsTrigger value="subscriber" className="flex items-center gap-2 text-white data-[state=active]:bg-white data-[state=active]:text-purple-600 font-semibold transition-all">
                 <Heart className="w-4 h-4" />
                 Subscriber Plans
               </TabsTrigger>
-              <TabsTrigger value="creator" className="flex items-center gap-2">
+              <TabsTrigger value="creator" className="flex items-center gap-2 text-white data-[state=active]:bg-white data-[state=active]:text-purple-600 font-semibold transition-all">
                 <Crown className="w-4 h-4" />
                 Creator Plans
               </TabsTrigger>
@@ -464,6 +465,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
+                      className="bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
                       onClick={() => setShowFeatureComparison(!showFeatureComparison)}
                     >
                       {showFeatureComparison ? 'Hide' : 'Show'} Details
@@ -501,6 +503,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
+                      className="bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
                       onClick={() => setShowFeatureComparison(!showFeatureComparison)}
                     >
                       {showFeatureComparison ? 'Hide' : 'Show'} Details
@@ -536,12 +539,12 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-6 border-t">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button variant="outline" onClick={onClose} className="flex-1 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold">
               Cancel
             </Button>
             {selectedTier && (
               <Button 
-                className="flex-1"
+                className="flex-1 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
                 onClick={() => {
                   // Handle checkout
                   onClose();
