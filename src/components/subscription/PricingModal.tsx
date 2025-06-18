@@ -200,13 +200,16 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
     return (
       <Card 
         key={tier.id}
-        className={`relative transition-all duration-300 hover:scale-105 ${
+        onClick={() => !isCurrentTier && handleTierSelect(tier.id)}
+        className={`relative transition-all duration-300 hover:scale-105 cursor-pointer select-none ${
           isSelected 
             ? 'ring-2 ring-primary border-primary shadow-lg' 
             : isCurrentTier
-            ? 'ring-2 ring-green-500 border-green-500 shadow-lg'
+            ? 'ring-2 ring-green-500 border-green-500 shadow-lg cursor-default opacity-70'
             : 'hover:border-primary/50'
         }`}
+        tabIndex={isCurrentTier ? -1 : 0}
+        aria-disabled={isCurrentTier}
       >
         {tier.isPopular && (
           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -336,26 +339,6 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
               ))}
             </div>
           )}
-
-          <Button 
-            className="w-full mt-4 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
-            variant={isCurrentTier ? "outline" : isSelected ? "default" : "outline"}
-            onClick={() => handleTierSelect(tier.id)}
-            disabled={isCurrentTier}
-          >
-            {isCurrentTier ? (
-              'Current Plan'
-            ) : isSelected ? (
-              <div className="flex items-center gap-2">
-                <Check className="w-4 h-4" />
-                Selected
-              </div>
-            ) : tier.price === 0 ? (
-              'Get Started Free'
-            ) : (
-              `Choose ${tier.name}`
-            )}
-          </Button>
         </CardContent>
       </Card>
     );
