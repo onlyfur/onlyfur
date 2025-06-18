@@ -498,7 +498,7 @@ export const getCreatorTierComparison = (): Array<{
       feature: 'Monthly Price',
       basic: 'Free',
       pro: '$29.99',
-      premium: '$59.99'
+      premium: '$49.99'
     },
     {
       feature: 'Platform Fee',

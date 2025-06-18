@@ -129,7 +129,7 @@ const SubscriptionTiers: React.FC = () => {
     },
     {
       name: "Premium Creator",
-      price: "$59.99/month",
+      price: "$49.99/month",
       icon: <Crown className="h-6 w-6" />,
       color: "bg-linear-to-r from-pink-500 to-red-500",
       features: [

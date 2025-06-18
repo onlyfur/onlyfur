@@ -120,6 +120,15 @@
   @apply bg-muted-foreground/30;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* Background pattern utility */
 .bg-grid-pattern {
   background-image: radial-gradient(circle, rgba(0,0,0,0.1) 1px, transparent 1px);

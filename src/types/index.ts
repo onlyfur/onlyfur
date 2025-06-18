@@ -204,6 +204,7 @@ export interface PlatformSubscriptionTier {
   level: 'basic' | 'pro' | 'premium' | 'vip';
   price: number;
   currency: string;
+  usdPrice: number;
   billingPeriod: 'monthly' | 'yearly';
   description: string;
   features: string[];

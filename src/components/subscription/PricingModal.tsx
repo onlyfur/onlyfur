@@ -239,24 +239,25 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
               <div className="text-3xl font-bold">Free</div>
             ) : (
               <>
-                <div className="flex items-center justify-center gap-1">
+                <div className="flex flex-col items-center justify-center gap-1">
                   <span className="text-3xl font-bold">
-                    ${showAnnual ? (annualPrice / 12).toFixed(2) : tier.price}
+                    €{showAnnual ? ((annualPrice / 12).toFixed(2)) : tier.price}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ≈ ${showAnnual ? ((tier.usdPrice * 12 * 0.8 / 12).toFixed(2)) : tier.usdPrice} USD
                   </span>
                   <span className="text-sm text-muted-foreground">
                     /{showAnnual ? 'mo' : tier.billingPeriod}
                   </span>
                 </div>
-                
                 {showAnnual && annualDiscount > 0 && (
                   <div className="text-xs text-green-600">
-                    Save ${annualDiscount}/year
+                    Save €{annualDiscount}/year
                   </div>
                 )}
-                
                 {showAnnual && (
                   <div className="text-xs text-muted-foreground">
-                    Billed annually: ${annualPrice}
+                    Billed annually: €{annualPrice} (≈ ${Math.round(tier.usdPrice * 12 * 0.8)})
                   </div>
                 )}
               </>
@@ -326,7 +327,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
           </div>
 
           {/* Limitations */}
-          {tier.limitations.length > 0 && (
+          {(tier.limitations.length > 0 || tier.id === 'pro-creator') && (
             <div className="space-y-1 pt-3 border-t">
               <h4 className="font-semibold text-sm uppercase tracking-wide text-orange-600">
                 Limitations
@@ -337,6 +338,12 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
                   <span className="text-sm text-muted-foreground">{limitation}</span>
                 </div>
               ))}
+              {tier.id === 'pro-creator' && (
+                <div className="flex items-start gap-2">
+                  <X className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
+                  <span className="text-sm text-muted-foreground">Reduced platform fee of 15%</span>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -388,7 +395,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-screen overflow-y-visible p-6">
+      <DialogContent className="max-w-7xl max-h-[96vh] min-h-[70vh] overflow-y-auto p-8 scrollbar-hide">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             Choose Your OnlyFur Subscription
@@ -507,7 +514,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-4 pt-6 border-t">
+          <div className="flex gap-4 pt-1 border-t">
             <Button 
               className="w-full mt-2 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-base py-2"
               onClick={onClose}

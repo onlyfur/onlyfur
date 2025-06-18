@@ -115,7 +115,7 @@ const SubscriptionTiersGuide: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Crown className="w-5 h-5 mr-2 text-purple-500" />
-              Premium Tier ($19.99 - $39.99/month)
+              Premium Tier ($19.99 - $49.99/month)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -158,7 +158,7 @@ const SubscriptionTiersGuide: React.FC = () => {
               <div className="flex items-center space-x-4 text-sm">
                 <span className="px-3 py-1 bg-purple-100 rounded-full">$19.99/month</span>
                 <span className="px-3 py-1 bg-purple-100 rounded-full">$29.99/month</span>
-                <span className="px-3 py-1 bg-purple-100 rounded-full">$39.99/month</span>
+                <span className="px-3 py-1 bg-purple-100 rounded-full">$49.99/month</span>
               </div>
             </div>
           </CardContent>

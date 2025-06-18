@@ -8,7 +8,8 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
     type: 'subscriber',
     level: 'basic',
     price: 9.99,
-    currency: 'USD',
+    currency: 'EUR',
+    usdPrice: 10.99,
     billingPeriod: 'monthly',
     description: 'Get started with furry content access',
     features: [
@@ -52,7 +53,8 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
     type: 'subscriber',
     level: 'pro',
     price: 19.99,
-    currency: 'USD',
+    currency: 'EUR',
+    usdPrice: 21.99,
     billingPeriod: 'monthly',
     description: 'Enhanced furry experience with premium features',
     features: [
@@ -96,7 +98,8 @@ export const subscriberTiers: PlatformSubscriptionTier[] = [
     type: 'subscriber',
     level: 'vip',
     price: 39.99,
-    currency: 'USD',
+    currency: 'EUR',
+    usdPrice: 43.99,
     billingPeriod: 'monthly',
     description: 'Ultimate furry content experience',
     features: [
@@ -142,7 +145,8 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
     type: 'creator',
     level: 'basic',
     price: 0,
-    currency: 'USD',
+    currency: 'EUR',
+    usdPrice: 0,
     billingPeriod: 'monthly',
     description: 'Start your furry content creation journey',
     features: [
@@ -201,7 +205,8 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
     type: 'creator',
     level: 'pro',
     price: 29.99,
-    currency: 'USD',
+    currency: 'EUR',
+    usdPrice: 32.99,
     billingPeriod: 'monthly',
     description: 'Advanced tools for serious creators',
     features: [
@@ -259,8 +264,9 @@ export const creatorTiers: PlatformSubscriptionTier[] = [
     name: 'Premium Creator',
     type: 'creator',
     level: 'premium',
-    price: 59.99,
-    currency: 'USD',
+    price: 49.99,
+    currency: 'EUR',
+    usdPrice: 54.99,
     billingPeriod: 'monthly',
     description: 'Professional creator suite with maximum features',
     features: [
