@@ -350,3 +350,8 @@
   }
 }
 
+/* Add a class for the scroll progress bar gradient, matching the main site gradient */
+.scroll-progress-gradient {
+  background: linear-gradient(90deg, #4A90E2 0%, #F5A623 100%);
+}
+

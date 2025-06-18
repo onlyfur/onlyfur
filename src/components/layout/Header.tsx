@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import ScrollProgressBar from '@/components/ScrollProgressBar';
 
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -72,227 +73,247 @@ const Header: React.FC = () => {
     { name: 'Messages', href: '/messages', icon: MessageCircle },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  // Helper for matching root and subroutes
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    // Normalize both path and location.pathname to ignore trailing slashes
+    const normalize = (p: string) => p.replace(/\/+$/, '');
+    const current = normalize(location.pathname);
+    const base = normalize(path);
+    // Match exact, subroutes, and -v2/-v3 variants
+    return (
+      current === base ||
+      current.startsWith(base + '/') ||
+      current.startsWith(base + '-v2') ||
+      current.startsWith(base + '-v3')
+    );
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <Logo size="md" />
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                  isActive(item.href)
-                    ? 'bg-accent text-accent-foreground'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                <span>{item.name}</span>
-                {item.badge && (
-                  <Badge variant="destructive" className="h-5 w-5 text-xs p-0 flex items-center justify-center">
-                    {item.badge}
-                  </Badge>
-                )}
+    <>
+      <ScrollProgressBar />
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center">
+                <Logo size="md" />
               </Link>
-            ))}
-          </nav>
+            </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center space-x-2">
-            {/* Neural Search */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="hidden sm:flex relative"
-              onClick={() => setIsSearchOpen(true)}
-              title="Neural Search v2.7 - AI-Powered Search"
-            >
-              <Brain className="h-5 w-5" />
-              <Sparkles className="h-2 w-2 absolute -top-0.5 -right-0.5 text-primary" />
-            </Button>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-1">
+              {navigation.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors 
+                      ${active
+                        ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-md'
+                        : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
+                    `}
+                    style={{ minWidth: 90, justifyContent: 'center' }}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                    {item.badge && (
+                      <Badge variant="destructive" className="h-5 w-5 text-xs p-0 flex items-center justify-center">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-            {/* Theme Toggle */}
-            <Button variant="ghost" size="icon" onClick={toggleTheme}>
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
+            {/* Right Side Actions */}
+            <div className="flex items-center space-x-2">
+              {/* Neural Search */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hidden sm:flex relative"
+                onClick={() => setIsSearchOpen(true)}
+                title="Neural Search v2.7 - AI-Powered Search"
+              >
+                <Brain className="h-5 w-5" />
+                <Sparkles className="h-2 w-2 absolute -top-0.5 -right-0.5 text-primary" />
+              </Button>
 
-            {isAuthenticated ? (
-              <>
-                {/* Upload Button for Creators */}
-                {(user?.role?.toLowerCase() === 'creator') && (
-                  <Button size="sm" className="hidden sm:flex" asChild>
-                    <Link to="/content/upload">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload
-                    </Link>
-                  </Button>
+              {/* Theme Toggle */}
+              <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                {theme === 'dark' ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
                 )}
+              </Button>
 
-                {/* Notifications */}
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
-                  <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full" />
-                </Button>
-
-                {/* User Menu */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={user?.avatar} alt={user?.displayName} />
-                        <AvatarFallback className="bg-linear-to-r from-pink-500 to-purple-500 text-white">
-                          {user?.displayName?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+              {isAuthenticated ? (
+                <>
+                  {/* Upload Button for Creators */}
+                  {(user?.role?.toLowerCase() === 'creator') && (
+                    <Button size="sm" className="hidden sm:flex" asChild>
+                      <Link to="/content/upload">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload
+                      </Link>
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user?.displayName}</p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {user?.email}
-                        </p>
-                        <Badge variant="secondary" className="w-fit text-xs">
-                          {user?.role}
-                        </Badge>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile" className="flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="flex items-center">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    {(user?.role?.toLowerCase() === 'creator') && (
+                  )}
+
+                  {/* Notifications */}
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5" />
+                    <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full" />
+                  </Button>
+
+                  {/* User Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user?.avatar} alt={user?.displayName} />
+                          <AvatarFallback className="bg-linear-to-r from-pink-500 to-purple-500 text-white">
+                            {user?.displayName?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{user?.displayName}</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user?.email}
+                          </p>
+                          <Badge variant="secondary" className="w-fit text-xs">
+                            {user?.role}
+                          </Badge>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link to="/creator-dashboard" className="flex items-center">
-                          <Crown className="mr-2 h-4 w-4" />
-                          Creator Studio
+                        <Link to="/profile" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          Profile
                         </Link>
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            ) : (
-              <>
-                <Button variant="ghost" asChild className="hidden sm:inline-flex">
-                  <Link to="/login">Log in</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/register">Sign up</Link>
-                </Button>
-              </>
-            )}
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      {(user?.role?.toLowerCase() === 'creator') && (
+                        <DropdownMenuItem asChild>
+                          <Link to="/creator-dashboard" className="flex items-center">
+                            <Crown className="mr-2 h-4 w-4" />
+                            Creator Studio
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
               ) : (
-                <Menu className="h-5 w-5" />
+                <>
+                  <Button variant="ghost" asChild className="hidden sm:inline-flex">
+                    <Link to="/login">Log in</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link to="/register">Sign up</Link>
+                  </Button>
+                </>
               )}
-            </Button>
-          </div>
-        </div>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t mt-2 pt-2 pb-4">
-            <nav className="flex flex-col space-y-2">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(item.href)
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`md:hidden ${isActive('/') ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Open menu"
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden border-t mt-2 pt-2 pb-4">
+              <nav className="flex flex-col space-y-2">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive(item.href)
                       ? 'bg-accent text-accent-foreground'
                       : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                    {item.badge && (
+                      <Badge variant="destructive" className="h-5 w-5 text-xs p-0 flex items-center justify-center">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
+                ))}
+
+                {/* Mobile Neural Search */}
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setIsSearchOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                  {item.badge && (
-                    <Badge variant="destructive" className="h-5 w-5 text-xs p-0 flex items-center justify-center">
-                      {item.badge}
-                    </Badge>
-                  )}
-                </Link>
-              ))}
+                  <Brain className="h-4 w-4 mr-2" />
+                  Neural Search
+                  <Sparkles className="h-3 w-3 ml-auto text-primary" />
+                </Button>
+                
+                {!isAuthenticated && (
+                  <div className="pt-2 border-t space-y-2">
+                    <Button variant="ghost" asChild className="w-full justify-start">
+                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        Log in
+                      </Link>
+                    </Button>
+                    <Button asChild className="w-full">
+                      <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                        Sign up
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </nav>
+            </div>
+          )}
+        </div>
 
-              {/* Mobile Neural Search */}
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start"
-                onClick={() => {
-                  setIsSearchOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                <Brain className="h-4 w-4 mr-2" />
-                Neural Search
-                <Sparkles className="h-3 w-3 ml-auto text-primary" />
-              </Button>
-              
-              {!isAuthenticated && (
-                <div className="pt-2 border-t space-y-2">
-                  <Button variant="ghost" asChild className="w-full justify-start">
-                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                      Log in
-                    </Link>
-                  </Button>
-                  <Button asChild className="w-full">
-                    <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign up
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </nav>
-          </div>
-        )}
-      </div>
-
-      {/* Neural Search Modal */}
-      <NeuralSearchModal 
-        open={isSearchOpen} 
-        onOpenChange={setIsSearchOpen} 
-      />
-    </header>
+        {/* Neural Search Modal */}
+        <NeuralSearchModal 
+          open={isSearchOpen} 
+          onOpenChange={setIsSearchOpen} 
+        />
+      </header>
+    </>
   );
 };
 
