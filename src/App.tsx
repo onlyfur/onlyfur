@@ -98,6 +98,7 @@ import SubscriptionTiers from '@/pages/help/articles/SubscriptionTiers';
 import PaymentMethods from '@/pages/help/articles/PaymentMethods';
 import HowToCreateAccount from '@/pages/help/articles/HowToCreateAccount';
 import CreatorEarnings from '@/pages/help/articles/CreatorEarnings';
+import SubscriptionTiersOverview from '@/pages/help/articles/SubscriptionTiersOverview';
 
 // V3.7 New Creator Components
 import LiveStreamingStudio from '@/pages/creator/LiveStreamingStudio';
@@ -584,7 +585,7 @@ function App() {
               <Route path="help/articles/mobile-app" element={<MobileApp />} />
               <Route path="help/articles/messaging-tips" element={<MessagingTips />} />
               <Route path="help/articles/message-limits" element={<MessageLimits />} />
-              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiers />} />
+              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiersOverview />} />
               <Route path="help/articles/payment-methods" element={<PaymentMethods />} />
               <Route path="help/articles/how-to-create-account" element={<HowToCreateAccount />} />
               <Route path="help/articles/creator-earnings" element={<CreatorEarnings />} />
