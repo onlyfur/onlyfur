@@ -227,20 +227,20 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
           </div>
         )}
 
-        <CardHeader className="text-center pb-4">
-          <div className={`w-12 h-12 mx-auto rounded-full ${tier.color} flex items-center justify-center text-white mb-3`}>
-            <Icon className="w-6 h-6" />
+        <CardHeader className="text-center pb-1">
+          <div className={`w-16 h-16 mx-auto rounded-full ${tier.color} flex items-center justify-center text-white mb-3`}>
+            <Icon className="w-8 h-8" />
           </div>
           
-          <CardTitle className="text-lg font-bold">{tier.name}</CardTitle>
+          <CardTitle className="text-xl font-bold">{tier.name}</CardTitle>
           
           <div className="space-y-2">
             {tier.price === 0 ? (
-              <div className="text-2xl font-bold">Free</div>
+              <div className="text-3xl font-bold">Free</div>
             ) : (
               <>
                 <div className="flex items-center justify-center gap-1">
-                  <span className="text-2xl font-bold">
+                  <span className="text-3xl font-bold">
                     ${showAnnual ? (annualPrice / 12).toFixed(2) : tier.price}
                   </span>
                   <span className="text-sm text-muted-foreground">
@@ -266,7 +266,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
           <CardDescription className="text-sm">{tier.description}</CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-2">
           {/* Key Features */}
           <div className="space-y-2">
             <h4 className="font-semibold text-sm uppercase tracking-wide">
@@ -286,7 +286,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t">
+          <div className="grid grid-cols-2 gap-0 pt-1 border-t">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1">
                 <MessageCircle className="w-3 h-3" />
@@ -327,7 +327,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
           {/* Limitations */}
           {tier.limitations.length > 0 && (
-            <div className="space-y-2 pt-2 border-t">
+            <div className="space-y-1 pt-3 border-t">
               <h4 className="font-semibold text-sm uppercase tracking-wide text-orange-600">
                 Limitations
               </h4>
@@ -388,12 +388,12 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-7xl max-h-screen overflow-y-visible p-6">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             Choose Your OnlyFur Subscription
           </DialogTitle>
-          <DialogDescription className="text-center">
+          <DialogDescription className="text-center text-base">
             Unlock the full potential of the furry creator platform
           </DialogDescription>
         </DialogHeader>
@@ -430,14 +430,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
             {/* Subscriber Plans */}
             <TabsContent value="subscriber" className="space-y-6">
-              <div className="text-center">
-                <h3 className="text-xl font-bold mb-2">Subscriber Plans</h3>
-                <p className="text-muted-foreground">
-                  Access amazing furry content and connect with creators
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-3 gap-4">
                 {subscriberTiers.map(tier => renderTierCard(tier, subscriberTiers))}
               </div>
 
@@ -468,14 +461,7 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
             {/* Creator Plans */}
             <TabsContent value="creator" className="space-y-6">
-              <div className="text-center">
-                <h3 className="text-xl font-bold mb-2">Creator Plans</h3>
-                <p className="text-muted-foreground">
-                  Build your furry content empire with powerful creator tools
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-3 gap-4">
                 {creatorTiers.map(tier => renderTierCard(tier, creatorTiers))}
               </div>
 
@@ -522,12 +508,15 @@ const EnhancedPricingModal: React.FC<EnhancedPricingModalProps> = ({
 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-6 border-t">
-            <Button variant="outline" onClick={onClose} className="flex-1 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold">
+            <Button 
+              className="w-full mt-2 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-base py-2"
+              onClick={onClose}
+            >
               Cancel
             </Button>
             {selectedTier && (
               <Button 
-                className="flex-1 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
+                className="flex-1 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-base py-2"
                 onClick={() => {
                   // Handle checkout
                   onClose();
