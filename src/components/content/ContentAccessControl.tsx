@@ -8,7 +8,7 @@ import { Content, User, PlatformSubscriptionTier } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTierById } from '@/data/subscriptionTiers';
 import { tierValidationService } from '@/services/tierValidationService';
-import EnhancedPricingModal from '../subscription/EnhancedPricingModal';
+import PricingModal from '../subscription/PricingModal';
 
 interface ContentAccessControlProps {
   content: Content;
@@ -322,7 +322,7 @@ const ContentAccessControl: React.FC<ContentAccessControlProps> = ({
         </CardContent>
       </Card>
 
-      <EnhancedPricingModal
+      <PricingModal
         isOpen={showPricingModal}
         onClose={() => setShowPricingModal(false)}
         initialTab="subscriber"

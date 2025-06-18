@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import ContentCard from '@/components/content/ContentCard';
 import EnhancedContentFeed from '@/components/content/EnhancedContentFeed';
-import EnhancedPricingModal from '@/components/subscription/EnhancedPricingModal';
 import { contentAccessService } from '@/services/contentAccessService';
 // import { getSortedContent } from '@/data/mockContent'; // Removed mock data
 import { Heart, Crown, Star, Filter, Search, Eye, Lock } from 'lucide-react';

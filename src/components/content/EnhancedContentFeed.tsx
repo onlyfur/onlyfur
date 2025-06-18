@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import ContentCard from '@/components/content/ContentCard';
 import ContentAccessControl from '@/components/content/ContentAccessControl';
-import EnhancedPricingModal from '@/components/subscription/EnhancedPricingModal';
+import PricingModal from '@/components/subscription/PricingModal';
 import { contentAccessService, ContentWithAccess } from '@/services/contentAccessService';
 import { tierValidationService } from '@/services/tierValidationService';
 import { realDataAPI } from '@/services/realDataAPI';
@@ -576,7 +576,7 @@ const EnhancedContentFeed: React.FC<ContentFeedProps> = ({
         )}
       </div>
 
-      <EnhancedPricingModal
+      <PricingModal
         isOpen={showPricingModal}
         onClose={() => setShowPricingModal(false)}
         initialTab={selectedPricingTab}

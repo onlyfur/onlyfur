@@ -24,7 +24,7 @@ import { Content, User } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { subscriberTiers } from '@/data/subscriptionTiers';
 import { tierValidationService } from '@/services/tierValidationService';
-import EnhancedPricingModal from '../subscription/EnhancedPricingModal';
+import PricingModal from '../subscription/PricingModal';
 
 interface SubscriptionPromptProps {
   content: Content;
@@ -209,7 +209,7 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
           </div>
         </div>
 
-        <EnhancedPricingModal
+        <PricingModal
           isOpen={showPricingModal}
           onClose={() => setShowPricingModal(false)}
           initialTab="subscriber"
@@ -244,7 +244,7 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
           </CardContent>
         </Card>
 
-        <EnhancedPricingModal
+        <PricingModal
           isOpen={showPricingModal}
           onClose={() => setShowPricingModal(false)}
           initialTab="subscriber"
@@ -409,7 +409,7 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({
         </CardContent>
       </Card>
 
-      <EnhancedPricingModal
+      <PricingModal
         isOpen={showPricingModal}
         onClose={() => setShowPricingModal(false)}
         initialTab="subscriber"
