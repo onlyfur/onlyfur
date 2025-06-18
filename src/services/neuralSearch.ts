@@ -590,9 +590,6 @@ class NeuralSearchEngine {
       }
     });
 
-    // AUTO-GENERATED: Import generated index
-    import neuralIndex from './neuralIndex.generated.json';
-
     // Index all help articles
     const helpArticles = [
       // List all help article routes and titles
