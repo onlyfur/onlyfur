@@ -59,28 +59,6 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState('search');
   
-  // Search mode states
-  const [searchMode, setSearchMode] = useState<'traditional' | 'neural' | 'visual' | 'api'>('neural');
-  const [visualSearchFile, setVisualSearchFile] = useState<File | null>(null);
-  
-  // Voice search removed
-  const [voiceTranscript, setVoiceTranscript] = useState('');
-  const [voiceError, setVoiceError] = useState<string | null>(null);
-  
-  // Neural search features
-  const [enablePersonalization, setEnablePersonalization] = useState(true);
-  const [enableNeuralBoost, setEnableNeuralBoost] = useState(true);
-  const [confidenceThreshold, setConfidenceThreshold] = useState(0.7);
-  
-  // Filters
-  const [filters, setFilters] = useState<SearchFilters>({
-    contentType: [],
-    dateRange: 'all',
-    creatorType: [],
-    sortBy: 'relevance',
-    tags: []
-  });
-
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -91,6 +69,15 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   // Neural search state
   const [neuralResults, setNeuralResults] = useState<NeuralSearchResult[]>([]);
   const [showNeuralInsights, setShowNeuralInsights] = useState(false);
+
+  // Filters
+  const [filters, setFilters] = useState<SearchFilters>({
+    contentType: [],
+    dateRange: 'all',
+    creatorType: [],
+    sortBy: 'relevance',
+    tags: []
+  });
 
   // Check for real data on component mount
   useEffect(() => {
@@ -139,7 +126,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
     debounce((searchQuery: string, source: 'text' | 'voice' = 'text') => {
       performSearch(searchQuery, source);
     }, 300),
-    [filters, searchMode, enablePersonalization, enableNeuralBoost]
+    [filters]
   );
 
   // Generate mock search results for demo purposes
@@ -234,13 +221,13 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
     try {
       // Search real data from database
       const searchResults: SearchResult[] = [];
+      let helpArticles: SearchResult[] = [];
       
       if (hasRealData) {
         // Search users/creators
         const usersResponse = await realDataAPI.searchUsers(searchQuery, 10);
         if (usersResponse.success && usersResponse.users) {
           const userResults = usersResponse.users
-            .filter((user: any) => filters.contentType.length === 0 || filters.contentType.includes('creator'))
             .map((user: any) => ({
               id: `creator-${user.id}`,
               type: 'creator' as const,
@@ -265,10 +252,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
               const matchesQuery = content.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                  content.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                  content.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-              
-              const matchesFilters = filters.contentType.length === 0 || filters.contentType.includes('content');
-              
-              return matchesQuery && matchesFilters;
+              return matchesQuery;
             })
             .map((content: any) => ({
               id: `content-${content.id}`,
@@ -290,80 +274,67 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
         searchResults.push(...mockResults);
       }
 
-      // Perform neural search if enabled
-      if (searchMode === 'neural' && enableNeuralBoost) {
-        const currentTime = new Date().getHours();
-        let timeContext: 'morning' | 'afternoon' | 'evening' | 'night' = 'afternoon';
-        
-        if (currentTime < 12) timeContext = 'morning';
-        else if (currentTime < 17) timeContext = 'afternoon';
-        else if (currentTime < 22) timeContext = 'evening';
-        else timeContext = 'night';
-
-        const searchContext: SearchContext = {
-          user_preferences: {
-            preferred_content_types: filters.contentType.length > 0 ? filters.contentType : ['art', 'tutorial'],
-            favorite_creators: [],
-            interest_categories: ['digital-art', 'character-design', 'animation'],
-            content_quality_threshold: confidenceThreshold,
-            language_preferences: ['en'],
-            accessibility_needs: []
-          },
-          search_history: recentSearches,
-          recent_interactions: [],
-          time_context: timeContext,
-          device_context: window.innerWidth < 768 ? 'mobile' : 'desktop'
-        };
-
-        const neuralSearchResults = await neuralSearchEngine.neuralSearch(
-          searchQuery, 
-          searchContext, 
-          { limit: 10, threshold: confidenceThreshold * 0.5 }
-        );
-
-        setNeuralResults(neuralSearchResults);
-
-        // Enhance search results with neural insights
-        searchResults.forEach(result => {
-          const neuralMatch = neuralSearchResults.find(nr => nr.id.includes(result.id.split('-')[1]));
-          if (neuralMatch) {
-            result.relevanceScore = (result.relevanceScore || 0) * (1 + neuralMatch.relevance_score);
+      // Always perform neural search
+      const currentTime = new Date().getHours();
+      let timeContext: 'morning' | 'afternoon' | 'evening' | 'night' = 'afternoon';
+      if (currentTime < 12) timeContext = 'morning';
+      else if (currentTime < 17) timeContext = 'afternoon';
+      else if (currentTime < 22) timeContext = 'evening';
+      else timeContext = 'night';
+      const searchContext: SearchContext = {
+        user_preferences: {
+          preferred_content_types: ['art', 'tutorial'],
+          favorite_creators: [],
+          interest_categories: ['digital-art', 'character-design', 'animation'],
+          content_quality_threshold: 0.7,
+          language_preferences: ['en'],
+          accessibility_needs: []
+        },
+        search_history: recentSearches,
+        recent_interactions: [],
+        time_context: timeContext,
+        device_context: window.innerWidth < 768 ? 'mobile' : 'desktop'
+      };
+      const neuralSearchResults = await neuralSearchEngine.neuralSearch(
+        searchQuery,
+        searchContext,
+        { limit: 10, threshold: 0.35 }
+      );
+      setNeuralResults(neuralSearchResults);
+      // Enhance search results with neural insights
+      searchResults.forEach(result => {
+        const neuralMatch = neuralSearchResults.find(nr => nr.id.includes(result.id.split('-')[1]));
+        if (neuralMatch) {
+          result.relevanceScore = (result.relevanceScore || 0) * (1 + neuralMatch.relevance_score);
+        }
+      });
+      // Add help center articles from neural search results
+      helpArticles = neuralSearchResults
+        .filter(result => result.id.startsWith('help-'))
+        .map(result => {
+          const vector = neuralSearchEngine.getVectorById(result.id);
+          if (vector && vector.metadata.category === 'help') {
+            return {
+              id: result.id,
+              type: 'help' as const,
+              title: vector.metadata.title || 'Help Article',
+              description: vector.metadata.description || '',
+              subtitle: `Help Center • ${vector.metadata.tags.join(', ')}`,
+              url: vector.metadata.url || '/help',
+              badge: 'Help Article',
+              relevanceScore: result.relevance_score * 100,
+              tags: vector.metadata.tags,
+              thumbnail: '/images/branding/fox-mascot.webp'
+            };
           }
-        });
-        
-        // Add help center articles from neural search results
-        const helpArticles = neuralSearchResults
-          .filter(result => result.id.startsWith('help-'))
-          .map(result => {
-            const vector = neuralSearchEngine.getVectorById(result.id);
-            if (vector && vector.metadata.category === 'help') {
-              return {
-                id: result.id,
-                type: 'help' as const,
-                title: vector.metadata.title || 'Help Article',
-                description: vector.metadata.description || '',
-                subtitle: `Help Center • ${vector.metadata.tags.join(', ')}`,
-                url: vector.metadata.url || '/help',
-                badge: 'Help Article',
-                relevanceScore: result.relevance_score * 100,
-                tags: vector.metadata.tags,
-                thumbnail: '/images/branding/fox-mascot.webp'
-              };
-            }
-            return null;
-          })
-          .filter(Boolean) as SearchResult[];
-          
-        // Add help articles to search results
-        searchResults.push(...helpArticles);
-      }
-
+          return null;
+        })
+        .filter(Boolean) as SearchResult[];
+      searchResults.push(...helpArticles);
       // Apply neural boost scoring
-      if (enableNeuralBoost) {
-        searchResults.forEach(result => {
-          result.relevanceScore = (result.relevanceScore || 0) * 1.1;
-        });
-      }
+      searchResults.forEach(result => {
+        result.relevanceScore = (result.relevanceScore || 0) * 1.1;
+      });
 
       // Sort results
       const sortedResults = searchResults.sort((a, b) => {
@@ -404,8 +375,6 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
     debouncedSearch(newQuery);
   };
 
-  // Voice search removed
-
   const handleResultClick = (result: SearchResult) => {
     navigate(result.url);
     onOpenChange(false);
@@ -414,89 +383,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
   const clearSearch = () => {
     setQuery('');
     setResults([]);
-    setVoiceTranscript('');
-    setVoiceError(null);
   };
-
-  const renderSearchModeSelector = () => (
-    <div className="flex items-center space-x-2 mb-4 p-3 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
-      <Brain className={`w-4 h-4 ${searchMode === 'neural' ? 'text-blue-600' : 'text-blue-400'}`} />
-      <span className="text-sm font-medium">Search Mode:</span>
-      <Select value={searchMode} onValueChange={(value: any) => setSearchMode(value)}>
-        <SelectTrigger className="w-36">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="traditional">
-            <div className="flex items-center">
-              <Search className="w-3 h-3 mr-2" />
-              Traditional
-            </div>
-          </SelectItem>
-          <SelectItem value="neural">
-            <div className="flex items-center">
-              <Brain className="w-3 h-3 mr-2 text-blue-500" />
-              Neural AI
-            </div>
-          </SelectItem>
-          <SelectItem value="visual">
-            <div className="flex items-center">
-              <Eye className="w-3 h-3 mr-2" />
-              Visual
-            </div>
-          </SelectItem>
-          <SelectItem value="api">
-            <div className="flex items-center">
-              <Zap className="w-3 h-3 mr-2" />
-              API
-            </div>
-          </SelectItem>
-        </SelectContent>
-      </Select>
-      {searchMode === 'neural' && (
-        <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-          <Sparkles className="w-3 h-3 mr-1" />
-          AI Enhanced
-        </Badge>
-      )}
-    </div>
-  );
-
-  const renderNeuralSettings = () => (
-    <Card className="mb-4">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center">
-          <Cpu className="w-4 h-4 mr-2" />
-          Neural Enhancement
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm">Personalization</span>
-          <Switch checked={enablePersonalization} onCheckedChange={setEnablePersonalization} />
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm">Neural Boost</span>
-          <Switch checked={enableNeuralBoost} onCheckedChange={setEnableNeuralBoost} />
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Confidence Threshold</span>
-            <span className="text-xs text-muted-foreground">{Math.round(confidenceThreshold * 100)}%</span>
-          </div>
-          <input
-            type="range"
-            min="0.1"
-            max="1"
-            step="0.1"
-            value={confidenceThreshold}
-            onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
-        </div>
-      </CardContent>
-    </Card>
-  );
 
   const renderResults = () => (
     <div className="space-y-2">
@@ -534,7 +421,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                       {result.badge}
                     </Badge>
                   )}
-                  {searchMode === 'neural' && neuralMatch && (
+                  {neuralMatch && (
                     <Badge variant="outline-solid" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
                       <Brain className="w-3 h-3 mr-1" />
                       {Math.round(neuralMatch.confidence_score * 100)}%
@@ -556,7 +443,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                     {result.description}
                   </p>
                 )}
-                {searchMode === 'neural' && neuralMatch && neuralMatch.explanation && (
+                {neuralMatch && neuralMatch.explanation && (
                   <p className="text-xs text-blue-600 mt-1 italic">
                     {neuralMatch.explanation}
                   </p>
@@ -658,7 +545,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
               <TabsTrigger value="search">Search</TabsTrigger>
               <TabsTrigger value="insights" className="relative">
                 Insights
-                {searchMode === 'neural' && neuralResults.length > 0 && (
+                {neuralResults.length > 0 && (
                   <Badge variant="secondary" className="ml-1 text-xs h-4 w-4 p-0 flex items-center justify-center">
                     {neuralResults.length}
                   </Badge>
@@ -669,7 +556,6 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
             </TabsList>
 
             <TabsContent value="search" className="flex-1 mt-4 overflow-visible flex flex-col">
-              {renderSearchModeSelector()}
               
               <form onSubmit={handleSearchSubmit} className="mb-4">
                 <div className="relative">
@@ -682,11 +568,6 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                     onChange={handleInputChange}
                     className="pl-10 pr-20"
                   />
-                  {searchMode === 'neural' && !query && (
-                    <div className="absolute -bottom-6 left-0 text-xs text-muted-foreground">
-                      Try searching with tags: "help article security", "creator digital art", etc.
-                    </div>
-                  )}
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
                     {query && (
                       <Button
@@ -701,9 +582,12 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                     )}
                   </div>
                 </div>
+                {neuralResults.length === 0 && !query && (
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Try searching with tags: "help article security", "creator digital art", etc.
+                  </div>
+                )}
               </form>
-
-              {/* Voice search removed */}
 
               <div className="flex-1 overflow-visible pb-4">
                 {isLoading ? (
@@ -747,65 +631,49 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
                       </div>
                     )}
                     
-                    {searchMode === 'neural' && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-2 flex items-center">
-                          <Sparkles className="w-4 h-4 mr-2 text-blue-500" />
-                          Try These Searches
-                        </h3>
-                        <div className="space-y-1">
-                          {[
-                            "help article account security",
-                            "creator digital art",
-                            "help subscription management",
-                            "content tutorial animation",
-                            "help mobile app"
-                          ].map((suggestion, index) => (
-                            <Button
-                              key={index}
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setQuery(suggestion);
-                                performSearch(suggestion, 'suggestion');
-                              }}
-                              className="w-full justify-start text-sm"
-                            >
-                              <Sparkles className="w-3 h-3 mr-2 text-blue-500" />
-                              {suggestion}
-                            </Button>
-                          ))}
-                        </div>
+                    <div>
+                      <h3 className="text-sm font-medium mb-2 flex items-center">
+                        <Sparkles className="w-4 h-4 mr-2 text-blue-500" />
+                        Try These Searches
+                      </h3>
+                      <div className="space-y-1">
+                        {[
+                          "help article account security",
+                          "creator digital art",
+                          "help subscription management",
+                          "content tutorial animation",
+                          "help mobile app"
+                        ].map((suggestion, index) => (
+                          <Button
+                            key={index}
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setQuery(suggestion);
+                              performSearch(suggestion, 'suggestion');
+                            }}
+                            className="w-full justify-start text-sm"
+                          >
+                            <Sparkles className="w-3 h-3 mr-2 text-blue-500" />
+                            {suggestion}
+                          </Button>
+                        ))}
                       </div>
-                    )}
+                    </div>
                   </div>
                 )}
               </div>
             </TabsContent>
 
             <TabsContent value="insights" className="mt-4 overflow-visible">
-              {searchMode === 'neural' ? (
-                neuralResults.length > 0 ? (
-                  <div className="max-h-[60vh] overflow-y-auto pr-1 pb-4">
-                    {renderNeuralInsights()}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>Perform a neural search to see AI insights</p>
-                  </div>
-                )
+              {neuralResults.length > 0 ? (
+                <div className="max-h-[60vh] overflow-y-auto pr-1 pb-4">
+                  {renderNeuralInsights()}
+                </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p>Switch to Neural mode to see AI-powered insights</p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-2"
-                    onClick={() => setSearchMode('neural')}
-                  >
-                    Enable Neural Search
-                  </Button>
+                  <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>Perform a neural search to see AI insights</p>
                 </div>
               )}
             </TabsContent>
@@ -863,7 +731,7 @@ const NeuralSearchModal: React.FC<NeuralSearchModalProps> = ({ open, onOpenChang
 
             <TabsContent value="settings" className="mt-4 overflow-visible">
               <div className="max-h-[60vh] overflow-y-auto pr-1 pb-4">
-                {renderNeuralSettings()}
+                {/* Neural settings removed */}
               </div>
             </TabsContent>
           </Tabs>

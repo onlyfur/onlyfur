@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Link } from 'react-router-dom';
 
 const HelpCenter: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,6 +152,165 @@ const HelpCenter: React.FC = () => {
     'Two-factor authentication setup'
   ];
 
+  // List of all neural search help articles and their categories
+  const neuralHelpArticles = [
+    {
+      title: 'How to Create Your OnlyFur Account',
+      url: '/help/articles/how-to-create-account',
+      category: 'Getting Started',
+    },
+    {
+      title: 'Age Verification Process',
+      url: '/help/articles/age-verification',
+      category: 'Safety & Privacy',
+    },
+    {
+      title: 'Content Protection for Creators',
+      url: '/help/articles/content-protection',
+      category: 'Safety & Privacy',
+    },
+    {
+      title: 'Bulk Messaging',
+      url: '/help/articles/bulk-messaging',
+      category: 'Messaging & Communication',
+    },
+    {
+      title: 'Tax Information for Creators',
+      url: '/help/articles/tax-information',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Refund Policy',
+      url: '/help/articles/refund-policy',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Subscription Management',
+      url: '/help/articles/subscription-management',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Content Privacy Levels',
+      url: '/help/articles/content-privacy-levels',
+      category: 'Safety & Privacy',
+    },
+    {
+      title: 'Messaging Creators',
+      url: '/help/articles/messaging-creators',
+      category: 'Messaging & Communication',
+    },
+    {
+      title: 'Creator Earnings',
+      url: '/help/articles/creator-earnings',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Account Security',
+      url: '/help/articles/account-security',
+      category: 'Safety & Privacy',
+    },
+    {
+      title: 'Mobile App',
+      url: '/help/articles/mobile-app',
+      category: 'Getting Started',
+    },
+    {
+      title: 'Upload & Organize Content',
+      url: '/help/articles/upload-organize-content',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Finding Creators',
+      url: '/help/articles/finding-creators',
+      category: 'Search Features',
+    },
+    {
+      title: 'Your First Subscription',
+      url: '/help/articles/first-subscription',
+      category: 'Getting Started',
+    },
+    {
+      title: 'Subscription Tiers Overview',
+      url: '/help/articles/subscription-tiers-overview',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Payment Methods',
+      url: '/help/articles/payment-methods',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'How Payments Work',
+      url: '/help/articles/payment-system',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Message Limits',
+      url: '/help/articles/message-limits',
+      category: 'Messaging & Communication',
+    },
+    {
+      title: 'Messaging Tips',
+      url: '/help/articles/messaging-tips',
+      category: 'Messaging & Communication',
+    },
+    {
+      title: 'Report User Content',
+      url: '/help/articles/report-user-content',
+      category: 'Safety & Privacy',
+    },
+    {
+      title: 'Community Guidelines',
+      url: '/help/articles/community-guidelines',
+      category: 'Safety & Privacy',
+    },
+    {
+      title: 'Pricing Strategies',
+      url: '/help/articles/pricing-strategies',
+      category: 'Billing & Subscriptions',
+    },
+    {
+      title: 'Scheduling Features',
+      url: '/help/articles/scheduling-features',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Understanding Analytics',
+      url: '/help/articles/understanding-analytics',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Custom Commissions',
+      url: '/help/articles/custom-commissions',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Setting Up Creator Profile',
+      url: '/help/articles/setting-up-creator-profile',
+      category: 'Getting Started',
+    },
+    {
+      title: 'Supported Formats',
+      url: '/help/articles/supported-formats',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Upload Troubleshooting',
+      url: '/help/articles/upload-troubleshooting',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Video Quality',
+      url: '/help/articles/video-quality',
+      category: 'Creator Resources',
+    },
+    {
+      title: 'Browser Compatibility',
+      url: '/help/articles/browser-compatibility',
+      category: 'Safety & Privacy',
+    },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
@@ -239,6 +399,15 @@ const HelpCenter: React.FC = () => {
                     </div>
                     <Badge variant="secondary">{category.articles}</Badge>
                   </CardHeader>
+                  <CardContent>
+                    <ul className="list-disc ml-4">
+                      {neuralHelpArticles.filter(a => a.category === category.title).map((article, idx) => (
+                        <li key={idx}>
+                          <Link to={article.url} className="text-blue-600 hover:underline">{article.title}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
                 </Card>
               ))}
             </div>
