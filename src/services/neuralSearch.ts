@@ -1,3 +1,5 @@
+import neuralIndex from './neuralIndex.generated.json';
+
 interface NeuralSearchVector {
   id: string;
   embedding: number[];
@@ -40,12 +42,22 @@ interface NeuralSearchResult {
   recommendation_reason: string;
 }
 
+// Type for neuralIndex
+interface NeuralIndexEntry {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  tags: string[];
+  category: string;
+}
+
 class NeuralSearchEngine {
   private vectors: Map<string, NeuralSearchVector> = new Map();
   private userModel: Map<string, UserPreferences> = new Map();
   private searchHistory: Map<string, string[]> = new Map();
   
-  // Neural network weights (simplified for demo)
+  // Neural network weights (simplified)
   private weights = {
     text_similarity: 0.4,
     semantic_match: 0.3,
@@ -575,6 +587,87 @@ class NeuralSearchEngine {
         title: 'Browser Compatibility',
         description: 'Supported browsers and technical requirements',
         url: '/help/articles/browser-compatibility'
+      }
+    });
+
+    // AUTO-GENERATED: Import generated index
+    import neuralIndex from './neuralIndex.generated.json';
+
+    // Index all help articles
+    const helpArticles = [
+      // List all help article routes and titles
+      { id: 'help-register', url: '/register', title: 'Register', description: 'Create a new account on OnlyFur', tags: ['register', 'account', 'signup'], category: 'page' },
+      { id: 'help-login', url: '/login', title: 'Login', description: 'Login to your OnlyFur account', tags: ['login', 'account', 'signin'], category: 'page' },
+      { id: 'help-creator-dashboard', url: '/creator/dashboard', title: 'Creator Dashboard', description: 'Manage your creator profile and content', tags: ['creator', 'dashboard', 'profile'], category: 'page' },
+      { id: 'help-creator-page', url: '/creator', title: 'Creator Page', description: 'View and manage your creator page', tags: ['creator', 'page', 'profile'], category: 'page' },
+      // Add all help articles (lowercase and PascalCase)
+      { id: 'help-account-security', url: '/help/articles/account-security', title: 'Account Security', description: 'Best practices for keeping your OnlyFur account secure', tags: ['security', 'account', 'privacy'], category: 'help' },
+      { id: 'help-AccountSecurity', url: '/help/articles/AccountSecurity', title: 'Account Security', description: 'Best practices for keeping your OnlyFur account secure', tags: ['security', 'account', 'privacy'], category: 'help' },
+      { id: 'help-age-verification', url: '/help/articles/age-verification', title: 'Age Verification', description: 'How to verify your age to access adult content', tags: ['age-verification', 'legal', 'privacy', 'security'], category: 'help' },
+      { id: 'help-ContentProtection', url: '/help/articles/ContentProtection', title: 'Content Protection', description: 'Tools to protect your content from unauthorized use', tags: ['content-protection', 'watermarking', 'access-control', 'reporting'], category: 'help' },
+      { id: 'help-bulk-messaging', url: '/help/articles/bulk-messaging', title: 'Bulk Messaging', description: 'How to send messages to multiple subscribers efficiently', tags: ['bulk-messaging', 'messaging', 'subscribers', 'communication'], category: 'help' },
+      { id: 'help-tax-information', url: '/help/articles/tax-information', title: 'Tax Information', description: 'Important tax considerations for creators', tags: ['tax', 'income', 'reporting', 'forms'], category: 'help' },
+      { id: 'help-refund-policy', url: '/help/articles/refund-policy', title: 'Refund Policy', description: 'Guidelines on refunds and how to request them', tags: ['refund', 'policy', 'support', 'requests'], category: 'help' },
+      { id: 'help-subscription-management', url: '/help/articles/subscription-management', title: 'Subscription Management', description: 'Learn how to manage your subscriptions, billing, and payment methods', tags: ['subscription', 'billing', 'payment', 'tutorial'], category: 'help' },
+      { id: 'help-content-privacy', url: '/help/articles/content-privacy-levels', title: 'Content Privacy Levels', description: 'Understanding the different privacy levels for your content', tags: ['privacy', 'content', 'security', 'tutorial'], category: 'help' },
+      { id: 'help-messaging-creators', url: '/help/articles/messaging-creators', title: 'Messaging Creators', description: 'How to communicate with creators through the platform', tags: ['messaging', 'communication', 'creators', 'tutorial'], category: 'help' },
+      { id: 'help-creator-earnings', url: '/help/articles/creator-earnings', title: 'Creator Earnings', description: 'Understanding how creators earn money and receive payments', tags: ['earnings', 'revenue', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-account-security', url: '/help/articles/account-security', title: 'Account Security', description: 'Best practices for keeping your OnlyFur account secure', tags: ['security', 'account', 'privacy'], category: 'help' },
+      { id: 'help-mobile-app', url: '/help/articles/mobile-app', title: 'Mobile App', description: 'Guide to using the OnlyFur mobile application', tags: ['mobile', 'app', 'ios', 'android', 'tutorial'], category: 'help' },
+      { id: 'help-upload-content', url: '/help/articles/upload-organize-content', title: 'Upload & Organize Content', description: 'How to upload and organize your content as a creator', tags: ['upload', 'content', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-finding-creators', url: '/help/articles/finding-creators', title: 'Finding Creators', description: 'How to discover and follow creators on OnlyFur', tags: ['search', 'discover', 'creators', 'tutorial'], category: 'help' },
+      { id: 'help-first-subscription', url: '/help/articles/first-subscription', title: 'Your First Subscription', description: 'What to expect when subscribing to a creator for the first time', tags: ['subscription', 'payment', 'beginner', 'tutorial'], category: 'help' },
+      { id: 'help-subscription-tiers', url: '/help/articles/subscription-tiers-overview', title: 'Subscription Tiers Overview', description: 'Understanding the different subscription levels and their benefits', tags: ['subscription', 'tiers', 'pricing', 'tutorial'], category: 'help' },
+      { id: 'help-payment-methods', url: '/help/articles/payment-methods', title: 'Payment Methods', description: 'Managing your payment methods and billing information', tags: ['payment', 'billing', 'financial', 'tutorial'], category: 'help' },
+      { id: 'help-payment-system', url: '/help/articles/payment-system', title: 'How Payments Work', description: 'Understanding the OnlyFur payment system and security', tags: ['payment', 'system', 'security', 'tutorial'], category: 'help' },
+      { id: 'help-message-limits', url: '/help/articles/message-limits', title: 'Message Limits', description: 'Understanding messaging restrictions by subscription tier', tags: ['messaging', 'limits', 'communication', 'tutorial'], category: 'help' },
+      { id: 'help-messaging-tips', url: '/help/articles/messaging-tips', title: 'Messaging Tips', description: 'How to send tips to creators through messages', tags: ['messaging', 'tips', 'payment', 'tutorial'], category: 'help' },
+      { id: 'help-report-user-content', url: '/help/articles/report-user-content', title: 'Report User Content', description: 'How to report inappropriate content or behavior', tags: ['report', 'safety', 'moderation', 'tutorial'], category: 'help' },
+      { id: 'help-community-guidelines', url: '/help/articles/community-guidelines', title: 'Community Guidelines', description: 'Understanding our community standards and rules', tags: ['guidelines', 'rules', 'community', 'tutorial'], category: 'help' },
+      { id: 'help-pricing-strategies', url: '/help/articles/pricing-strategies', title: 'Pricing Strategies', description: 'Tips for setting subscription and tip prices as a creator', tags: ['pricing', 'strategy', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-scheduling-features', url: '/help/articles/scheduling-features', title: 'Scheduling Features', description: 'How to schedule and plan your content releases', tags: ['scheduling', 'content', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-understanding-analytics', url: '/help/articles/understanding-analytics', title: 'Understanding Analytics', description: 'How to interpret and use creator analytics', tags: ['analytics', 'metrics', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-custom-commissions', url: '/help/articles/custom-commissions', title: 'Custom Commissions', description: 'How to offer and manage personalized content requests', tags: ['commissions', 'custom', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-setting-up-creator-profile', url: '/help/articles/setting-up-creator-profile', title: 'Setting Up Creator Profile', description: 'Complete guide to creating an attractive creator profile', tags: ['profile', 'setup', 'creator', 'tutorial'], category: 'help' },
+      { id: 'help-supported-formats', url: '/help/articles/supported-formats', title: 'Supported Formats', description: 'File formats and sizes supported on OnlyFur', tags: ['formats', 'technical', 'upload', 'tutorial'], category: 'help' },
+      { id: 'help-upload-troubleshooting', url: '/help/articles/upload-troubleshooting', title: 'Upload Troubleshooting', description: 'Solutions for common upload problems', tags: ['troubleshooting', 'upload', 'technical', 'tutorial'], category: 'help' },
+      { id: 'help-video-quality', url: '/help/articles/video-quality', title: 'Video Quality', description: 'Optimizing video content for the platform', tags: ['video', 'quality', 'technical', 'tutorial'], category: 'help' },
+      { id: 'help-browser-compatibility', url: '/help/articles/browser-compatibility', title: 'Browser Compatibility', description: 'Supported browsers and technical requirements', tags: ['browser', 'compatibility', 'technical', 'tutorial'], category: 'help' }
+    ];
+    helpArticles.forEach(article => {
+      this.vectors.set(article.id, {
+        id: article.id,
+        embedding: [0.8, 0.7, 0.6, 0.5, 0.7, 0.6, 0.5, 0.4],
+        metadata: {
+          type: 'text',
+          content: article.title + ' ' + article.description,
+          category: article.category,
+          tags: article.tags,
+          quality_score: 0.9,
+          title: article.title,
+          description: article.description,
+          url: article.url
+        }
+      });
+    });
+
+    // Auto-indexed pages and articles
+    (neuralIndex as NeuralIndexEntry[]).forEach((article: NeuralIndexEntry) => {
+      if (!this.vectors.has(article.id)) {
+        this.vectors.set(article.id, {
+          id: article.id,
+          embedding: [0.8, 0.7, 0.6, 0.5, 0.7, 0.6, 0.5, 0.4],
+          metadata: {
+            type: 'text',
+            content: article.title + ' ' + article.description,
+            category: article.category,
+            tags: article.tags,
+            quality_score: 0.9,
+            title: article.title,
+            description: article.description,
+            url: article.url
+          }
+        });
       }
     });
   }

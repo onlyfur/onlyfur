@@ -16,7 +16,9 @@
     "db:reset": "prisma migrate reset --force",
     "db:init": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
     "start": "node scripts/start-production.js",
-    "start:prod": "npm run build && npm run server:prod"
+    "start:prod": "npm run build && npm run server:prod",
+    "prebuild": "node scripts/generateNeuralIndex.js",
+    "prestart:prod": "node scripts/generateNeuralIndex.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
