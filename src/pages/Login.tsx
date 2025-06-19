@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 import AutoLoginPrompt from '@/components/auth/AutoLoginPrompt';
+import { getRedirectPathAfterLogin } from '@/utils/userUtils';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -29,7 +30,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login, error: authError, clearError, getSavedCredentials } = useAuth();
+  const { login, user, error: authError, clearError, getSavedCredentials } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -66,19 +67,18 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     setError(null);
-    clearError();
-
-    try {
-      await login(data.email, data.password, data.rememberMe);
-      
-      // Show success toast
-      toast({
-        title: "Welcome back!",
-        description: "You've been successfully signed in.",
+    clearError();    try {
+      await login(data.email, data.password, data.rememberMe, (user) => {
+        // Show success toast
+        toast({
+          title: "Welcome back!",
+          description: "You've been successfully signed in.",
+        });
+        
+        // Get the appropriate redirect path based on user status
+        const redirectPath = getRedirectPathAfterLogin(user);
+        navigate(redirectPath);
       });
-      
-      // Immediate redirect after successful login
-      navigate('/dashboard');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Invalid email or password. Please try again.';
       setError(errorMessage);

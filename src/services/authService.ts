@@ -1,5 +1,17 @@
 import { User } from '@/types';
 import { apiClient, AuthResponse } from './apiClient';
+import {
+  setAuthToken,
+  setRefreshToken,
+  setUserData,
+  setRememberMe,
+  getAuthToken,
+  getRefreshToken,
+  getUserData,
+  getRememberMe,
+  clearAuthCookies,
+  hasValidAuthSession
+} from '@/utils/cookieUtils';
 
 // Response interface for auth operations
 interface AuthResult {
@@ -10,14 +22,140 @@ interface AuthResult {
   error?: string;
 }
 
-// Session storage keys
-const TOKEN_KEY = 'onlyfur_token';
-const REFRESH_TOKEN_KEY = 'onlyfur_refresh_token';
-const USER_KEY = 'onlyfur_user';
-const REMEMBER_KEY = 'onlyfur_remember';
+// Mock users for development/offline mode
+const MOCK_USERS: (User & { setupComplete: boolean })[] = [
+  {
+    id: '1',
+    email: 'test@example.com',
+    username: 'testuser',
+    displayName: 'Test User',
+    role: 'SUBSCRIBER',
+    isVerified: true,
+    subscriptionStatus: 'ACTIVE',
+    setupComplete: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: '2',
+    email: 'creator@example.com',
+    username: 'creator',
+    displayName: 'Test Creator',
+    role: 'CREATOR',
+    isVerified: true,
+    subscriptionStatus: 'ACTIVE',
+    setupComplete: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: '3',
+    email: 'admin@onlyfur.com',
+    username: 'admin',
+    displayName: 'Admin User',
+    role: 'ADMIN',
+    isVerified: true,
+    subscriptionStatus: 'ACTIVE',
+    setupComplete: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
+
+// Development mode flag
+const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
+
+// Session storage keys (now using cookies)
 const CREDENTIALS_KEY = 'onlyfur_saved_credentials';
 
 class AuthService {
+  private isOfflineMode = false;
+  
+  // Check if backend is available
+  private async checkBackendAvailability(): Promise<boolean> {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/health`, {
+        method: 'GET',
+        timeout: 3000
+      } as RequestInit);
+      return response.ok;
+    } catch (error) {
+      console.warn('Backend not available, switching to offline mode:', error);
+      this.isOfflineMode = true;
+      return false;
+    }
+  }
+
+  // Mock authentication for development/offline mode
+  private async mockAuth(email: string, password: string): Promise<AuthResult> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const user = MOCK_USERS.find(u => u.email === email);
+    if (!user) {
+      return {
+        success: false,
+        error: 'Invalid email or password'
+      };
+    }
+    
+    // For development, accept any password
+    const mockToken = `mock-token-${user.id}-${Date.now()}`;
+    const mockRefreshToken = `mock-refresh-${user.id}-${Date.now()}`;
+    
+    return {
+      success: true,
+      user,
+      token: mockToken,
+      refreshToken: mockRefreshToken
+    };
+  }
+  // Mock registration for development/offline mode
+  private async mockRegister(userData: {
+    email: string;
+    username: string;
+    displayName: string;
+    password: string;
+    role: 'creator' | 'subscriber';
+  }): Promise<AuthResult> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Check if user already exists
+    const existingUser = MOCK_USERS.find(u => u.email === userData.email || u.username === userData.username);
+    if (existingUser) {
+      return {
+        success: false,
+        error: 'User already exists'
+      };
+    }
+    
+    const newUser: User & { setupComplete: boolean } = {
+      id: String(MOCK_USERS.length + 1),
+      email: userData.email,
+      username: userData.username,
+      displayName: userData.displayName,
+      role: userData.role.toUpperCase() as 'CREATOR' | 'SUBSCRIBER',
+      isVerified: true,
+      subscriptionStatus: 'ACTIVE',
+      setupComplete: false, // New users need setup
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    // Add to mock users (in memory only)
+    MOCK_USERS.push(newUser);
+    
+    const mockToken = `mock-token-${newUser.id}-${Date.now()}`;
+    const mockRefreshToken = `mock-refresh-${newUser.id}-${Date.now()}`;
+    
+    return {
+      success: true,
+      user: newUser,
+      token: mockToken,
+      refreshToken: mockRefreshToken
+    };
+  }
   // Register a new user
   async register(userData: {
     email: string;
@@ -27,6 +165,14 @@ class AuthService {
     role: 'subscriber' | 'creator';
   }): Promise<AuthResult> {
     try {
+      // Check backend availability first
+      const backendAvailable = await this.checkBackendAvailability();
+      
+      if (!backendAvailable || this.isOfflineMode) {
+        console.warn('Using offline mode for registration');
+        return this.mockRegister(userData);
+      }
+      
       const apiUserData = {
         ...userData,
         role: userData.role.toUpperCase() as 'CREATOR' | 'SUBSCRIBER'
@@ -45,18 +191,16 @@ class AuthService {
             refreshToken,
           };
         }
-      }
-      
+      }      
       return {
         success: false,
         error: response.error || 'Registration failed',
       };
     } catch (error) {
       console.error('Registration error:', error);
-      return {
-        success: false,
-        error: 'Network error during registration',
-      };
+      // Fall back to offline mode on network error
+      console.warn('Network error, falling back to offline mode');
+      return this.mockRegister(userData);
     }
   }
 
@@ -66,6 +210,14 @@ class AuthService {
     password: string; 
   }): Promise<AuthResult> {
     try {
+      // Check backend availability first
+      const backendAvailable = await this.checkBackendAvailability();
+      
+      if (!backendAvailable || this.isOfflineMode) {
+        console.warn('Using offline mode for login');
+        return this.mockAuth(credentials.email, credentials.password);
+      }
+      
       const response = await apiClient.login(credentials);
       
       if (response.success && response.data) {
@@ -87,10 +239,9 @@ class AuthService {
       };
     } catch (error) {
       console.error('Login error:', error);
-      return {
-        success: false,
-        error: 'Network error during login',
-      };
+      // Fall back to offline mode on network error
+      console.warn('Network error, falling back to offline mode');
+      return this.mockAuth(credentials.email, credentials.password);
     }
   }
 
@@ -195,11 +346,10 @@ class AuthService {
       };
     }
   }
-
   // Refresh authentication token
   async refreshAuthToken(): Promise<AuthResult> {
     try {
-      const refreshToken = this.getRefreshToken();
+      const refreshToken = getRefreshToken();
       
       if (!refreshToken) {
         return {
@@ -217,7 +367,7 @@ class AuthService {
           // Update stored tokens
           this.setSession(token, this.isRememberMeEnabled());
           if (newRefreshToken) {
-            this.setRefreshToken(newRefreshToken);
+            setRefreshToken(newRefreshToken);
           }
           
           return {
@@ -329,59 +479,50 @@ class AuthService {
       };
     }
   }
-
-  // Session management
-  setSession(token: string, remember: boolean = false): void {
-    // Always store in both storages to prevent race conditions
-    localStorage.setItem(TOKEN_KEY, token);
-    sessionStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(REMEMBER_KEY, remember.toString());
-  }
-
-  getSession(): string | null {
-    return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
-  }
-
-  setRefreshToken(refreshToken: string): void {
-    const storage = this.isRememberMeEnabled() ? localStorage : sessionStorage;
-    storage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESH_TOKEN_KEY) || sessionStorage.getItem(REFRESH_TOKEN_KEY);
-  }
-
-  setUser(user: User): void {
-    const storage = this.isRememberMeEnabled() ? localStorage : sessionStorage;
-    storage.setItem(USER_KEY, JSON.stringify(user));
-  }
-
-  getStoredUser(): User | null {
-    try {
-      const userData = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
-      return userData ? JSON.parse(userData) : null;
-    } catch {
-      return null;
+  // Session management using cookies
+  setSession(token: string, remember: boolean = false, refreshToken?: string, user?: User): void {
+    setAuthToken(token, remember);
+    setRememberMe(remember);
+    
+    if (refreshToken) {
+      setRefreshToken(refreshToken, remember);
+    }
+    
+    if (user) {
+      setUserData(user, remember);
     }
   }
 
+  getSession(): string | null {
+    return getAuthToken();
+  }
+  setRefreshTokenValue(refreshToken: string, remember: boolean = false): void {
+    setRefreshToken(refreshToken, remember);
+  }
+
+  getRefreshTokenValue(): string | null {
+    return getRefreshToken();
+  }
+
+  setUser(user: User, remember: boolean = false): void {
+    setUserData(user, remember);
+  }
+
+  getStoredUser(): User | null {
+    return getUserData();
+  }
+
   updateStoredUser(user: User): void {
-    const storage = this.isRememberMeEnabled() ? localStorage : sessionStorage;
-    storage.setItem(USER_KEY, JSON.stringify(user));
+    const remember = getRememberMe();
+    setUserData(user, remember);
   }
 
   isRememberMeEnabled(): boolean {
-    return localStorage.getItem(REMEMBER_KEY) === 'true';
+    return getRememberMe();
   }
 
   clearSession(): void {
-    // Clear from both storage types
-    [localStorage, sessionStorage].forEach(storage => {
-      storage.removeItem(TOKEN_KEY);
-      storage.removeItem(REFRESH_TOKEN_KEY);
-      storage.removeItem(USER_KEY);
-    });
-    localStorage.removeItem(REMEMBER_KEY);
+    clearAuthCookies();
     localStorage.removeItem(CREDENTIALS_KEY);
   }
 

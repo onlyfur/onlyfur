@@ -9,6 +9,12 @@ export interface CookieOptions {
   httpOnly?: boolean;
 }
 
+// Authentication cookie constants
+export const AUTH_COOKIE_NAME = 'onlyfur_auth_token';
+export const REFRESH_COOKIE_NAME = 'onlyfur_refresh_token';
+export const USER_COOKIE_NAME = 'onlyfur_user_data';
+export const REMEMBER_COOKIE_NAME = 'onlyfur_remember_me';
+
 // Set a cookie with options
 export const setCookie = (name: string, value: string, options: CookieOptions = {}): void => {
   const {
@@ -112,4 +118,98 @@ export const areCookiesEnabled = (): boolean => {
   } catch {
     return false;
   }
+};
+
+// Authentication-specific cookie functions
+export const setAuthToken = (token: string, rememberMe: boolean = false): void => {
+  const options: CookieOptions = {
+    path: '/',
+    secure: window.location.protocol === 'https:',
+    sameSite: 'lax'
+  };
+
+  if (rememberMe) {
+    // Remember for 30 days
+    options.maxAge = 30 * 24 * 60 * 60;
+  }
+  // If not remembering, cookie will be session-only (expires when browser closes)
+
+  setCookie(AUTH_COOKIE_NAME, token, options);
+};
+
+export const setRefreshToken = (refreshToken: string, rememberMe: boolean = false): void => {
+  const options: CookieOptions = {
+    path: '/',
+    secure: window.location.protocol === 'https:',
+    sameSite: 'lax'
+  };
+
+  if (rememberMe) {
+    // Remember for 30 days
+    options.maxAge = 30 * 24 * 60 * 60;
+  }
+
+  setCookie(REFRESH_COOKIE_NAME, refreshToken, options);
+};
+
+export const setUserData = (userData: any, rememberMe: boolean = false): void => {
+  const options: CookieOptions = {
+    path: '/',
+    secure: window.location.protocol === 'https:',
+    sameSite: 'lax'
+  };
+
+  if (rememberMe) {
+    // Remember for 30 days
+    options.maxAge = 30 * 24 * 60 * 60;
+  }
+
+  setCookie(USER_COOKIE_NAME, JSON.stringify(userData), options);
+};
+
+export const setRememberMe = (remember: boolean): void => {
+  if (remember) {
+    setCookie(REMEMBER_COOKIE_NAME, 'true', {
+      path: '/',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      secure: window.location.protocol === 'https:',
+      sameSite: 'lax'
+    });
+  } else {
+    deleteCookie(REMEMBER_COOKIE_NAME);
+  }
+};
+
+export const getAuthToken = (): string | null => {
+  return getCookie(AUTH_COOKIE_NAME);
+};
+
+export const getRefreshToken = (): string | null => {
+  return getCookie(REFRESH_COOKIE_NAME);
+};
+
+export const getUserData = (): any | null => {
+  try {
+    const userData = getCookie(USER_COOKIE_NAME);
+    return userData ? JSON.parse(userData) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getRememberMe = (): boolean => {
+  return getCookie(REMEMBER_COOKIE_NAME) === 'true';
+};
+
+export const clearAuthCookies = (): void => {
+  deleteCookie(AUTH_COOKIE_NAME);
+  deleteCookie(REFRESH_COOKIE_NAME);
+  deleteCookie(USER_COOKIE_NAME);
+  deleteCookie(REMEMBER_COOKIE_NAME);
+};
+
+export const hasValidAuthSession = (): boolean => {
+  const token = getAuthToken();
+  const userData = getUserData();
+  return !!(token && userData);
 };

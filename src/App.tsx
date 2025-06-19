@@ -127,6 +127,9 @@ import AIContentCreationStudio from '@/components/ai/AIContentCreationStudio';
 // AI Components
 import AISettingsManager from '@/components/ai/AISettingsManager';
 
+// Account Setup Page
+import AccountSetup from '@/pages/AccountSetup';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();

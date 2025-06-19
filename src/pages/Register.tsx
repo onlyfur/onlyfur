@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { z } from 'zod';
 import { Eye, EyeOff, Crown, Mail, Lock, User, ArrowLeft, ArrowRight } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import RoleSelector from '@/components/auth/RoleSelector';
 import EnhancedRoleSelector from '@/components/auth/EnhancedRoleSelector';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
+import { getRedirectPathAfterLogin, isNewUser } from '@/utils/userUtils';
 
 
 const registerSchema = z.object({
@@ -88,9 +89,7 @@ const Register: React.FC = () => {
 
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
-    setError(null);
-
-    try {
+    setError(null);    try {
       // Register the user
       await registerUser({
         email: data.email,
@@ -99,25 +98,28 @@ const Register: React.FC = () => {
         role: data.role,
         password: data.password,
         // selectedTier and newsletter are not part of User, handle separately if needed
-      });
-      
-      // Show success toast
-      toast({
-        title: "Registration Successful!",
-        description: `Welcome to OnlyFur, ${data.displayName}! You've been automatically signed in.`,
-      });
-      
-      // Automatic redirect with feedback
-      setTimeout(() => {
-        // If user selected a paid tier, redirect to payment
-        if (data.selectedTier && data.selectedTier !== 'basic-creator') {
-          navigate('/subscription/checkout', { 
-            state: { tierId: data.selectedTier } 
-          });
+      }, (user) => {
+        // Show success toast
+        toast({
+          title: "Registration Successful!",
+          description: `Welcome to OnlyFur, ${data.displayName}! You've been automatically signed in.`,
+        });
+        
+        // For new users, always redirect to setup first
+        if (isNewUser(user)) {
+          navigate('/setup');
         } else {
-          navigate('/dashboard');
+          // If user selected a paid tier, redirect to payment
+          if (data.selectedTier && data.selectedTier !== 'basic-creator') {
+            navigate('/subscription/checkout', { 
+              state: { tierId: data.selectedTier } 
+            });
+          } else {
+            const redirectPath = getRedirectPathAfterLogin(user);
+            navigate(redirectPath);
+          }
         }
-      }, 1000); // Brief delay to show success message
+      });
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.';

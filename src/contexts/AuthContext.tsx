@@ -2,15 +2,16 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { authService } from '@/services/authService';
 import onlineStatusAPI from '@/services/onlineStatusAPI';
+import { getRedirectPathAfterLogin } from '@/utils/userUtils';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-  register: (userData: Partial<User> & { password?: string }) => Promise<void>;
-  loginWithGoogle: (credential: string, userType: 'creator' | 'subscriber') => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean, onSuccess?: (user: User) => void) => Promise<void>;
+  register: (userData: Partial<User> & { password?: string }, onSuccess?: (user: User) => void) => Promise<void>;
+  loginWithGoogle: (credential: string, userType: 'creator' | 'subscriber', onSuccess?: (user: User) => void) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   clearError: () => void;
@@ -36,20 +37,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     // Check for stored authentication and attempt auto-login
     const checkAuth = async () => {
       try {
         const storedToken = authService.getSession();
+        const storedUser = authService.getStoredUser();
         
-        if (storedToken) {
-          // Verify existing token and get fresh user data
+        if (storedToken && storedUser) {
+          // Try to verify the token and get fresh user data
           const result = await authService.getProfile(storedToken);
           if (result.success && result.user) {
             setUser(result.user);
+            
+            // Start online status tracking
+            onlineStatusAPI.startTracking().catch(console.error);
+            
             setIsLoading(false);
-            return; // Session is valid, no need for auto-login
+            return;
           } else {
             // Token is invalid, clear storage
             authService.clearSession();
@@ -62,7 +67,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const autoLoginResult = await authService.tryAutoLogin();
             if (autoLoginResult.success && autoLoginResult.user && autoLoginResult.token) {
               setUser(autoLoginResult.user);
-              authService.setSession(autoLoginResult.token, true); // Remember the auto-login
+              authService.setSession(autoLoginResult.token, true, autoLoginResult.refreshToken, autoLoginResult.user);
+              
+              // Start online status tracking
+              onlineStatusAPI.startTracking().catch(console.error);
+              
               console.log('Auto-login successful');
             }
           } catch (autoLoginError) {
@@ -79,9 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
-
-  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<void> => {
+  }, []);  const login = async (email: string, password: string, rememberMe: boolean = false, onSuccess?: (user: User) => void): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
@@ -93,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       setUser(result.user);
-      authService.setSession(result.token, rememberMe);
+      authService.setSession(result.token, rememberMe, result.refreshToken, result.user);
       
       // Start online status tracking
       onlineStatusAPI.startTracking().catch(console.error);
@@ -104,6 +111,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         authService.clearSavedCredentials();
       }
+
+      // Call success callback with user data
+      if (onSuccess) {
+        onSuccess(result.user);
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Invalid email or password';
       setError(errorMessage);
@@ -111,9 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const register = async (userData: Partial<User> & { password?: string }): Promise<void> => {
+  };  const register = async (userData: Partial<User> & { password?: string }, onSuccess?: (user: User) => void): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
@@ -135,10 +145,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       setUser(result.user);
-      authService.setSession(result.token, true); // Auto-remember for new registrations
+      authService.setSession(result.token, true, result.refreshToken, result.user); // Auto-remember for new registrations
       
       // Start online status tracking
       onlineStatusAPI.startTracking().catch(console.error);
+
+      // Call success callback with user data
+      if (onSuccess) {
+        onSuccess(result.user);
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed';
       setError(errorMessage);
@@ -146,9 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const loginWithGoogle = async (credential: string, userType: 'creator' | 'subscriber'): Promise<void> => {
+  };  const loginWithGoogle = async (credential: string, userType: 'creator' | 'subscriber', onSuccess?: (user: User) => void): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
@@ -161,10 +174,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       setUser(result.user);
-      authService.setSession(result.token, true); // Auto-remember for Google login
+      authService.setSession(result.token, true, result.refreshToken, result.user); // Auto-remember for Google login
       
       // Start online status tracking
       onlineStatusAPI.startTracking().catch(console.error);
+
+      // Call success callback with user data
+      if (onSuccess) {
+        onSuccess(result.user);
+      }
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google authentication failed';

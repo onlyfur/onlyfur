@@ -130,6 +130,16 @@
     "category": "help"
   },
   {
+    "id": "help-custom-commissions-new",
+    "url": "/help/articles/custom-commissions-new",
+    "title": "Custom Commissions New",
+    "description": "",
+    "tags": [
+      "help"
+    ],
+    "category": "help"
+  },
+  {
     "id": "help-custom-commissions",
     "url": "/help/articles/custom-commissions",
     "title": "Custom Commissions",
@@ -193,6 +203,16 @@
     "id": "help-message-limits",
     "url": "/help/articles/message-limits",
     "title": "Message Limits",
+    "description": "",
+    "tags": [
+      "help"
+    ],
+    "category": "help"
+  },
+  {
+    "id": "help-messaging-creators-new",
+    "url": "/help/articles/messaging-creators-new",
+    "title": "Messaging Creators New",
     "description": "",
     "tags": [
       "help"
@@ -453,6 +473,14 @@
     "id": "About",
     "url": "/About",
     "title": "About",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "AccountSetup",
+    "url": "/AccountSetup",
+    "title": "AccountSetup",
     "description": "",
     "tags": [],
     "category": "page"

@@ -1,4 +1,5 @@
 // API client for backend communication
+import { getAuthToken } from '@/utils/cookieUtils';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -21,22 +22,17 @@ export interface AuthResponse {
 
 class ApiClient {
   private baseURL: string;
-
   constructor() {
-    // Use environment variable or fallback to production server
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002/api';
+    // Use environment variable or fallback to localhost server for development
+    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
   }
 
   private getAuthHeaders(): HeadersInit {
-    const token = this.getStoredToken();
+    const token = getAuthToken();
     return {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
     };
-  }
-
-  private getStoredToken(): string | null {
-    return localStorage.getItem('onlyfur_token') || sessionStorage.getItem('onlyfur_token');
   }
 
   private async makeRequest<T>(
@@ -237,13 +233,13 @@ class ApiClient {
   async getContentById(id: string): Promise<ApiResponse> {
     return this.makeRequest(`/content/${id}`);
   }
-
   async createContent(contentData: FormData): Promise<ApiResponse> {
+    const token = getAuthToken();
     return this.makeRequest('/content', {
       method: 'POST',
       headers: {
         // Don't set Content-Type for FormData - let browser set it with boundary
-        ...(this.getStoredToken() && { Authorization: `Bearer ${this.getStoredToken()}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: contentData,
     });
@@ -280,15 +276,15 @@ class ApiClient {
 
   // Upload endpoints
   async uploadFile(file: File, type: 'avatar' | 'content' | 'cover'): Promise<ApiResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
+    const formData = new FormData();    formData.append('file', file);
     formData.append('type', type);
 
+    const token = getAuthToken();
     return this.makeRequest('/upload', {
       method: 'POST',
       headers: {
         // Don't set Content-Type for FormData
-        ...(this.getStoredToken() && { Authorization: `Bearer ${this.getStoredToken()}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: formData,
     });
