@@ -612,29 +612,32 @@ class DatabaseService {
       this.client = null;
     }
   }
-  
-  async initializeAdminUser() {
+    async initializeAdminUser() {
     try {
-      // Check if admin user exists by email
+      console.log('🔧 Initializing admin user...');
+      
+      // Check if admin user exists by email (case-insensitive)
       const existingAdmin = await this.client.query(
-        'SELECT id, email, username, role FROM users WHERE email = $1',
+        'SELECT id, email, username, role, "isActive" FROM users WHERE LOWER(email) = LOWER($1)',
         [ADMIN_EMAIL]
       );
       
       if (existingAdmin.rows.length === 0) {
         // Create new admin user
+        console.log('🆕 Creating new admin user...');
         const hashedPassword = await PasswordHasher.hash(ADMIN_PASSWORD);
         const adminId = crypto.randomUUID();
         
         // Generate unique username
         let username = ADMIN_USERNAME;
         const existingUsername = await this.client.query(
-          'SELECT id FROM users WHERE username = $1',
+          'SELECT id FROM users WHERE LOWER(username) = LOWER($1)',
           [username]
         );
         
         if (existingUsername.rows.length > 0) {
           username = `${ADMIN_USERNAME}_admin_${Date.now()}`;
+          console.log(`🔧 Username collision detected, using: ${username}`);
         }
         
         await this.client.query(`
@@ -659,6 +662,8 @@ class DatabaseService {
         console.log(`✅ Admin user created successfully with username: ${username}`);
       } else {
         // Update existing admin user with correct password and role
+        console.log('🔄 Updating existing admin user...');
+        const existingUser = existingAdmin.rows[0];
         const hashedPassword = await PasswordHasher.hash(ADMIN_PASSWORD);
         
         await this.client.query(`
@@ -669,23 +674,71 @@ class DatabaseService {
             "isVerified" = true,
             "isEmailVerified" = true,
             "updatedAt" = NOW()
-          WHERE email = $3
+          WHERE LOWER(email) = LOWER($3)
         `, [hashedPassword, 'ADMIN', ADMIN_EMAIL]);
         
-        console.log('✅ Admin user updated with environment credentials');
+        console.log(`✅ Admin user updated: ${existingUser.email} (was active: ${existingUser.isActive})`);
       }
+      
+      // Verify admin user was created/updated correctly
+      const verifyAdmin = await this.client.query(
+        'SELECT email, username, role, "isActive" FROM users WHERE LOWER(email) = LOWER($1)',
+        [ADMIN_EMAIL]
+      );
+      
+      if (verifyAdmin.rows.length > 0) {
+        const admin = verifyAdmin.rows[0];
+        console.log(`✅ Admin verification: ${admin.email} | ${admin.username} | ${admin.role} | Active: ${admin.isActive}`);
+      } else {
+        console.error('❌ Admin user verification failed - user not found after creation/update');
+      }
+      
     } catch (error) {
       console.error('❌ Failed to initialize admin user:', error.message);
+      console.error('Full error:', error);
     }
   }
-  
-  async findUserByEmail(email) {
+    async findUserByEmail(email) {
     try {
-      const result = await this.client.query(
+      // First try exact case match for active users
+      let result = await this.client.query(
         'SELECT * FROM users WHERE email = $1 AND "isActive" = true',
         [email]
       );
-      return result.rows[0] || null;
+      
+      if (result.rows.length > 0) {
+        return result.rows[0];
+      }
+      
+      // If no exact match found, try case-insensitive search for active users
+      result = await this.client.query(
+        'SELECT * FROM users WHERE LOWER(email) = LOWER($1) AND "isActive" = true',
+        [email]
+      );
+      
+      if (result.rows.length > 0) {
+        return result.rows[0];
+      }
+      
+      // For admin emails, also check inactive users (in case admin was deactivated)
+      if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        result = await this.client.query(
+          'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
+          [email]
+        );
+        
+        if (result.rows.length > 0) {
+          console.log('🔧 Found admin user, ensuring it is activated...');
+          // Reactivate admin user if found but inactive
+          await this.client.query(
+            'UPDATE users SET "isActive" = true, "updatedAt" = NOW() WHERE LOWER(email) = LOWER($1)',
+            [email]
+          );
+          return result.rows[0];
+        }
+      }
+      
+      return null;
     } catch (error) {
       console.error('Database error finding user by email:', error);
       return null;
@@ -1040,7 +1093,6 @@ const routes = {
         }
       }
     });  },
-
   // Login
   'POST /api/auth/login': async (req, res) => {
     try {
@@ -1056,7 +1108,15 @@ const routes = {
       
       // Find user by email
       console.log(`🔍 Looking up user: ${email}`);
-      const user = await db.findUserByEmail(email);
+      let user = await db.findUserByEmail(email);
+      
+      // Special handling for admin login if user not found in database
+      if (!user && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        console.log('🔧 Admin user not found in database, attempting to create/reinitialize...');
+        await db.initializeAdminUser();
+        user = await db.findUserByEmail(email);
+      }
+      
       if (!user) {
         console.log('❌ User not found');
         return sendError(res, 401, 'Invalid email or password');
@@ -1067,11 +1127,42 @@ const routes = {
       // Check if user is active
       if (!user.isActive) {
         console.log('❌ User account is disabled');
-        return sendError(res, 401, 'Account is disabled');
+        // Special case: if this is admin, try to reactivate
+        if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          console.log('🔧 Reactivating admin user...');
+          await db.client.query(
+            'UPDATE users SET "isActive" = true, "updatedAt" = NOW() WHERE id = $1',
+            [user.id]
+          );
+          user.isActive = true;
+          console.log('✅ Admin user reactivated');
+        } else {
+          return sendError(res, 401, 'Account is disabled');
+        }
       }
-        // Verify password
-      const passwordValid = await PasswordHasher.compare(password, user.password);
+
+      // Verify password
+      console.log('🔑 Verifying password...');
+      let passwordValid = await PasswordHasher.compare(password, user.password);
+      
+      // Special fallback for admin user - if password doesn't match, try updating with env password
+      if (!passwordValid && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        console.log('🔧 Admin password mismatch, updating with environment password...');
+        const hashedPassword = await PasswordHasher.hash(ADMIN_PASSWORD);
+        await db.client.query(
+          'UPDATE users SET password = $1, "updatedAt" = NOW() WHERE id = $2',
+          [hashedPassword, user.id]
+        );
+        // Try again with the environment password
+        passwordValid = await PasswordHasher.compare(password, hashedPassword);
+        if (passwordValid) {
+          console.log('✅ Admin password updated and verified');
+          user.password = hashedPassword; // Update local object
+        }
+      }
+      
       if (!passwordValid) {
+        console.log('❌ Password verification failed');
         return sendError(res, 401, 'Invalid email or password');
       }
 
