@@ -136,8 +136,7 @@ class ApiClient {
         user: (response.data as any).user || response.data,
         token: (response.data as any).token,
         refreshToken: (response.data as any).refreshToken
-      } : undefined,
-      message: response.message,
+      } : undefined,      message: response.message,
       error: response.error
     };
   }
@@ -146,9 +145,30 @@ class ApiClient {
     credential: string;
     userType?: 'creator' | 'subscriber';
   }): Promise<AuthResponse> {
-    const response = await this.makeRequest('/auth/google', {
+    const response = await this.makeRequest('/auth/google/login', {
       method: 'POST',
-      body: JSON.stringify(googleData),
+      body: JSON.stringify({ credential: googleData.credential }),
+    });
+    
+    return {
+      success: response.success,
+      data: response.data ? {
+        user: (response.data as any).user || response.data,
+        token: (response.data as any).token,
+        refreshToken: (response.data as any).refreshToken
+      } : undefined,
+      message: response.message,
+      error: response.error
+    };
+  }
+
+  async registerWithGoogle(googleData: {
+    credential: string;
+    userType?: 'creator' | 'subscriber';
+  }): Promise<AuthResponse> {
+    const response = await this.makeRequest('/auth/google/register', {
+      method: 'POST',
+      body: JSON.stringify({ credential: googleData.credential }),
     });
     
     return {

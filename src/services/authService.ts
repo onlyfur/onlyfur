@@ -282,6 +282,43 @@ class AuthService {
     }
   }
 
+  // Register with Google OAuth
+  async registerWithGoogle(
+    credential: string, 
+    userType: 'creator' | 'subscriber' = 'subscriber'
+  ): Promise<AuthResult> {
+    try {
+      const response = await apiClient.registerWithGoogle({
+        credential,
+        userType,
+      });
+      
+      if (response.success && response.data) {
+        const { user, token, refreshToken } = response.data;
+        
+        if (user && token) {
+          return {
+            success: true,
+            user: this.normalizeUser(user),
+            token,
+            refreshToken,
+          };
+        }
+      }
+      
+      return {
+        success: false,
+        error: response.error || 'Google registration failed',
+      };
+    } catch (error) {
+      console.error('Google registration error:', error);
+      return {
+        success: false,
+        error: 'Network error during Google registration',
+      };
+    }
+  }
+
   // Get current user profile
   async getProfile(token?: string): Promise<AuthResult> {
     try {

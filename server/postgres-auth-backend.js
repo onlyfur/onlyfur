@@ -3,6 +3,7 @@ const url = require('url');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const { Client } = require('pg');
+const fetch = require('node-fetch');
 
 // Load environment variables from .env file
 const fs = require('fs');
@@ -62,6 +63,7 @@ console.log(`   - Frontend URL: ${FRONTEND_URL}`);
 console.log(`   - Database: ${DB_CONFIG.connectionString ? 'Configured' : 'Not configured'}`);
 console.log(`   - Admin Email: ${ADMIN_EMAIL}`);
 console.log(`   - BCrypt Rounds: ${BCRYPT_ROUNDS}`);
+console.log(`   - Google Client ID: ${process.env.GOOGLE_CLIENT_ID ? 'Configured' : 'Not configured'}`);
 
 // Password hashing utilities using Node.js crypto (bcrypt alternative)
 class PasswordHasher {
@@ -175,10 +177,15 @@ class DatabaseService {
   constructor() {
     this.client = null;
   }
-  
-  async connect() {
+    async connect() {
     try {
       this.client = new Client(DB_CONFIG);
+      
+      // Add error handler to prevent crashes
+      this.client.on('error', (err) => {
+        console.error('Database client error:', err);
+      });
+      
       await this.client.connect();
       console.log('✅ Connected to PostgreSQL database');
       
@@ -198,20 +205,26 @@ class DatabaseService {
       this.client = null;
     }
   }
-  
-  async initializeAdminUser() {
+    async initializeAdminUser() {
     try {
-      // Check if admin user exists
-      const existingAdmin = await this.client.query(
-        'SELECT id FROM users WHERE email = $1',
+      // Check if admin user exists by email
+      const existingAdminByEmail = await this.client.query(
+        'SELECT id, username, email FROM users WHERE email = $1',
         [ADMIN_EMAIL]
       );
       
-      if (existingAdmin.rows.length === 0) {
-        // Create admin user
+      // Check if admin username exists
+      const existingAdminByUsername = await this.client.query(
+        'SELECT id, username, email FROM users WHERE username = $1',
+        [ADMIN_USERNAME]
+      );
+      
+      if (existingAdminByEmail.rows.length === 0 && existingAdminByUsername.rows.length === 0) {
+        // Create new admin user - no conflicts
         const hashedPassword = await PasswordHasher.hash(ADMIN_PASSWORD);
         const adminId = crypto.randomUUID();
-          await this.client.query(`
+        
+        await this.client.query(`
           INSERT INTO users (
             id, email, username, "displayName", role, password, 
             "isVerified", "isActive", "isEmailVerified", "authProvider",
@@ -231,8 +244,50 @@ class DatabaseService {
         ]);
         
         console.log('✅ Admin user created successfully');
+      } else if (existingAdminByEmail.rows.length > 0) {
+        // Admin exists by email - update password and role to ensure it's correct
+        const hashedPassword = await PasswordHasher.hash(ADMIN_PASSWORD);
+        
+        await this.client.query(`
+          UPDATE users SET 
+            password = $1, 
+            role = $2, 
+            "isActive" = true, 
+            "isVerified" = true,
+            "updatedAt" = NOW()
+          WHERE email = $3
+        `, [hashedPassword, 'ADMIN', ADMIN_EMAIL]);
+        
+        console.log('✅ Admin user updated with environment credentials');
       } else {
-        console.log('✅ Admin user already exists');
+        // Username conflict but different email
+        console.log('⚠️ Username "admin" exists but with different email. Using email for admin identification.');
+        
+        // Create admin with different username
+        const altUsername = `${ADMIN_USERNAME}_${Date.now()}`;
+        const hashedPassword = await PasswordHasher.hash(ADMIN_PASSWORD);
+        const adminId = crypto.randomUUID();
+        
+        await this.client.query(`
+          INSERT INTO users (
+            id, email, username, "displayName", role, password, 
+            "isVerified", "isActive", "isEmailVerified", "authProvider",
+            "createdAt", "updatedAt"
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        `, [
+          adminId,
+          ADMIN_EMAIL,
+          altUsername,
+          'Admin User',
+          'ADMIN',
+          hashedPassword,
+          true,
+          true,
+          true,
+          'EMAIL'
+        ]);
+        
+        console.log(`✅ Admin user created with username: ${altUsername}`);
       }
     } catch (error) {
       console.error('❌ Failed to initialize admin user:', error.message);
@@ -278,6 +333,19 @@ class DatabaseService {
     }
   }
   
+  async findUserByGoogleId(googleId) {
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM users WHERE "googleId" = $1',
+        [googleId]
+      );
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error('Database error finding user by Google ID:', error);
+      return null;
+    }
+  }
+  
   async createUser(userData) {
     try {
       const {
@@ -314,6 +382,69 @@ class DatabaseService {
     } catch (error) {
       console.error('Database error creating user:', error);
       throw error;
+    }
+  }
+  
+  async createGoogleUser(userData) {
+    try {
+      const {
+        email,
+        googleId,
+        name,
+        picture
+      } = userData;
+      
+      const userId = crypto.randomUUID();
+      
+      // Generate username from email or name
+      let username = email.split('@')[0];
+      
+      // Check if username exists and make it unique
+      let uniqueUsername = username;
+      let counter = 1;
+      while (await this.findUserByUsername(uniqueUsername)) {
+        uniqueUsername = `${username}${counter}`;
+        counter++;
+      }
+      
+      const result = await this.client.query(`
+        INSERT INTO users (
+          id, email, username, "displayName", role, "googleId",
+          "isVerified", "isActive", "isEmailVerified", "authProvider",
+          avatar, "createdAt", "updatedAt"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        RETURNING *
+      `, [
+        userId,
+        email,
+        uniqueUsername,
+        name || uniqueUsername,
+        'SUBSCRIBER', // Default role for Google users
+        googleId,
+        true, // isVerified
+        true, // isActive
+        true, // isEmailVerified (Google provides verified emails)
+        'GOOGLE', // authProvider
+        picture // avatar from Google
+      ]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('Database error creating Google user:', error);
+      throw error;
+    }
+  }
+  
+  async linkGoogleAccount(userId, googleId) {
+    try {
+      await this.client.query(
+        'UPDATE users SET "googleId" = $1, "authProvider" = $2 WHERE id = $3',
+        [googleId, 'GOOGLE', userId]
+      );
+      return true;
+    } catch (error) {
+      console.error('Database error linking Google account:', error);
+      return false;
     }
   }
   
@@ -440,11 +571,12 @@ const routes = {
   'GET /api': async (req, res) => {
     sendResponse(res, 200, {
       message: 'OnlyFur Authentication API',
-      version: '1.0.0',
-      endpoints: {
+      version: '1.0.0',      endpoints: {
         auth: {
           login: 'POST /api/auth/login',
           register: 'POST /api/auth/register',
+          googleLogin: 'POST /api/auth/google/login',
+          googleRegister: 'POST /api/auth/google/register',
           me: 'GET /api/auth/me',
           logout: 'POST /api/auth/logout',
           setupComplete: 'POST /api/auth/setup-complete'
@@ -656,8 +788,348 @@ const routes = {
         sendError(res, 500, 'Internal server error', error);
       }
     }
-  }
+  },
+
+  // Google OAuth login
+  'POST /api/auth/google': async (req, res) => {
+    try {
+      const { idToken } = await getRequestBody(req);
+      
+      if (!idToken) {
+        return sendError(res, 400, 'ID token is required');
+      }
+      
+      // Verify Google ID token
+      const googleUser = await GoogleOAuth.verifyIdToken(idToken);
+      
+      // Check if user already exists
+      let user = await db.findUserByEmail(googleUser.email);
+      
+      if (!user) {
+        // Create new user
+        user = await db.createUser({
+          email: googleUser.email,
+          username: googleUser.email.split('@')[0],
+          displayName: googleUser.name,
+          password: crypto.randomUUID(), // Random password for OAuth users
+          role: 'SUBSCRIBER'
+        });
+      }
+      
+      // Generate tokens
+      const tokenPayload = {
+        userId: user.id,
+        email: user.email,
+        role: user.role
+      };
+      
+      const token = JWTHandler.sign(tokenPayload, JWT_SECRET, JWT_EXPIRES_IN);
+      const refreshToken = JWTHandler.sign(tokenPayload, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN);
+      
+      sendResponse(res, 200, {
+        success: true,
+        message: 'Google login successful',
+        data: {
+          user: normalizeUser(user),
+          token,
+          refreshToken
+        }
+      });
+      
+    } catch (error) {
+      console.error('Google login error:', error);
+      sendError(res, 500, 'Internal server error', error);
+    }
+  },
+
+  // Google OAuth Login
+  'POST /api/auth/google/login': async (req, res) => {
+    try {
+      const { credential } = await getRequestBody(req);
+      
+      if (!credential) {
+        return sendError(res, 400, 'Google credential is required');
+      }
+      
+      // Verify Google token
+      const googleUserInfo = await GoogleOAuth.verifyIdToken(credential);
+      
+      // Check if user exists by Google ID
+      let user = await db.findUserByGoogleId(googleUserInfo.googleId);
+      
+      if (!user) {
+        // Check if user exists by email (for account linking)
+        user = await db.findUserByEmail(googleUserInfo.email);
+        
+        if (user) {
+          // Link existing email account with Google
+          const linked = await db.linkGoogleAccount(user.id, googleUserInfo.googleId);
+          if (!linked) {
+            return sendError(res, 500, 'Failed to link Google account');
+          }
+          
+          // Refresh user data
+          user = await db.findUserById(user.id);
+        } else {
+          // Create new user with Google
+          user = await db.createGoogleUser({
+            email: googleUserInfo.email,
+            googleId: googleUserInfo.googleId,
+            name: googleUserInfo.name,
+            picture: googleUserInfo.picture
+          });
+        }
+      }
+      
+      // Check if user is active
+      if (!user.isActive) {
+        return sendError(res, 401, 'Account is disabled');
+      }
+      
+      // Update last login
+      await db.updateUserLastLogin(user.id);
+      
+      // Generate tokens
+      const tokenPayload = {
+        userId: user.id,
+        email: user.email,
+        role: user.role
+      };
+      
+      const token = JWTHandler.sign(tokenPayload, JWT_SECRET, JWT_EXPIRES_IN);
+      const refreshToken = JWTHandler.sign(tokenPayload, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN);
+      
+      sendResponse(res, 200, {
+        success: true,
+        message: 'Google login successful',
+        data: {
+          user: normalizeUser(user),
+          token,
+          refreshToken
+        }
+      });
+      
+    } catch (error) {
+      console.error('Google login error:', error);
+      sendError(res, 500, 'Google authentication failed', error);
+    }
+  },
+
+  // Google OAuth Register (same as login for OAuth)
+  'POST /api/auth/google/register': async (req, res) => {
+    try {
+      const { credential } = await getRequestBody(req);
+      
+      if (!credential) {
+        return sendError(res, 400, 'Google credential is required');
+      }
+      
+      // Verify Google token
+      const googleUserInfo = await GoogleOAuth.verifyIdToken(credential);
+      
+      // Check if user already exists by Google ID
+      let user = await db.findUserByGoogleId(googleUserInfo.googleId);
+      
+      if (user) {
+        // User already exists, perform login
+        if (!user.isActive) {
+          return sendError(res, 401, 'Account is disabled');
+        }
+        
+        await db.updateUserLastLogin(user.id);
+        
+        const tokenPayload = {
+          userId: user.id,
+          email: user.email,
+          role: user.role
+        };
+        
+        const token = JWTHandler.sign(tokenPayload, JWT_SECRET, JWT_EXPIRES_IN);
+        const refreshToken = JWTHandler.sign(tokenPayload, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN);
+        
+        return sendResponse(res, 200, {
+          success: true,
+          message: 'Google login successful (existing account)',
+          data: {
+            user: normalizeUser(user),
+            token,
+            refreshToken
+          }
+        });
+      }
+      
+      // Check if user exists by email (for account linking)
+      user = await db.findUserByEmail(googleUserInfo.email);
+      
+      if (user) {
+        // Link existing email account with Google
+        const linked = await db.linkGoogleAccount(user.id, googleUserInfo.googleId);
+        if (!linked) {
+          return sendError(res, 500, 'Failed to link Google account');
+        }
+        
+        // Refresh user data
+        user = await db.findUserById(user.id);
+        
+        await db.updateUserLastLogin(user.id);
+        
+        const tokenPayload = {
+          userId: user.id,
+          email: user.email,
+          role: user.role
+        };
+        
+        const token = JWTHandler.sign(tokenPayload, JWT_SECRET, JWT_EXPIRES_IN);
+        const refreshToken = JWTHandler.sign(tokenPayload, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN);
+        
+        return sendResponse(res, 200, {
+          success: true,
+          message: 'Account linked with Google successfully',
+          data: {
+            user: normalizeUser(user),
+            token,
+            refreshToken
+          }
+        });
+      }
+      
+      // Create new user with Google
+      user = await db.createGoogleUser({
+        email: googleUserInfo.email,
+        googleId: googleUserInfo.googleId,
+        name: googleUserInfo.name,
+        picture: googleUserInfo.picture
+      });
+      
+      // Generate tokens
+      const tokenPayload = {
+        userId: user.id,
+        email: user.email,
+        role: user.role
+      };
+      
+      const token = JWTHandler.sign(tokenPayload, JWT_SECRET, JWT_EXPIRES_IN);
+      const refreshToken = JWTHandler.sign(tokenPayload, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN);
+      
+      sendResponse(res, 201, {
+        success: true,
+        message: 'Google registration successful',
+        data: {
+          user: normalizeUser(user),
+          token,
+          refreshToken
+        }
+      });
+      
+    } catch (error) {
+      console.error('Google registration error:', error);
+      if (error.code === '23505') { // PostgreSQL unique violation
+        sendError(res, 409, 'Account already exists');
+      } else {
+        sendError(res, 500, 'Google registration failed', error);
+      }
+    }
+  },
+
+  // Test Google OAuth (Development only)
+  'POST /api/auth/google/test': async (req, res) => {
+    try {
+      if (false && process.env.NODE_ENV === 'production') { // Temporarily allow testing
+        return sendError(res, 403, 'Test endpoint not available in production');
+      }
+      
+      const { email, name } = await getRequestBody(req);
+      
+      if (!email || !name) {
+        return sendError(res, 400, 'Email and name are required for test');
+      }
+      
+      // Simulate Google user info
+      const testGoogleId = `test_google_${Date.now()}`;
+      
+      // Check if user exists by email (for account linking)
+      let user = await db.findUserByEmail(email);
+      
+      if (user) {
+        // Link existing email account with Google
+        const linked = await db.linkGoogleAccount(user.id, testGoogleId);
+        if (!linked) {
+          return sendError(res, 500, 'Failed to link Google account');
+        }
+        
+        // Refresh user data
+        user = await db.findUserById(user.id);
+        
+        sendResponse(res, 200, {
+          success: true,
+          message: 'Account linked with Google successfully (test)',
+          data: {
+            user: normalizeUser(user),
+            action: 'linked'
+          }
+        });
+      } else {
+        // Create new user with Google
+        user = await db.createGoogleUser({
+          email: email,
+          googleId: testGoogleId,
+          name: name,
+          picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
+        });
+        
+        sendResponse(res, 201, {
+          success: true,
+          message: 'Google user created successfully (test)',
+          data: {
+            user: normalizeUser(user),
+            action: 'created'
+          }
+        });
+      }
+      
+    } catch (error) {
+      console.error('Google test error:', error);
+      sendError(res, 500, 'Google test failed', error);
+    }
+  },
+
+  // ...existing code...
 };
+
+// Google OAuth token verification
+class GoogleOAuth {
+  static async verifyIdToken(idToken) {
+    try {
+      // Verify the Google ID token by calling Google's tokeninfo endpoint
+      const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+      const tokenInfo = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(tokenInfo.error || 'Invalid token');
+      }
+      
+      // Verify the token is for our app
+      if (tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID) {
+        throw new Error('Token audience mismatch');
+      }
+      
+      // Verify token hasn't expired
+      if (tokenInfo.exp < Math.floor(Date.now() / 1000)) {
+        throw new Error('Token expired');
+      }
+      
+      return {
+        googleId: tokenInfo.sub,
+        email: tokenInfo.email,
+        name: tokenInfo.name,
+        picture: tokenInfo.picture,
+        emailVerified: tokenInfo.email_verified === 'true'
+      };
+    } catch (error) {
+      throw new Error(`Google token verification failed: ${error.message}`);
+    }
+  }
+}
 
 // Create HTTP server
 const server = http.createServer(async (req, res) => {
