@@ -51,10 +51,25 @@ function scanHelpArticles() {
     }));
 }
 
+// Remove duplicates and only include articles that exist on disk
+function dedupeAndFilterExisting(entries) {
+  const seen = new Set();
+  return entries.filter(entry => {
+    if (seen.has(entry.url)) return false;
+    seen.add(entry.url);
+    // For help articles, check file existence
+    if (entry.category === 'help') {
+      const filePath = path.join(helpArticlesDir, path.basename(entry.url) + '.tsx');
+      return fs.existsSync(filePath);
+    }
+    return true;
+  });
+}
+
 function main() {
   const helpArticles = scanHelpArticles();
   const pages = scanDirForPages(pagesDir);
-  const all = [...helpArticles, ...pages];
+  const all = dedupeAndFilterExisting([...helpArticles, ...pages]);
   fs.writeFileSync(outputFile, JSON.stringify(all, null, 2));
   console.log(`Indexed ${all.length} pages/articles to ${outputFile}`);
 }

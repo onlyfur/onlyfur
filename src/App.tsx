@@ -74,31 +74,49 @@ import DMCA from '@/pages/legal/DMCA';
 // Creator Resources - Removed as requested
 
 // Help Articles
-import CreateAccount from '@/pages/help/articles/CreateAccount';
-import SettingUpCreatorProfile from '@/pages/help/articles/SettingUpCreatorProfile';
-import UploadOrganizeContent from '@/pages/help/articles/UploadOrganizeContent';
-import FindingCreators from '@/pages/help/articles/FindingCreators';
-import SubscriptionTiersGuide from '@/pages/help/articles/SubscriptionTiersGuide';
-import FirstSubscription from '@/pages/help/articles/FirstSubscription';
-import ContentPrivacyLevels from '@/pages/help/articles/ContentPrivacyLevels';
-import PricingStrategies from '@/pages/help/articles/PricingStrategies';
-import SchedulingFeatures from '@/pages/help/articles/SchedulingFeatures';
-import UnderstandingAnalytics from '@/pages/help/articles/UnderstandingAnalytics';
-import CustomCommissions from '@/pages/help/articles/CustomCommissions';
-import PaymentSystem from '@/pages/help/articles/PaymentSystem';
-import MessagingCreators from '@/pages/help/articles/MessagingCreators';
-import CommunityGuidelinesArticle from '@/pages/help/articles/CommunityGuidelines';
-import SubscriptionManagement from '@/pages/help/articles/SubscriptionManagement';
-import AccountSecurity from '@/pages/help/articles/AccountSecurity';
-import ReportUserContent from '@/pages/help/articles/ReportUserContent';
-import MobileApp from '@/pages/help/articles/MobileApp';
-import MessagingTips from '@/pages/help/articles/MessagingTips';
-import MessageLimits from '@/pages/help/articles/MessageLimits';
-import SubscriptionTiers from '@/pages/help/articles/SubscriptionTiers';
-import PaymentMethods from '@/pages/help/articles/PaymentMethods';
-import HowToCreateAccount from '@/pages/help/articles/HowToCreateAccount';
-import CreatorEarnings from '@/pages/help/articles/CreatorEarnings';
-import SubscriptionTiersOverview from '@/pages/help/articles/SubscriptionTiersOverview';
+import HowToCreateAccount from '@/pages/help/articles/how-to-create-account';
+import SettingUpCreatorProfile from '@/pages/help/articles/setting-up-creator-profile';
+import UploadOrganizeContent from '@/pages/help/articles/upload-organize-content';
+import FindingCreators from '@/pages/help/articles/finding-creators';
+import FirstSubscription from '@/pages/help/articles/first-subscription';
+import ContentPrivacyLevels from '@/pages/help/articles/content-privacy-levels';
+import PricingStrategies from '@/pages/help/articles/pricing-strategies';
+import SchedulingFeatures from '@/pages/help/articles/scheduling-features';
+import UnderstandingAnalytics from '@/pages/help/articles/understanding-analytics';
+import CustomCommissions from '@/pages/help/articles/custom-commissions';
+import PaymentSystem from '@/pages/help/articles/payment-system';
+import MessagingCreators from '@/pages/help/articles/messaging-creators';
+import CommunityGuidelinesArticle from '@/pages/help/articles/community-guidelines';
+import SubscriptionManagement from '@/pages/help/articles/subscription-management';
+import AccountSecurity from '@/pages/help/articles/account-security';
+import ReportUserContent from '@/pages/help/articles/report-user-content';
+import MobileApp from '@/pages/help/articles/mobile-app';
+import MessagingTips from '@/pages/help/articles/messaging-tips';
+import MessageLimits from '@/pages/help/articles/message-limits';
+import PaymentMethods from '@/pages/help/articles/payment-methods';
+import CreatorEarnings from '@/pages/help/articles/creator-earnings';
+import SubscriptionTiersOverview from '@/pages/help/articles/subscription-tiers-overview';
+
+// Additional missing help articles
+import LoginTroubleshooting from '@/pages/help/articles/login-troubleshooting';
+import PasswordReset from '@/pages/help/articles/password-reset';
+import OAuthGuide from '@/pages/help/articles/oauth-guide';
+import SessionManagement from '@/pages/help/articles/session-management';
+import EmailVerification from '@/pages/help/articles/email-verification';
+import ProfileSetup from '@/pages/help/articles/profile-setup';
+import ContentProtection from '@/pages/help/articles/content-protection';
+import PrivacySettings from '@/pages/help/articles/privacy-settings';
+import TwoFactorAuthentication from '@/pages/help/articles/two-factor-authentication';
+import BrowserCompatibility from '@/pages/help/articles/browser-compatibility';
+import AgeVerification from '@/pages/help/articles/age-verification';
+import BulkMessaging from '@/pages/help/articles/bulk-messaging';
+import AdvancedSearchFeatures from '@/pages/help/articles/advanced-search-features';
+import NeuralSearch from '@/pages/help/articles/neural-search';
+import SupportedFormats from '@/pages/help/articles/supported-formats';
+import UploadTroubleshooting from '@/pages/help/articles/upload-troubleshooting';
+import VideoQuality from '@/pages/help/articles/video-quality';
+import RefundPolicy from '@/pages/help/articles/refund-policy';
+import TaxInformation from '@/pages/help/articles/tax-information';
 
 // V3.7 New Creator Components
 import LiveStreamingStudio from '@/pages/creator/LiveStreamingStudio';
@@ -564,12 +582,12 @@ function App() {
               <Route path="success-stories" element={<SuccessStories />} />
 
               {/* Support Pages */}
-              <Route path="help" element={<HelpCenter />} />
-              <Route path="help/articles/create-account" element={<CreateAccount />} />
+              <Route path="help" element={<HelpCenter />} />              <Route path="help/articles/create-account" element={<HowToCreateAccount />} />
+              <Route path="help/articles/how-to-create-account" element={<HowToCreateAccount />} />
               <Route path="help/articles/setting-up-creator-profile" element={<SettingUpCreatorProfile />} />
               <Route path="help/articles/upload-organize-content" element={<UploadOrganizeContent />} />
               <Route path="help/articles/finding-creators" element={<FindingCreators />} />
-              <Route path="help/articles/subscription-tiers" element={<SubscriptionTiersGuide />} />
+              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiersOverview />} />
               <Route path="help/articles/first-subscription" element={<FirstSubscription />} />
               <Route path="help/articles/content-privacy-levels" element={<ContentPrivacyLevels />} />
               <Route path="help/articles/pricing-strategies" element={<PricingStrategies />} />
@@ -585,10 +603,39 @@ function App() {
               <Route path="help/articles/mobile-app" element={<MobileApp />} />
               <Route path="help/articles/messaging-tips" element={<MessagingTips />} />
               <Route path="help/articles/message-limits" element={<MessageLimits />} />
-              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiersOverview />} />
               <Route path="help/articles/payment-methods" element={<PaymentMethods />} />
-              <Route path="help/articles/how-to-create-account" element={<HowToCreateAccount />} />
               <Route path="help/articles/creator-earnings" element={<CreatorEarnings />} />
+              
+              {/* Account Settings */}
+              <Route path="help/articles/login-troubleshooting" element={<LoginTroubleshooting />} />
+              <Route path="help/articles/password-reset" element={<PasswordReset />} />
+              <Route path="help/articles/oauth-guide" element={<OAuthGuide />} />
+              <Route path="help/articles/session-management" element={<SessionManagement />} />
+              <Route path="help/articles/email-verification" element={<EmailVerification />} />
+              <Route path="help/articles/profile-setup" element={<ProfileSetup />} />
+              
+              {/* Safety & Privacy */}
+              <Route path="help/articles/content-protection" element={<ContentProtection />} />
+              <Route path="help/articles/privacy-settings" element={<PrivacySettings />} />
+              <Route path="help/articles/two-factor-authentication" element={<TwoFactorAuthentication />} />
+              <Route path="help/articles/browser-compatibility" element={<BrowserCompatibility />} />
+              <Route path="help/articles/age-verification" element={<AgeVerification />} />
+              
+              {/* Communication */}
+              <Route path="help/articles/bulk-messaging" element={<BulkMessaging />} />
+              
+              {/* Search Features */}
+              <Route path="help/articles/advanced-search-features" element={<AdvancedSearchFeatures />} />
+              <Route path="help/articles/neural-search" element={<NeuralSearch />} />
+              
+              {/* Creator Tools */}
+              <Route path="help/articles/supported-formats" element={<SupportedFormats />} />
+              <Route path="help/articles/upload-troubleshooting" element={<UploadTroubleshooting />} />
+              <Route path="help/articles/video-quality" element={<VideoQuality />} />
+              
+              {/* Billing */}
+              <Route path="help/articles/refund-policy" element={<RefundPolicy />} />
+              <Route path="help/articles/tax-information" element={<TaxInformation />} />
               <Route path="safety" element={<Safety />} />
               <Route path="guidelines" element={<CommunityGuidelinesPage />} />
               <Route path="contact" element={<ContactUs />} />

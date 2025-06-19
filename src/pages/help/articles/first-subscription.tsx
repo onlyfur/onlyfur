@@ -1,16 +1,24 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function FirstSubscription() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Your First Subscription</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>What to expect when subscribing to a creator for the first time.</p>
-        {/* Add detailed instructions here */}
-      </CardContent>
-    </Card>
-  );
-}
+const FirstSubscription: React.FC = () => (
+  <div>
+    <h1>First Subscription</h1>
+    <p><strong>Description:</strong> How to manage your first subscription on OnlyFur.</p>
+    <h2>Getting Started</h2>
+    <ol>
+      <li>Find a creator you want to support.</li>
+      <li>Click the <strong>Subscribe</strong> button on their profile.</li>
+      <li>Choose your subscription tier and payment method.</li>
+      <li>Enjoy exclusive content and interact with the creator.</li>
+    </ol>
+    <h2>Managing Your Subscription</h2>
+    <ul>
+      <li>View your active subscriptions in your account dashboard.</li>
+      <li>Cancel or upgrade your subscription at any time.</li>
+      <li>Contact support if you have billing issues.</li>
+    </ul>
+    <div><strong>Tags:</strong> help, subscription, manage, first</div>
+  </div>
+);
+
+export default FirstSubscription;

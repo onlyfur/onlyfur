@@ -18,7 +18,8 @@
     "start": "node scripts/start-production.js",
     "start:prod": "npm run build && npm run server:prod",
     "prebuild": "node scripts/generateNeuralIndex.js",
-    "prestart:prod": "node scripts/generateNeuralIndex.js"
+    "prestart:prod": "node scripts/generateNeuralIndex.js",
+    "predev": "node scripts/generateNeuralIndex.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

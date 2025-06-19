@@ -24,73 +24,72 @@ import { Link } from 'react-router-dom';
 
 const HelpCenter: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [openCategories, setOpenCategories] = useState<string[]>(['getting-started']);
-
-  const getArticleLink = (article: any) => {
+  const [openCategories, setOpenCategories] = useState<string[]>(['getting-started']);  const getArticleLink = (article: any) => {
     const articleLinks: { [key: string]: string } = {
+      // Getting Started
       'How to create your OnlyFur account': '/help/articles/how-to-create-account',
       'Setting up your profile as a creator': '/help/articles/setting-up-creator-profile',
       'Understanding subscription tiers': '/help/articles/subscription-tiers-overview',
       'Finding and following creators': '/help/articles/finding-creators',
       'Your first subscription - what to expect': '/help/articles/first-subscription',
+      'Mobile app features and limitations': '/help/articles/mobile-app',
+      'Profile setup and optimization': '/help/articles/profile-setup',
+      'Email verification process': '/help/articles/email-verification',
+      
+      // Creator Tools
       'Uploading and organizing your content': '/help/articles/upload-organize-content',
       'Setting content privacy levels': '/help/articles/content-privacy-levels',
       'Pricing strategies for creators': '/help/articles/pricing-strategies',
       'Using scheduling features': '/help/articles/scheduling-features',
       'Understanding creator analytics': '/help/articles/understanding-analytics',
       'Custom content and commissions': '/help/articles/custom-commissions',
+      'Supported file formats and sizes': '/help/articles/supported-formats',
+      'Troubleshooting upload issues': '/help/articles/upload-troubleshooting',
+      'Video quality and streaming': '/help/articles/video-quality',
+      
+      // Payments & Billing
       'How payments work on OnlyFur': '/help/articles/payment-system',
       'Updating your payment method': '/help/articles/payment-methods',
-      'Creator earnings and payouts': '/help/articles/creator-earnings',
       'Subscription renewal and cancellation': '/help/articles/subscription-management',
+      'Creator earnings and payouts': '/help/articles/creator-earnings',
       'Refund policy and requests': '/help/articles/refund-policy',
       'Tax information for creators': '/help/articles/tax-information',
+      
+      // Communication
       'How to message creators': '/help/articles/messaging-creators',
       'Message limits by subscription tier': '/help/articles/message-limits',
       'Sending tips through messages': '/help/articles/messaging-tips',
-      'Blocking and reporting users': '/help/articles/report-user-content',
       'Creator bulk messaging features': '/help/articles/bulk-messaging',
+      
+      // Safety & Privacy
       'Community guidelines overview': '/help/articles/community-guidelines',
       'Privacy settings and controls': '/help/articles/privacy-settings',
       'Content protection for creators': '/help/articles/content-protection',
       'Reporting inappropriate content or behavior': '/help/articles/report-user-content',
       'Age verification process': '/help/articles/age-verification',
-      'Supported file formats and sizes': '/help/articles/supported-formats',
-      'Troubleshooting upload issues': '/help/articles/upload-troubleshooting',
-      'Video quality and streaming': '/help/articles/video-quality',
-      'Mobile app features and limitations': '/help/articles/mobile-app',
-      'Browser compatibility': '/help/articles/browser-compatibility',
-      'Account security': '/help/articles/account-security',
+      'Account security best practices': '/help/articles/account-security',
+      'Two-factor authentication setup': '/help/articles/two-factor-authentication',
+      'Browser compatibility information': '/help/articles/browser-compatibility',
+      
+      // Account Management
       'Password reset guide': '/help/articles/password-reset',
       'Login troubleshooting': '/help/articles/login-troubleshooting',
-      'Session management': '/help/articles/session-management',
       'Google OAuth guide': '/help/articles/oauth-guide',
-      'Two-factor authentication': '/help/articles/two-factor-authentication',
-      'Age Verification': '/help/articles/age-verification',
-      'Content Protection': '/help/articles/content-protection',
-      'Bulk Messaging': '/help/articles/bulk-messaging',
-      'Tax Information': '/help/articles/tax-information',
-      'Refund Policy': '/help/articles/refund-policy'
-
+      'Session management': '/help/articles/session-management',
+      
+      // Search Features
+      'Advanced search features': '/help/articles/advanced-search-features',
+      'Neural search capabilities': '/help/articles/neural-search'
     };
     
     return articleLinks[article.title] || '/help';
   };
-
   const getPopularArticleLink = (article: string) => {
     const popularLinks: { [key: string]: string } = {
       'How to create your OnlyFur account': '/help/articles/how-to-create-account',
       'Uploading and organizing your content': '/help/articles/upload-organize-content',
       'How payments work on OnlyFur': '/help/articles/payment-system',
-      'Community guidelines overview': '/help/articles/community-guidelines',
-      'Creator earnings and payouts': '/help/articles/creator-earnings',
-      'Subscription renewal and cancellation': '/help/articles/subscription-management',
-      'How to message creators': '/help/articles/messaging-creators',
-      'Setting content privacy levels': '/help/articles/content-privacy-levels',
-      'Mobile app features and limitations': '/help/articles/mobile-app',
-      'Account security': '/help/articles/account-security',
-      'Password reset guide': '/help/articles/password-reset',
-      'Login troubleshooting': '/help/articles/login-troubleshooting'
+      'Community guidelines overview': '/help/articles/community-guidelines'
     };
     
     return popularLinks[article] || '/help';
@@ -102,9 +101,7 @@ const HelpCenter: React.FC = () => {
         ? prev.filter(id => id !== categoryId)
         : [...prev, categoryId]
     );
-  };
-
-  const helpCategories = [
+  };  const helpCategories = [
     {
       id: 'getting-started',
       title: 'Getting Started',
@@ -112,7 +109,7 @@ const HelpCenter: React.FC = () => {
       description: 'New to OnlyFur? Start here!',
       color: 'text-blue-500',
       articles: [
-      {
+        {
           title: 'How to create your OnlyFur account',
           description: 'Step-by-step guide to joining our community',
           popular: true
@@ -120,10 +117,6 @@ const HelpCenter: React.FC = () => {
         {
           title: 'Setting up your profile as a creator',
           description: 'Complete your creator profile to attract subscribers'
-        },
-        {
-          title: 'Understanding subscription tiers',
-          description: 'Learn about Basic, Pro, and VIP subscriber levels'
         },
         {
           title: 'Finding and following creators',
@@ -134,33 +127,19 @@ const HelpCenter: React.FC = () => {
           description: 'Guide for new subscribers'
         },
         {
-          title: 'Account security',
-          description: 'Best practices for keeping your OnlyFur account secure',
-          popular: true
+          title: 'Mobile app features and limitations',
+          description: 'Using OnlyFur on mobile devices'
         },
         {
-          title: 'Password reset guide',
-          description: 'Learn how to securely reset your password'
+          title: 'Profile setup and optimization',
+          description: 'Complete your profile to attract subscribers'
         },
         {
-          title: 'Login troubleshooting',
-          description: 'Resolve common login issues and access problems'
-        },
-        {
-          title: 'Two-factor authentication',
-          description: 'Set up 2FA for enhanced account protection'
-        },
-        {
-          title: 'Google OAuth guide',
-          description: 'Use Google Sign-In for convenient and secure access'
-        },
-        {
-          title: 'Session management',
-          description: 'Monitor and control your active login sessions'
+          title: 'Email verification process',
+          description: 'Verify your email for full account access'
         }
       ]
-    },
-    {
+    },    {
       id: 'creator-tools',
       title: 'Creator Tools',
       icon: Upload,
@@ -174,8 +153,7 @@ const HelpCenter: React.FC = () => {
         },
         {
           title: 'Setting content privacy levels',
-          description: 'Control who can see your content',
-          popular: true
+          description: 'Control who can see your content'
         },
         {
           title: 'Pricing strategies for creators',
@@ -194,13 +172,19 @@ const HelpCenter: React.FC = () => {
           description: 'Offer personalized content to subscribers'
         },
         {
-          title: 'Creator earnings and payouts',
-          description: 'Understanding how creators earn money and receive payments',
-          popular: true
+          title: 'Supported file formats and sizes',
+          description: 'What content types you can upload'
+        },
+        {
+          title: 'Troubleshooting upload issues',
+          description: 'Fix common upload problems'
+        },
+        {
+          title: 'Video quality and streaming',
+          description: 'Optimize your video content'
         }
       ]
-    },
-    {
+    },    {
       id: 'payments',
       title: 'Payments & Billing',
       icon: CreditCard,
@@ -217,9 +201,16 @@ const HelpCenter: React.FC = () => {
           description: 'Change credit cards and payment details'
         },
         {
+          title: 'Understanding subscription tiers',
+          description: 'Learn about Basic, Premium, and VIP subscriber levels'
+        },
+        {
           title: 'Subscription renewal and cancellation',
-          description: 'Manage your subscription settings',
-          popular: true
+          description: 'Manage your subscription settings'
+        },
+        {
+          title: 'Creator earnings and payouts',
+          description: 'Understanding how creators earn money and receive payments'
         },
         {
           title: 'Refund policy and requests',
@@ -230,8 +221,7 @@ const HelpCenter: React.FC = () => {
           description: 'Important tax considerations'
         }
       ]
-    },
-    {
+    },    {
       id: 'messaging',
       title: 'Messaging & Communication',
       icon: MessageCircle,
@@ -240,8 +230,7 @@ const HelpCenter: React.FC = () => {
       articles: [
         {
           title: 'How to message creators',
-          description: 'Start conversations with your favorite creators',
-          popular: true
+          description: 'Start conversations with your favorite creators'
         },
         {
           title: 'Message limits by subscription tier',
@@ -252,16 +241,11 @@ const HelpCenter: React.FC = () => {
           description: 'Show appreciation with monetary tips'
         },
         {
-          title: 'Blocking and reporting users',
-          description: 'Keep your experience safe and positive'
-        },
-        {
           title: 'Creator bulk messaging features',
           description: 'Reach multiple subscribers efficiently'
         }
       ]
-    },
-    {
+    },    {
       id: 'safety',
       title: 'Safety & Privacy',
       icon: Shield,
@@ -288,64 +272,76 @@ const HelpCenter: React.FC = () => {
         {
           title: 'Age verification process',
           description: 'Why and how we verify user ages'
+        },
+        {
+          title: 'Account security best practices',
+          description: 'Keep your OnlyFur account safe and secure'
+        },
+        {
+          title: 'Two-factor authentication setup',
+          description: 'Add an extra layer of account protection'
+        },
+        {
+          title: 'Browser compatibility information',
+          description: 'Supported browsers and requirements'
         }
       ]
-    },
-      {
-        id: 'technical',
-        title: 'Technical Support',
-        icon: Settings,
-        description: 'Troubleshooting and technical help',
-        color: 'text-orange-500',
-        articles: [
-          {
-            title: 'Supported file formats and sizes',
-            description: 'What content types you can upload'
-          },
-          {
-            title: 'Troubleshooting upload issues',
-            description: 'Fix common upload problems'
-          },
-          {
-            title: 'Video quality and streaming',
-            description: 'Optimize your video content'
-          },
-          {
-            title: 'Mobile app features and limitations',
-            description: 'Using OnlyFur on mobile devices',
-            popular: true
-          },
-          {
-            title: 'Browser compatibility',
-            description: 'Supported browsers and requirements'
-          },
-          {
-            title: 'Login troubleshooting',
-            description: 'Resolve common login and access issues',
-            popular: true
-          },
-          {
-            title: 'Session management',
-            description: 'Monitor and control your active sessions'
-          }
-        ]
-      }
+    },    {
+      id: 'account-settings',
+      title: 'Account Settings',
+      icon: Settings,
+      description: 'Manage your account and settings',
+      color: 'text-orange-500',
+      articles: [
+        {
+          title: 'Password reset guide',
+          description: 'Learn how to securely reset your password'
+        },
+        {
+          title: 'Login troubleshooting',
+          description: 'Resolve common login issues and access problems'
+        },
+        {
+          title: 'Google OAuth guide',
+          description: 'Use Google Sign-In for convenient and secure access'
+        },
+        {
+          title: 'Session management',
+          description: 'Monitor and control your active login sessions'
+        },
+        {
+          title: 'Email verification process',
+          description: 'Verify your email address for account security'
+        },
+        {
+          title: 'Profile setup and optimization',
+          description: 'Complete your OnlyFur profile'
+        }
+      ]
+    },    {
+      id: 'search-features',
+      title: 'Search Features',
+      icon: Search,
+      description: 'Find content and creators effectively',
+      color: 'text-indigo-500',
+      articles: [
+        {
+          title: 'Advanced search features',
+          description: 'Use powerful search tools to find exactly what you want'
+        },
+        {
+          title: 'Neural search capabilities',
+          description: 'AI-powered content discovery'
+        }
+      ]
+    }
   ];
-
 
   const popularArticles = [
     'How to create your OnlyFur account',
     'Uploading and organizing your content',
     'How payments work on OnlyFur',
-    'Community guidelines overview',
-    'Creator earnings and payouts',
-    'Subscription renewal and cancellation',
-    'How to message creators',
-    'Setting content privacy levels',
-    'Mobile app features and limitations',
-    'Account security',
-    'Password reset guide',
-    'Login troubleshooting'
+    'Community guidelines overview'
   ];
 
   const quickLinks = [

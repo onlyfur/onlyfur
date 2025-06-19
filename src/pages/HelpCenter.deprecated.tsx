@@ -23,21 +23,21 @@ const HelpCenter: React.FC = () => {
       title: 'Getting Started',
       description: 'Learn the basics of using OnlyFur',
       color: 'text-blue-500',
-      articles: 7
+      articles: 5
     },
     {
       icon: CreditCard,
       title: 'Billing & Subscriptions',
       description: 'Manage your subscriptions and payments',
       color: 'text-green-500',
-      articles: 7
+      articles: 8
     },
     {
       icon: Shield,
       title: 'Safety & Privacy',
       description: 'Stay safe and protect your privacy',
       color: 'text-purple-500',
-      articles: 8
+      articles: 9
     },
     {
       icon: Search,
@@ -45,7 +45,8 @@ const HelpCenter: React.FC = () => {
       description: 'Find content and creators effectively',
       color: 'text-indigo-500',
       articles: 2
-    },    {
+    },
+    {
       icon: MessageCircle,
       title: 'Messaging & Communication',
       description: 'How to connect with others',
@@ -61,10 +62,10 @@ const HelpCenter: React.FC = () => {
     },
     {
       icon: Users,
-      title: 'Creator Tools',
+      title: 'Creator Resources',
       description: 'Tools and guides for content creators',
       color: 'text-orange-500',
-      articles: 9
+      articles: 7
     }
   ];
 
@@ -141,98 +142,63 @@ const HelpCenter: React.FC = () => {
         }
       ]
     }
-  ];  // List of all neural search help articles and their categories - synchronized with neuralIndex.ts
+  ];
+  // List of all neural search help articles and their categories
   const neuralHelpArticles = [
     // Getting Started
     { title: 'How to Create Your OnlyFur Account', url: '/help/articles/how-to-create-account', category: 'Getting Started' },
-    { title: 'How To Create Account', url: '/help/articles/HowToCreateAccount', category: 'Getting Started' },
-    { title: 'Create Account Guide', url: '/help/articles/CreateAccount', category: 'Getting Started' },
     { title: 'Setting Up Creator Profile', url: '/help/articles/setting-up-creator-profile', category: 'Getting Started' },
-    { title: 'Setting Up Creator Profile', url: '/help/articles/SettingUpCreatorProfile', category: 'Getting Started' },
     { title: 'Finding Creators', url: '/help/articles/finding-creators', category: 'Getting Started' },
-    { title: 'Finding Creators Guide', url: '/help/articles/FindingCreators', category: 'Getting Started' },
     { title: 'First Subscription', url: '/help/articles/first-subscription', category: 'Getting Started' },
-    { title: 'First Subscription Guide', url: '/help/articles/FirstSubscription', category: 'Getting Started' },
     { title: 'Mobile App', url: '/help/articles/mobile-app', category: 'Getting Started' },
-    { title: 'Mobile App Guide', url: '/help/articles/MobileApp', category: 'Getting Started' },
-    { title: 'Profile Setup', url: '/help/articles/ProfileSetup', category: 'Getting Started' },
-    { title: 'Email Verification', url: '/help/articles/EmailVerification', category: 'Getting Started' },
 
     // Billing & Subscriptions
     { title: 'Subscription Tiers Overview', url: '/help/articles/subscription-tiers-overview', category: 'Billing & Subscriptions' },
-    { title: 'Subscription Tiers Overview', url: '/help/articles/SubscriptionTiersOverview', category: 'Billing & Subscriptions' },
-    { title: 'Subscription Tiers', url: '/help/articles/SubscriptionTiers', category: 'Billing & Subscriptions' },
-    { title: 'Subscription Tiers Guide', url: '/help/articles/SubscriptionTiersGuide', category: 'Billing & Subscriptions' },
     { title: 'Subscription Management', url: '/help/articles/subscription-management', category: 'Billing & Subscriptions' },
-    { title: 'Subscription Management', url: '/help/articles/SubscriptionManagement', category: 'Billing & Subscriptions' },
     { title: 'Payment Methods', url: '/help/articles/payment-methods', category: 'Billing & Subscriptions' },
-    { title: 'Payment Methods Guide', url: '/help/articles/PaymentMethods', category: 'Billing & Subscriptions' },
-    { title: 'Payment System', url: '/help/articles/payment-system', category: 'Billing & Subscriptions' },
-    { title: 'Payment System Overview', url: '/help/articles/PaymentSystem', category: 'Billing & Subscriptions' },
+    { title: 'How Payments Work', url: '/help/articles/payment-system', category: 'Billing & Subscriptions' },
     { title: 'Pricing Strategies', url: '/help/articles/pricing-strategies', category: 'Billing & Subscriptions' },
-    { title: 'Pricing Strategies', url: '/help/articles/PricingStrategies', category: 'Billing & Subscriptions' },
     { title: 'Refund Policy', url: '/help/articles/refund-policy', category: 'Billing & Subscriptions' },
-    { title: 'Refund Policy', url: '/help/articles/RefundPolicy', category: 'Billing & Subscriptions' },
     { title: 'Tax Information', url: '/help/articles/tax-information', category: 'Billing & Subscriptions' },
-    { title: 'Tax Information', url: '/help/articles/TaxInformation', category: 'Billing & Subscriptions' },
     { title: 'Creator Earnings', url: '/help/articles/creator-earnings', category: 'Billing & Subscriptions' },
-    { title: 'Creator Earnings Guide', url: '/help/articles/CreatorEarnings', category: 'Billing & Subscriptions' },
 
     // Safety & Privacy
     { title: 'Account Security', url: '/help/articles/account-security', category: 'Safety & Privacy' },
-    { title: 'Account Security', url: '/help/articles/AccountSecurity', category: 'Safety & Privacy' },
     { title: 'Age Verification', url: '/help/articles/age-verification', category: 'Safety & Privacy' },
-    { title: 'Age Verification (Alternative)', url: '/help/articles/AgeVerification', category: 'Safety & Privacy' },
     { title: 'Content Protection for Creators', url: '/help/articles/content-protection', category: 'Safety & Privacy' },
-    { title: 'Content Protection Guide', url: '/help/articles/ContentProtection', category: 'Safety & Privacy' },
     { title: 'Content Privacy Levels', url: '/help/articles/content-privacy-levels', category: 'Safety & Privacy' },
-    { title: 'Content Privacy Levels Guide', url: '/help/articles/ContentPrivacyLevels', category: 'Safety & Privacy' },
     { title: 'Community Guidelines', url: '/help/articles/community-guidelines', category: 'Safety & Privacy' },
-    { title: 'Community Guidelines Overview', url: '/help/articles/CommunityGuidelines', category: 'Safety & Privacy' },
     { title: 'Report User Content', url: '/help/articles/report-user-content', category: 'Safety & Privacy' },
-    { title: 'Report User Content', url: '/help/articles/ReportUserContent', category: 'Safety & Privacy' },
     { title: 'Browser Compatibility', url: '/help/articles/browser-compatibility', category: 'Safety & Privacy' },
-    { title: 'Browser Compatibility Guide', url: '/help/articles/BrowserCompatibility', category: 'Safety & Privacy' },
     { title: 'Privacy Settings', url: '/help/articles/PrivacySettings', category: 'Safety & Privacy' },
     { title: 'Two-Factor Authentication', url: '/help/articles/TwoFactorAuthentication', category: 'Safety & Privacy' },
-    { title: 'Session Management', url: '/help/articles/SessionManagement', category: 'Safety & Privacy' },
 
     // Messaging & Communication
     { title: 'Bulk Messaging', url: '/help/articles/bulk-messaging', category: 'Messaging & Communication' },
-    { title: 'Bulk Messaging Guide', url: '/help/articles/BulkMessaging', category: 'Messaging & Communication' },
     { title: 'Messaging Creators', url: '/help/articles/messaging-creators', category: 'Messaging & Communication' },
-    { title: 'Messaging Creators Guide', url: '/help/articles/MessagingCreators', category: 'Messaging & Communication' },
     { title: 'Messaging Tips', url: '/help/articles/messaging-tips', category: 'Messaging & Communication' },
-    { title: 'Messaging Tips', url: '/help/articles/MessagingTips', category: 'Messaging & Communication' },
     { title: 'Message Limits', url: '/help/articles/message-limits', category: 'Messaging & Communication' },
-    { title: 'Message Limits Guide', url: '/help/articles/MessageLimits', category: 'Messaging & Communication' },
 
     // Search Features
     { title: 'Advanced Search Features', url: '/help/articles/AdvancedSearchFeatures', category: 'Search Features' },
     { title: 'Neural Search', url: '/help/articles/NeuralSearch', category: 'Search Features' },
-    { title: 'Neural Search', url: '/help/articles/neural-search', category: 'Search Features' },
 
     // Account Settings
     { title: 'Login Troubleshooting', url: '/help/articles/LoginTroubleshooting', category: 'Account Settings' },
-    { title: 'Login Troubleshooting', url: '/help/articles/login-troubleshooting', category: 'Account Settings' },
     { title: 'Password Reset', url: '/help/articles/PasswordReset', category: 'Account Settings' },
     { title: 'OAuth Guide', url: '/help/articles/OAuthGuide', category: 'Account Settings' },
+    { title: 'Email Verification', url: '/help/articles/EmailVerification', category: 'Account Settings' },
+    { title: 'Profile Setup', url: '/help/articles/ProfileSetup', category: 'Account Settings' },
+    { title: 'Session Management', url: '/help/articles/SessionManagement', category: 'Account Settings' },
 
     // Creator Resources
     { title: 'Custom Commissions', url: '/help/articles/custom-commissions', category: 'Creator Resources' },
-    { title: 'Custom Commissions Guide', url: '/help/articles/CustomCommissions', category: 'Creator Resources' },
     { title: 'Scheduling Features', url: '/help/articles/scheduling-features', category: 'Creator Resources' },
-    { title: 'Scheduling Features', url: '/help/articles/SchedulingFeatures', category: 'Creator Resources' },
     { title: 'Supported Formats', url: '/help/articles/supported-formats', category: 'Creator Resources' },
-    { title: 'Supported Formats', url: '/help/articles/SupportedFormats', category: 'Creator Resources' },
     { title: 'Upload & Organize Content', url: '/help/articles/upload-organize-content', category: 'Creator Resources' },
-    { title: 'Upload & Organize Content Guide', url: '/help/articles/UploadOrganizeContent', category: 'Creator Resources' },
     { title: 'Upload Troubleshooting', url: '/help/articles/upload-troubleshooting', category: 'Creator Resources' },
-    { title: 'Upload Troubleshooting Guide', url: '/help/articles/UploadTroubleshooting', category: 'Creator Resources' },
     { title: 'Understanding Analytics', url: '/help/articles/understanding-analytics', category: 'Creator Resources' },
-    { title: 'Understanding Analytics Guide', url: '/help/articles/UnderstandingAnalytics', category: 'Creator Resources' },
     { title: 'Video Quality', url: '/help/articles/video-quality', category: 'Creator Resources' },
-    { title: 'Video Quality Guide', url: '/help/articles/VideoQuality', category: 'Creator Resources' },
   ];
 
   // Only 4 real, high-value articles for Popular Articles
