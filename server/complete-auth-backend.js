@@ -949,6 +949,208 @@ class DatabaseService {
       return false;
     }
   }
+  
+  // User Profile Management
+  async createUserProfile(userId, profileData) {
+    try {
+      const { customUrl, bio, coverImage, socialLinks } = profileData;
+      
+      await this.client.query(`
+        UPDATE users SET 
+          "customUrl" = $1,
+          bio = $2,
+          "coverImage" = $3,
+          "socialLinks" = $4,
+          "updatedAt" = NOW()
+        WHERE id = $5
+      `, [customUrl, bio, coverImage, JSON.stringify(socialLinks || {}), userId]);
+      
+      return true;
+    } catch (error) {
+      console.error('Database error creating user profile:', error);
+      return false;
+    }
+  }
+
+  async findUserByCustomUrl(customUrl) {
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM users WHERE "customUrl" = $1 AND "isActive" = true',
+        [customUrl]
+      );
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error('Database error finding user by custom URL:', error);
+      return null;
+    }
+  }
+
+  async checkCustomUrlAvailability(customUrl, excludeUserId = null) {
+    try {
+      let query = 'SELECT id FROM users WHERE "customUrl" = $1';
+      let params = [customUrl];
+      
+      if (excludeUserId) {
+        query += ' AND id != $2';
+        params.push(excludeUserId);
+      }
+      
+      const result = await this.client.query(query, params);
+      return result.rows.length === 0;
+    } catch (error) {
+      console.error('Database error checking custom URL availability:', error);
+      return false;
+    }
+  }
+
+  // Content Management
+  async createContent(contentData) {
+    try {
+      const {
+        creatorId, title, description, type, mediaUrl, mediaUrls,
+        thumbnailUrl, isPublic, requiresSubscription, privacyLevel,
+        tags, category, textContent, tier
+      } = contentData;
+
+      const contentId = crypto.randomUUID();
+      
+      await this.client.query(`
+        INSERT INTO content (
+          id, "creatorId", title, description, type, "mediaUrl", "mediaUrls",
+          "thumbnailUrl", "isPublic", "requiresSubscription", "privacyLevel",
+          tags, category, "textContent", tier, "createdAt", "updatedAt"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
+      `, [
+        contentId, creatorId, title, description, type, mediaUrl,
+        JSON.stringify(mediaUrls || []), thumbnailUrl, isPublic,
+        requiresSubscription, privacyLevel || 'PUBLIC',
+        JSON.stringify(tags || []), category, textContent, tier || 'FREE'
+      ]);
+
+      // Update user content count
+      await this.client.query(
+        'UPDATE users SET "contentCount" = "contentCount" + 1 WHERE id = $1',
+        [creatorId]
+      );
+
+      return contentId;
+    } catch (error) {
+      console.error('Database error creating content:', error);
+      return null;
+    }
+  }
+
+  async getUserContent(userId, viewerId = null, limit = 20, offset = 0) {
+    try {
+      let query = `
+        SELECT c.*, u.username, u."displayName", u.avatar 
+        FROM content c
+        JOIN users u ON c."creatorId" = u.id
+        WHERE c."creatorId" = $1 AND c.status = 'PUBLISHED'
+      `;
+      let params = [userId];
+      let paramIndex = 2;
+
+      // Content visibility logic
+      if (viewerId !== userId) {
+        // Check if viewer is subscribed to creator
+        const isSubscribed = viewerId ? await this.isUserSubscribedToCreator(viewerId, userId) : false;
+        
+        if (!isSubscribed) {
+          // Non-subscribers only see public content and most recent post
+          query += ` AND (c."isPublic" = true OR c."requiresSubscription" = false)`;
+          query += ` ORDER BY c."createdAt" DESC LIMIT 1`;
+          
+          const result = await this.client.query(query, params);
+          return result.rows;
+        } else {
+          // Subscribed users see all content
+          query += ` AND (c."privacyLevel" = 'PUBLIC' OR c."privacyLevel" = 'SUBSCRIBER')`;
+        }
+      }
+      // Creator sees all their content
+
+      query += ` ORDER BY c."createdAt" DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      params.push(limit, offset);
+
+      const result = await this.client.query(query, params);
+      return result.rows;
+    } catch (error) {
+      console.error('Database error getting user content:', error);
+      return [];
+    }
+  }
+
+  async isUserSubscribedToCreator(subscriberId, creatorId) {
+    try {
+      const result = await this.client.query(`
+        SELECT id FROM subscriptions s
+        JOIN users u ON s."userId" = u.id
+        WHERE s."userId" = $1 AND u.id = $2 AND s.status = 'ACTIVE'
+        AND s."currentPeriodEnd" > NOW()
+      `, [subscriberId, creatorId]);
+      
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error('Database error checking subscription:', error);
+      return false;
+    }
+  }
+
+  async updateUserProfile(userId, updates) {
+    try {
+      const allowedFields = [
+        'displayName', 'bio', 'avatar', 'coverImage', 'website',
+        'twitter', 'instagram', 'customUrl', 'isPrivate', 'allowMessages'
+      ];
+      
+      const updateFields = [];
+      const values = [];
+      let paramIndex = 1;
+
+      Object.keys(updates).forEach(field => {
+        if (allowedFields.includes(field) && updates[field] !== undefined) {
+          updateFields.push(`"${field}" = $${paramIndex}`);
+          values.push(updates[field]);
+          paramIndex++;
+        }
+      });
+
+      if (updateFields.length === 0) {
+        return false;
+      }
+
+      updateFields.push(`"updatedAt" = NOW()`);
+      
+      const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = $${paramIndex}`;
+      values.push(userId);
+
+      await this.client.query(query, values);
+      return true;
+    } catch (error) {
+      console.error('Database error updating user profile:', error);
+      return false;
+    }
+  }
+
+  async generateUniqueCustomUrl(baseUsername) {
+    let customUrl = baseUsername.toLowerCase().replace(/[^a-z0-9]/g, '');
+    let counter = 0;
+    
+    while (true) {
+      const testUrl = counter === 0 ? customUrl : `${customUrl}${counter}`;
+      const isAvailable = await this.checkCustomUrlAvailability(testUrl);
+      
+      if (isAvailable) {
+        return testUrl;
+      }
+      
+      counter++;
+      if (counter > 1000) { // Prevent infinite loop
+        return `${customUrl}_${Date.now()}`;
+      }
+    }
+  }
 }
 
 // Initialize database service
@@ -1067,12 +1269,11 @@ const routes = {
       ]
     });
   },
-
   // API info
   'GET /api': async (req, res) => {
     sendResponse(res, 200, {
       message: 'OnlyFur Complete Authentication API',
-      version: '2.0.0',
+      version: '3.0.0',
       endpoints: {
         auth: {
           login: 'POST /api/auth/login',
@@ -1087,6 +1288,15 @@ const routes = {
           changePassword: 'POST /api/auth/change-password',
           changeEmail: 'POST /api/auth/change-email',
           verifyEmail: 'POST /api/auth/verify-email'
+        },
+        user: {
+          profile: 'GET /user/:username',
+          updateProfile: 'PUT /api/user/profile',
+          checkUrl: 'GET /api/user/check-url/:url',
+          getUserContent: 'GET /api/user/content'
+        },
+        content: {
+          create: 'POST /api/content'
         },
         admin: {
           panel: 'GET /api/admin/panel (Admin only)'
@@ -1221,8 +1431,7 @@ const routes = {
       if (existingUserByUsername) {
         return sendError(res, 409, 'Username already taken');
       }
-      
-      // Create user
+        // Create user
       const newUser = await db.createUser({
         email,
         username,
@@ -1230,6 +1439,11 @@ const routes = {
         password,
         role: role.toUpperCase()
       });
+
+      // Generate unique custom URL for the user
+      const customUrl = await db.generateUniqueCustomUrl(username);
+      await db.updateUserProfile(newUser.id, { customUrl });
+      newUser.customUrl = customUrl;
       
       // Generate tokens
       const tokenPayload = {
@@ -1694,8 +1908,7 @@ const routes = {
         return sendError(res, 403, 'Access denied. Admin privileges required.');
       }
       
-      sendResponse(res, 200, {
-        success: true,
+      sendResponse(res, 200, {        success: true,
         message: 'Admin panel access granted',
         data: {
           user: normalizeUser(user),
@@ -1715,6 +1928,273 @@ const routes = {
         sendError(res, 500, 'Internal server error', error);
       }
     }
+  },
+
+  // User Profile Endpoints
+  'GET /user/:username': async (req, res) => {
+    try {
+      const username = req.url.split('/user/')[1]?.split('?')[0];
+      if (!username) {
+        return sendError(res, 400, 'Username is required');
+      }
+
+      // Find user by custom URL or username
+      let user = await db.findUserByCustomUrl(username);
+      if (!user) {
+        user = await db.findUserByUsername(username);
+      }
+
+      if (!user) {
+        return sendError(res, 404, 'User not found');
+      }
+
+      // Check if profile is private
+      if (user.isPrivate) {
+        // Only show limited info for private profiles
+        const publicUser = {
+          username: user.username,
+          displayName: user.displayName,
+          avatar: user.avatar,
+          isPrivate: true
+        };
+        return sendResponse(res, 200, {
+          success: true,
+          data: { user: publicUser, content: [] }
+        });
+      }
+
+      // Get viewer ID from token (optional)
+      let viewerId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const payload = JWTHandler.verify(token, JWT_SECRET);
+          viewerId = payload.userId;
+        } catch (error) {
+          // Invalid token, continue as anonymous user
+        }
+      }
+
+      // Get user content based on viewing permissions
+      const content = await db.getUserContent(user.id, viewerId);
+
+      // Normalize user data
+      const userProfile = {
+        username: user.username,
+        displayName: user.displayName,
+        avatar: user.avatar,
+        bio: user.bio,
+        coverImage: user.coverImage,
+        subscriberCount: user.subscriberCount,
+        contentCount: user.contentCount,
+        website: user.website,
+        twitter: user.twitter,
+        instagram: user.instagram,
+        customUrl: user.customUrl,
+        createdAt: user.createdAt
+      };
+
+      sendResponse(res, 200, {
+        success: true,
+        data: {
+          user: userProfile,
+          content: content,
+          isOwner: viewerId === user.id,
+          isSubscribed: viewerId ? await db.isUserSubscribedToCreator(viewerId, user.id) : false
+        }
+      });
+
+    } catch (error) {
+      console.error('User profile error:', error);
+      sendError(res, 500, 'Internal server error', error);
+    }
+  },
+
+  'PUT /api/user/profile': async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return sendError(res, 401, 'Authorization token required');
+      }
+
+      const token = authHeader.substring(7);
+      const payload = JWTHandler.verify(token, JWT_SECRET);
+      const userId = payload.userId;
+
+      const updates = await getRequestBody(req);
+      
+      // Validate custom URL if provided
+      if (updates.customUrl) {
+        const urlPattern = /^[a-z0-9_-]+$/;
+        if (!urlPattern.test(updates.customUrl)) {
+          return sendError(res, 400, 'Custom URL can only contain lowercase letters, numbers, hyphens, and underscores');
+        }
+
+        if (updates.customUrl.length < 3 || updates.customUrl.length > 30) {
+          return sendError(res, 400, 'Custom URL must be between 3 and 30 characters');
+        }
+
+        const isAvailable = await db.checkCustomUrlAvailability(updates.customUrl, userId);
+        if (!isAvailable) {
+          return sendError(res, 400, 'Custom URL is already taken');
+        }
+      }
+
+      const success = await db.updateUserProfile(userId, updates);
+      if (!success) {
+        return sendError(res, 500, 'Failed to update profile');
+      }
+
+      // Get updated user data
+      const updatedUser = await db.findUserById(userId);
+      
+      sendResponse(res, 200, {
+        success: true,
+        message: 'Profile updated successfully',
+        data: { user: normalizeUser(updatedUser) }
+      });
+
+    } catch (error) {
+      if (error.message.includes('token')) {
+        sendError(res, 401, error.message);
+      } else {
+        console.error('Profile update error:', error);
+        sendError(res, 500, 'Internal server error', error);
+      }
+    }
+  },
+
+  'POST /api/content': async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return sendError(res, 401, 'Authorization token required');
+      }
+
+      const token = authHeader.substring(7);
+      const payload = JWTHandler.verify(token, JWT_SECRET);
+      const userId = payload.userId;
+
+      const contentData = await getRequestBody(req);
+      const { title, description, type, mediaUrl, mediaUrls, thumbnailUrl, 
+              isPublic, requiresSubscription, privacyLevel, tags, category, 
+              textContent, tier } = contentData;
+
+      if (!title || !type) {
+        return sendError(res, 400, 'Title and type are required');
+      }
+
+      const validTypes = ['IMAGE', 'VIDEO', 'AUDIO', 'TEXT', 'DOCUMENT'];
+      if (!validTypes.includes(type)) {
+        return sendError(res, 400, 'Invalid content type');
+      }
+
+      const contentId = await db.createContent({
+        creatorId: userId,
+        title,
+        description,
+        type,
+        mediaUrl,
+        mediaUrls,
+        thumbnailUrl,
+        isPublic: isPublic !== false,
+        requiresSubscription: requiresSubscription || false,
+        privacyLevel: privacyLevel || 'PUBLIC',
+        tags: tags || [],
+        category,
+        textContent,
+        tier: tier || 'FREE'
+      });
+
+      if (!contentId) {
+        return sendError(res, 500, 'Failed to create content');
+      }
+
+      sendResponse(res, 201, {
+        success: true,
+        message: 'Content created successfully',
+        data: { contentId }
+      });
+
+    } catch (error) {
+      if (error.message.includes('token')) {
+        sendError(res, 401, error.message);
+      } else {
+        console.error('Content creation error:', error);
+        sendError(res, 500, 'Internal server error', error);
+      }
+    }
+  },
+
+  'GET /api/user/content': async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return sendError(res, 401, 'Authorization token required');
+      }
+
+      const token = authHeader.substring(7);
+      const payload = JWTHandler.verify(token, JWT_SECRET);
+      const userId = payload.userId;
+
+      const parsedUrl = url.parse(req.url, true);
+      const limit = parseInt(parsedUrl.query.limit) || 20;
+      const offset = parseInt(parsedUrl.query.offset) || 0;
+
+      const content = await db.getUserContent(userId, userId, limit, offset);
+
+      sendResponse(res, 200, {
+        success: true,
+        data: { content }
+      });
+
+    } catch (error) {
+      if (error.message.includes('token')) {
+        sendError(res, 401, error.message);
+      } else {
+        console.error('Get user content error:', error);
+        sendError(res, 500, 'Internal server error', error);
+      }
+    }
+  },
+
+  'GET /api/user/check-url/:url': async (req, res) => {
+    try {
+      const customUrl = req.url.split('/api/user/check-url/')[1];
+      if (!customUrl) {
+        return sendError(res, 400, 'URL is required');
+      }
+
+      const urlPattern = /^[a-z0-9_-]+$/;
+      if (!urlPattern.test(customUrl)) {
+        return sendResponse(res, 200, {
+          success: true,
+          available: false,
+          message: 'URL can only contain lowercase letters, numbers, hyphens, and underscores'
+        });
+      }
+
+      if (customUrl.length < 3 || customUrl.length > 30) {
+        return sendResponse(res, 200, {
+          success: true,
+          available: false,
+          message: 'URL must be between 3 and 30 characters'
+        });
+      }
+
+      const isAvailable = await db.checkCustomUrlAvailability(customUrl);
+      
+      sendResponse(res, 200, {
+        success: true,
+        available: isAvailable,
+        message: isAvailable ? 'URL is available' : 'URL is already taken'
+      });
+
+    } catch (error) {
+      console.error('URL check error:', error);
+      sendError(res, 500, 'Internal server error', error);
+    }
   }
 };
 
@@ -1723,19 +2203,35 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const method = req.method;
   const pathname = parsedUrl.pathname;
-  const routeKey = `${method} ${pathname}`;
   
-  // Handle CORS preflight
+  // Set CORS headers
+  Object.entries(corsHeaders()).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
+  // Handle OPTIONS requests
   if (method === 'OPTIONS') {
-    const headers = corsHeaders();
-    res.writeHead(200, headers);
+    res.writeHead(200);
     res.end();
     return;
   }
-  
+
   try {
-    // Find matching route
-    const handler = routes[routeKey];
+    let routeKey = `${method} ${pathname}`;
+    let handler = routes[routeKey];
+
+    // Handle dynamic routes
+    if (!handler) {
+      // Handle /user/:username route
+      if (pathname.startsWith('/user/') && method === 'GET') {
+        handler = routes['GET /user/:username'];
+      }
+      // Handle /api/user/check-url/:url route
+      else if (pathname.startsWith('/api/user/check-url/') && method === 'GET') {
+        handler = routes['GET /api/user/check-url/:url'];
+      }
+    }
+
     if (handler) {
       await handler(req, res);
     } else {
@@ -1749,49 +2245,53 @@ const server = http.createServer(async (req, res) => {
 
 // Start server
 async function startServer() {
-  // Connect to database
-  const dbConnected = await db.connect();
-  if (!dbConnected) {
-    console.error('❌ Failed to connect to database. Server will not start.');
+  try {
+    // Connect to database
+    const dbConnected = await db.connect();
+    
+    if (!dbConnected) {
+      console.error('❌ Failed to connect to database. Exiting...');
+      process.exit(1);
+    }
+
+    server.listen(PORT, () => {
+      console.log('🔑 Authentication System Ready:');
+      console.log(`   ✅ Admin Email: ${ADMIN_EMAIL}`);
+      console.log(`   ✅ Admin Username: ${ADMIN_USERNAME}`);
+      console.log(`   ✅ Admin Password: [Configured]`);
+      console.log('🚀 OnlyFur Complete Authentication Backend running on port ' + PORT);
+      console.log('🔗 Frontend URL: ' + FRONTEND_URL);
+      console.log('📋 Health check: http://localhost:' + PORT + '/api/health');
+      console.log('📋 API endpoints: http://localhost:' + PORT + '/api');
+      console.log('🔐 Admin panel: http://localhost:' + PORT + '/api/admin/panel');
+      console.log('👤 User profiles: http://localhost:' + PORT + '/user/[username]');
+      console.log('🌍 Environment: ' + (process.env.NODE_ENV || 'development'));
+      console.log('✅ All authentication features ready');
+    });
+
+    // Graceful shutdown
+    process.on('SIGTERM', async () => {
+      console.log('📴 Received SIGTERM, shutting down gracefully...');
+      await db.disconnect();
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGINT', async () => {
+      console.log('📴 Received SIGINT, shutting down gracefully...');
+      await db.disconnect();
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
     process.exit(1);
   }
-  
-  server.listen(PORT, () => {
-    console.log('🔑 Authentication System Ready:');
-    console.log(`   ✅ Admin Email: ${ADMIN_EMAIL}`);
-    console.log(`   ✅ Admin Username: ${ADMIN_USERNAME}`);
-    console.log(`   ✅ Admin Password: ${ADMIN_PASSWORD ? '[Configured]' : '[Missing]'}`);
-    console.log('🚀 OnlyFur Complete Authentication Backend running on port', PORT);
-    console.log('🔗 Frontend URL:', FRONTEND_URL);
-    console.log('📋 Health check: http://localhost:' + PORT + '/api/health');
-    console.log('📋 API endpoints: http://localhost:' + PORT + '/api');
-    console.log('🔐 Admin panel: http://localhost:' + PORT + '/api/admin/panel');
-    console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
-    console.log('✅ All authentication features ready');
-  });
 }
 
-// Handle graceful shutdown
-process.on('SIGINT', async () => {
-  console.log('\n🛑 Shutting down server...');
-  await db.disconnect();
-  server.close(() => {
-    console.log('✅ Server stopped');
-    process.exit(0);
-  });
-});
-
-process.on('SIGTERM', async () => {
-  console.log('\n🛑 Shutting down server...');
-  await db.disconnect();
-  server.close(() => {
-    console.log('✅ Server stopped');
-    process.exit(0);
-  });
-});
-
-// Start the server
-startServer().catch(error => {
-  console.error('❌ Failed to start server:', error);
-  process.exit(1);
-});
+startServer();
