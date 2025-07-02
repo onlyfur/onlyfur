@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit --pretty && vite build",
+    "build:vercel": "npm run prisma:generate && npm run build",
     "preview": "vite preview",
     "server:dev": "ts-node-dev --respawn --transpile-only server/production-server.ts",
     "server:prod": "node dist/server/production-server.js",
@@ -112,6 +113,7 @@
     "@types/react-dom": "^19.1.6",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
+    "@vercel/node": "^3.0.0",
     "eslint": "^9.28.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
