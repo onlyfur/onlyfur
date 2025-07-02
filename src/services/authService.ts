@@ -74,14 +74,9 @@ class AuthService {
   // Check if backend is available
   private async checkBackendAvailability(): Promise<boolean> {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/health`, {
-        method: 'GET',
-        timeout: 3000
-      } as RequestInit);
-      return response.ok;
+      return await apiClient.checkBackendAvailability();
     } catch (error) {
-      console.warn('Backend not available, switching to offline mode:', error);
-      this.isOfflineMode = true;
+      console.warn('Backend availability check failed:', error);
       return false;
     }
   }

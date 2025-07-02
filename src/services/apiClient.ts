@@ -23,8 +23,48 @@ export interface AuthResponse {
 class ApiClient {
   private baseURL: string;
   constructor() {
-    // Use environment variable or fallback to localhost server for development
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+    // Determine the correct API base URL based on environment
+    if (import.meta.env.VITE_API_BASE_URL) {
+      // Use explicitly set environment variable
+      this.baseURL = import.meta.env.VITE_API_BASE_URL;
+    } else if (typeof window !== 'undefined') {
+      // Browser environment - detect based on current domain
+      const currentHost = window.location.hostname;
+      const currentProtocol = window.location.protocol;
+      
+      if (currentHost === 'onlyfur.net' || currentHost === 'www.onlyfur.net') {
+        // Same domain - use relative API path
+        this.baseURL = '/api';
+      } else if (currentHost === 'creatorplattform.vercel.app') {
+        // Same domain - use relative API path
+        this.baseURL = '/api';
+      } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        // Local development
+        this.baseURL = 'http://localhost:3001/api';
+      } else {
+        // Fallback to relative path for any other production domain
+        this.baseURL = '/api';
+      }
+    } else {
+      // Fallback for SSR or non-browser environments
+      this.baseURL = '/api';
+    }
+    
+    console.log('API Client initialized with baseURL:', this.baseURL);
+  }
+
+  // Add method to check backend availability
+  async checkBackendAvailability(): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.baseURL}/health`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return response.ok;
+    } catch (error) {
+      console.warn('Backend not available:', error);
+      return false;
+    }
   }
 
   private getAuthHeaders(): HeadersInit {
@@ -48,6 +88,7 @@ class ApiClient {
           ...this.getAuthHeaders(),
           ...options.headers,
         },
+        credentials: 'include', // Important for CORS with cookies
       });
 
       let data: any;
@@ -83,9 +124,10 @@ class ApiClient {
       console.error('API request failed:', error);
       
       if (error instanceof TypeError && error.message.includes('fetch')) {
+        // Network error - could be CORS, connection refused, etc.
         return {
           success: false,
-          error: 'Network error. Please check your connection and try again.',
+          error: 'Unable to connect to server. Please check your internet connection and try again.',
         };
       }
       
