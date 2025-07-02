@@ -50,7 +50,7 @@ const initializeTestUsers = async () => {
     },
     {
       id: '3',
-      email: 'admin@onlyfur.com',
+      email: 'admin@onlyfur.net',
       username: 'admin',
       displayName: 'Admin User',
       password: 'admin123',
@@ -74,7 +74,7 @@ const initializeTestUsers = async () => {
   console.log('📧 Test credentials:');
   console.log('   - test@example.com / password123 (Subscriber)');
   console.log('   - creator@example.com / password123 (Creator)');
-  console.log('   - admin@onlyfur.com / admin123 (Admin)');
+  console.log('   - admin@onlyfur.net / admin123 (Admin)');
 };
 
 // Helper functions

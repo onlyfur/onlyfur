@@ -124,7 +124,7 @@ curl https://ly3bz7fnuansj12j.public.blob.vercel-storage.com/test/1749149356695-
 - **Pro Creator**: $29.99/month - Advanced creator features (1080p uploads)
 
 ### Default Users Created
-- **Admin**: `admin@onlyfur.com` / `OnlyFur2024!`
+- **Admin**: `admin@onlyfur.net` / `OnlyFur2024!`
 - **Creator**: `creator@onlyfur.com` / `Creator2024!` 
 - **Subscriber**: `subscriber@onlyfur.com` / `Subscriber2024!`
 

@@ -67,7 +67,7 @@ FROM_NAME="OnlyFur Platform"
 
 #### Admin Configuration
 ```env
-ADMIN_EMAIL="admin@onlyfur.com"
+ADMIN_EMAIL="admin@onlyfur.net"
 ADMIN_PASSWORD="your_secure_admin_password"
 ADMIN_USERNAME="admin"
 ```

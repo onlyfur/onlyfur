@@ -4,7 +4,7 @@ import { User } from '@/types';
 // In production, these would connect to a real backend API
 
 // Admin credentials from environment variables
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@onlyfur.com';
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@onlyfur.net';
 const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
 const ADMIN_DISPLAY_NAME = import.meta.env.VITE_ADMIN_DISPLAY_NAME || 'OnlyFur Admin';

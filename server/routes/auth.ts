@@ -70,7 +70,7 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
   const validatedData = loginSchema.parse(req.body);
   const { email, password } = validatedData;
 
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@onlyfur.net';
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
   const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 

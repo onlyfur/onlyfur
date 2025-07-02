@@ -356,7 +356,7 @@ class MockPrismaClient {
   async createDefaultAdminUser() {
     const bcrypt = require('bcryptjs');
     
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.net';
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
     const adminUsername = process.env.ADMIN_USERNAME || 'admin';
     const adminDisplayName = process.env.ADMIN_DISPLAY_NAME || 'Platform Administrator';

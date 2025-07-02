@@ -47,12 +47,12 @@ async function main() {
     const hashedPassword = await bcrypt.hash('admin123', 12);
     
     await prisma.user.deleteMany({
-      where: { email: 'admin@onlyfur.com' }
+      where: { email: 'admin@onlyfur.net' }
     });
 
     await prisma.user.create({
       data: {
-        email: 'admin@onlyfur.com',
+        email: 'admin@onlyfur.net',
         username: 'admin',
         displayName: 'Platform Administrator',
         role: 'ADMIN',

@@ -50,7 +50,7 @@ const MOCK_USERS: (User & { setupComplete: boolean })[] = [
   },
   {
     id: '3',
-    email: 'admin@onlyfur.com',
+    email: 'admin@onlyfur.net',
     username: 'admin',
     displayName: 'Admin User',
     role: 'ADMIN',

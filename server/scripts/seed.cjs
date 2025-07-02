@@ -264,10 +264,10 @@ async function main() {
     const hashedPassword = await bcrypt.hash('admin123', 12);
     
     await prisma.user.upsert({
-      where: { email: 'admin@onlyfur.com' },
+      where: { email: 'admin@onlyfur.net' },
       update: {},
       create: {
-        email: 'admin@onlyfur.com',
+        email: 'admin@onlyfur.net',
         username: 'admin',
         displayName: 'Platform Administrator',
         role: 'ADMIN',
@@ -398,7 +398,7 @@ async function main() {
     console.log('  - 3 sample content items');
     console.log('');
     console.log('🔐 Login credentials:');
-    console.log('  Admin: admin@onlyfur.com / admin123');
+    console.log('  Admin: admin@onlyfur.net / admin123');
     console.log('  Creator: creator@onlyfur.com / creator123');
     console.log('  Subscriber: subscriber@onlyfur.com / subscriber123');
 

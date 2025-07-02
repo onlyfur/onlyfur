@@ -44,7 +44,7 @@ API_BASE_URL="http://localhost:3002"
 CORS_ORIGIN="http://localhost:5173"
 
 # Admin User (will be created automatically)
-ADMIN_EMAIL="admin@onlyfur.com"
+ADMIN_EMAIL="admin@onlyfur.net"
 ADMIN_PASSWORD="admin123"
 ADMIN_USERNAME="admin"
 ```
@@ -109,7 +109,7 @@ npm run server:prod
 After setup, these users will be available:
 
 ### Admin User
-- **Email**: admin@onlyfur.com
+- **Email**: admin@onlyfur.net
 - **Password**: admin123
 - **Role**: ADMIN
 

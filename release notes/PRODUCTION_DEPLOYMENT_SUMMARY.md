@@ -14,7 +14,7 @@ The OnlyFur platform has been successfully completed with all critical functiona
 - **User registration and login** with email/password
 - **Profile management** with avatar uploads and settings
 - **Session management** with refresh tokens
-- **Admin credentials**: admin@onlyfur.com / admin123
+- **Admin credentials**: admin@onlyfur.net / admin123
 
 ### ✅ Payment Processing & Subscriptions
 - **Stripe integration** configured with test keys
@@ -96,7 +96,7 @@ The OnlyFur platform has been successfully completed with all critical functiona
 ## 📊 Platform Metrics & Sample Data
 
 ### Sample Users Created
-- **Admin**: admin@onlyfur.com (Platform Administrator)
+- **Admin**: admin@onlyfur.net (Platform Administrator)
 - **Creator**: creator@onlyfur.com (Sample Creator with content)
 - **Subscriber**: subscriber@onlyfur.com (Sample Subscriber)
 
@@ -200,7 +200,7 @@ npm run db:studio
 ```
 
 ### Test Accounts
-- **Admin**: admin@onlyfur.com / admin123
+- **Admin**: admin@onlyfur.net / admin123
 - **Creator**: creator@onlyfur.com / creator123
 - **Subscriber**: subscriber@onlyfur.com / subscriber123
 

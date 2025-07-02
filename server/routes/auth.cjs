@@ -9,7 +9,7 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'onlyfur-super-secret-key-for-development-only';
 
 // Admin credentials
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@onlyfur.net';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 

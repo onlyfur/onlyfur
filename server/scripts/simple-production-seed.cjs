@@ -201,10 +201,10 @@ async function main() {
     const hashedPassword = await bcrypt.hash('OnlyFur2024!', 12);
     
     const adminUser = await prisma.user.upsert({
-      where: { email: 'admin@onlyfur.com' },
+      where: { email: 'admin@onlyfur.net' },
       update: {},
       create: {
-        email: 'admin@onlyfur.com',
+        email: 'admin@onlyfur.net',
         username: 'admin',
         displayName: 'Platform Administrator',
         password: hashedPassword,
@@ -223,7 +223,7 @@ async function main() {
 
     console.log('🎉 Database seeding completed successfully!');
     console.log('\n📝 Default Users Created:');
-    console.log('👤 Admin: admin@onlyfur.com / OnlyFur2024!');
+    console.log('👤 Admin: admin@onlyfur.net / OnlyFur2024!');
     console.log('\n✨ Platform ready for real user registrations - no demo users created!');
 
   } catch (error) {

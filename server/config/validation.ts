@@ -17,7 +17,7 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
   
   // Admin
-  ADMIN_EMAIL: z.string().email().default('admin@onlyfur.com'),
+  ADMIN_EMAIL: z.string().email().default('admin@onlyfur.net'),
   ADMIN_PASSWORD: z.string().min(6).default('admin123'),
   ADMIN_USERNAME: z.string().default('admin'),
   

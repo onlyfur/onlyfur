@@ -178,7 +178,7 @@ function initializeMockDatabase() {
   // Create admin user
   const adminUser = {
     id: 'admin-user-id',
-    email: process.env.ADMIN_EMAIL || 'admin@onlyfur.com',
+    email: process.env.ADMIN_EMAIL || 'admin@onlyfur.net',
     username: process.env.ADMIN_USERNAME || 'admin',
     displayName: 'OnlyFur Admin',
     role: 'ADMIN',

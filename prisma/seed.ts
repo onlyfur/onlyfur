@@ -58,10 +58,10 @@ async function main() {
     );
 
     await prisma.user.upsert({
-      where: { email: process.env.ADMIN_EMAIL || 'admin@onlyfur.com' },
+      where: { email: process.env.ADMIN_EMAIL || 'admin@onlyfur.net' },
       update: {},
       create: {
-        email: process.env.ADMIN_EMAIL || 'admin@onlyfur.com',
+        email: process.env.ADMIN_EMAIL || 'admin@onlyfur.net',
         username: process.env.ADMIN_USERNAME || 'admin',
         displayName: 'Platform Administrator',
         password: hashedPassword,

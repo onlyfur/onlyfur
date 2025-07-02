@@ -93,7 +93,7 @@ export async function initializeDefaultData(): Promise<void> {
     }
 
     // Check if admin user exists
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.net';
     const adminUser = await prisma.user.findUnique({
       where: { email: adminEmail }
     });
@@ -390,7 +390,7 @@ async function createDefaultSubscriptionTiers(): Promise<void> {
 async function createDefaultAdminUser(): Promise<void> {
   const bcrypt = await import('bcryptjs');
   
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@onlyfur.net';
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
 

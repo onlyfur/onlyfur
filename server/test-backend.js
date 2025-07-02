@@ -42,7 +42,7 @@ const mockUsers = [
   },
   {
     id: '3',
-    email: 'admin@onlyfur.com',
+    email: 'admin@onlyfur.net',
     username: 'admin',
     displayName: 'Admin User',
     password: '$2a$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // admin123
@@ -260,7 +260,7 @@ app.listen(PORT, () => {
   console.log(`🚀 OnlyFur Test Backend running on port ${PORT}`);
   console.log(`📧 Test credentials: test@example.com / password123`);
   console.log(`🎨 Creator credentials: creator@example.com / password123`);
-  console.log(`⚡ Admin credentials: admin@onlyfur.com / admin123`);
+  console.log(`⚡ Admin credentials: admin@onlyfur.net / admin123`);
   console.log(`🔗 Frontend URL: ${process.env.CLIENT_BASE_URL || 'http://localhost:5173'}`);
 });
 

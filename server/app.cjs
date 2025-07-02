@@ -289,7 +289,7 @@ async function initializeDatabase() {
       const hashedPassword = await hashPassword('admin123');
       await prisma.user.create({
         data: {
-          email: 'admin@onlyfur.com',
+          email: 'admin@onlyfur.net',
           username: 'admin',
           displayName: 'Administrator',
           password: hashedPassword,
