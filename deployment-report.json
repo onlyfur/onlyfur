@@ -1,25 +1,25 @@
 {
-  "timestamp": "2025-07-02T22:02:56.341Z",
+  "timestamp": "2025-07-02T22:19:01.180Z",
   "environment": "production",
   "version": "3.9.0",
   "status": "DEGRADED",
   "services": {
-    "API Status": {
-      "status": "healthy",
-      "statusCode": 200,
-      "responseTime": 1751493746318,
-      "critical": true
-    },
     "API Health": {
       "status": "healthy",
       "statusCode": 200,
-      "responseTime": 1751493746319,
+      "responseTime": 1751494711164,
+      "critical": true
+    },
+    "API Status": {
+      "status": "healthy",
+      "statusCode": 200,
+      "responseTime": 1751494711165,
       "critical": true
     },
     "Platform Stats": {
       "status": "healthy",
       "statusCode": 200,
-      "responseTime": 1751493746327,
+      "responseTime": 1751494711166,
       "critical": false
     },
     "Auth Login": {
