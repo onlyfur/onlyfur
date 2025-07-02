@@ -18,7 +18,7 @@ import AuthCallback from '@/pages/AuthCallback';
 import OAuthDebugger from '@/components/auth/OAuthDebugger';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
-import UserProfile from '@/pages/UserProfile';
+import UserProfile from '@/pages/UserProfilePage';
 import Explore from '@/pages/Explore';
 import EnhancedSearchInterface from '@/components/search/EnhancedSearchInterface';
 import MySubscriptions from '@/components/subscription/MySubscriptions';

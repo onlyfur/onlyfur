@@ -804,5 +804,13 @@
     "description": "",
     "tags": [],
     "category": "page"
+  },
+  {
+    "id": "UserProfilePage",
+    "url": "/UserProfilePage",
+    "title": "UserProfilePage",
+    "description": "",
+    "tags": [],
+    "category": "page"
   }
 ]

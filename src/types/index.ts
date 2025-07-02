@@ -15,6 +15,12 @@ export interface User {
   googleId?: string;
   bio?: string;
   coverImage?: string;
+  website?: string;
+  twitter?: string;
+  instagram?: string;
+  subscriberCount?: number;
+  contentCount?: number;
+  isPrivate?: boolean;
   socialLinks?: {
     twitter?: string;
     instagram?: string;

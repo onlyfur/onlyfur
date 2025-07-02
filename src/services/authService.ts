@@ -158,14 +158,20 @@ class AuthService {
     displayName: string;
     password: string;
     role: 'subscriber' | 'creator';
-  }): Promise<AuthResult> {
+  }, remember: boolean = false): Promise<AuthResult> {
     try {
       // Check backend availability first
       const backendAvailable = await this.checkBackendAvailability();
       
       if (!backendAvailable || this.isOfflineMode) {
         console.warn('Using offline mode for registration');
-        return this.mockRegister(userData);
+        const result = await this.mockRegister(userData);
+        
+        if (result.success && result.user && result.token) {
+          this.setSession(result.token, remember, result.refreshToken, result.user);
+        }
+        
+        return result;
       }
       
       const apiUserData = {
@@ -179,6 +185,9 @@ class AuthService {
         const { user, token, refreshToken } = response.data;
         
         if (user && token) {
+          // Store session in cookies for persistence
+          this.setSession(token, remember, refreshToken, this.normalizeUser(user));
+          
           return {
             success: true,
             user: this.normalizeUser(user),
@@ -195,7 +204,13 @@ class AuthService {
       console.error('Registration error:', error);
       // Fall back to offline mode on network error
       console.warn('Network error, falling back to offline mode');
-      return this.mockRegister(userData);
+      const result = await this.mockRegister(userData);
+      
+      if (result.success && result.user && result.token) {
+        this.setSession(result.token, remember, result.refreshToken, result.user);
+      }
+      
+      return result;
     }
   }
 
@@ -203,14 +218,20 @@ class AuthService {
   async login(credentials: { 
     email: string; 
     password: string; 
-  }): Promise<AuthResult> {
+  }, remember: boolean = false): Promise<AuthResult> {
     try {
       // Check backend availability first
       const backendAvailable = await this.checkBackendAvailability();
       
       if (!backendAvailable || this.isOfflineMode) {
         console.warn('Using offline mode for login');
-        return this.mockAuth(credentials.email, credentials.password);
+        const result = await this.mockAuth(credentials.email, credentials.password);
+        
+        if (result.success && result.user && result.token) {
+          this.setSession(result.token, remember, result.refreshToken, result.user);
+        }
+        
+        return result;
       }
       
       const response = await apiClient.login(credentials);
@@ -219,6 +240,9 @@ class AuthService {
         const { user, token, refreshToken } = response.data;
         
         if (user && token) {
+          // Store session in cookies for persistence
+          this.setSession(token, remember, refreshToken, this.normalizeUser(user));
+          
           return {
             success: true,
             user: this.normalizeUser(user),
@@ -236,7 +260,13 @@ class AuthService {
       console.error('Login error:', error);
       // Fall back to offline mode on network error
       console.warn('Network error, falling back to offline mode');
-      return this.mockAuth(credentials.email, credentials.password);
+      const result = await this.mockAuth(credentials.email, credentials.password);
+      
+      if (result.success && result.user && result.token) {
+        this.setSession(result.token, remember, result.refreshToken, result.user);
+      }
+      
+      return result;
     }
   }
 
@@ -627,7 +657,43 @@ class AuthService {
 
   // Utility methods
   isAuthenticated(): boolean {
-    return !!this.getSession();
+    return hasValidAuthSession();
+  }
+
+  // Get current authenticated user
+  async getCurrentUser(): Promise<User | null> {
+    try {
+      // First check if we have tokens in cookies
+      const token = getAuthToken();
+      const user = getUserData();
+      
+      if (!token || !user) {
+        return null;
+      }
+
+      // Try to validate token with backend
+      const backendAvailable = await this.checkBackendAvailability();
+      if (!backendAvailable) {
+        // If backend is unavailable but we have session data, return cached user
+        return user;
+      }
+
+      // Validate with backend and get fresh user data
+      const response = await apiClient.getProfile();
+      if (response.success && response.data) {
+        const freshUser = this.normalizeUser(response.data);
+        // Update cached user data
+        setUserData(freshUser, getRememberMe());
+        return freshUser;
+      }
+
+      // If backend call fails but we have cached data, return cached user
+      return user;
+    } catch (error) {
+      console.error('Get current user failed:', error);
+      // Return cached user data if available
+      return getUserData();
+    }
   }
 
   getCurrentUserId(): string | null {
