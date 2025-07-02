@@ -3,7 +3,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
-    "api/index-basic.js": {
+    "api/index-simple.js": {
       "memory": 1024,
       "maxDuration": 10
     }
@@ -11,7 +11,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index-basic.js"
+      "destination": "/api/index-simple.js"
     },
     {
       "source": "/(.*)",

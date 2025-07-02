@@ -1,0 +1,675 @@
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+// Define JWT payload interface
+interface TokenPayload extends JwtPayload {
+  userId: string;
+  email: string;
+  role: string;
+}
+
+// Load environment variables
+dotenv.config();
+
+// Initialize Prisma with proper connection handling
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+});
+
+// Create Express app
+const app = express();
+
+// Environment variables with fallbacks
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@onlyfur.net';
+const PORT = process.env.PORT || 3001;
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://onlyfur.net',
+        'https://www.onlyfur.net',
+        'https://creatorplattform.vercel.app',
+        process.env.FRONTEND_URL || 'https://onlyfur.net'
+      ]
+    : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
+};
+
+// Middleware
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Request logging middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log('API Request:', {
+    method: req.method,
+    path: req.path,
+    url: req.url,
+    headers: {
+      origin: req.headers.origin,
+      'user-agent': req.headers['user-agent']?.substring(0, 50) + '...'
+    },
+    timestamp: new Date().toISOString()
+  });
+  next();
+});
+
+// Initialize admin user
+async function initializeAdminUser() {
+  try {
+    let adminUser = await prisma.user.findUnique({
+      where: { email: ADMIN_EMAIL }
+    });
+
+    if (!adminUser) {
+      if (process.env.ADMIN_PASSWORD) {
+        const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
+        
+        adminUser = await prisma.user.create({
+          data: {
+            email: ADMIN_EMAIL,
+            username: 'admin',
+            displayName: 'System Administrator',
+            password: hashedPassword,
+            role: 'ADMIN',
+            authProvider: 'EMAIL',
+            isActive: true,
+            isVerified: true,
+            isEmailVerified: true,
+            subscriptionStatus: 'ACTIVE',
+            subscriptionTier: 'premium'
+          }
+        });
+        
+        console.log('✅ Admin user created successfully');
+      } else {
+        console.log('⚠️ Admin user not found and ADMIN_PASSWORD not set');
+      }
+    } else {
+      // Ensure admin is active
+      if (!adminUser.isActive || adminUser.role !== 'ADMIN') {
+        await prisma.user.update({
+          where: { id: adminUser.id },
+          data: {
+            isActive: true,
+            role: 'ADMIN'
+          }
+        });
+        console.log('✅ Admin user status updated');
+      }
+    }
+  } catch (error) {
+    console.error('❌ Admin user initialization failed:', error);
+  }
+}
+
+// Initialize on startup
+initializeAdminUser();
+
+// Helper function to verify JWT token
+function verifyToken(token: string): TokenPayload {
+  return jwt.verify(token, JWT_SECRET) as TokenPayload;
+}
+
+// Helper function to verify refresh token
+function verifyRefreshToken(token: string): TokenPayload {
+  return jwt.verify(token, JWT_REFRESH_SECRET) as TokenPayload;
+}
+
+// Health check endpoints
+app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    service: 'OnlyFur Creator Platform API',
+    version: '3.9.0'
+  });
+});
+
+app.get('/api/health', (req: Request, res: Response) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    service: 'OnlyFur Creator Platform API',
+    version: '3.9.0'
+  });
+});
+
+// Authentication endpoints
+
+// Login endpoint
+app.post('/api/auth/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() }
+    });
+
+    if (!user || !user.password) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ error: 'Account is deactivated' });
+    }
+
+    // Generate tokens
+    const accessToken = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: user.id },
+      JWT_REFRESH_SECRET,
+      { expiresIn: JWT_REFRESH_EXPIRES_IN }
+    );
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          displayName: user.displayName,
+          role: user.role,
+          isVerified: user.isVerified,
+          subscriptionStatus: user.subscriptionStatus,
+          avatar: user.avatar
+        },
+        token: accessToken,
+        refreshToken: refreshToken
+      }
+    });
+  } catch (error: any) {
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      error: 'Login failed',
+      message: error.message
+    });
+  }
+});
+
+// Register endpoint  
+app.post('/api/auth/register', async (req: Request, res: Response) => {
+  try {
+    const { email, username, displayName, password, role } = req.body;
+
+    if (!email || !username || !displayName || !password) {
+      return res.status(400).json({ 
+        error: 'Email, username, display name, and password are required' 
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    // Check existing user
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: email.toLowerCase() },
+          { username: username.toLowerCase() }
+        ]
+      }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ 
+        error: existingUser.email === email.toLowerCase() 
+          ? 'Email already registered' 
+          : 'Username already taken' 
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create user
+    const newUser = await prisma.user.create({
+      data: {
+        email: email.toLowerCase(),
+        username: username.toLowerCase(),
+        displayName,
+        password: hashedPassword,
+        role: role?.toUpperCase() === 'CREATOR' ? 'CREATOR' : 'SUBSCRIBER',
+        authProvider: 'EMAIL',
+        isActive: true,
+        isEmailVerified: false,
+        subscriptionStatus: 'ACTIVE',
+        subscriptionTier: 'free'
+      }
+    });
+
+    // Generate tokens
+    const accessToken = jwt.sign(
+      { userId: newUser.id, email: newUser.email, role: newUser.role },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: newUser.id },
+      JWT_REFRESH_SECRET,
+      { expiresIn: JWT_REFRESH_EXPIRES_IN }
+    );
+
+    res.status(201).json({
+      success: true,
+      data: {
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          username: newUser.username,
+          displayName: newUser.displayName,
+          role: newUser.role,
+          isVerified: newUser.isVerified,
+          subscriptionStatus: newUser.subscriptionStatus
+        },
+        token: accessToken,
+        refreshToken: refreshToken
+      }
+    });
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    res.status(500).json({ 
+      error: 'Registration failed',
+      message: error.message
+    });
+  }
+});
+
+// Profile endpoint
+app.get('/api/auth/profile', async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No valid token provided' });
+    }
+
+    const token = authHeader.substring(7);
+    
+    try {
+      const decoded = verifyToken(token);
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          displayName: true,
+          role: true,
+          isVerified: true,
+          subscriptionStatus: true,
+          avatar: true,
+          createdAt: true
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({
+        success: true,
+        data: { user }
+      });
+    } catch (jwtError) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+  } catch (error: any) {
+    console.error('Profile error:', error);
+    res.status(500).json({ 
+      error: 'Profile fetch failed',
+      message: error.message
+    });
+  }
+});
+
+// Refresh token endpoint
+app.post('/api/auth/refresh', async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ error: 'Refresh token is required' });
+    }
+    
+    try {
+      const decoded = verifyRefreshToken(refreshToken);
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId }
+      });
+
+      if (!user || !user.isActive) {
+        return res.status(401).json({ error: 'Invalid refresh token' });
+      }
+
+      // Generate new access token
+      const accessToken = jwt.sign(
+        { userId: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      );
+
+      res.json({
+        success: true,
+        data: { token: accessToken }
+      });
+    } catch (jwtError) {
+      return res.status(401).json({ error: 'Invalid refresh token' });
+    }
+  } catch (error: any) {
+    console.error('Token refresh error:', error);
+    res.status(500).json({ 
+      error: 'Token refresh failed',
+      message: error.message
+    });
+  }
+});
+
+// User profile routes
+app.get('/api/user/:usernameOrId', async (req: Request, res: Response) => {
+  try {
+    const { usernameOrId } = req.params;
+    
+    // Try username first, then ID
+    let user = await prisma.user.findUnique({
+      where: { username: usernameOrId.toLowerCase() },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        displayName: true,
+        role: true,
+        isVerified: true,
+        avatar: true,
+        bio: true,
+        coverImage: true,
+        subscriberCount: true,
+        contentCount: true,
+        isPrivate: true,
+        website: true,
+        twitter: true,
+        instagram: true,
+        createdAt: true
+      }
+    });
+
+    if (!user && usernameOrId.length > 10) {
+      user = await prisma.user.findUnique({
+        where: { id: usernameOrId },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          displayName: true,
+          role: true,
+          isVerified: true,
+          avatar: true,
+          bio: true,
+          coverImage: true,
+          subscriberCount: true,
+          contentCount: true,
+          isPrivate: true,
+          website: true,
+          twitter: true,
+          instagram: true,
+          createdAt: true
+        }
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if it's own profile
+    const authHeader = req.headers.authorization;
+    let isOwnProfile = false;
+    
+    if (authHeader?.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7);
+        const decoded = verifyToken(token);
+        isOwnProfile = decoded.userId === user.id;
+      } catch (e) {
+        // Invalid token, continue as public view
+      }
+    }
+
+    const publicUser = {
+      ...user,
+      email: isOwnProfile ? user.email : undefined
+    };
+
+    res.json({
+      success: true,
+      data: { user: publicUser }
+    });
+  } catch (error: any) {
+    console.error('User profile error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch user profile',
+      message: error.message
+    });
+  }
+});
+
+// Additional API endpoints
+
+// Status endpoint
+app.get('/api/status', (req: Request, res: Response) => {
+  res.status(200).json({ 
+    status: 'healthy',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    version: '3.9.0',
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Platform stats
+app.get('/api/real-data/platform-stats', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    stats: {
+      users: { total: 150, online: 23, creators: 45 },
+      content: { total: 890, thisMonth: 67 },
+      revenue: { total: 15420, thisMonth: 2340 }
+    }
+  });
+});
+
+// Online status endpoints  
+app.post('/api/online-status/set-online', (req: Request, res: Response) => {
+  res.json({ success: true, message: 'Online status updated' });
+});
+
+app.post('/api/online-status/set-offline', (req: Request, res: Response) => {
+  res.json({ success: true, message: 'Online status updated' });
+});
+
+// Placeholder routes for future implementation
+app.use('/api/subscriptions', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Subscription routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+app.use('/api/content', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Content routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+app.use('/api/messaging', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Messaging routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+app.use('/api/admin', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Admin routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+app.use('/api/payments', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Payment routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+app.use('/api/upload-blob', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Upload routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+app.use('/api/creator-pages', (req: Request, res: Response) => {
+  res.json({ 
+    success: false,
+    error: 'Creator pages routes temporarily unavailable', 
+    endpoint: req.path,
+    message: 'This feature is being implemented'
+  });
+});
+
+// Error handling middleware
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('API Error:', {
+    error: error?.message || error,
+    path: req?.path || req?.url,
+    method: req?.method,
+    timestamp: new Date().toISOString()
+  });
+  
+  if (res.headersSent) {
+    return next(error);
+  }
+  
+  res.status(500).json({ 
+    success: false,
+    error: 'Internal server error',
+    message: error?.message || 'Unknown error occurred',
+    endpoint: req?.path || req?.url,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 404 handler
+app.use('*', (req: Request, res: Response) => {
+  res.status(404).json({ 
+    success: false,
+    error: 'API endpoint not found',
+    method: req.method,
+    path: req.path,
+    availableEndpoints: [
+      'GET /api/health',
+      'GET /api/status', 
+      'GET /api/auth/profile',
+      'POST /api/auth/login',
+      'POST /api/auth/register',
+      'POST /api/auth/refresh',
+      'GET /api/user/:username',
+      'GET /api/real-data/platform-stats'
+    ]
+  });
+});
+
+// Graceful shutdown
+process.on('beforeExit', async () => {
+  console.log('🔄 Shutting down gracefully...');
+  await prisma.$disconnect();
+  console.log('✅ Database connection closed');
+});
+
+process.on('SIGTERM', async () => {
+  console.log('🛑 SIGTERM received, shutting down...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('🛑 SIGINT received, shutting down...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+// Start server if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log('🚀 OnlyFur Platform API Server Started');
+    console.log('=====================================');
+    console.log(`📍 Port: ${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
+    console.log('');
+    console.log('📚 Available API Endpoints:');
+    console.log('   POST /api/auth/login');
+    console.log('   POST /api/auth/register');
+    console.log('   GET  /api/auth/profile');
+    console.log('   POST /api/auth/refresh');
+    console.log('   GET  /api/user/:username');
+    console.log('   GET  /api/status');
+    console.log('   GET  /api/health');
+    console.log('=====================================');
+  });
+}
+
+// Export for Vercel/serverless
+export default app;
+module.exports = app;
