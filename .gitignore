@@ -1,4 +1,58 @@
 node_modules
 .vercel
-.env*.local
+coverage
+*.log
+.idea
+creatorplattform.iml
+
+# Environment files (exclude local configurations)
 .env
+.env.local
+.env*.local
+
+# Allow environment templates in env/ folder
+!env/.env.example
+!env/.env.development
+
+# Exclude production secrets
+env/.env.production
+
+# Build and distribution
+dist/
+build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary and backup files
+*.tmp
+*.temp
+*-backup.*
+*-clean.*
+*-old.*
+deployment-report.json
+
+# Archive directories (keep structure but ignore content changes)
+backend/archive/
+docs/release-notes/archive/
+
+
+# Test and coverage
+coverage/
+.nyc_output
+
+# Editor and IDE
+.vscode/
+.idea/
+*.iml
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

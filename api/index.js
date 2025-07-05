@@ -1,107 +1,203 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const { getDatabase } = require('../backend/database');
+const { createRoutes } = require('../backend/routes');
+const { corsHeaders } = require('../backend/utils');
+const url = require('url');
 
-// Simple Express app for testing
-const app = express();
-const PORT = process.env.PORT || 3001;
+// Global database instance for serverless functions
+let dbInstance = null;
+let routeHandlers = null;
 
-// Basic middleware
-app.use(cors());
-app.use(express.json());
+// Initialize database and routes if needed
+async function initializeBackend() {
+  if (!dbInstance) {
+    dbInstance = getDatabase();
+    await dbInstance.connect();
+    routeHandlers = createRoutes(dbInstance);
+  }
+  return { db: dbInstance, routes: routeHandlers };
+}
 
-// Simple health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    service: 'OnlyFur API',
-    version: '3.9.0',
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    service: 'OnlyFur API',
-    version: '3.9.0',
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.get('/api/status', (req, res) => {
-  res.json({
-    status: 'running',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Simple login endpoint (mock for now)
-app.post('/api/auth/login', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Login endpoint is working',
-    data: { demo: true }
-  });
-});
-
-// Simple register endpoint (mock for now)
-app.post('/api/auth/register', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Register endpoint is working',
-    data: { demo: true }
-  });
-});
-
-// Catch-all for API routes
-app.get('/api*', (req, res) => {
-  res.json({
-    message: 'API endpoint under development',
-    path: req.path
-  });
-});
-
-app.post('/api*', (req, res) => {
-  res.json({
-    message: 'API endpoint under development',
-    path: req.path
-  });
-});
-
-// Default route
-app.get('*', (req, res) => {
-  res.json({
-    message: 'OnlyFur Platform API',
-    version: '3.9.0',
-    endpoints: [
-      'GET /api/health',
-      'GET /api/status',
-      'POST /api/auth/login',
-      'POST /api/auth/register'
-    ]
-  });
-});
-
-// Error handler
-app.use((error, req, res, next) => {
-  console.error('Error:', error);
-  res.status(500).json({
-    error: 'Internal server error',
-    message: error.message
-  });
-});
-
-// Start server
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log('🚀 OnlyFur Platform API Server (Basic)');
-    console.log('======================================');
-    console.log(`📍 Port: ${PORT}`);
-    console.log(`📊 Health: http://localhost:${PORT}/api/health`);
-    console.log('======================================');
+// Add CORS headers
+function addCorsHeaders(res) {
+  const headers = corsHeaders();
+  Object.entries(headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
   });
 }
 
-module.exports = app;
+async function handler(req, res) {
+  const { method } = req;
+  const parsedUrl = url.parse(req.url, true);
+  const pathname = parsedUrl.pathname;
+  
+  // Add CORS headers to all responses
+  addCorsHeaders(res);
+  
+  // Handle preflight OPTIONS requests
+  if (method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  try {
+    // Initialize backend
+    const { routes } = await initializeBackend();
+    
+    // Find route handler
+    let routeKey = `${method} ${pathname}`;
+    let handler = routes[routeKey];
+    
+    // Handle dynamic routes
+    if (!handler) {
+      // Handle /user/:username route
+      if (pathname.startsWith('/user/') && method === 'GET') {
+        handler = routes['GET /user/:username'];
+      }
+      // Handle /api/user/check-url/:url route
+      else if (pathname.startsWith('/api/user/check-url/') && method === 'GET') {
+        handler = routes['GET /api/user/check-url/:url'];
+      }
+    }
+    
+    if (handler) {
+      // Convert Vercel req/res to Node.js format for compatibility
+      const nodeReq = {
+        ...req,
+        url: req.url,
+        method: req.method,
+        headers: req.headers
+      };
+      
+      const nodeRes = {
+        writeHead: (status, headers) => {
+          res.status(status);
+          if (headers) {
+            Object.entries(headers).forEach(([key, value]) => {
+              res.setHeader(key, value);
+            });
+          }
+        },
+        end: (data) => {
+          if (data) {
+            res.send(data);
+          } else {
+            res.end();
+          }
+        },
+        setHeader: (key, value) => res.setHeader(key, value)
+      };
+      
+      await handler(nodeReq, nodeRes);
+    } else {
+      res.status(404).json({
+        success: false,
+        error: 'Endpoint not found',
+        path: pathname,
+        method: method
+      });
+    }
+    
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+}
+
+// For local development
+if (require.main === module) {
+  const http = require('http');
+  const PORT = process.env.PORT || 3001;
+  
+  console.log('🚀 Starting serverless backend for local development...');
+  
+  const server = http.createServer(async (req, res) => {
+    // Parse request body for POST/PUT/PATCH requests
+    let body = null;
+    if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      try {
+        const chunks = [];
+        for await (const chunk of req) {
+          chunks.push(chunk);
+        }
+        const rawBody = Buffer.concat(chunks).toString();
+        body = rawBody ? JSON.parse(rawBody) : {};
+      } catch (error) {
+        console.error('Error parsing request body:', error.message);
+        body = {};
+      }
+    }
+    
+    // Convert to Vercel-like request/response objects
+    const vercelReq = {
+      ...req,
+      query: url.parse(req.url, true).query,
+      body: body
+    };
+    
+    const vercelRes = {
+      status: (code) => {
+        res.statusCode = code;
+        return vercelRes;
+      },
+      json: (data) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(data));
+      },
+      send: (data) => {
+        if (typeof data === 'string') {
+          res.end(data);
+        } else {
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify(data));
+        }
+      },
+      end: () => {
+        res.end();
+      },
+      setHeader: (key, value) => {
+        res.setHeader(key, value);
+        return vercelRes;
+      }
+    };
+    
+    await handler(vercelReq, vercelRes);
+  });
+  
+  server.listen(PORT, () => {
+    console.log(`✅ Local serverless backend running on port ${PORT}`);
+    console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`📋 API endpoints: http://localhost:${PORT}/api`);
+    console.log(`🔐 Admin panel: http://localhost:${PORT}/api/admin/panel`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+  
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    console.log('📴 Received SIGTERM, shutting down gracefully...');
+    if (dbInstance) {
+      await dbInstance.disconnect();
+    }
+    server.close(() => {
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
+  });
+  
+  process.on('SIGINT', async () => {
+    console.log('📴 Received SIGINT, shutting down gracefully...');
+    if (dbInstance) {
+      await dbInstance.disconnect();
+    }
+    server.close(() => {
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
+  });
+}
+
+module.exports = handler;
+module.exports.default = handler;

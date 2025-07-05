@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const helpArticlesDir = path.join(__dirname, '../src/pages/help/articles');
-const pagesDir = path.join(__dirname, '../src/pages');
-const outputFile = path.join(__dirname, '../src/services/neuralIndex.generated.json');
+const helpArticlesDir = path.join(__dirname, '../frontend/src/pages/help/articles');
+const pagesDir = path.join(__dirname, '../frontend/src/pages');
+const outputFile = path.join(__dirname, '../frontend/src/services/neuralIndex.generated.json');
 
 function getTitleFromFileName(fileName) {
   // Remove extension and convert dashes/underscores to spaces, capitalize words
