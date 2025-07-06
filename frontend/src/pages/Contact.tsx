@@ -311,9 +311,9 @@ const Contact: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-1">Is there phone support available?</h4>
+                  <h4 className="font-medium mb-1">How can I get support?</h4>
                   <p className="text-sm text-muted-foreground">
-                    Currently, we provide support primarily through email. For urgent issues, please mark your message as "Urgent" in the subject line.
+                    We provide support primarily through email and our contact form. For urgent issues, please mark your message as "Urgent" in the subject line.
                   </p>
                 </div>
                 <div>
