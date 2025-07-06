@@ -1,12 +1,13 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { AlertTriangle, FileText, Calculator, Globe, Phone } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { AlertTriangle, FileText, Calculator, Globe, Phone, DollarSign, CheckCircle } from 'lucide-react';
 
 export default function TaxInfo() {
   const taxCategories = [
     {
       title: 'Income Reporting',
-      icon: <Calculator className="w-5 h-5" />,
+      icon: Calculator,
       content: [
         'All earnings from subscriptions, tips, and sales must be reported as income',
         'Keep detailed records of all payments received through the platform',
@@ -16,7 +17,7 @@ export default function TaxInfo() {
     },
     {
       title: 'Business Expenses',
-      icon: <FileText className="w-5 h-5" />,
+      icon: FileText,
       content: [
         'Equipment purchases (cameras, lighting, computers) may be deductible',
         'Internet and phone bills (portion used for business) can be claimed',
@@ -26,7 +27,7 @@ export default function TaxInfo() {
     },
     {
       title: 'Record Keeping',
-      icon: <Globe className="w-5 h-5" />,
+      icon: Globe,
       content: [
         'Maintain detailed records of all income and expenses',
         'Save receipts for all business-related purchases',
@@ -43,176 +44,216 @@ export default function TaxInfo() {
     { name: 'Quarterly Taxes', description: 'Estimated tax payments due quarterly', region: 'US' }
   ];
 
+  const quarterlyDates = [
+    { quarter: 'Q1 2025', date: 'April 15, 2025', color: 'blue' },
+    { quarter: 'Q2 2025', date: 'June 16, 2025', color: 'green' },
+    { quarter: 'Q3 2025', date: 'September 15, 2025', color: 'yellow' },
+    { quarter: 'Q4 2025', date: 'January 15, 2026', color: 'purple' }
+  ];
+
+  const internationalInfo = [
+    {
+      title: 'Tax Treaty Benefits',
+      description: 'Many countries have tax treaties with the US that may reduce or eliminate withholding taxes. Check if your country has a tax treaty and complete the appropriate forms.'
+    },
+    {
+      title: 'Required Forms',
+      items: [
+        'Form W-8BEN for individual foreign creators',
+        'Form W-8BEN-E for foreign entities',
+        'Form 1042-S for reporting US source income'
+      ]
+    },
+    {
+      title: 'Local Reporting',
+      description: 'You must also report your earnings to your local tax authority according to your country\'s laws. Consult with a local tax professional familiar with international income reporting.'
+    }
+  ];
+
+  const professionalHelp = {
+    when: [
+      'You earn more than $400 in self-employment income',
+      'You have complex deductions or multiple income sources',
+      'You\'re an international creator with US earnings',
+      'You\'re unsure about quarterly payment requirements'
+    ],
+    resources: [
+      'IRS.gov for official US tax information',
+      'Local tax authority websites for your jurisdiction',
+      'Certified Public Accountants (CPAs)',
+      'Tax preparation software with creator-specific features'
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Tax Information for Creators</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Important tax considerations and guidelines for content creators earning income on our platform
-          </p>
+    <div className="container mx-auto p-6 max-w-6xl">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 px-4 py-2 rounded-full mb-6">
+          <DollarSign className="h-5 w-5 text-primary" />
+          <span className="text-sm font-medium">Tax Information</span>
         </div>
+        
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-6">
+          Tax Information for Creators
+        </h1>
+        
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Important tax considerations and guidelines for content creators earning income on our platform. 
+          Stay compliant and maximize your deductions.
+        </p>
+      </div>
 
-        {/* Important Notice */}
-        <Card className="mb-8 border-amber-200 bg-amber-50">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-amber-800 mb-2">Important Disclaimer</h3>
-                <p className="text-amber-700 text-sm">
-                  This information is for general guidance only and should not be considered professional tax advice. 
-                  Tax laws vary by jurisdiction and individual circumstances. Please consult with a qualified tax 
-                  professional or accountant for advice specific to your situation.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Important Notice */}
+      <div className="mb-16">
+        <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800 dark:text-amber-200">
+            <strong>Important Disclaimer:</strong> This information is for general guidance only and should not be considered professional tax advice. 
+            Tax laws vary by jurisdiction and individual circumstances. Please consult with a qualified tax 
+            professional or accountant for advice specific to your situation.
+          </AlertDescription>
+        </Alert>
+      </div>
 
-        {/* Tax Categories */}
-        <div className="space-y-6 mb-8">
+      {/* Tax Categories */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Key Tax Considerations</h2>
+        <div className="grid md:grid-cols-3 gap-6">
           {taxCategories.map((category, index) => (
-            <Card key={index}>
+            <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {category.icon}
+                <CardTitle className="flex items-center text-lg">
+                  <category.icon className="w-5 h-5 mr-3 text-primary" />
                   {category.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <ul className="space-y-3">
                   {category.content.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700">{item}</span>
-                    </div>
+                    <li key={itemIndex} className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 shrink-0"></div>
+                      <span className="text-sm text-muted-foreground">{item}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </CardContent>
             </Card>
           ))}
         </div>
+      </div>
 
-        {/* Common Tax Forms */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Common Tax Forms (US)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {forms.map((form, index) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold">{form.name}</h4>
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      {form.region}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600">{form.description}</p>
+      {/* Common Tax Forms */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Common Tax Forms (US)</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          {forms.map((form, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-semibold">{form.name}</h4>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded dark:bg-blue-900/20 dark:text-blue-300">
+                    {form.region}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <p className="text-sm text-muted-foreground">{form.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-        {/* Quarterly Tax Calendar */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>US Quarterly Tax Due Dates 2025</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="font-bold text-blue-600 mb-1">Q1 2025</div>
-                <div className="text-sm text-gray-600">Due: April 15, 2025</div>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="font-bold text-green-600 mb-1">Q2 2025</div>
-                <div className="text-sm text-gray-600">Due: June 16, 2025</div>
-              </div>
-              <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <div className="font-bold text-yellow-600 mb-1">Q3 2025</div>
-                <div className="text-sm text-gray-600">Due: September 15, 2025</div>
-              </div>
-              <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="font-bold text-purple-600 mb-1">Q4 2025</div>
-                <div className="text-sm text-gray-600">Due: January 15, 2026</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Quarterly Tax Calendar */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">US Quarterly Tax Due Dates 2025</h2>
+        <div className="grid md:grid-cols-4 gap-4">
+          {quarterlyDates.map((quarter, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className={`w-12 h-12 rounded-full bg-${quarter.color}-100 dark:bg-${quarter.color}-900/20 flex items-center justify-center mx-auto mb-4`}>
+                  <Calculator className={`w-6 h-6 text-${quarter.color}-600`} />
+                </div>
+                <h3 className="font-bold mb-1">{quarter.quarter}</h3>
+                <p className="text-sm text-muted-foreground">Due: {quarter.date}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-        {/* International Considerations */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="w-5 h-5" />
-              International Creators
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2">Tax Treaty Benefits</h4>
-                <p className="text-sm text-gray-600 mb-2">
-                  Many countries have tax treaties with the US that may reduce or eliminate withholding taxes. 
-                  Check if your country has a tax treaty and complete the appropriate forms.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">Required Forms</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Form W-8BEN for individual foreign creators</li>
-                  <li>• Form W-8BEN-E for foreign entities</li>
-                  <li>• Form 1042-S for reporting US source income</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">Local Reporting</h4>
-                <p className="text-sm text-gray-600">
-                  You must also report your earnings to your local tax authority according to your country's laws. 
-                  Consult with a local tax professional familiar with international income reporting.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* International Considerations */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">International Creators</h2>
+        <div className="space-y-6">
+          {internationalInfo.map((info, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <Globe className="w-5 h-5 mr-3 text-primary" />
+                  {info.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {info.description && (
+                  <p className="text-muted-foreground mb-4">{info.description}</p>
+                )}
+                {info.items && (
+                  <ul className="space-y-2">
+                    {info.items.map((item, itemIndex) => (
+                      <li key={itemIndex} className="flex items-start space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                        <span className="text-sm text-muted-foreground">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-        {/* Getting Help */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Phone className="w-5 h-5" />
-              Getting Professional Help
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold mb-3">When to Consult a Professional</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• You earn more than $400 in self-employment income</li>
-                  <li>• You have complex deductions or multiple income sources</li>
-                  <li>• You're an international creator with US earnings</li>
-                  <li>• You're unsure about quarterly payment requirements</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3">Resources</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• IRS.gov for official US tax information</li>
-                  <li>• Local tax authority websites for your jurisdiction</li>
-                  <li>• Certified Public Accountants (CPAs)</li>
-                  <li>• Tax preparation software with creator-specific features</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Getting Professional Help */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Getting Professional Help</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg">
+                <Phone className="w-5 h-5 mr-3 text-primary" />
+                When to Consult a Professional
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {professionalHelp.when.map((item, index) => (
+                  <li key={index} className="flex items-start space-x-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                    <span className="text-sm text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg">
+                <FileText className="w-5 h-5 mr-3 text-primary" />
+                Resources
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {professionalHelp.resources.map((item, index) => (
+                  <li key={index} className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 shrink-0"></div>
+                    <span className="text-sm text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
