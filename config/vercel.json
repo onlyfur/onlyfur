@@ -1,8 +1,8 @@
 {
-  "buildCommand": "npm ci && npm run build",
+  "buildCommand": "npm ci && npm run prisma:generate && npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "devCommand": "vite --port $PORT --config config/vite.config.ts",
+  "devCommand": "vite --port $PORT",
   "functions": {
     "api/*.js": {
       "memory": 1024,

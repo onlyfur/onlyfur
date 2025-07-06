@@ -1,218 +1,266 @@
-# OnlyFur Platform - Production Backend Setup
+# 🦊 OnlyFur Platform
 
-This guide will help you set up the production backend for the OnlyFur platform with PostgreSQL database and authentication.
+**The complete creator platform with real-time content, subscriptions, and authentication.**
 
-## Prerequisites
+OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and Prisma. It features real authentication, content management, subscription tiers, and a complete admin system.
 
-Before starting, make sure you have:
+## 🚀 **Quick Start for New Developers**
 
-- **Node.js** (v18 or higher)
-- **PostgreSQL** (v13 or higher) running locally or remotely
-- **npm** or **yarn** package manager
+**New to the project? Start here! 👇**
 
-## Quick Start
+### **📋 Essential Setup (5 minutes)**
 
-### 1. Install Dependencies
+1. **Clone and install:**
+   ```bash
+   git clone [repository-url]
+   cd creatorplattform
+   npm install
+   ```
 
+2. **One-command setup:**
+   ```bash
+   npm run dev:backend
+   ```
+   
+   This automatically:
+   - 🔍 Detects your OS (Windows/macOS/Linux)
+   - 🐘 Installs PostgreSQL (or uses Docker)
+   - 🗄️ Sets up database with test users
+   - 🔐 Starts authentication backend
+
+3. **Start frontend:**
+   ```bash
+   npm run dev:frontend
+   ```
+
+4. **You're ready!** 🎉
+   - Frontend: http://localhost:5173
+   - Backend: http://localhost:3001
+   - Login with: `admin@onlyfur.net` / `admin123`
+
+### **📚 Required Reading for New Developers**
+
+**Read these documents in order:**
+
+1. **[📖 Documentation Overview](docs/README.md)** ⭐ **START HERE**
+2. **[🔧 Local Development Setup](docs/development/LOCAL_DEVELOPMENT.md)**
+3. **[🌍 Cross-Platform Setup](docs/development/CROSS_PLATFORM_SETUP.md)**
+
+### **📖 Role-Specific Guides**
+
+| Role | Essential Reading |
+|------|------------------|
+| **Frontend Developer** | [Local Setup](docs/development/LOCAL_DEVELOPMENT.md) → [Cross-Platform](docs/development/CROSS_PLATFORM_SETUP.md) |
+| **Backend Developer** | [Local Setup](docs/development/LOCAL_DEVELOPMENT.md) → [Deployment](docs/deployment/) |
+| **DevOps** | [Vercel Deployment](docs/deployment/VERCEL_DEPLOYMENT.md) → [Production Fixes](docs/deployment/VERCEL_FIX_COMPLETE.md) |
+| **Project Manager** | [Documentation Overview](docs/README.md) → [Release Notes](docs/release-notes/CHANGELOG.md) |
+
+## 📁 **Project Structure**
+
+```
+creatorplattform/
+├── src/                   # Frontend React application
+├── server/                # Backend authentication & APIs
+├── api/                   # Vercel serverless functions
+├── prisma/                # Database schema & migrations
+├── scripts/               # Development automation scripts
+├── env/                   # 🔐 Environment templates & examples
+│   ├── .env.example       # Complete variable reference
+│   ├── .env.development   # Development template
+│   └── README.md          # Environment guide
+├── docs/                  # 📖 All documentation
+│   ├── development/       # Local setup guides
+│   ├── deployment/        # Production deployment
+│   ├── guides/            # Feature-specific guides
+│   ├── troubleshooting/   # Problem-solving
+│   └── release-notes/     # Version history
+└── tests/                 # Test suites
+```
+
+## ⚙️ **Technology Stack**
+
+| Component | Technology | Purpose |
+|-----------|------------|----------|
+| **Frontend** | React 19, Vite, TailwindCSS | Modern responsive UI |
+| **Backend** | Node.js, Express | Authentication & API |
+| **Database** | PostgreSQL, Prisma ORM | Data persistence |
+| **Deployment** | Vercel, Neon Database | Production hosting |
+| **Auth** | JWT tokens, bcrypt | Secure authentication |
+| **Dev Tools** | ESLint, Jest, TypeScript | Code quality |
+
+## 📈 **Features**
+
+✅ **Authentication System**
+- Email/password registration & login
+- JWT token-based sessions
+- Admin, Creator, and Subscriber roles
+- Password reset functionality
+
+✅ **User Management**
+- Profile management
+- Subscription tiers (Free, Basic, Pro)
+- Role-based access control
+- Admin panel for user management
+
+✅ **Content System**
+- Content creation and management
+- Subscription-gated content
+- Media upload and storage
+- Content analytics
+
+✅ **Development Experience**
+- Cross-platform setup (Windows/macOS/Linux)
+- Automated PostgreSQL installation
+- Hot reloading for development
+- Comprehensive testing suite
+
+## 🛠️ **Development Commands**
+
+### **🚀 Essential Commands**
 ```bash
-npm install
+# Quick start (recommended)
+npm run dev:backend          # Setup & start backend
+npm run dev:frontend          # Start frontend
+npm run dev                   # Start both frontend & backend
+
+# Cross-platform database setup
+npm run postgres:setup        # Auto-install PostgreSQL
+npm run postgres:docker       # Use Docker PostgreSQL
+npm run env:create            # Create .env.development template
 ```
 
-### 2. Database Setup
-
-First, make sure PostgreSQL is running. Then create a database:
-
-```sql
-CREATE DATABASE onlyfur_db;
-```
-
-### 3. Environment Configuration
-
-The `.env` file has been created with default settings. Update it with your database credentials:
-
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/onlyfur_db"
-
-# JWT Secrets (CHANGE THESE IN PRODUCTION!)
-JWT_SECRET="your-super-secret-jwt-key-change-in-production"
-JWT_REFRESH_SECRET="your-super-secret-refresh-key-change-in-production"
-
-# Server Configuration
-PORT=3002
-API_BASE_URL="http://localhost:3002"
-CORS_ORIGIN="http://localhost:5173"
-
-# Admin User (will be created automatically)
-ADMIN_EMAIL="admin@onlyfur.com"
-ADMIN_PASSWORD="admin123"
-ADMIN_USERNAME="admin"
-```
-
-### 4. Initialize Database
-
-Run the automated setup script:
-
+### **🗄️ Database Commands**
 ```bash
-npm start
+npm run db:setup              # Setup local database
+npm run db:seed               # Seed with test users
+npm run db:local              # Complete database setup
+npm run prisma:studio         # Open database GUI
 ```
 
-This will:
-- Generate Prisma client
-- Run database migrations
-- Seed the database with default data
-- Build the application
-
-### 5. Start the Production Server
-
+### **🔨 Build & Production**
 ```bash
-npm run server:dev
+npm run build                 # Build for production
+npm run start                 # Start production server
+npm run deploy                # Deploy to Vercel
 ```
 
-The server will start on `http://localhost:3002`
-
-## Manual Setup (Alternative)
-
-If you prefer to run each step manually:
-
+### **🧪 Testing**
 ```bash
-# Generate Prisma client
-npm run prisma:generate
-
-# Run database migrations
-npm run prisma:migrate
-
-# Seed the database
-npm run prisma:seed
-
-# Build the application
-npm run build
-
-# Start production server
-npm run server:prod
+npm run test                  # Run all tests
+npm run test:api              # Test API endpoints
+npm run test:coverage         # Test with coverage
 ```
 
-## Available Scripts
+## 👥 **Default Test Users**
 
-- `npm run dev` - Start frontend development server
-- `npm run server:dev` - Start backend development server
-- `npm run server:prod` - Start production backend server
-- `npm run build` - Build the application
-- `npm start` - Run automated setup
-- `npm run prisma:studio` - Open Prisma Studio (database GUI)
-- `npm run prisma:migrate` - Run database migrations
-- `npm run prisma:seed` - Seed the database
-- `npm run db:reset` - Reset database (WARNING: Deletes all data)
+After running `npm run dev:backend`, these accounts are available:
 
-## Default Users
+| Role | Email | Password | Access Level |
+|------|-------|----------|-------------|
+| **Admin** | admin@onlyfur.net | admin123 | Full platform access |
+| **Creator** | creator@onlyfur.net | creator123 | Content creation |
+| **Subscriber** | subscriber@onlyfur.net | subscriber123 | Content access |
+| **Test User** | user@example.com | test123 | Basic access |
 
-After setup, these users will be available:
+## 🌐 **Development URLs**
 
-### Admin User
-- **Email**: admin@onlyfur.com
-- **Password**: admin123
-- **Role**: ADMIN
+| Service | URL | Purpose |
+|---------|-----|----------|
+| **Frontend** | http://localhost:5173 | Main application |
+| **Backend API** | http://localhost:3001 | Authentication & API |
+| **Health Check** | http://localhost:3001/api/health | Service status |
+| **Admin Panel** | http://localhost:3001/api/admin/panel | Admin interface |
+| **Database GUI** | http://localhost:5555 | Prisma Studio |
 
-### Test Users
-- **Email**: test@example.com
-- **Password**: password123
-- **Role**: SUBSCRIBER
+## 📚 **Documentation**
 
-- **Email**: creator@example.com
-- **Password**: password123
-- **Role**: CREATOR
+**➡️ All documentation is in the [`docs/`](docs/) folder. Start with the [Documentation Overview](docs/README.md).**
 
-## API Endpoints
+### **📅 Quick Links**
+- **[Getting Started](docs/README.md)** - Documentation overview
+- **[Local Development](docs/development/LOCAL_DEVELOPMENT.md)** - Complete setup guide
+- **[Cross-Platform Setup](docs/development/CROSS_PLATFORM_SETUP.md)** - Windows/macOS/Linux
+- **[Deployment Guide](docs/deployment/VERCEL_DEPLOYMENT.md)** - Production deployment
+- **[Troubleshooting](docs/troubleshooting/bugs.md)** - Common issues
+- **[Release Notes](docs/release-notes/CHANGELOG.md)** - Version history
 
-The backend provides these main endpoints:
+## 📋 **API Endpoints**
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user profile
-- `POST /api/auth/logout` - Logout user
-
-### Users
-- `GET /api/users` - Get users list (admin only)
-- `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-
-### Content
-- `GET /api/content` - Get content list
-- `POST /api/content` - Create content
-- `GET /api/content/:id` - Get content by ID
-- `PUT /api/content/:id` - Update content
-- `DELETE /api/content/:id` - Delete content
-
-### Subscriptions
-- `GET /api/subscriptions/tiers` - Get subscription tiers
-- `POST /api/subscriptions/subscribe` - Subscribe to tier
-
-## Database Management
-
-### View Database
-```bash
-npm run prisma:studio
+### **🔐 Authentication**
+```
+POST /api/auth/register      # Register new user
+POST /api/auth/login         # Login user
+GET  /api/auth/me            # Get current user profile
+POST /api/auth/logout        # Logout user
+POST /api/auth/reset-password # Password reset
 ```
 
-### Reset Database
-```bash
-npm run db:reset
+### **👥 Users**
+```
+GET  /api/users              # Get users list (admin only)
+GET  /api/users/:id          # Get user by ID
+PUT  /api/users/:id          # Update user
+GET  /user/:username         # Public user profile
 ```
 
-### Create Migration
-```bash
-npx prisma migrate dev --name your_migration_name
+### **📝 Content**
+```
+GET  /api/content            # Get content list
+POST /api/content            # Create content
+GET  /api/content/:id        # Get content by ID
+PUT  /api/content/:id        # Update content
+DELETE /api/content/:id      # Delete content
 ```
 
-## Production Deployment
+### **💳 Subscriptions**
+```
+GET  /api/subscriptions/tiers  # Get subscription tiers
+POST /api/subscriptions/subscribe # Subscribe to tier
+```
 
-For production deployment:
-
-1. Set up a PostgreSQL database
-2. Update environment variables in `.env`
-3. Change JWT secrets to secure random strings
-4. Run the setup: `npm start`
-5. Start the server: `npm run server:prod`
-
-## Troubleshooting
-
-### Database Connection Issues
-- Ensure PostgreSQL is running
-- Check DATABASE_URL in `.env`
-- Verify database exists and user has permissions
-
-### Port Already in Use
-- Change PORT in `.env` file
-- Kill existing processes on port 3002
-
-### Migration Errors
-- Reset database: `npm run db:reset`
-- Run setup again: `npm start`
-
-### Frontend Connection Issues
-- Ensure CORS_ORIGIN matches your frontend URL
-- Check VITE_API_BASE_URL in `.env.local`
-
-## Security Notes
+## 🛡️ **Security & Production**
 
 ⚠️ **Important for Production:**
 
-1. Change all default passwords
-2. Use strong, random JWT secrets
-3. Use environment variables for sensitive data
-4. Enable HTTPS in production
-5. Configure proper CORS origins
-6. Set up rate limiting
-7. Use a secure database connection
+1. **Change all default passwords**
+2. **Use strong, random JWT secrets**
+3. **Configure environment variables**
+4. **Enable HTTPS**
+5. **Set up rate limiting**
+6. **Use secure database connections**
 
-## Support
+See [Deployment Guide](docs/deployment/VERCEL_DEPLOYMENT.md) for detailed production setup.
 
-If you encounter issues:
+## 🔧 **Troubleshooting**
 
-1. Check the console logs for error messages
-2. Verify all environment variables are set correctly
-3. Ensure PostgreSQL is running and accessible
-4. Check that all dependencies are installed
+### **🐛 Common Issues**
+- **Database connection failed**: Check PostgreSQL is running
+- **Port already in use**: Change PORT in environment file
+- **NPM install errors**: Delete `node_modules` and reinstall
+- **Cross-platform issues**: See [Cross-Platform Setup](docs/development/CROSS_PLATFORM_SETUP.md)
 
-The backend includes comprehensive logging and error handling to help diagnose issues.
+### **🆘 Need Help?**
+1. Check [troubleshooting docs](docs/troubleshooting/bugs.md)
+2. Review [known issues](docs/troubleshooting/bugs.md)
+3. Contact the development team
+
+## 💯 **Contributing**
+
+When contributing to the project:
+
+1. **Read the [documentation](docs/README.md) first**
+2. **Follow the development setup guide**
+3. **Write tests for new features**
+4. **Update documentation as needed**
+5. **Follow the existing code style**
+
+## 📋 **License & Support**
+
+For support and questions:
+- 📖 **Documentation**: [docs/](docs/)
+- 🐛 **Issues**: Check [troubleshooting](docs/troubleshooting/bugs.md)
+- 📝 **Release Notes**: [changelog](docs/release-notes/CHANGELOG.md)
+
+---
+
+**Happy coding! 🎉** Built with ❤️ by the OnlyFur team.
