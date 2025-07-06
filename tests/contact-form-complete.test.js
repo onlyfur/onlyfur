@@ -199,7 +199,7 @@ describe('Contact Form', () => {
         .expect(200);
 
       const firstCall = EmailService.sendEmail.mock.calls[0];
-      expect(firstCall[0]).toBe(process.env.SUPPORT_EMAIL || 'support@onlyfur.com');
+      expect(firstCall[0]).toBe(process.env.SUPPORT_EMAIL || 'support@onlyfur.net');
       expect(firstCall[1]).toContain('[OnlyFur Contact] Technical - Test User');
       expect(firstCall[2]).toContain('Test User');
       expect(firstCall[2]).toContain('test@example.com');

@@ -304,7 +304,7 @@ const Safety: React.FC = () => {
         <AlertDescription className="text-orange-800 dark:text-orange-200">
           <strong>Emergency Situations:</strong> If you believe someone is in immediate danger, 
           contact your local emergency services (911, 999, etc.) first, then report the situation to us. 
-          For serious safety concerns, email safety@onlyfur.com for priority handling.
+          For serious safety concerns, email safety@onlyfur.net for priority handling.
         </AlertDescription>
       </Alert>
 

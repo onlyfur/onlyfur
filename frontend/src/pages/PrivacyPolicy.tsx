@@ -161,7 +161,7 @@ const PrivacyPolicy: React.FC = () => {
               <li>Restrict certain data processing activities</li>
             </ul>
             <p className="text-muted-foreground mt-4">
-              To exercise these rights, please contact us at privacy@onlyfur.com
+              To exercise these rights, please contact us at privacy@onlyfur.net
             </p>
           </CardContent>
         </Card>
@@ -198,8 +198,8 @@ const PrivacyPolicy: React.FC = () => {
               If you have questions about this Privacy Policy or our data practices, please contact us:
             </p>
             <div className="space-y-2 text-muted-foreground">
-              <div><strong>Email:</strong> privacy@onlyfur.com</div>
-              <div><strong>General Support:</strong> support@onlyfur.com</div>
+              <div><strong>Email:</strong> privacy@onlyfur.net</div>
+              <div><strong>General Support:</strong> support@onlyfur.net</div>
               <div><strong>Address:</strong> [Company Address - To be updated in production]</div>
             </div>
           </CardContent>

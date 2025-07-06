@@ -14,7 +14,7 @@ class EmailService {
 
   constructor() {
     // Initialize email configuration from environment variables
-    this.defaultFromEmail = process.env.EMAIL_FROM || 'noreply@onlyfur.com';
+    this.defaultFromEmail = process.env.EMAIL_FROM || 'noreply@onlyfur.net';
 
     // Create nodemailer transporter
     this.transporter = nodemailer.createTransport({

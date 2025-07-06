@@ -36,7 +36,7 @@ const ContactUs: React.FC = () => {
       icon: Mail,
       title: 'Email Support',
       description: 'Get help via email with detailed responses',
-      contact: 'support@onlyfur.com',
+      contact: 'support@onlyfur.net',
       responseTime: '24-48 hours',
       availability: '24/7'
     }

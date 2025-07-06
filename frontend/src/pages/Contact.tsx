@@ -25,7 +25,7 @@ const Contact: React.FC = () => {
       icon: Mail,
       title: 'Email Support',
       description: 'Get help via email',
-      contact: 'support@onlyfur.com',
+      contact: 'support@onlyfur.net',
       responseTime: 'Response within 24 hours',
       color: 'text-blue-500'
     },
@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
       icon: MessageCircle,
       title: 'Creator Support',
       description: 'Specialized help for creators',
-      contact: 'creators@onlyfur.com',
+      contact: 'creators@onlyfur.net',
       responseTime: 'Response within 12 hours',
       color: 'text-green-500'
     },
@@ -41,7 +41,7 @@ const Contact: React.FC = () => {
       icon: User,
       title: 'Business Inquiries',
       description: 'Partnerships and business',
-      contact: 'business@onlyfur.com',
+      contact: 'business@onlyfur.net',
       responseTime: 'Response within 48 hours',
       color: 'text-purple-500'
     },
@@ -49,7 +49,7 @@ const Contact: React.FC = () => {
       icon: FileText,
       title: 'Legal & Safety',
       description: 'Legal and safety concerns',
-      contact: 'legal@onlyfur.com',
+      contact: 'legal@onlyfur.net',
       responseTime: 'Response within 24 hours',
       color: 'text-red-500'
     }

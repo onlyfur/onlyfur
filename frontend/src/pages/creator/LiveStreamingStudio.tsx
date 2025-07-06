@@ -182,7 +182,7 @@ const LiveStreamingStudio: React.FC = () => {
         thumbnail: '/api/placeholder/300/200',
         status: 'offline',
         streamKey: 'sk_live_1234567890abcdef',
-        rtmpUrl: 'rtmp://live.onlyfur.com/live',
+        rtmpUrl: 'rtmp://live.onlyfur.net/live',
         createdAt: new Date(),
         tags: ['digital art', 'character design', 'tutorial'],
         isPrivate: false,

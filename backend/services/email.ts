@@ -58,7 +58,7 @@ class EmailService {
 
     try {
       const mailOptions = {
-        from: `${process.env.FROM_NAME || 'OnlyFur Platform'} <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+        from: `${process.env.FROM_NAME || 'OnlyFur Platform'} <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
         to: options.to,
         subject: options.subject,
         html: options.html,

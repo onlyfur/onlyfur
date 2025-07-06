@@ -95,13 +95,13 @@ const SafetyCenter: React.FC = () => {
   const emergencyContacts = [
     {
       type: "Platform Safety Team",
-      contact: "safety@onlyfur.com",
+      contact: "safety@onlyfur.net",
       description: "24/7 safety concerns and urgent reports",
       responseTime: "< 1 hour"
     },
     {
       type: "Legal Issues",
-      contact: "legal@onlyfur.com", 
+      contact: "legal@onlyfur.net", 
       description: "Copyright, DMCA, and legal matters",
       responseTime: "< 24 hours"
     },
@@ -150,7 +150,7 @@ const SafetyCenter: React.FC = () => {
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800 dark:text-red-200">
             <strong>Need immediate help?</strong> If you're in danger or experiencing a crisis, contact local emergency services immediately. 
-            For platform-related safety concerns, email safety@onlyfur.com or use our reporting tools below.
+            For platform-related safety concerns, email safety@onlyfur.net or use our reporting tools below.
           </AlertDescription>
         </Alert>
 

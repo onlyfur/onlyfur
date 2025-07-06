@@ -30,7 +30,7 @@ DATABASE_URL="${POSTGRES_PRISMA_URL}"
 ```env
 NODE_ENV="production"
 PLATFORM_NAME="OnlyFur"
-SUPPORT_EMAIL="support@onlyfur.com"
+SUPPORT_EMAIL="support@onlyfur.net"
 VITE_API_URL="https://your-app.vercel.app"
 ```
 
@@ -61,7 +61,7 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_your_token"
 ```env
 EMAIL_PROVIDER="sendgrid"
 SENDGRID_API_KEY="SG.your_sendgrid_api_key"
-FROM_EMAIL="noreply@onlyfur.com"
+FROM_EMAIL="noreply@onlyfur.net"
 FROM_NAME="OnlyFur Platform"
 ```
 

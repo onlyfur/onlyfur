@@ -294,19 +294,19 @@ const generateAutoReplyHTML = (name: string, category?: string) => {
           <p>Our support team will review your message and get back to you as soon as possible. In the meantime, you might find these resources helpful:</p>
           
           <ul>
-            <li><a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.com'}/faq">Frequently Asked Questions</a></li>
-            <li><a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.com'}/help">Help Center</a></li>
-            <li><a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.com'}/community">Community Guidelines</a></li>
+            <li><a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.net'}/faq">Frequently Asked Questions</a></li>
+            <li><a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.net'}/help">Help Center</a></li>
+            <li><a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.net'}/community">Community Guidelines</a></li>
           </ul>
           
           <p>For urgent matters, please include "URGENT" in your subject line.</p>
           
-          <a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.com'}" class="button">Return to OnlyFur</a>
+          <a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.net'}" class="button">Return to OnlyFur</a>
         </div>
         <div class="footer">
           <p>© 2024 OnlyFur Platform. All rights reserved.</p>
           <p>This is an automated response. Please do not reply to this email.</p>
-          <p>If you need immediate assistance, visit our <a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.com'}/contact">contact page</a>.</p>
+          <p>If you need immediate assistance, visit our <a href="${process.env.CLIENT_BASE_URL || 'https://onlyfur.net'}/contact">contact page</a>.</p>
         </div>
       </div>
     </body>
@@ -325,7 +325,7 @@ router.post('/', contactLimiter, asyncHandler(async (req: Request, res: Response
     const { name, email, subject, category, message } = validatedData;
 
     const supportEmail = process.env.SUPPORT_EMAIL || 'info@fur.ninja';
-    const fromEmail = process.env.FROM_EMAIL || 'noreply@onlyfur.com';
+    const fromEmail = process.env.FROM_EMAIL || 'noreply@onlyfur.net';
     const timestamp = new Date().toISOString();
     const userAgent = req.headers['user-agent'];
     const ip = req.ip || req.connection.remoteAddress;

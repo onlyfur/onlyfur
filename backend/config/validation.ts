@@ -47,7 +47,7 @@ const envSchema = z.object({
   
   // Email
   SENDGRID_API_KEY: z.string().optional(),
-  FROM_EMAIL: z.string().email().default('noreply@onlyfur.com'),
+  FROM_EMAIL: z.string().email().default('noreply@onlyfur.net'),
   FROM_NAME: z.string().default('OnlyFur Platform'),
   
   // SMTP Alternative

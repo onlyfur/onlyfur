@@ -183,7 +183,7 @@ const CommunityGuidelines: React.FC = () => {
     {
       when: 'Safety Concerns',
       description: 'Report anything that makes you feel unsafe',
-      action: 'Use priority reporting or contact safety@onlyfur.com'
+      action: 'Use priority reporting or contact safety@onlyfur.net'
     },
     {
       when: 'Technical Issues',

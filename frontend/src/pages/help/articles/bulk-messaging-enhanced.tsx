@@ -340,7 +340,7 @@ const BulkMessaging: React.FC = () => {
               <Link to="/support/contact">Contact Support</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:creators@onlyfur.com">creators@onlyfur.com</a>
+              <a href="mailto:creators@onlyfur.net">creators@onlyfur.net</a>
             </Button>
           </div>
         </CardContent>

@@ -180,7 +180,7 @@ const HowToCreateAccount: React.FC = () => {
               <div className="flex-1">
                 <h4 className="font-semibold mb-2">Navigate to Sign-Up Page</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Visit OnlyFur.com and locate the registration options.
+                  Visit onlyfur.net and locate the registration options.
                 </p>
                 <div className="space-y-2">
                   <div className="p-3 bg-blue-50 rounded-lg">
@@ -189,7 +189,7 @@ const HowToCreateAccount: React.FC = () => {
                       <li>• Click "Sign Up" button in the top navigation</li>
                       <li>• Use "Create Account" link on the login page</li>
                       <li>• Access via "Get Started" button on the homepage</li>
-                      <li>• Direct URL: onlyfur.com/register</li>
+                      <li>• Direct URL: onlyfur.net/register</li>
                     </ul>
                   </div>
                   <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -367,7 +367,7 @@ const HowToCreateAccount: React.FC = () => {
                     <h5 className="font-medium text-yellow-800 mb-1">Troubleshooting Email Issues:</h5>
                     <ul className="text-sm text-yellow-700 space-y-1">
                       <li>• Check all email folders (spam, promotions, updates)</li>
-                      <li>• Add noreply@onlyfur.com to your contacts</li>
+                      <li>• Add noreply@onlyfur.net to your contacts</li>
                       <li>• Try a different email provider if problems persist</li>
                       <li>• Contact support if no email after 15 minutes</li>
                     </ul>
@@ -662,7 +662,7 @@ const HowToCreateAccount: React.FC = () => {
                 <ol className="text-sm space-y-1 ml-4">
                   <li>1. Check all email folders (inbox, spam, promotions, updates)</li>
                   <li>2. Wait 5-10 minutes (emails can be delayed)</li>
-                  <li>3. Add noreply@onlyfur.com to your safe senders list</li>
+                  <li>3. Add noreply@onlyfur.net to your safe senders list</li>
                   <li>4. Try requesting a new verification email</li>
                   <li>5. Check if your email provider blocks adult content</li>
                   <li>6. Try a different email address (Gmail, Yahoo, etc.)</li>
