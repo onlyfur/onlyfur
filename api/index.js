@@ -18,8 +18,31 @@ async function initializeBackend() {
 }
 
 // Add CORS headers
-function addCorsHeaders(res) {
-  const headers = corsHeaders();
+function addCorsHeaders(res, origin = null) {
+  // Get allowed origins
+  const allowedOrigins = [
+    'https://onlyfur.net',
+    'https://onlyfur.vercel.app', 
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://onlyfur.net:5173'
+  ];
+  
+  // Determine the appropriate origin
+  let allowedOrigin = 'https://onlyfur.net'; // Default to production
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    allowedOrigin = origin;
+  }
+  
+  const headers = {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
+    'Access-Control-Allow-Credentials': 'true',
+    'Content-Type': 'application/json'
+  };
+  
   Object.entries(headers).forEach(([key, value]) => {
     res.setHeader(key, value);
   });
@@ -29,9 +52,10 @@ async function handler(req, res) {
   const { method } = req;
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
+  const origin = req.headers.origin;
   
   // Add CORS headers to all responses
-  addCorsHeaders(res);
+  addCorsHeaders(res, origin);
   
   // Handle preflight OPTIONS requests
   if (method === 'OPTIONS') {

@@ -83,11 +83,24 @@ class JWTHandler {
 
 // Helper functions
 function corsHeaders() {
-  const FRONTEND_URL = process.env.CLIENT_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:5174';
+  // Get allowed origins from environment variable or use defaults
+  const corsOrigins = process.env.CORS_ORIGIN?.split(',') || [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://onlyfur.net',
+    'https://onlyfur.vercel.app',
+    'http://onlyfur.net:5173'
+  ];
+  
+  // Use wildcard for development or specific origin in production
+  const allowedOrigin = process.env.NODE_ENV === 'production' 
+    ? (corsOrigins.includes('https://onlyfur.net') ? 'https://onlyfur.net' : corsOrigins[0])
+    : corsOrigins[0];
+    
   return {
-    'Access-Control-Allow-Origin': FRONTEND_URL,
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
     'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };

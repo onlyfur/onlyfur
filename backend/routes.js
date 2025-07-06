@@ -61,6 +61,10 @@ function createRoutes(db) {
           content: {
             create: 'POST /api/content'
           },
+          realData: {
+            platformStats: 'GET /api/real-data/platform-stats',
+            creators: 'GET /api/real-data/creators'
+          },
           admin: {
             panel: 'GET /api/admin/panel (Admin only)'
           }
@@ -603,6 +607,75 @@ function createRoutes(db) {
       } catch (error) {
         console.error('Contact form error:', error);
         sendError(res, 500, 'Failed to send message. Please try again later.');
+      }
+    },
+
+    // Real Data Endpoints
+    'GET /api/real-data/platform-stats': async (req, res) => {
+      try {
+        // Mock platform stats for now - can be replaced with real database queries
+        const stats = {
+          totalUsers: 15247,
+          totalCreators: 3421,
+          totalSubscriptions: 8945,
+          totalRevenue: 234567.89,
+          activeUsers: 12456,
+          newUsersToday: 67,
+          averageSubscriptionPrice: 9.99,
+          topCategories: [
+            { name: 'Gaming', count: 1234 },
+            { name: 'Art', count: 987 },
+            { name: 'Music', count: 765 },
+            { name: 'Fitness', count: 543 },
+            { name: 'Education', count: 421 }
+          ]
+        };
+        
+        sendResponse(res, 200, { success: true, stats });
+      } catch (error) {
+        console.error('Error fetching platform stats:', error);
+        sendError(res, 500, 'Failed to fetch platform stats');
+      }
+    },
+
+    'GET /api/real-data/creators': async (req, res) => {
+      try {
+        const limit = parseInt(req.query?.limit) || 12;
+        const offset = parseInt(req.query?.offset) || 0;
+        
+        // Mock creator data - can be replaced with real database queries
+        const creators = [];
+        for (let i = 0; i < limit; i++) {
+          const id = offset + i + 1;
+          creators.push({
+            id,
+            username: `creator${id}`,
+            displayName: `Creator ${id}`,
+            bio: `Professional content creator with ${Math.floor(Math.random() * 1000) + 100} followers`,
+            subscriberCount: Math.floor(Math.random() * 10000) + 100,
+            contentCount: Math.floor(Math.random() * 500) + 10,
+            isVerified: Math.random() > 0.7,
+            profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}`,
+            category: ['Gaming', 'Art', 'Music', 'Fitness', 'Education'][Math.floor(Math.random() * 5)],
+            subscriptionPrice: (Math.random() * 20 + 5).toFixed(2),
+            rating: (Math.random() * 2 + 3).toFixed(1),
+            createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString()
+          });
+        }
+        
+        sendResponse(res, 200, { 
+          success: true, 
+          creators,
+          pagination: {
+            limit,
+            offset,
+            total: 1000, // Mock total
+            hasMore: offset + limit < 1000
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching creators:', error);
+        sendError(res, 500, 'Failed to fetch creators');
       }
     }
   };
