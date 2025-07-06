@@ -163,6 +163,7 @@ const Login: React.FC = () => {
                     type="email"
                     placeholder="Enter your email"
                     className="pl-10"
+                    autoComplete="email"
                     {...register('email')}
                   />
                 </div>
@@ -180,6 +181,7 @@ const Login: React.FC = () => {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     className="pl-10 pr-10"
+                    autoComplete="current-password"
                     {...register('password')}
                   />
                   <button

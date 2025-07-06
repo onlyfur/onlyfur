@@ -262,6 +262,7 @@ const Register: React.FC = () => {
                           id="username"
                           placeholder="username"
                           className="pl-10"
+                          autoComplete="username"
                           {...register('username')}
                         />
                       </div>
@@ -275,6 +276,7 @@ const Register: React.FC = () => {
                       <Input
                         id="displayName"
                         placeholder="Your Name"
+                        autoComplete="name"
                         {...register('displayName')}
                       />
                       {errors.displayName && (
@@ -292,6 +294,7 @@ const Register: React.FC = () => {
                         type="email"
                         placeholder="Enter your email"
                         className="pl-10"
+                        autoComplete="email"
                         {...register('email')}
                       />
                     </div>
@@ -309,6 +312,7 @@ const Register: React.FC = () => {
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Create a password"
                         className="pl-10 pr-10"
+                        autoComplete="new-password"
                         {...register('password')}
                       />
                       <button
@@ -337,6 +341,7 @@ const Register: React.FC = () => {
                         type={showConfirmPassword ? 'text' : 'password'}
                         placeholder="Confirm your password"
                         className="pl-10 pr-10"
+                        autoComplete="new-password"
                         {...register('confirmPassword')}
                       />
                       <button
