@@ -1,12 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { BarChart3, TrendingUp, Users, Eye, Heart, DollarSign, Calendar, Target } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { BarChart3, TrendingUp, Users, Eye, Heart, DollarSign, Calendar, Target, Activity } from 'lucide-react';
 
 export default function AnalyticsGuide() {
   const metrics = [
     {
       name: 'Views',
-      icon: <Eye className="w-5 h-5" />,
+      icon: Eye,
       description: 'Total number of times your content has been viewed',
       tips: [
         'Track daily and weekly trends to identify peak viewing times',
@@ -16,7 +16,7 @@ export default function AnalyticsGuide() {
     },
     {
       name: 'Engagement Rate',
-      icon: <Heart className="w-5 h-5" />,
+      icon: Heart,
       description: 'Percentage of viewers who liked, commented, or shared your content',
       tips: [
         'Aim for an engagement rate above 3% for good performance',
@@ -26,7 +26,7 @@ export default function AnalyticsGuide() {
     },
     {
       name: 'Subscriber Growth',
-      icon: <Users className="w-5 h-5" />,
+      icon: Users,
       description: 'Rate at which you gain new subscribers over time',
       tips: [
         'Track conversion rates from free to paid subscribers',
@@ -36,7 +36,7 @@ export default function AnalyticsGuide() {
     },
     {
       name: 'Revenue Analytics',
-      icon: <DollarSign className="w-5 h-5" />,
+      icon: DollarSign,
       description: 'Breakdown of your earnings from different sources',
       tips: [
         'Monitor average revenue per user (ARPU)',
@@ -85,166 +85,185 @@ export default function AnalyticsGuide() {
     }
   ];
 
+  const benchmarks = [
+    { metric: 'Engagement Rate', good: '2-4%', great: '4-6%', excellent: '6%+' },
+    { metric: 'Subscriber Conversion', good: '1-3%', great: '3-5%', excellent: '5%+' },
+    { metric: 'Monthly Churn Rate', good: '15-20%', great: '10-15%', excellent: '<10%' },
+    { metric: 'Average Session Duration', good: '2-5 min', great: '5-10 min', excellent: '10+ min' }
+  ];
+
+  const bestPractices = {
+    dos: [
+      'Check your analytics at least weekly',
+      'Focus on trends rather than daily fluctuations',
+      'Set specific, measurable goals',
+      'Test different content strategies',
+      'Use data to inform content decisions'
+    ],
+    donts: [
+      'Don\'t obsess over vanity metrics',
+      'Don\'t make drastic changes based on one bad day',
+      'Don\'t ignore audience feedback in favor of numbers',
+      'Don\'t compare your early metrics to established creators',
+      'Don\'t neglect qualitative feedback'
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Analytics Guide</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Learn how to understand and leverage your platform analytics to grow your audience and increase revenue
-          </p>
+    <div className="container mx-auto p-6 max-w-6xl">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
+          <Activity className="h-5 w-5 text-primary" />
+          <span className="text-sm font-medium">Analytics Center</span>
         </div>
+        
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+          Analytics Guide
+        </h1>
+        
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Learn how to understand and leverage your platform analytics to grow your audience, 
+          increase engagement, and maximize your revenue potential.
+        </p>
+      </div>
 
-        {/* Key Metrics Overview */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              Essential Metrics to Track
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {metrics.map((metric, index) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    {metric.icon}
-                    <h3 className="font-semibold text-lg">{metric.name}</h3>
+      {/* Essential Metrics */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Essential Metrics to Track</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {metrics.map((metric, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                    <metric.icon className="w-6 h-6 text-purple-600" />
                   </div>
-                  <p className="text-gray-600 text-sm mb-3">{metric.description}</p>
-                  <div className="space-y-1">
-                    {metric.tips.map((tip, tipIndex) => (
-                      <div key={tipIndex} className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-sm text-gray-700">{tip}</span>
-                      </div>
-                    ))}
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold mb-2">{metric.name}</h3>
+                    <p className="text-muted-foreground mb-3 text-sm">{metric.description}</p>
+                    <ul className="space-y-2">
+                      {metric.tips.map((tip, tipIndex) => (
+                        <li key={tipIndex} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 shrink-0"></div>
+                          <span className="text-sm text-muted-foreground">{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Key Performance Indicators */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Key Performance Indicators (KPIs)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {kpis.map((kpi, index) => (
-                <div key={index} className="flex flex-col p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-1">{kpi.name}</h4>
-                  <p className="text-sm text-gray-600">{kpi.description}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* How-to Sections */}
-        <div className="space-y-6">
-          {sections.map((section, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>{section.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {section.content.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700">{item}</span>
-                    </div>
-                  ))}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      </div>
 
-        {/* Analytics Best Practices */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Analytics Best Practices
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold mb-3">Do's</h4>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li>• Check your analytics at least weekly</li>
-                  <li>• Focus on trends rather than daily fluctuations</li>
-                  <li>• Set specific, measurable goals</li>
-                  <li>• Test different content strategies</li>
-                  <li>• Use data to inform content decisions</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3">Don'ts</h4>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li>• Don't obsess over vanity metrics</li>
-                  <li>• Don't make drastic changes based on one bad day</li>
-                  <li>• Don't ignore audience feedback in favor of numbers</li>
-                  <li>• Don't compare your early metrics to established creators</li>
-                  <li>• Don't neglect qualitative feedback</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Key Performance Indicators */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Key Performance Indicators (KPIs)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {kpis.map((kpi, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-4">
+                <h4 className="font-medium text-gray-900 mb-2">{kpi.name}</h4>
+                <p className="text-sm text-muted-foreground">{kpi.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-        {/* Performance Benchmarks */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Performance Benchmarks
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* How-to Sections */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">How to Use Analytics</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {sections.map((section, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-lg">{section.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {section.content.map((item, itemIndex) => (
+                    <li key={itemIndex} className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 shrink-0"></div>
+                      <span className="text-sm text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Analytics Best Practices */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Analytics Best Practices</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg text-green-600">
+                <TrendingUp className="w-5 h-5 mr-3" />
+                Do's
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {bestPractices.dos.map((item, index) => (
+                  <li key={index} className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 shrink-0"></div>
+                    <span className="text-sm text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg text-red-600">
+                <Target className="w-5 h-5 mr-3" />
+                Don'ts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {bestPractices.donts.map((item, index) => (
+                  <li key={index} className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mt-2 shrink-0"></div>
+                    <span className="text-sm text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Performance Benchmarks */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Performance Benchmarks</h2>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2">Metric</th>
-                    <th className="text-left py-2">Good</th>
-                    <th className="text-left py-2">Great</th>
-                    <th className="text-left py-2">Excellent</th>
+                    <th className="text-left py-3 font-semibold">Metric</th>
+                    <th className="text-left py-3 font-semibold">Good</th>
+                    <th className="text-left py-3 font-semibold">Great</th>
+                    <th className="text-left py-3 font-semibold">Excellent</th>
                   </tr>
                 </thead>
-                <tbody className="space-y-2">
-                  <tr className="border-b">
-                    <td className="py-2 font-medium">Engagement Rate</td>
-                    <td className="py-2">2-4%</td>
-                    <td className="py-2">4-6%</td>
-                    <td className="py-2">6%+</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 font-medium">Subscriber Conversion</td>
-                    <td className="py-2">1-3%</td>
-                    <td className="py-2">3-5%</td>
-                    <td className="py-2">5%+</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 font-medium">Monthly Churn Rate</td>
-                    <td className="py-2">15-20%</td>
-                    <td className="py-2">10-15%</td>
-                    <td className="py-2">&lt;10%</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-medium">Average Session Duration</td>
-                    <td className="py-2">2-5 min</td>
-                    <td className="py-2">5-10 min</td>
-                    <td className="py-2">10+ min</td>
-                  </tr>
+                <tbody>
+                  {benchmarks.map((benchmark, index) => (
+                    <tr key={index} className="border-b">
+                      <td className="py-3 font-medium">{benchmark.metric}</td>
+                      <td className="py-3 text-muted-foreground">{benchmark.good}</td>
+                      <td className="py-3 text-muted-foreground">{benchmark.great}</td>
+                      <td className="py-3 text-muted-foreground">{benchmark.excellent}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

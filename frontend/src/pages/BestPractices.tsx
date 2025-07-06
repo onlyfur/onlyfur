@@ -1,13 +1,13 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { CheckCircle, Users, TrendingUp, Heart, Star, Calendar } from 'lucide-react';
+import { CheckCircle, Users, TrendingUp, Heart, Star, Calendar, Target, Lightbulb } from 'lucide-react';
 
 export default function BestPractices() {
   const practices = [
     {
       category: 'Content Creation',
-      icon: <Star className="w-5 h-5" />,
+      icon: Star,
       tips: [
         'Create a consistent posting schedule to keep your audience engaged',
         'Use high-quality visuals and clear audio in your content',
@@ -18,7 +18,7 @@ export default function BestPractices() {
     },
     {
       category: 'Audience Building',
-      icon: <Users className="w-5 h-5" />,
+      icon: Users,
       tips: [
         'Know your target audience and create content that resonates with them',
         'Use relevant hashtags and keywords to improve discoverability',
@@ -29,7 +29,7 @@ export default function BestPractices() {
     },
     {
       category: 'Monetization',
-      icon: <TrendingUp className="w-5 h-5" />,
+      icon: TrendingUp,
       tips: [
         'Diversify your income streams (subscriptions, tips, merchandise)',
         'Set competitive pricing for your subscription tiers',
@@ -40,7 +40,7 @@ export default function BestPractices() {
     },
     {
       category: 'Community Management',
-      icon: <Heart className="w-5 h-5" />,
+      icon: Heart,
       tips: [
         'Respond to comments and messages in a timely manner',
         'Set clear community guidelines and enforce them consistently',
@@ -59,130 +59,151 @@ export default function BestPractices() {
     'Always maintain professionalism in public interactions'
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Creator Best Practices</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Proven strategies and tips to help you succeed as a content creator on our platform
-          </p>
-        </div>
+  const gettingStarted = [
+    {
+      week: 'Week 1: Foundation',
+      tasks: [
+        'Set up your profile completely',
+        'Define your content niche',
+        'Create your first 3-5 posts'
+      ]
+    },
+    {
+      week: 'Week 2: Engagement',
+      tasks: [
+        'Interact with other creators',
+        'Respond to all comments',
+        'Join relevant communities'
+      ]
+    },
+    {
+      week: 'Week 3: Growth',
+      tasks: [
+        'Analyze your performance',
+        'Adjust content strategy',
+        'Plan collaborations'
+      ]
+    },
+    {
+      week: 'Week 4: Monetization',
+      tasks: [
+        'Set up subscription tiers',
+        'Create exclusive content',
+        'Promote your offerings'
+      ]
+    }
+  ];
 
-        {/* Quick Tips Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              Quick Tips for Success
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+  const metrics = [
+    { name: 'Engagement', description: 'Likes, comments, shares per post', color: 'blue' },
+    { name: 'Growth', description: 'New followers and subscribers', color: 'green' },
+    { name: 'Revenue', description: 'Monthly recurring revenue', color: 'purple' }
+  ];
+
+  return (
+    <div className="container mx-auto p-6 max-w-6xl">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 px-4 py-2 rounded-full mb-6">
+          <Lightbulb className="h-5 w-5 text-primary" />
+          <span className="text-sm font-medium">Creator Resources</span>
+        </div>
+        
+        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+          Creator Best Practices
+        </h1>
+        
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Proven strategies and tips to help you succeed as a content creator on our platform. 
+          Learn from experienced creators and implement best practices for sustainable growth.
+        </p>
+      </div>
+
+      {/* Quick Tips Section */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Quick Tips for Success</h2>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {quickTips.map((tip, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">{tip}</span>
+                <div key={index} className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                  <span className="text-muted-foreground">{tip}</span>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Detailed Practices */}
-        <div className="space-y-6">
+      {/* Detailed Practices */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Best Practices by Category</h2>
+        <div className="grid md:grid-cols-2 gap-6">
           {practices.map((practice, index) => (
-            <Card key={index}>
+            <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {practice.icon}
+                <CardTitle className="flex items-center text-lg">
+                  <practice.icon className="w-5 h-5 mr-3 text-primary" />
                   {practice.category}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <ul className="space-y-3">
                   {practice.tips.map((tip, tipIndex) => (
-                    <div key={tipIndex} className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700">{tip}</span>
-                    </div>
+                    <li key={tipIndex} className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 shrink-0"></div>
+                      <span className="text-sm text-muted-foreground">{tip}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </CardContent>
             </Card>
           ))}
         </div>
+      </div>
 
-        {/* Additional Resources */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Getting Started Checklist
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Week 1: Foundation</h4>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    <li>• Set up your profile completely</li>
-                    <li>• Define your content niche</li>
-                    <li>• Create your first 3-5 posts</li>
-                  </ul>
+      {/* Getting Started Checklist */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Getting Started Checklist</h2>
+        <div className="grid md:grid-cols-4 gap-6">
+          {gettingStarted.map((phase, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-6 h-6 text-blue-600" />
                 </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Week 2: Engagement</h4>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    <li>• Interact with other creators</li>
-                    <li>• Respond to all comments</li>
-                    <li>• Join relevant communities</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Week 3: Growth</h4>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    <li>• Analyze your performance</li>
-                    <li>• Adjust content strategy</li>
-                    <li>• Plan collaborations</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Week 4: Monetization</h4>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    <li>• Set up subscription tiers</li>
-                    <li>• Create exclusive content</li>
-                    <li>• Promote your offerings</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                <h3 className="font-semibold mb-3 text-center">{phase.week}</h3>
+                <ul className="space-y-2">
+                  {phase.tasks.map((task, taskIndex) => (
+                    <li key={taskIndex} className="flex items-start space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      <span className="text-sm text-muted-foreground">{task}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-        {/* Success Metrics */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Key Metrics to Track</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600 mb-2">Engagement</div>
-                <p className="text-sm text-gray-600">Likes, comments, shares per post</p>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600 mb-2">Growth</div>
-                <p className="text-sm text-gray-600">New followers and subscribers</p>
-              </div>
-              <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600 mb-2">Revenue</div>
-                <p className="text-sm text-gray-600">Monthly recurring revenue</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Success Metrics */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Key Metrics to Track</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {metrics.map((metric, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className={`w-12 h-12 rounded-full bg-${metric.color}-100 dark:bg-${metric.color}-900/20 flex items-center justify-center mx-auto mb-4`}>
+                  <Target className={`w-6 h-6 text-${metric.color}-600`} />
+                </div>
+                <h3 className="text-xl font-bold mb-2">{metric.name}</h3>
+                <p className="text-sm text-muted-foreground">{metric.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
