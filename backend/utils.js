@@ -89,6 +89,7 @@ function corsHeaders() {
     'http://localhost:3000',
     'https://onlyfur.net',
     'https://onlyfur.vercel.app',
+    'https://creatorplattform.vercel.app',
     'http://onlyfur.net:5173'
   ];
   
