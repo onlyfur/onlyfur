@@ -24,19 +24,25 @@ import messagingRoutes from './routes/messaging';
 import adminRoutes from './routes/admin';
 import uploadRoutes from './routes/upload';
 import analyticsRoutes from './routes/analytics';
+import contactRoutes from './routes/contact';
 // V2.9 New routes
 import twoFactorRoutes from './routes/twoFactor';
 import notificationRoutes from './routes/notifications';
 import moderationRoutes from './routes/moderation';
 // V3.6 New routes
 import creatorDashboardRoutes from './routes/creatorDashboard';
-import advancedAnalyticsRoutes from './routes/advancedAnalytics';\nimport webhookRoutes from './routes/webhooks';
+import advancedAnalyticsRoutes from './routes/advancedAnalytics';
+import webhookRoutes from './routes/webhooks';
 // V3.0 New routes
 import userPreferencesRoutes from './routes/userPreferences';
 import aiRoutes from './routes/ai';
 import liveStreamingRoutes from './routes/liveStreaming';
 import enhancedPaymentsRoutes from './routes/enhancedPayments';
-import enhancedSearchRoutes from './routes/enhancedSearch';\nimport stripeIntegrationRoutes from './routes/stripeIntegration';\nimport vercelBlobUploadRoutes from './routes/vercelBlobUpload';\nimport realDataRoutes from './routes/realData';\nimport onlineStatusRoutes from './routes/onlineStatus';
+import enhancedSearchRoutes from './routes/enhancedSearch';
+import stripeIntegrationRoutes from './routes/stripeIntegration';
+import vercelBlobUploadRoutes from './routes/vercelBlobUpload';
+import realDataRoutes from './routes/realData';
+import onlineStatusRoutes from './routes/onlineStatus';
 // V3.7 New routes
 import liveStreamingCompleteRoutes from './routes/liveStreamingComplete';
 import advancedAnalyticsV2Routes from './routes/advancedAnalyticsV2';
@@ -47,8 +53,11 @@ import authCompleteRoutes from './routes/authComplete';
 import usersCompleteRoutes from './routes/usersComplete';
 import contentCompleteRoutes from './routes/contentComplete';
 import subscriptionsCompleteRoutes from './routes/subscriptionsComplete';
-import homeExploreAIRoutes from './routes/homeExploreAI';\nimport aiCompleteRoutes from './routes/aiComplete';\nimport userAnalyticsV3Routes from './routes/userAnalyticsV3';\nimport aiOptimizationV3Routes from './routes/aiOptimizationV3';\nimport aiCommunityV3Routes from './routes/aiCommunityV3';
+import homeExploreAIRoutes from './routes/homeExploreAI';
 import aiCompleteRoutes from './routes/aiComplete';
+import userAnalyticsV3Routes from './routes/userAnalyticsV3';
+import aiOptimizationV3Routes from './routes/aiOptimizationV3';
+import aiCommunityV3Routes from './routes/aiCommunityV3';
 
 // Import services
 import { initializeDatabase } from './services/database';
@@ -153,11 +162,13 @@ app.use('/api/messaging', messagingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/contact', contactRoutes);
 // V2.9 New routes
 app.use('/api/2fa', twoFactorRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/moderation', moderationRoutes);
-app.use('/api/advanced-analytics', advancedAnalyticsRoutes);\napp.use('/api/webhooks', webhookRoutes);
+app.use('/api/advanced-analytics', advancedAnalyticsRoutes);
+app.use('/api/webhooks', webhookRoutes);
 // V3.6 Creator Dashboard
 app.use('/api/creator', creatorDashboardRoutes);
 // V3.0 New routes
@@ -165,7 +176,11 @@ app.use('/api/preferences', userPreferencesRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/streaming', liveStreamingRoutes);
 app.use('/api/payments', enhancedPaymentsRoutes);
-app.use('/api/search', enhancedSearchRoutes);\napp.use('/api/stripe', stripeIntegrationRoutes);\napp.use('/api/blob', vercelBlobUploadRoutes);\napp.use('/api/real-data', realDataRoutes);\napp.use('/api/online-status', onlineStatusRoutes);
+app.use('/api/search', enhancedSearchRoutes);
+app.use('/api/stripe', stripeIntegrationRoutes);
+app.use('/api/blob', vercelBlobUploadRoutes);
+app.use('/api/real-data', realDataRoutes);
+app.use('/api/online-status', onlineStatusRoutes);
 // V3.7 New routes
 app.use('/api/streaming-v2', liveStreamingCompleteRoutes);
 app.use('/api/analytics-v2', advancedAnalyticsV2Routes);

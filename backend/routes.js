@@ -504,6 +504,106 @@ function createRoutes(db) {
       } catch (error) {
         sendError(res, 500, 'Internal server error', error);
       }
+    },
+
+    // Contact form submission
+    'POST /api/contact': async (req, res) => {
+      try {
+        const body = await getRequestBody(req);
+        const { name, email, category, message } = body;
+
+        // Validate required fields
+        if (!name || !email || !category || !message) {
+          return sendError(res, 400, 'All fields are required');
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return sendError(res, 400, 'Invalid email format');
+        }
+
+        // Validate category
+        const validCategories = ['general', 'technical', 'billing', 'content', 'partnership', 'other'];
+        if (!validCategories.includes(category)) {
+          return sendError(res, 400, 'Invalid category');
+        }
+
+        // Initialize email service
+        const emailService = EmailService;
+
+        // Send email to support
+        const supportSubject = `[OnlyFur Contact] ${category.charAt(0).toUpperCase() + category.slice(1)} - ${name}`;
+        const supportHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #8B5CF6; margin-bottom: 20px;">New Contact Form Submission</h2>
+            
+            <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h3 style="margin-top: 0; color: #333;">Contact Details</h3>
+              <p><strong>Name:</strong> ${name}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Category:</strong> ${category}</p>
+            </div>
+            
+            <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
+              <h3 style="margin-top: 0; color: #333;">Message</h3>
+              <p style="white-space: pre-wrap;">${message}</p>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 20px;">
+              This message was sent through the OnlyFur contact form at ${new Date().toLocaleString()}.
+            </p>
+          </div>
+        `;
+
+        await emailService.sendEmail(
+          process.env.SUPPORT_EMAIL || 'support@onlyfur.com',
+          supportSubject,
+          supportHtml
+        );
+
+        // Send auto-reply to user
+        const autoReplySubject = 'Thank you for contacting OnlyFur - We\'ve received your message';
+        const autoReplyHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #8B5CF6; margin-bottom: 20px;">Thank you for contacting us!</h2>
+            
+            <p>Hi ${name},</p>
+            
+            <p>Thank you for reaching out to OnlyFur. We've received your message regarding <strong>${category}</strong> and will get back to you as soon as possible.</p>
+            
+            <div style="background-color: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #8B5CF6; margin: 20px 0;">
+              <p style="margin: 0;"><strong>Your message summary:</strong></p>
+              <p style="margin: 10px 0 0 0; color: #666;">${message.substring(0, 150)}${message.length > 150 ? '...' : ''}</p>
+            </div>
+            
+            <p>Our typical response time is 24-48 hours during business days. For urgent matters, please don't hesitate to reach out to us directly.</p>
+            
+            <p>Best regards,<br>
+            The OnlyFur Team</p>
+            
+            <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 30px 0;">
+            <p style="color: #666; font-size: 12px;">
+              This is an automated response. Please do not reply to this email. If you need immediate assistance, please contact us through our website.
+            </p>
+          </div>
+        `;
+
+        await emailService.sendEmail(
+          email,
+          autoReplySubject,
+          autoReplyHtml
+        );
+
+        sendResponse(res, 200, {
+          success: true,
+          message: 'Your message has been sent successfully. We\'ll get back to you soon!'
+        });
+
+      } catch (error) {
+        console.error('Contact form error:', error);
+        sendError(res, 500, 'Failed to send message. Please try again later.');
+      }
     }
   };
 }
