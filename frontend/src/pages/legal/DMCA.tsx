@@ -59,7 +59,7 @@ const DMCA: React.FC = () => {
                   Email (Preferred)
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  Send your DMCA notice to: dmca@onlyfur.com
+                  Send your DMCA notice to: dmca@onlyfur.net
                 </p>
               </div>
               <div className="p-4 border rounded-lg">
@@ -266,7 +266,7 @@ const DMCA: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild>
-              <a href="mailto:dmca@onlyfur.com">
+              <a href="mailto:dmca@onlyfur.net">
                 <Mail className="w-4 h-4 mr-2" />
                 Email DMCA Agent
               </a>

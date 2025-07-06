@@ -291,7 +291,7 @@ const CreatorEarnings: React.FC = () => {
               <Link to="/support/contact">Contact Creator Support</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:earnings@onlyfur.com">earnings@onlyfur.com</a>
+              <a href="mailto:earnings@onlyfur.net">earnings@onlyfur.net</a>
             </Button>
           </div>
         </CardContent>

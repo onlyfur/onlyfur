@@ -182,7 +182,7 @@ const MobileApp: React.FC = () => {
               <div>
                 <h4 className="font-semibold mb-2">Open Your Mobile Browser</h4>
                 <p className="text-sm text-muted-foreground">
-                  Launch Safari, Chrome, or your preferred mobile browser and navigate to onlyfur.com
+                  Launch Safari, Chrome, or your preferred mobile browser and navigate to onlyfur.net
                 </p>
               </div>
             </div>

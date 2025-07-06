@@ -137,7 +137,7 @@ const LoginTroubleshooting: React.FC = () => {
               <div>
                 <h4 className="font-semibold mb-2">Clear Browser Data</h4>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Clear your browser's cache, cookies, and stored data for OnlyFur.com
+                  Clear your browser's cache, cookies, and stored data for onlyfur.net
                 </p>
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-sm"><strong>How to:</strong> Browser Settings → Privacy/Security → Clear Browsing Data → Select Cookies and Cache</p>
@@ -234,7 +234,7 @@ const LoginTroubleshooting: React.FC = () => {
               <Link to="/support/contact">Contact Support</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:support@onlyfur.com">support@onlyfur.com</a>
+              <a href="mailto:support@onlyfur.net">support@onlyfur.net</a>
             </Button>
           </div>
         </CardContent>

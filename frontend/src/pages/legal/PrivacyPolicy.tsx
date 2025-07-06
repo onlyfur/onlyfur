@@ -182,7 +182,7 @@ const PrivacyPolicy: React.FC = () => {
             <Alert className="mt-4">
               <Mail className="h-4 w-4" />
               <AlertDescription>
-                To exercise these rights, contact us at privacy@onlyfur.com
+                To exercise these rights, contact us at privacy@onlyfur.net
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -336,9 +336,9 @@ const PrivacyPolicy: React.FC = () => {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:privacy@onlyfur.com">
+              <a href="mailto:privacy@onlyfur.net">
                 <Shield className="w-4 h-4 mr-2" />
-                privacy@onlyfur.com
+                privacy@onlyfur.net
               </a>
             </Button>
           </div>

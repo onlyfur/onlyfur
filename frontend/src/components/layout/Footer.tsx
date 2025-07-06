@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Twitter, Instagram, Youtube, Mail } from 'lucide-react';
+import { Crown, Heart, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -32,10 +32,7 @@ const Footer: React.FC = () => {
   };
 
   const socialLinks = [
-    { name: 'Twitter', href: 'https://twitter.com', icon: Twitter },
-    { name: 'Instagram', href: 'https://instagram.com', icon: Instagram },
-    { name: 'YouTube', href: 'https://youtube.com', icon: Youtube },
-    { name: 'Email', href: 'mailto:support@creatorhub.com', icon: Mail },
+    { name: 'Email', href: 'mailto:support@onlyfur.net', icon: Mail },
   ];
 
   return (

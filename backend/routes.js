@@ -561,7 +561,7 @@ function createRoutes(db) {
         `;
 
         await emailService.sendEmail(
-          process.env.SUPPORT_EMAIL || 'support@onlyfur.com',
+          process.env.SUPPORT_EMAIL || 'support@onlyfur.net',
           supportSubject,
           supportHtml
         );

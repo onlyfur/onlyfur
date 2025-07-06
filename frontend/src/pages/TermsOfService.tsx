@@ -251,8 +251,8 @@ const TermsOfService: React.FC = () => {
               If you have questions about these Terms of Service, please contact us:
             </p>
             <div className="space-y-2 text-muted-foreground">
-              <div><strong>Email:</strong> legal@onlyfur.com</div>
-              <div><strong>General Support:</strong> support@onlyfur.com</div>
+              <div><strong>Email:</strong> legal@onlyfur.net</div>
+              <div><strong>General Support:</strong> support@onlyfur.net</div>
               <div><strong>Address:</strong> [Company Address - To be updated in production]</div>
             </div>
           </CardContent>

@@ -380,7 +380,7 @@ export default function UploadTroubleshooting() {
 
             <div className="mt-4 p-4 border rounded-lg">
               <p className="text-sm">
-                <strong>Support Contact:</strong> Visit our <a href="/support/contact" className="text-primary hover:underline">Contact Support page</a> or email support@onlyfur.com with your issue details.
+                <strong>Support Contact:</strong> Visit our <a href="/support/contact" className="text-primary hover:underline">Contact Support page</a> or email support@onlyfur.net with your issue details.
               </p>
             </div>
           </div>

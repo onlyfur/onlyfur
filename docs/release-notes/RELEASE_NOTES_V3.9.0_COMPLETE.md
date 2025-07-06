@@ -333,7 +333,7 @@ npm install
 npm run dev
 
 # Access AI endpoints
-curl https://api.onlyfur.com/api/ai-optimization/analyze-content
+curl https://api.onlyfur.net/api/ai-optimization/analyze-content
 ```
 
 ### For Community Managers
@@ -383,6 +383,6 @@ curl https://api.onlyfur.com/api/ai-optimization/analyze-content
 
 ---
 
-*For technical support, feature requests, or partnership inquiries, please contact our team at support@onlyfur.com*
+*For technical support, feature requests, or partnership inquiries, please contact our team at support@onlyfur.net*
 
 **© 2024 OnlyFur Platform - Powered by Advanced AI Technology**

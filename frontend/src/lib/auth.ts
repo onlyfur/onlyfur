@@ -26,7 +26,7 @@ const DEMO_USERS: User[] = [
   },
   {
     id: '2',
-    email: 'demo@onlyfur.com',
+    email: 'demo@onlyfur.net',
     username: 'demofox',
     displayName: 'Demo Fox',
     role: 'creator' as const,
@@ -60,7 +60,7 @@ const verifyPassword = (email: string, password: string): boolean => {
   const validCredentials = [
     { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
     { email: 'admin@creatorhub.com', password: 'password123' },
-    { email: 'demo@onlyfur.com', password: 'password123' },
+    { email: 'demo@onlyfur.net', password: 'password123' },
     { email: 'demo@creatorhub.com', password: 'password123' }
   ];
 

@@ -314,7 +314,7 @@ npx prisma migrate deploy
 ### Environment Variables
 ```bash
 # New AI service configuration
-AI_SERVICE_URL=https://ai-api.onlyfur.com
+AI_SERVICE_URL=https://ai-api.onlyfur.net
 AI_API_KEY=your_ai_api_key
 ANALYTICS_AI_ENABLED=true
 MODERATION_AI_ENABLED=true
@@ -375,8 +375,8 @@ const performanceMetrics = {
 ## 🤝 Community & Support
 
 ### Getting Help
-- **Documentation**: [docs.onlyfur.com](https://docs.onlyfur.com)
-- **Community Forum**: [community.onlyfur.com](https://community.onlyfur.com)
+- **Documentation**: [docs.onlyfur.net](https://docs.onlyfur.net)
+- **Community Forum**: [community.onlyfur.net](https://community.onlyfur.net)
 - **Discord Server**: [discord.gg/onlyfur](https://discord.gg/onlyfur)
 - **YouTube Channel**: Video tutorials and feature demos
 - **Blog**: Regular updates and technical deep-dives

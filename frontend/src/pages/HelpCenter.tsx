@@ -411,12 +411,12 @@ const HelpCenter: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-1">Email Support</h4>
-                  <p className="text-sm text-muted-foreground">support@onlyfur.com</p>
+                  <p className="text-sm text-muted-foreground">support@onlyfur.net</p>
                   <p className="text-xs text-muted-foreground">Response within 24 hours</p>
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Creator Support</h4>
-                  <p className="text-sm text-muted-foreground">creators@onlyfur.com</p>
+                  <p className="text-sm text-muted-foreground">creators@onlyfur.net</p>
                   <p className="text-xs text-muted-foreground">Specialized creator assistance</p>
                 </div>
                 <Button className="w-full" variant="outline">

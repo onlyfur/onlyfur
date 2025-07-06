@@ -97,8 +97,8 @@ The OnlyFur platform has been successfully completed with all critical functiona
 
 ### Sample Users Created
 - **Admin**: admin@onlyfur.net (Platform Administrator)
-- **Creator**: creator@onlyfur.com (Sample Creator with content)
-- **Subscriber**: subscriber@onlyfur.com (Sample Subscriber)
+- **Creator**: creator@onlyfur.net (Sample Creator with content)
+- **Subscriber**: subscriber@onlyfur.net (Sample Subscriber)
 
 ### Sample Content
 - **3 sample posts** with different privacy levels
@@ -201,8 +201,8 @@ npm run db:studio
 
 ### Test Accounts
 - **Admin**: admin@onlyfur.net / admin123
-- **Creator**: creator@onlyfur.com / creator123
-- **Subscriber**: subscriber@onlyfur.com / subscriber123
+- **Creator**: creator@onlyfur.net / creator123
+- **Subscriber**: subscriber@onlyfur.net / subscriber123
 
 ## 🎉 Final Status: **PRODUCTION READY**
 

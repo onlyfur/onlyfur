@@ -285,7 +285,7 @@ NEXTAUTH_SECRET=secure_random_key
 
 # Platform
 PLATFORM_NAME=OnlyFur
-SUPPORT_EMAIL=support@onlyfur.com
+SUPPORT_EMAIL=support@onlyfur.net
 ```
 
 ## 📈 Success Metrics

@@ -71,7 +71,7 @@ const getEmailTemplate = (type: string, data: any) => {
       <div class="footer">
         <p>© 2024 OnlyFur Platform. All rights reserved.</p>
         <p>You're receiving this email because you have an account with OnlyFur.</p>
-        <p>If you need help, contact us at ${process.env.SUPPORT_EMAIL || 'support@onlyfur.com'}</p>
+        <p>If you need help, contact us at ${process.env.SUPPORT_EMAIL || 'support@onlyfur.net'}</p>
       </div>
     </body>
     </html>
@@ -223,7 +223,7 @@ export const sendWelcomeEmail = async (user: any) => {
     const html = getEmailTemplate('welcome', emailData);
 
     await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
       to: user.email,
       subject: 'Welcome to OnlyFur! 🎉',
       html,
@@ -252,7 +252,7 @@ export const sendSubscriptionConfirmationEmail = async (user: any, tier: any) =>
     const html = getEmailTemplate('subscriptionConfirmation', emailData);
 
     await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
       to: user.email,
       subject: `🚀 ${tier.name} Subscription Activated!`,
       html,
@@ -276,7 +276,7 @@ export const sendMessageNotificationEmail = async (recipient: any, sender: any, 
     const html = getEmailTemplate('messageNotification', emailData);
 
     await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
       to: recipient.email,
       subject: `💬 New message from ${sender.username}`,
       html,
@@ -301,7 +301,7 @@ export const sendPasswordResetEmail = async (user: any, resetToken: string) => {
     const html = getEmailTemplate('passwordReset', emailData);
 
     await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
       to: user.email,
       subject: '🔐 Reset Your OnlyFur Password',
       html,
@@ -326,7 +326,7 @@ export const sendContentApprovedEmail = async (creator: any, content: any) => {
     const html = getEmailTemplate('contentApproved', emailData);
 
     await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
       to: creator.email,
       subject: '✅ Your content has been approved!',
       html,
@@ -351,7 +351,7 @@ export const sendPaymentFailedEmail = async (user: any, tier: any, failureReason
     const html = getEmailTemplate('paymentFailed', emailData);
 
     await transporter.sendMail({
-      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+      from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
       to: user.email,
       subject: '❌ Payment Issue - Action Required',
       html,
@@ -376,7 +376,7 @@ export const sendBulkEmail = async (users: any[], subject: string, content: stri
       const html = getEmailTemplate('custom', emailData);
 
       return transporter.sendMail({
-        from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.com'}>`,
+        from: `"${process.env.FROM_NAME || 'OnlyFur Platform'}" <${process.env.FROM_EMAIL || 'noreply@onlyfur.net'}>`,
         to: user.email,
         subject,
         html,

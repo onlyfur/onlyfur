@@ -65,7 +65,7 @@ const ProfileSetup: React.FC = () => {
               <div className="border rounded-lg p-4">
                 <h4 className="font-medium mb-2">Username</h4>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Your unique identifier and URL (onlyfur.com/your-username).
+                  Your unique identifier and URL (onlyfur.net/your-username).
                 </p>
                 <ul className="list-disc list-inside text-sm space-y-1">
                   <li>Must be unique across the platform</li>

@@ -782,7 +782,7 @@ export class LiveStreamingService {
   }
 
   private generatePlaybackUrl(streamId: string): string {
-    return `https://stream.onlyfur.com/live/${streamId}`;
+    return `https://stream.onlyfur.net/live/${streamId}`;
   }
 
   private async canUserViewStream(stream: LiveStream, userId: string): Promise<{

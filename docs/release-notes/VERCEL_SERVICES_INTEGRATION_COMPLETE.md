@@ -125,8 +125,8 @@ curl https://ly3bz7fnuansj12j.public.blob.vercel-storage.com/test/1749149356695-
 
 ### Default Users Created
 - **Admin**: `admin@onlyfur.net` / `OnlyFur2024!`
-- **Creator**: `creator@onlyfur.com` / `Creator2024!` 
-- **Subscriber**: `subscriber@onlyfur.com` / `Subscriber2024!`
+- **Creator**: `creator@onlyfur.net` / `Creator2024!` 
+- **Subscriber**: `subscriber@onlyfur.net` / `Subscriber2024!`
 
 ## 🔧 File Storage Integration
 

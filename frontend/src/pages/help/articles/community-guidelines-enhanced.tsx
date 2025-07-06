@@ -239,7 +239,7 @@ const CommunityGuidelines: React.FC = () => {
                 <h4 className="font-semibold text-blue-600 mb-2">How to Report</h4>
                 <ul className="text-sm space-y-1">
                   <li>• Use the report button on content or profiles</li>
-                  <li>• Send detailed reports to support@onlyfur.com</li>
+                  <li>• Send detailed reports to support@onlyfur.net</li>
                   <li>• Include screenshots and relevant information</li>
                   <li>• Reports are reviewed confidentially</li>
                 </ul>
@@ -333,7 +333,7 @@ const CommunityGuidelines: React.FC = () => {
               <Link to="/support/contact">Contact Community Team</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:community@onlyfur.com">community@onlyfur.com</a>
+              <a href="mailto:community@onlyfur.net">community@onlyfur.net</a>
             </Button>
           </div>
         </CardContent>
