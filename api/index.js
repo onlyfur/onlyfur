@@ -23,6 +23,7 @@ function addCorsHeaders(res, origin = null) {
   const allowedOrigins = [
     'https://onlyfur.net',
     'https://onlyfur.vercel.app', 
+    'https://creatorplattform.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000',
     'http://onlyfur.net:5173'
