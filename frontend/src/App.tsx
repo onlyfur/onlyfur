@@ -130,6 +130,11 @@ import AISettingsManager from '@/components/ai/AISettingsManager';
 // Account Setup Page
 import AccountSetup from '@/pages/AccountSetup';
 
+// Footer Pages
+import BestPractices from './pages/BestPractices';
+import AnalyticsGuide from './pages/AnalyticsGuide';
+import TaxInfo from './pages/TaxInfo';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -648,6 +653,11 @@ function App() {
               <Route path="terms" element={<TermsOfService />} />
               <Route path="cookies" element={<CookiePolicy />} />
               <Route path="dmca" element={<DMCA />} />
+
+              {/* Footer Pages */}
+              <Route path="best-practices" element={<BestPractices />} />
+              <Route path="analytics-guide" element={<AnalyticsGuide />} />
+              <Route path="tax-info" element={<TaxInfo />} />
 
               {/* Creator Resources - Removed as requested */}
 

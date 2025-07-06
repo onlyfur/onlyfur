@@ -494,9 +494,25 @@
     "category": "page"
   },
   {
+    "id": "AnalyticsGuide",
+    "url": "/AnalyticsGuide",
+    "title": "AnalyticsGuide",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
     "id": "AuthCallback",
     "url": "/AuthCallback",
     "title": "AuthCallback",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "BestPractices",
+    "url": "/BestPractices",
+    "title": "BestPractices",
     "description": "",
     "tags": [],
     "category": "page"
@@ -785,6 +801,14 @@
     "id": "SubscriptionSettings",
     "url": "/SubscriptionSettings",
     "title": "SubscriptionSettings",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "TaxInfo",
+    "url": "/TaxInfo",
+    "title": "TaxInfo",
     "description": "",
     "tags": [],
     "category": "page"
