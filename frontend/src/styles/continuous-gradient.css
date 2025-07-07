@@ -1,23 +1,19 @@
 /* Continuous Gradient System for Buttons */
 :root {
   --page-gradient: linear-gradient(90deg, 
-    #7c3aed 0%, 
-    #c026d3 15%, 
-    #ec4899 30%, 
-    #f97316 45%, 
-    #eab308 60%, 
-    #10b981 75%, 
-    #06b6d4 90%, 
+    #ec4899 0%, 
+    #f472b6 20%, 
+    #a855f7 40%, 
+    #8b5cf6 60%, 
+    #6366f1 80%, 
     #3b82f6 100%
   );
   --page-gradient-hover: linear-gradient(90deg, 
-    #6d28d9 0%, 
-    #a21caf 15%, 
-    #db2777 30%, 
-    #ea580c 45%, 
-    #ca8a04 60%, 
-    #059669 75%, 
-    #0891b2 90%, 
+    #db2777 0%, 
+    #ec4899 20%, 
+    #9333ea 40%, 
+    #7c3aed 60%, 
+    #4f46e5 80%, 
     #2563eb 100%
   );
 }
@@ -70,13 +66,13 @@
   color: white !important;
 }
 
-/* Active state styling */
+/* Active state styling - same as normal state but with hover gradient */
 .continuous-gradient.active {
-  background: var(--page-gradient-hover) !important;
+  background: var(--page-gradient) !important;
   background-size: 100vw 100% !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
-  filter: saturate(1.4) brightness(1.2);
+  filter: saturate(1.2) brightness(1.1);
 }
 
 /* Specific adjustments for different button sizes */
