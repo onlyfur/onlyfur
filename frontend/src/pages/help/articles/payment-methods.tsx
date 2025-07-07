@@ -56,7 +56,7 @@ const PaymentMethods: React.FC = () => {
                 <div>
                   <h4 className="font-semibold">Credit & Debit Cards</h4>
                   <ul className="text-sm text-muted-foreground mt-1 space-y-1">
-                    <li>• Visa, Mastercard, American Express</li>
+                    <li>• Visa, Mastercard, American Express, Discover</li>
                     <li>• Instant processing for subscriptions</li>
                     <li>• Automatic renewal support</li>
                   </ul>

@@ -191,10 +191,26 @@ const TermsOfService: React.FC = () => {
             <CardTitle>12. Governing Law</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
-              These terms are governed by the laws of [Jurisdiction]. Any disputes will be resolved in the courts 
-              of [Jurisdiction] or through binding arbitration.
-            </p>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold mb-2">For EU Users</h4>
+                <p className="text-muted-foreground">
+                  These terms are governed by the laws of Germany for EU users. Disputes will be resolved in accordance with German law and EU regulations. EU users benefit from additional consumer protection rights under applicable EU directives.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">For US Users</h4>
+                <p className="text-muted-foreground">
+                  These terms are governed by the laws of Illinois, United States for US users. Any disputes will be resolved in the courts of Chicago, Illinois or through binding arbitration as permitted by US law.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">For Other Jurisdictions</h4>
+                <p className="text-muted-foreground">
+                  For users in other jurisdictions, these terms are governed by the laws of Germany, with respect for local consumer protection laws where applicable.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -231,7 +247,7 @@ const TermsOfService: React.FC = () => {
                   <li>• <strong>OnlyFur is NOT responsible for illegal content</strong> uploaded or shared by users</li>
                   <li>• Users who engage in illegal activities are solely liable for their actions</li>
                   <li>• We do not monitor user activities for legal compliance</li>
-                  <li>• Users must comply with all applicable local, state, federal, and international laws</li>
+                  <li>• Users must comply with all applicable local, national, and international laws</li>
                   <li>• OnlyFur will cooperate with law enforcement investigations when legally required</li>
                   <li>• We reserve the right to remove content and terminate accounts without notice</li>
                 </ul>

@@ -128,7 +128,7 @@ const AgeVerification: React.FC = () => {
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Take a clear photo or scan of your ID</li>
                   <li>• Ensure file size is under 10MB</li>
-                  <li>• Supported formats: JPG, PNG, PDF</li>
+                  <li>• Supported formats: JPG, PNG</li>
                   <li>• Follow the upload prompts carefully</li>
                 </ul>
               </div>
@@ -172,7 +172,7 @@ const AgeVerification: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>GDPR and CCPA compliant processing</span>
+                  <span>GDPR (EU) and CCPA (US) compliant processing</span>
                 </li>
               </ul>
             </div>
@@ -214,7 +214,7 @@ const AgeVerification: React.FC = () => {
             <div className="border-l-4 border-blue-500 pl-4">
               <h4 className="font-semibold">Document Upload Failed</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Ensure your file is under 10MB, in JPG/PNG/PDF format, and shows all corners of your ID clearly.
+                Ensure your file is under 10MB, in JPG/PNG format, and shows all corners of your ID clearly.
               </p>
             </div>
             <div className="border-l-4 border-blue-500 pl-4">

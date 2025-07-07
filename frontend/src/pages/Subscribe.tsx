@@ -283,7 +283,7 @@ const Subscribe: React.FC = () => {
                           <div>
                             <div className="font-medium">Credit/Debit Card</div>
                             <div className="text-sm text-muted-foreground">
-                              Visa, Mastercard, American Express
+                              Visa, Mastercard, American Express, Discover
                             </div>
                           </div>
                         </div>

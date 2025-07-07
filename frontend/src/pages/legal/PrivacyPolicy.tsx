@@ -190,6 +190,40 @@ const PrivacyPolicy: React.FC = () => {
 
         <Card>
           <CardHeader>
+            <CardTitle>5.1. Regional Privacy Rights</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2">European Union (GDPR)</h4>
+              <p className="text-muted-foreground mb-2">EU users have additional rights under the General Data Protection Regulation:</p>
+              <ul className="space-y-1 text-muted-foreground ml-4">
+                <li>• Right to object to processing for legitimate interests</li>
+                <li>• Right to restrict processing in certain circumstances</li>
+                <li>• Right to withdraw consent at any time</li>
+                <li>• Right to lodge a complaint with your local data protection authority</li>
+                <li>• Enhanced notification requirements for data breaches</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">United States (CCPA/CPRA)</h4>
+              <p className="text-muted-foreground mb-2">California residents have rights under the California Consumer Privacy Act:</p>
+              <ul className="space-y-1 text-muted-foreground ml-4">
+                <li>• Right to know what personal information is collected</li>
+                <li>• Right to delete personal information</li>
+                <li>• Right to opt-out of the sale of personal information</li>
+                <li>• Right to non-discrimination for exercising privacy rights</li>
+                <li>• Right to correct inaccurate personal information</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">Other Jurisdictions</h4>
+              <p className="text-muted-foreground">We respect privacy rights in all jurisdictions and will work with users to address local privacy requirements where applicable.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>6. Cookies and Tracking</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

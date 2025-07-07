@@ -53,7 +53,7 @@ const BillingAndSubscriptions: React.FC = () => {
       features: [
         'All Basic features',
         'Access to premium content',
-        'Download content for offline viewing',
+        'Stream content online',
         'Exclusive creator interactions',
         'Beta feature access'
       ],
@@ -251,7 +251,7 @@ const BillingAndSubscriptions: React.FC = () => {
                   <td className="text-center"><CheckCircle className="w-4 h-4 mx-auto text-green-500" /></td>
                 </tr>
                 <tr className="border-b">
-                  <td className="py-2">Download content</td>
+                  <td className="py-2">Stream content</td>
                   <td className="text-center"><XCircle className="w-4 h-4 mx-auto text-red-500" /></td>
                   <td className="text-center"><XCircle className="w-4 h-4 mx-auto text-red-500" /></td>
                   <td className="text-center"><CheckCircle className="w-4 h-4 mx-auto text-green-500" /></td>

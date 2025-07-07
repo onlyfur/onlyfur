@@ -8,10 +8,8 @@ import {
   BarChart3, 
   DollarSign, 
   Camera,
-  Palette,
   Users,
   MessageCircle,
-  Download,
   ExternalLink,
   Star,
   Crown,
@@ -20,94 +18,41 @@ import {
 import { Link } from 'react-router-dom';
 
 const CreatorResources: React.FC = () => {
-  const getResourceLink = (resource: any) => {
-    const resourceLinks: { [key: string]: string } = {
-      'Creator Onboarding Guide': '/resources/pdfs/creator-onboarding-guide.md',
-      'Pricing Strategy Guide': '/resources/pdfs/pricing-strategy-guide.md',
-      'Photography Lighting Guide': '/resources/pdfs/photography-lighting-guide.md',
-      'Content Planning Template': '/resources/templates/content-planning-template.md',
-      'Welcome Message Template': '/resources/templates/welcome-message-template.md',
-      'Commission Price Sheet': '/resources/templates/commission-price-sheet.md',
-      'Content Calendar': '/resources/templates/content-calendar.md',
-      'Fan Survey Template': '/resources/templates/fan-survey-template.md',
-      'Profile Optimization Tips': '/help/articles/setting-up-creator-profile',
-      'Art Scanning & Upload Tips': '/help/articles/upload-organize-content',
-      'Growth Strategies Guide': '/resources/pdfs/growth-strategies-guide.md',
-      'Revenue Optimization Guide': '/resources/pdfs/revenue-optimization-guide.md',
-      'Tax Guide for Creators': '/resources/pdfs/tax-guide-creators.md',
-      'Custom Content Pricing': '/help/articles/pricing-strategies',
-      'Engagement Best Practices': '/help/articles/engagement-best-practices',
-      'Cross-Platform Promotion': '/help/articles/cross-platform-promotion'
-    };
-    
-    return resourceLinks[resource.title] || '#';
-  };
-
-  const getVideoLink = (tutorial: any) => {
-    const videoLinks: { [key: string]: string } = {
-      'Setting Up Your Creator Profile': '/resources/videos/creator-profile-setup.mp4',
-      'Photography Tips for Fursuit Content': '/resources/videos/fursuit-photography-tips.mp4',
-      'Building Your Community': '/resources/videos/building-community.mp4',
-      'Advanced Pricing Strategies': '/resources/videos/pricing-strategies.mp4'
-    };
-    
-    return videoLinks[tutorial.title] || '#';
-  };
-
-  const getTemplateLink = (template: any) => {
-    const templateLinks: { [key: string]: string } = {
-      'Welcome Message Template': '/resources/templates/welcome-message-template.md',
-      'Commission Price Sheet': '/resources/templates/commission-price-sheet.md',
-      'Content Calendar': '/resources/templates/content-calendar.md',
-      'Fan Survey Template': '/resources/templates/fan-survey-template.md'
-    };
-    
-    return templateLinks[template.name] || '#';
-  };
-  const resourceCategories = [
+  const helpArticles = [
     {
-      title: 'Getting Started',
-      icon: BookOpen,
-      color: 'text-blue-500',
-      resources: [
-        { title: 'Creator Onboarding Guide', type: 'PDF', description: 'Complete setup guide for new creators' },
-        { title: 'Profile Optimization Tips', type: 'Article', description: 'Make your profile stand out' },
-        { title: 'First Post Best Practices', type: 'Video', description: '10-minute tutorial on your first upload' },
-        { title: 'Pricing Strategy Guide', type: 'PDF', description: 'How to price your content effectively' }
-      ]
+      title: 'Profile Optimization Tips',
+      description: 'Learn how to create an attractive and professional creator profile',
+      link: '/help/articles/setting-up-creator-profile',
+      category: 'Getting Started',
+      icon: Users
     },
     {
-      title: 'Content Creation',
-      icon: Camera,
-      color: 'text-purple-500',
-      resources: [
-        { title: 'Photography Lighting Guide', type: 'PDF', description: 'Professional lighting on any budget' },
-        { title: 'Video Creation Workshop', type: 'Video', description: 'Creating engaging video content' },
-        { title: 'Art Scanning & Upload Tips', type: 'Article', description: 'Best practices for digital artwork' },
-        { title: 'Content Planning Template', type: 'Template', description: 'Plan your content calendar' }
-      ]
+      title: 'Content Upload & Organization',
+      description: 'Best practices for uploading and organizing your content',
+      link: '/help/articles/upload-organize-content',
+      category: 'Content Creation',
+      icon: Camera
     },
     {
-      title: 'Analytics & Growth',
-      icon: BarChart3,
-      color: 'text-green-500',
-      resources: [
-        { title: 'Understanding Your Analytics', type: 'Video', description: 'Make sense of your performance data' },
-        { title: 'Growth Strategies Guide', type: 'PDF', description: 'Proven methods to grow your audience' },
-        { title: 'Engagement Best Practices', type: 'Article', description: 'Build stronger fan relationships' },
-        { title: 'Cross-Platform Promotion', type: 'Guide', description: 'Leverage social media effectively' }
-      ]
+      title: 'Pricing Strategies',
+      description: 'How to price your subscriptions and custom content effectively',
+      link: '/help/articles/pricing-strategies',
+      category: 'Monetization',
+      icon: DollarSign
     },
     {
-      title: 'Monetization',
-      icon: DollarSign,
-      color: 'text-yellow-500',
-      resources: [
-        { title: 'Revenue Optimization Guide', type: 'PDF', description: 'Maximize your earning potential' },
-        { title: 'Custom Content Pricing', type: 'Article', description: 'Price custom requests fairly' },
-        { title: 'Tax Guide for Creators', type: 'PDF', description: 'Understanding taxes on creator income' },
-        { title: 'Subscription Tier Strategy', type: 'Video', description: 'Structure your subscription offerings' }
-      ]
+      title: 'Engagement Best Practices',
+      description: 'Tips for engaging with your subscribers and building community',
+      link: '/help/articles/engagement-best-practices',
+      category: 'Community',
+      icon: MessageCircle
+    },
+    {
+      title: 'Cross-Platform Promotion',
+      description: 'Strategies for promoting your OnlyFur content across social media',
+      link: '/help/articles/cross-platform-promotion',
+      category: 'Growth',
+      icon: BarChart3
     }
   ];
 
@@ -142,75 +87,99 @@ const CreatorResources: React.FC = () => {
     }
   ];
 
+  const resourceCategories = [
+    {
+      title: 'Getting Started',
+      icon: BookOpen,
+      color: 'text-blue-500',
+      resources: [
+        { title: 'Profile Optimization Tips', type: 'Guide', description: 'Make your profile stand out', link: '/help/articles/setting-up-creator-profile' },
+        { title: 'First Post Best Practices', type: 'Guide', description: 'Tips for your first upload', link: '/help/articles/upload-organize-content' },
+        { title: 'Content Strategy Basics', type: 'Guide', description: 'Plan your content effectively', link: '/help/articles/pricing-strategies' }
+      ]
+    },
+    {
+      title: 'Content Creation',
+      icon: Camera,
+      color: 'text-purple-500',
+      resources: [
+        { title: 'Photography Tips', type: 'Guide', description: 'Improve your photo quality', link: '/help/articles/upload-organize-content' },
+        { title: 'Content Organization', type: 'Guide', description: 'Organize your content library', link: '/help/articles/upload-organize-content' },
+        { title: 'Quality Guidelines', type: 'Guide', description: 'Meet platform quality standards', link: '/help/guidelines' }
+      ]
+    },
+    {
+      title: 'Analytics & Growth', 
+      icon: BarChart3,
+      color: 'text-green-500',
+      resources: [
+        { title: 'Understanding Analytics', type: 'Guide', description: 'Make sense of your performance data', link: '/dashboard/analytics' },
+        { title: 'Growth Strategies', type: 'Guide', description: 'Proven methods to grow your audience', link: '/help/articles/engagement-best-practices' },
+        { title: 'Engagement Best Practices', type: 'Guide', description: 'Build stronger fan relationships', link: '/help/articles/engagement-best-practices' },
+        { title: 'Cross-Platform Promotion', type: 'Guide', description: 'Leverage social media effectively', link: '/help/articles/cross-platform-promotion' }
+      ]
+    },
+    {
+      title: 'Monetization',
+      icon: DollarSign,
+      color: 'text-yellow-500',
+      resources: [
+        { title: 'Revenue Optimization', type: 'Guide', description: 'Maximize your earning potential', link: '/help/articles/pricing-strategies' },
+        { title: 'Custom Content Pricing', type: 'Guide', description: 'Price custom requests fairly', link: '/help/articles/pricing-strategies' },
+        { title: 'Subscription Strategy', type: 'Guide', description: 'Structure your subscription offerings', link: '/help/articles/pricing-strategies' }
+      ]
+    }
+  ];
+
   const tutorials = [
     {
       title: 'Setting Up Your Creator Profile',
       duration: '8 min',
       level: 'Beginner',
       thumbnail: '🎨',
-      description: 'Learn how to create an engaging profile that attracts subscribers'
+      description: 'Learn how to create an engaging profile that attracts subscribers',
+      link: '/help/articles/setting-up-creator-profile'
     },
     {
       title: 'Photography Tips for Fursuit Content',
       duration: '15 min',
       level: 'Intermediate',
       thumbnail: '📸',
-      description: 'Professional photography techniques for amazing fursuit photos'
+      description: 'Professional photography techniques for amazing fursuit photos',
+      link: '/help/articles/upload-organize-content'
     },
     {
       title: 'Building Your Community',
       duration: '12 min',
       level: 'Intermediate',
       thumbnail: '👥',
-      description: 'Strategies for growing and engaging your subscriber base'
+      description: 'Strategies for growing and engaging your subscriber base',
+      link: '/help/articles/engagement-best-practices'
     },
     {
       title: 'Advanced Pricing Strategies',
       duration: '20 min',
       level: 'Advanced',
       thumbnail: '💰',
-      description: 'Optimize your pricing to maximize revenue and subscriber satisfaction'
+      description: 'Optimize your pricing to maximize revenue and subscriber satisfaction',
+      link: '/help/articles/pricing-strategies'
     }
   ];
-
-  const templates = [
-    {
-      name: 'Welcome Message Template',
-      description: 'Greet new subscribers professionally',
-      category: 'Messaging'
-    },
-    {
-      name: 'Commission Price Sheet',
-      description: 'Professional pricing template',
-      category: 'Business'
-    },
-    {
-      name: 'Content Calendar',
-      description: 'Plan your posts effectively',
-      category: 'Planning'
-    },
-    {
-      name: 'Fan Survey Template',
-      description: 'Gather feedback from subscribers',
-      category: 'Engagement'
-    }
-  ];
-
   return (
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-linear-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
+        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-2 rounded-full mb-6">
           <Crown className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Creator Resources</span>
         </div>
         
-        <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+        <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
           Everything You Need to Succeed
         </h1>
         
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Access guides, tutorials, templates, and tools designed to help furry creators 
+          Access guides, tutorials, and tools designed to help furry creators 
           build successful businesses and engaged communities.
         </p>
       </div>
@@ -218,19 +187,19 @@ const CreatorResources: React.FC = () => {
       {/* Quick Links */}
       <div className="grid md:grid-cols-4 gap-4 mb-16">
         <Button variant="outline" className="h-20 flex flex-col space-y-2" asChild>
-          <Link to="/best-practices">
+          <Link to="/help/articles/engagement-best-practices">
             <Star className="w-6 h-6" />
             <span>Best Practices</span>
           </Link>
         </Button>
         <Button variant="outline" className="h-20 flex flex-col space-y-2" asChild>
-          <Link to="/analytics-guide">
+          <Link to="/dashboard/analytics">
             <BarChart3 className="w-6 h-6" />
             <span>Analytics Guide</span>
           </Link>
         </Button>
         <Button variant="outline" className="h-20 flex flex-col space-y-2" asChild>
-          <Link to="/tax-info">
+          <Link to="/help/articles/tax-information">
             <DollarSign className="w-6 h-6" />
             <span>Tax Information</span>
           </Link>
@@ -267,10 +236,10 @@ const CreatorResources: React.FC = () => {
                       </div>
                       <p className="text-sm text-muted-foreground mb-3">{resource.description}</p>
                       <Button size="sm" variant="outline" className="w-full" asChild>
-                        <a href={getResourceLink(resource)} download target="_blank" rel="noopener noreferrer">
-                          <Download className="w-3 h-3 mr-2" />
-                          Access Resource
-                        </a>
+                        <Link to={resource.link}>
+                          <ExternalLink className="w-3 h-3 mr-2" />
+                          View Guide
+                        </Link>
                       </Button>
                     </div>
                   ))}
@@ -293,7 +262,7 @@ const CreatorResources: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold">{tutorial.title}</h3>
-                      <Badge variant="outline-solid" className="text-xs">
+                      <Badge variant="outline" className="text-xs">
                         {tutorial.level}
                       </Badge>
                     </div>
@@ -301,10 +270,10 @@ const CreatorResources: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">{tutorial.duration}</span>
                       <Button size="sm" asChild>
-                        <a href={getVideoLink(tutorial)} target="_blank" rel="noopener noreferrer">
+                        <Link to={tutorial.link}>
                           <Video className="w-3 h-3 mr-2" />
-                          Watch
-                        </a>
+                          View Guide
+                        </Link>
                       </Button>
                     </div>
                   </div>
@@ -346,32 +315,8 @@ const CreatorResources: React.FC = () => {
         </div>
       </div>
 
-      {/* Templates */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold text-center mb-8">Templates & Tools</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {templates.map((template, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4 text-center">
-                <h3 className="font-medium mb-2">{template.name}</h3>
-                <p className="text-muted-foreground text-xs mb-3">{template.description}</p>
-                <Badge variant="outline-solid" className="mb-3 text-xs">
-                  {template.category}
-                </Badge>
-                <Button size="sm" className="w-full" asChild>
-                  <a href={getTemplateLink(template)} download target="_blank" rel="noopener noreferrer">
-                    <Download className="w-3 h-3 mr-2" />
-                    Download
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
       {/* Support CTA */}
-      <Card className="text-center bg-linear-to-r from-purple-500 to-pink-500 text-white border-0">
+      <Card className="text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
         <CardContent className="p-8">
           <Users className="w-12 h-12 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Need Personal Help?</h2>
@@ -386,7 +331,7 @@ const CreatorResources: React.FC = () => {
               </Link>
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600" asChild>
-              <Link to="/best-practices">
+              <Link to="/help/articles/engagement-best-practices">
                 <BookOpen className="w-4 h-4 mr-2" />
                 Best Practices Guide
               </Link>

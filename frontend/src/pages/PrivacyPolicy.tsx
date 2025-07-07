@@ -200,7 +200,10 @@ const PrivacyPolicy: React.FC = () => {
             <div className="space-y-2 text-muted-foreground">
               <div><strong>Email:</strong> privacy@onlyfur.com</div>
               <div><strong>General Support:</strong> support@onlyfur.com</div>
-              <div><strong>Address:</strong> [Company Address - To be updated in production]</div>
+              <div>
+                <strong>EU Address:</strong> OnlyFur GmbH, Berlin, Germany<br/>
+                <strong>US Address:</strong> OnlyFur LLC, Chicago, Illinois, United States
+              </div>
             </div>
           </CardContent>
         </Card>

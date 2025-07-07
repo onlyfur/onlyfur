@@ -133,7 +133,7 @@ const DMCA: React.FC = () => {
               <li>• Your contact information</li>
               <li>• Identification of the removed material</li>
               <li>• A statement under penalty of perjury that you have a good faith belief the content was removed in error</li>
-              <li>• Consent to jurisdiction of federal court</li>
+              <li>• Consent to jurisdiction of appropriate court in your jurisdiction</li>
               <li>• Your physical or electronic signature</li>
             </ul>
           </CardContent>

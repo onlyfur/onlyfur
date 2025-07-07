@@ -29,9 +29,9 @@ export default function UploadOrganizeContent() {
     {
       type: 'Documents',
       icon: FileText,
-      formats: ['PDF', 'TXT', 'DOC', 'DOCX'],
+      formats: ['TXT', 'DOC', 'DOCX'],
       maxSize: '25 MB',
-      recommended: 'PDF for formatted content'
+      recommended: 'TXT for simple content'
     }
   ];
 

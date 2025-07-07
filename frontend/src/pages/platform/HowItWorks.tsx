@@ -129,7 +129,7 @@ const HowItWorks: React.FC = () => {
       features: [
         'Everything in Basic',
         'Premium HD content access',
-        'Download content offline',
+        'Stream content online',
         'Priority customer support',
         'Advanced messaging features'
       ],

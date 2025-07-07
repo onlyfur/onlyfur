@@ -888,7 +888,7 @@ const HowToCreateAccount: React.FC = () => {
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Subscribe to unlimited creators</li>
                     <li>• Access exclusive content libraries</li>
-                    <li>• Download content for offline viewing</li>
+                    <li>• Stream content online</li>
                     <li>• Create personal collections</li>
                   </ul>
                 </div>
@@ -1005,7 +1005,7 @@ const HowToCreateAccount: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span><strong>Legal Content:</strong> All content must be legal in your jurisdiction</span>
+                  <span><strong>Legal Content:</strong> All content must comply with applicable laws in your jurisdiction</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />

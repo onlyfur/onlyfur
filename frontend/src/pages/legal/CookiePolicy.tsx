@@ -165,6 +165,38 @@ const CookiePolicy: React.FC = () => {
 
         <Card>
           <CardHeader>
+            <CardTitle>Regional Cookie Compliance</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2">European Union (GDPR)</h4>
+              <p className="text-muted-foreground mb-2">
+                EU users have enhanced rights regarding cookies and consent:
+              </p>
+              <ul className="space-y-1 text-muted-foreground ml-4">
+                <li>• Explicit consent required for non-essential cookies</li>
+                <li>• Right to withdraw consent at any time</li>
+                <li>• Granular control over cookie categories</li>
+                <li>• Clear information about data processing purposes</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">United States</h4>
+              <p className="text-muted-foreground mb-2">
+                US users, particularly in California, have privacy rights including:
+              </p>
+              <ul className="space-y-1 text-muted-foreground ml-4">
+                <li>• Right to know what information is collected via cookies</li>
+                <li>• Right to opt-out of sale of personal information</li>
+                <li>• Access to cookie preference management tools</li>
+                <li>• Non-discrimination for exercising privacy choices</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Updates to This Policy</CardTitle>
           </CardHeader>
           <CardContent>

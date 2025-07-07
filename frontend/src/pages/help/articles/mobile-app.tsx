@@ -157,7 +157,7 @@ const MobileApp: React.FC = () => {
                   <h4 className="font-semibold text-orange-600">Offline Features</h4>
                 </div>
                 <ul className="text-sm space-y-1">
-                  <li>• Download content for offline viewing</li>
+                  <li>• Stream content online</li>
                   <li>• Sync when connection returns</li>
                   <li>• Reduced data usage options</li>
                   <li>• Background content updates</li>

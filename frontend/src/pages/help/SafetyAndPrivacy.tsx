@@ -84,7 +84,7 @@ const SafetyAndPrivacy: React.FC = () => {
         'Encrypted storage of all personal data',
         'Limited access on need-to-know basis',
         'Regular security audits and updates',
-        'GDPR and CCPA compliance'
+        'GDPR (EU) and CCPA (US) compliance'
       ]
     },
     {
