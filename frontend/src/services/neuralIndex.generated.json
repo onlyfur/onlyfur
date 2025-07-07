@@ -470,14 +470,6 @@
     "category": "help"
   },
   {
-    "id": "AIDashboardV3",
-    "url": "/AIDashboardV3",
-    "title": "AIDashboardV3",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
     "id": "About",
     "url": "/About",
     "title": "About",
@@ -489,6 +481,14 @@
     "id": "AccountSetup",
     "url": "/AccountSetup",
     "title": "AccountSetup",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "AIDashboardV3",
+    "url": "/AIDashboardV3",
+    "title": "AIDashboardV3",
     "description": "",
     "tags": [],
     "category": "page"
@@ -617,6 +617,46 @@
     "id": "GoogleCallback",
     "url": "/GoogleCallback",
     "title": "GoogleCallback",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-BillingAndSubscriptions",
+    "url": "/help/BillingAndSubscriptions",
+    "title": "BillingAndSubscriptions",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-CreatorFeatures",
+    "url": "/help/CreatorFeatures",
+    "title": "CreatorFeatures",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-GettingStarted",
+    "url": "/help/GettingStarted",
+    "title": "GettingStarted",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-SafetyAndPrivacy",
+    "url": "/help/SafetyAndPrivacy",
+    "title": "SafetyAndPrivacy",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-SearchFeatures",
+    "url": "/help/SearchFeatures",
+    "title": "SearchFeatures",
     "description": "",
     "tags": [],
     "category": "page"
@@ -769,46 +809,6 @@
     "id": "UserProfilePage",
     "url": "/UserProfilePage",
     "title": "UserProfilePage",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-BillingAndSubscriptions",
-    "url": "/help/BillingAndSubscriptions",
-    "title": "BillingAndSubscriptions",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-CreatorFeatures",
-    "url": "/help/CreatorFeatures",
-    "title": "CreatorFeatures",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-GettingStarted",
-    "url": "/help/GettingStarted",
-    "title": "GettingStarted",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-SafetyAndPrivacy",
-    "url": "/help/SafetyAndPrivacy",
-    "title": "SafetyAndPrivacy",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-SearchFeatures",
-    "url": "/help/SearchFeatures",
-    "title": "SearchFeatures",
     "description": "",
     "tags": [],
     "category": "page"
