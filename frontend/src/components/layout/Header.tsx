@@ -135,9 +135,9 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-2">
               {/* Neural Search */}
               <Button 
-                variant="ghost" 
+                variant="gradient" 
                 size="icon" 
-                className="hidden sm:flex relative"
+                className="hidden sm:flex relative bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
                 onClick={() => setIsSearchOpen(true)}
                 title="Neural Search v2.7 - AI-Powered Search"
               >
@@ -146,7 +146,12 @@ const Header: React.FC = () => {
               </Button>
 
               {/* Theme Toggle */}
-              <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              <Button 
+                variant="gradient" 
+                size="icon" 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+                onClick={toggleTheme}
+              >
                 {theme === 'dark' ? (
                   <Sun className="h-5 w-5" />
                 ) : (
@@ -227,10 +232,10 @@ const Header: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" asChild className="hidden sm:inline-flex">
+                  <Button variant="gradient" asChild className="hidden sm:inline-flex bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
                     <Link to="/login">Log in</Link>
                   </Button>
-                  <Button asChild>
+                  <Button variant="gradient" asChild className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
                     <Link to="/register">Sign up</Link>
                   </Button>
                 </>
@@ -238,9 +243,9 @@ const Header: React.FC = () => {
 
               {/* Mobile Menu Button */}
               <Button
-                variant="ghost"
+                variant="gradient"
                 size="icon"
-                className={`md:hidden ${isActive('/') ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}
+                className={`md:hidden bg-gradient-to-r from-purple-500 to-pink-500 text-white ${isActive('/') ? '' : ''}`}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Open menu"
               >
@@ -276,8 +281,8 @@ const Header: React.FC = () => {
 
                 {/* Mobile Neural Search */}
                 <Button 
-                  variant="ghost" 
-                  className="w-full justify-start"
+                  variant="gradient" 
+                  className="w-full justify-start bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
                   onClick={() => {
                     setIsSearchOpen(true);
                     setIsMobileMenuOpen(false);
@@ -290,12 +295,12 @@ const Header: React.FC = () => {
                 
                 {!isAuthenticated && (
                   <div className="pt-2 border-t space-y-2">
-                    <Button variant="ghost" asChild className="w-full justify-start">
+                    <Button variant="gradient" asChild className="w-full justify-start bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
                       <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                         Log in
                       </Link>
                     </Button>
-                    <Button asChild className="w-full">
+                    <Button variant="gradient" asChild className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
                       <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
                         Sign up
                       </Link>

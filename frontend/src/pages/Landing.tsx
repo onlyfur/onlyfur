@@ -93,7 +93,7 @@ const Landing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 bg-transparent border-2 border-transparent"
+                  className="text-lg px-8 py-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg"
                   onClick={() => {
                     setSelectedPricingTab('subscriber');
                     setShowPricingModal(true);
@@ -102,7 +102,7 @@ const Landing: React.FC = () => {
                   <Heart className="mr-2 h-5 w-5" />
                   View Subscriber Plans
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 border-transparent shadow-lg" asChild>
                   <Link to="/register">
                     Join for Free
                   </Link>
@@ -251,7 +251,7 @@ const Landing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 bg-transparent border-2 border-transparent"
+                  className="text-lg px-8 py-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg"
                   onClick={() => {
                     setSelectedPricingTab('creator');
                     setShowPricingModal(true);
@@ -260,7 +260,7 @@ const Landing: React.FC = () => {
                   <Crown className="mr-2 h-5 w-5" />
                   View Creator Plans
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 border-transparent shadow-lg" asChild>
                   <Link to="/register">
                     Start Creating for Free
                   </Link>

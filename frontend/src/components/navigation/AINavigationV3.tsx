@@ -318,8 +318,8 @@ export default function AINavigationV3() {
                         to={item.route}
                         className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
                           isActive(item.route)
-                            ? 'bg-gray-100 text-gray-900'
-                            : 'hover:bg-gray-50 text-gray-600'
+                            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                            : 'hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white'
                         }`}
                       >
                         <IconComponent className="w-4 h-4" />
