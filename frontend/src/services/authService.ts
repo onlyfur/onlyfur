@@ -10,8 +10,10 @@ import {
   getUserData,
   getRememberMe,
   clearAuthCookies,
-  hasValidAuthSession
-} from '@/utils/cookieUtils';
+  hasValidAuthSession,
+  isSessionNearExpiration,
+  validateAndCleanupSession
+} from '../utils/cookieUtils';
 
 // Response interface for auth operations
 interface AuthResult {
@@ -19,6 +21,14 @@ interface AuthResult {
   user?: User;
   token?: string;
   refreshToken?: string;
+  error?: string;
+}
+
+// Session validation interface
+interface SessionValidationResult {
+  isValid: boolean;
+  needsRefresh: boolean;
+  user?: User;
   error?: string;
 }
 
@@ -63,13 +73,73 @@ const MOCK_USERS: (User & { setupComplete: boolean })[] = [
 ];
 
 // Development mode flag
-const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
+const IS_DEVELOPMENT = (import.meta as any).env?.MODE === 'development';
 
-// Session storage keys (now using cookies)
+// Session storage keys (for saved credentials only - not auth tokens)
 const CREDENTIALS_KEY = 'onlyfur_saved_credentials';
 
 class AuthService {
   private isOfflineMode = false;
+  private tokenRefreshPromise: Promise<AuthResult> | null = null;
+  
+  // Initialize periodic session validation
+  constructor() {
+    // Validate session on startup
+    this.validateStoredSession();
+    
+    // Set up periodic validation every 5 minutes
+    setInterval(() => {
+      this.periodicSessionValidation();
+    }, 5 * 60 * 1000);
+    
+    // Set up automatic token refresh check
+    setInterval(() => {
+      this.checkAndRefreshToken();
+    }, 60 * 1000); // Check every minute
+  }
+  
+  // Periodic session validation
+  private periodicSessionValidation(): void {
+    if (!validateAndCleanupSession()) {
+      // Session is invalid, could trigger logout or re-authentication
+      console.log('Session validation failed, cleaning up');
+      this.clearSession();
+    }
+  }
+  
+  // Check if token needs refresh and do it automatically
+  private async checkAndRefreshToken(): Promise<void> {
+    if (!hasValidAuthSession()) return;
+    
+    if (isSessionNearExpiration()) {
+      console.log('Token is near expiration, attempting refresh');
+      try {
+        await this.refreshAuthToken();
+      } catch (error) {
+        console.warn('Automatic token refresh failed:', error);
+      }
+    }
+  }
+  
+  // Validate stored session and return status
+  public validateStoredSession(): SessionValidationResult {
+    try {
+      if (!validateAndCleanupSession()) {
+        return { isValid: false, needsRefresh: false, error: 'No valid session found' };
+      }
+      
+      const user = getUserData();
+      const needsRefresh = isSessionNearExpiration();
+      
+      return {
+        isValid: true,
+        needsRefresh,
+        user,
+      };
+    } catch (error) {
+      return { isValid: false, needsRefresh: false, error: 'Session validation failed' };
+    }
+  }
   
   // Check if backend is available
   private async checkBackendAvailability(): Promise<boolean> {
@@ -410,6 +480,22 @@ class AuthService {
   }
   // Refresh authentication token
   async refreshAuthToken(): Promise<AuthResult> {
+    // Prevent multiple simultaneous refresh attempts
+    if (this.tokenRefreshPromise) {
+      return this.tokenRefreshPromise;
+    }
+    
+    this.tokenRefreshPromise = this.performTokenRefresh();
+    
+    try {
+      const result = await this.tokenRefreshPromise;
+      return result;
+    } finally {
+      this.tokenRefreshPromise = null;
+    }
+  }
+  
+  private async performTokenRefresh(): Promise<AuthResult> {
     try {
       const refreshToken = getRefreshToken();
       
@@ -426,17 +512,17 @@ class AuthService {
         const { user, token, refreshToken: newRefreshToken } = response.data;
         
         if (token) {
-          // Update stored tokens
-          this.setSession(token, this.isRememberMeEnabled());
-          if (newRefreshToken) {
-            setRefreshToken(newRefreshToken);
-          }
+          // Update stored tokens while preserving remember preference
+          const remember = this.isRememberMeEnabled();
+          this.setSession(token, remember, newRefreshToken || refreshToken, user ? this.normalizeUser(user) : undefined);
+          
+          console.log('Token refreshed successfully');
           
           return {
             success: true,
             user: user ? this.normalizeUser(user) : undefined,
             token,
-            refreshToken: newRefreshToken,
+            refreshToken: newRefreshToken || refreshToken,
           };
         }
       }
@@ -541,23 +627,37 @@ class AuthService {
       };
     }
   }
-  // Session management using cookies
+
+  // Enhanced session management using secure cookies
   setSession(token: string, remember: boolean = false, refreshToken?: string, user?: User): void {
-    setAuthToken(token, remember);
-    setRememberMe(remember);
-    
-    if (refreshToken) {
-      setRefreshToken(refreshToken, remember);
-    }
-    
-    if (user) {
-      setUserData(user, remember);
+    try {
+      // Set auth token with enhanced security
+      setAuthToken(token, remember);
+      setRememberMe(remember);
+      
+      if (refreshToken) {
+        setRefreshToken(refreshToken, remember);
+      }
+      
+      if (user) {
+        // Ensure no sensitive data is stored
+        const safeUser = { ...user };
+        delete (safeUser as any).password;
+        delete (safeUser as any).passwordHash;
+        setUserData(safeUser, remember);
+      }
+      
+      console.log(`Session stored successfully (remember: ${remember})`);
+    } catch (error) {
+      console.error('Failed to store session:', error);
+      throw new Error('Failed to store authentication session');
     }
   }
 
   getSession(): string | null {
     return getAuthToken();
   }
+  
   setRefreshTokenValue(refreshToken: string, remember: boolean = false): void {
     setRefreshToken(refreshToken, remember);
   }
@@ -567,7 +667,11 @@ class AuthService {
   }
 
   setUser(user: User, remember: boolean = false): void {
-    setUserData(user, remember);
+    // Ensure no sensitive data is stored
+    const safeUser = { ...user };
+    delete (safeUser as any).password;
+    delete (safeUser as any).passwordHash;
+    setUserData(safeUser, remember);
   }
 
   getStoredUser(): User | null {
@@ -576,7 +680,11 @@ class AuthService {
 
   updateStoredUser(user: User): void {
     const remember = getRememberMe();
-    setUserData(user, remember);
+    // Ensure no sensitive data is stored
+    const safeUser = { ...user };
+    delete (safeUser as any).password;
+    delete (safeUser as any).passwordHash;
+    setUserData(safeUser, remember);
   }
 
   isRememberMeEnabled(): boolean {
@@ -586,18 +694,39 @@ class AuthService {
   clearSession(): void {
     clearAuthCookies();
     localStorage.removeItem(CREDENTIALS_KEY);
+    this.tokenRefreshPromise = null;
   }
 
-  // Auto-login functionality
+  // Auto-login functionality with enhanced security
   saveCredentials(email: string, password: string): void {
-    const credentials = { email, password };
-    localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+    // Only save email and a flag that credentials exist
+    // Never save the actual password in plaintext
+    const credentials = { 
+      email, 
+      hasPassword: true, // Just indicate that a password was provided
+      lastUsed: new Date().toISOString() 
+    };
+    
+    try {
+      localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+    } catch (error) {
+      console.warn('Failed to save login preferences:', error);
+    }
   }
 
   getSavedCredentials(): { email: string; password: string } | null {
+    // This method is kept for compatibility but now returns null
+    // since we don't store actual passwords
+    return null;
+  }
+  
+  getSavedEmail(): string | null {
     try {
-      const credentials = localStorage.getItem(CREDENTIALS_KEY);
-      return credentials ? JSON.parse(credentials) : null;
+      const stored = localStorage.getItem(CREDENTIALS_KEY);
+      if (!stored) return null;
+      
+      const credentials = JSON.parse(stored);
+      return credentials.email || null;
     } catch {
       return null;
     }
@@ -608,29 +737,27 @@ class AuthService {
   }
 
   shouldAttemptAutoLogin(): boolean {
-    return !!this.getSavedCredentials() && this.isRememberMeEnabled();
+    // Only attempt auto-login if we have a valid stored session
+    return hasValidAuthSession();
   }
 
   async tryAutoLogin(): Promise<AuthResult> {
-    const credentials = this.getSavedCredentials();
+    // Enhanced auto-login only works with stored tokens, not credentials
+    const validation = this.validateStoredSession();
     
-    if (!credentials) {
-      return { success: false, error: 'No saved credentials' };
+    if (!validation.isValid) {
+      return { success: false, error: 'No valid session found' };
     }
-
-    try {
-      const result = await this.login(credentials);
-      
-      if (!result.success) {
-        // Clear invalid credentials
-        this.clearSavedCredentials();
-      }
-      
-      return result;
-    } catch (error) {
-      this.clearSavedCredentials();
-      return { success: false, error: 'Auto-login failed' };
+    
+    if (validation.needsRefresh) {
+      return await this.refreshAuthToken();
     }
+    
+    return {
+      success: true,
+      user: validation.user,
+      token: getAuthToken() || undefined
+    };
   }
 
   // User data normalization
