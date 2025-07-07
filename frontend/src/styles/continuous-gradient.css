@@ -1,0 +1,126 @@
+/* Continuous Gradient System for Buttons */
+:root {
+  --page-gradient: linear-gradient(90deg, 
+    #ec4899 0%, 
+    #f472b6 20%, 
+    #a855f7 40%, 
+    #8b5cf6 60%, 
+    #6366f1 80%, 
+    #3b82f6 100%
+  );
+}
+
+/* Base continuous gradient class */
+.continuous-gradient {
+  position: relative;
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  overflow: hidden;
+  color: white !important;
+  border: 0 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  filter: saturate(1.2) brightness(1.1);
+  transition: filter 0.15s ease;
+}
+
+/* Hover effect for continuous gradient - only darken, same gradient */
+.continuous-gradient:hover {
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  filter: saturate(1.2) brightness(0.7);
+  transform: none;
+}
+
+/* Override any conflicting Tailwind classes */
+.continuous-gradient.bg-gradient-to-r,
+.continuous-gradient[class*="bg-gradient"] {
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Override any hover background classes that might interfere */
+.continuous-gradient:hover.bg-accent,
+.continuous-gradient.hover\:bg-accent:hover,
+.continuous-gradient[class*="hover:bg-"]:hover {
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Handle opacity transitions for inactive navigation items */
+.continuous-gradient.opacity-70 {
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.continuous-gradient.opacity-70:hover {
+  opacity: 1;
+}
+
+/* Remove any border styling that might conflict */
+.continuous-gradient[class*="border"] {
+  border: 0 !important;
+}
+
+/* Ensure text is always white on the gradient */
+.continuous-gradient,
+.continuous-gradient:hover,
+.continuous-gradient:focus,
+.continuous-gradient:active {
+  color: white !important;
+}
+
+/* Active state styling - same as normal state but with hover gradient */
+.continuous-gradient.active {
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  filter: saturate(1.2) brightness(1.1);
+}
+
+/* Specific adjustments for different button sizes */
+.continuous-gradient.btn-sm {
+  font-size: 0.875rem;
+}
+
+.continuous-gradient.btn-lg {
+  font-size: 1.125rem;
+}
+
+.continuous-gradient.btn-icon {
+  aspect-ratio: 1;
+}
+
+/* Ensure the gradient doesn't interfere with other elements */
+.continuous-gradient:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Support for mobile devices that may not support background-attachment: fixed */
+@media (max-width: 768px) {
+  .continuous-gradient {
+    background-attachment: scroll !important;
+  }
+  
+  .continuous-gradient:hover {
+    background-attachment: scroll !important;
+  }
+  
+  .continuous-gradient.bg-gradient-to-r,
+  .continuous-gradient[class*="bg-gradient"] {
+    background-attachment: scroll !important;
+  }
+  
+  .continuous-gradient.active {
+    background-attachment: scroll !important;
+  }
+}

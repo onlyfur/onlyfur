@@ -131,8 +131,8 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
                 </ul>
               </div>
               <Button
-                variant={selectedRole === activeRole.id ? 'default' : 'outline'}
-                className={`w-full mt-4 font-semibold text-lg transition-all duration-200 ${selectedRole === activeRole.id ? 'ring-2 ring-primary' : 'group-hover:ring-2 group-hover:ring-primary/50'}`}
+                variant="gradient"
+                className="w-full mt-4 font-semibold text-lg transition-all duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRoleSelect(activeRole.id);

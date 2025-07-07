@@ -29,7 +29,7 @@ const ScrollProgressBar: React.FC = () => {
         left: 0,
         zIndex: 100,
         background: 'linear-gradient(90deg, #ec4899 0%, #f59e42 100%)', // pink to orange
-        transition: 'width 0.2s cubic-bezier(0.4,0,0.2,1)',
+        transition: 'width 0.01s cubic-bezier(0.4,0,0.2,1)',
         pointerEvents: 'none',
       }}
       aria-hidden="true"
