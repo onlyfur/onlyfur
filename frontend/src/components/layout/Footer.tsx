@@ -42,14 +42,12 @@ const Footer: React.FC = () => {
         <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="relative">
-                <Crown className="h-8 w-8 text-primary" />
-                <div className="absolute -top-1 -right-1 h-3 w-3 bg-linear-to-r from-pink-500 to-purple-500 rounded-full animate-pulse" />
-              </div>
-              <span className="text-xl font-bold bg-linear-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                OnlyFur
-              </span>
+            <Link to="/" className="flex items-center mb-4">
+              <img 
+                src="/images/branding/onlyfur-logo.png" 
+                alt="OnlyFur Logo" 
+                className="h-16 w-16 object-contain"
+              />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
               Empowering creators to build sustainable businesses and connect with their audience through premium content and exclusive experiences.

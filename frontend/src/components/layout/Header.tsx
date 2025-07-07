@@ -112,11 +112,9 @@ const Header: React.FC = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors 
-                      ${active
-                        ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-md'
-                        : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
-                    `}
+                    className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors continuous-gradient ${
+                      active ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                    }`}
                     style={{ minWidth: 90, justifyContent: 'center' }}
                   >
                     <item.icon className="h-4 w-4" />
@@ -135,7 +133,7 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-2">
               {/* Neural Search */}
               <Button 
-                variant="ghost" 
+                variant="gradient" 
                 size="icon" 
                 className="hidden sm:flex relative"
                 onClick={() => setIsSearchOpen(true)}
@@ -146,7 +144,11 @@ const Header: React.FC = () => {
               </Button>
 
               {/* Theme Toggle */}
-              <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              <Button 
+                variant="gradient" 
+                size="icon" 
+                onClick={toggleTheme}
+              >
                 {theme === 'dark' ? (
                   <Sun className="h-5 w-5" />
                 ) : (
@@ -227,10 +229,10 @@ const Header: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" asChild className="hidden sm:inline-flex">
+                  <Button variant="gradient" asChild className="hidden sm:inline-flex">
                     <Link to="/login">Log in</Link>
                   </Button>
-                  <Button asChild>
+                  <Button variant="gradient" asChild>
                     <Link to="/register">Sign up</Link>
                   </Button>
                 </>
@@ -238,9 +240,9 @@ const Header: React.FC = () => {
 
               {/* Mobile Menu Button */}
               <Button
-                variant="ghost"
+                variant="gradient"
                 size="icon"
-                className={`md:hidden ${isActive('/') ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}
+                className="md:hidden"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Open menu"
               >
@@ -258,11 +260,9 @@ const Header: React.FC = () => {
                     key={item.name}
                     to={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive(item.href)
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  }`}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors continuous-gradient ${
+                      isActive(item.href) ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                    }`}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.name}</span>
@@ -276,7 +276,7 @@ const Header: React.FC = () => {
 
                 {/* Mobile Neural Search */}
                 <Button 
-                  variant="ghost" 
+                  variant="gradient" 
                   className="w-full justify-start"
                   onClick={() => {
                     setIsSearchOpen(true);
@@ -290,12 +290,12 @@ const Header: React.FC = () => {
                 
                 {!isAuthenticated && (
                   <div className="pt-2 border-t space-y-2">
-                    <Button variant="ghost" asChild className="w-full justify-start">
+                    <Button variant="gradient" asChild className="w-full justify-start">
                       <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                         Log in
                       </Link>
                     </Button>
-                    <Button asChild className="w-full">
+                    <Button variant="gradient" asChild className="w-full">
                       <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
                         Sign up
                       </Link>
