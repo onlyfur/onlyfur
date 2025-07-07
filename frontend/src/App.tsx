@@ -14,6 +14,7 @@ import CookieConsentManager from '@/components/legal/CookieConsentManager';
 import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import PaymentSetup from '@/pages/PaymentSetup';
 import AuthCallback from '@/pages/AuthCallback';
 import OAuthDebugger from '@/components/auth/OAuthDebugger';
 import Dashboard from '@/pages/Dashboard';
@@ -214,6 +215,10 @@ function App() {
                     <Register />
                   </PublicRoute>
                 }
+              />
+              <Route
+                path="payment-setup"
+                element={<PaymentSetup />}
               />
               <Route
                 path="auth/callback"

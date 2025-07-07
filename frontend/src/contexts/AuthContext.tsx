@@ -123,7 +123,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };  const register = async (userData: Partial<User> & { password?: string }, onSuccess?: (user: User) => void): Promise<void> => {
+  };  const register = async (userData: Partial<User> & { 
+    password?: string; 
+    selectedTier?: string; 
+    agreeToTerms?: boolean; 
+    newsletter?: boolean; 
+  }, onSuccess?: (user: User) => void): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
@@ -138,6 +143,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         displayName: userData.displayName,
         password: userData.password,
         role: (userData.role?.toLowerCase?.() as 'subscriber' | 'creator') || 'subscriber',
+        selectedTier: userData.selectedTier,
+        agreeToTerms: userData.agreeToTerms,
+        newsletter: userData.newsletter,
       });
       
       if (!result.success || !result.user || !result.token) {

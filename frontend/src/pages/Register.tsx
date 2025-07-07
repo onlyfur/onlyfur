@@ -55,7 +55,7 @@ const Register: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -89,15 +89,23 @@ const Register: React.FC = () => {
 
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
-    setError(null);    try {
-      // Register the user
+    setError(null);
+    
+    try {
+      console.log('Form data:', data);
+      console.log('Selected role:', selectedRole);
+      console.log('Selected tier:', selectedTier);
+      
+      // Register the user with all the data
       await registerUser({
         email: data.email,
         username: data.username,
         displayName: data.displayName,
         role: data.role,
         password: data.password,
-        // selectedTier and newsletter are not part of User, handle separately if needed
+        selectedTier: data.selectedTier || selectedTier,
+        agreeToTerms: data.agreeToTerms,
+        newsletter: data.newsletter,
       }, (user) => {
         // Show success toast
         toast({
@@ -105,15 +113,24 @@ const Register: React.FC = () => {
           description: `Welcome to OnlyFur, ${data.displayName}! You've been automatically signed in.`,
         });
         
-        // For new users, always redirect to setup first
-        if (isNewUser(user)) {
-          navigate('/setup');
+        // Check if selected plan requires payment
+        const freeTiers = ['free-creator', 'basic-creator', 'free-subscriber', 'basic-subscriber'];
+        const requiresPayment = selectedTier && !freeTiers.includes(selectedTier);
+        
+        if (requiresPayment) {
+          // Redirect to payment setup
+          navigate('/payment-setup', { 
+            state: { 
+              userId: user.id,
+              selectedTier: selectedTier,
+              userEmail: user.email,
+              canSkip: true 
+            } 
+          });
         } else {
-          // If user selected a paid tier, redirect to payment
-          if (data.selectedTier && data.selectedTier !== 'basic-creator') {
-            navigate('/subscription/checkout', { 
-              state: { tierId: data.selectedTier } 
-            });
+          // For new users, always redirect to setup first, then dashboard
+          if (isNewUser(user)) {
+            navigate('/setup');
           } else {
             const redirectPath = getRedirectPathAfterLogin(user);
             navigate(redirectPath);
@@ -149,6 +166,62 @@ const Register: React.FC = () => {
   };
 
   const canProceedToStep2 = selectedRole !== null;
+
+  // Google registration handler
+  const handleGoogleRegister = async (credential: string) => {
+    if (!selectedRole || !selectedTier) {
+      setError('Please select your role and plan before using Google registration');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Call the auth service with Google credential and registration data
+      await loginWithGoogle(credential, selectedRole, (user) => {
+        // Show success toast
+        toast({
+          title: "Registration Successful!",
+          description: `Welcome to OnlyFur, ${user.displayName}! You've been automatically signed in.`,
+        });
+        
+        // Check if selected plan requires payment
+        const freeTiers = ['free-creator', 'basic-creator', 'free-subscriber', 'basic-subscriber'];
+        const requiresPayment = selectedTier && !freeTiers.includes(selectedTier);
+        
+        if (requiresPayment) {
+          // Redirect to payment setup
+          navigate('/payment-setup', { 
+            state: { 
+              userId: user.id,
+              selectedTier: selectedTier,
+              userEmail: user.email,
+              canSkip: true 
+            } 
+          });
+        } else {
+          // For new users, redirect to setup, then dashboard
+          if (isNewUser(user)) {
+            navigate('/setup');
+          } else {
+            const redirectPath = getRedirectPathAfterLogin(user);
+            navigate(redirectPath);
+          }
+        }
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Google registration failed';
+      setError(errorMessage);
+      toast({
+        title: "Google Registration Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-orange-50 via-amber-50 to-purple-50 dark:from-gray-900 dark:via-orange-900/20 dark:to-purple-900/20 flex items-center justify-center p-4">
@@ -240,6 +313,7 @@ const Register: React.FC = () => {
                   <GoogleLoginButton 
                     mode="register" 
                     userType={selectedRole || 'subscriber'} 
+                    onSuccess={handleGoogleRegister}
                   />
                 </div>
 

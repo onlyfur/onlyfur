@@ -158,6 +158,9 @@ class AuthService {
     displayName: string;
     password: string;
     role: 'subscriber' | 'creator';
+    selectedTier?: string;
+    agreeToTerms?: boolean;
+    newsletter?: boolean;
   }, remember: boolean = false): Promise<AuthResult> {
     try {
       // Check backend availability first
@@ -176,8 +179,10 @@ class AuthService {
       
       const apiUserData = {
         ...userData,
-        role: userData.role.toUpperCase() as 'CREATOR' | 'SUBSCRIBER'
+        role: userData.role // Keep as lowercase for backend mapping
       };
+      
+      console.log('Sending registration data:', apiUserData);
       
       const response = await apiClient.register(apiUserData);
       

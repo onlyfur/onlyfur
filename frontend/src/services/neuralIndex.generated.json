@@ -742,6 +742,14 @@
     "category": "page"
   },
   {
+    "id": "PaymentSetup",
+    "url": "/PaymentSetup",
+    "title": "PaymentSetup",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
     "id": "PrivacyPolicy",
     "url": "/PrivacyPolicy",
     "title": "PrivacyPolicy",

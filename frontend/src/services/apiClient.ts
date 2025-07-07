@@ -144,7 +144,10 @@ class ApiClient {
     username: string;
     displayName: string;
     password: string;
-    role: 'CREATOR' | 'SUBSCRIBER';
+    role: 'creator' | 'subscriber';
+    selectedTier?: string;
+    agreeToTerms?: boolean;
+    newsletter?: boolean;
   }): Promise<AuthResponse> {
     const response = await this.makeRequest('/auth/register', {
       method: 'POST',
