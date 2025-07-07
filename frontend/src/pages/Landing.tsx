@@ -71,7 +71,7 @@ const Landing: React.FC = () => {
     <>
       <div className="min-h-screen">
         {/* Hero Section - Subscriber Focused */}
-        <section className="relative py-20 px-4 bg-linear-to-br from-purple-100 via-pink-50 to-orange-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-orange-900/20 overflow-hidden">
+        <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/branding/fox-mascot.webp')] bg-cover bg-center opacity-5"></div>
           <div className="relative container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
@@ -93,7 +93,7 @@ const Landing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  className="text-lg px-8 py-6 bg-transparent border-2 border-transparent"
                   onClick={() => {
                     setSelectedPricingTab('subscriber');
                     setShowPricingModal(true);
@@ -251,7 +251,7 @@ const Landing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                  className="text-lg px-8 py-6 bg-transparent border-2 border-transparent"
                   onClick={() => {
                     setSelectedPricingTab('creator');
                     setShowPricingModal(true);
