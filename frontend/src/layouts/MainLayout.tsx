@@ -26,17 +26,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
         {shouldShowSidebar && (
-          <div className="hidden lg:block">
+          <div className="hidden lg:block lg:fixed lg:inset-y-0 lg:z-40 lg:w-64 lg:top-16">
             <Sidebar />
           </div>
         )}
         
         <main 
           className={cn(
-            'flex-1 overflow-auto',
-            shouldShowSidebar ? 'lg:ml-0' : '',
+            'flex-1 overflow-auto min-h-[calc(100vh-4rem)]',
+            shouldShowSidebar ? 'lg:ml-64' : '',
             'w-full'
           )}
         >

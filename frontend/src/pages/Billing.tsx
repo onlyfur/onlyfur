@@ -4,7 +4,6 @@ import {
   CreditCard,
   Calendar,
   DollarSign,
-  Download,
   Eye,
   MoreHorizontal,
   Pause,
@@ -22,7 +21,7 @@ import {
 } from 'lucide-react';
 import { usePayment } from '@/contexts/PaymentContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Transaction, Subscription, PaymentMethod, Invoice } from '@/types';
+import { Transaction, Subscription, PaymentMethod } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +57,6 @@ const Billing: React.FC = () => {
     userSubscriptions,
     paymentMethods,
     transactions,
-    invoices,
     cancelSubscription,
     resumeSubscription,
     removePaymentMethod,
@@ -74,7 +72,6 @@ const Billing: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showAddPaymentDialog, setShowAddPaymentDialog] = useState(false);
   const [paymentMethodType, setPaymentMethodType] = useState<'stripe' | 'paypal'>('stripe');
 
@@ -295,11 +292,10 @@ const Billing: React.FC = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
           <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
           <TabsTrigger value="transactions">Transaction History</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
         </TabsList>
 
         {/* Subscriptions Tab */}
@@ -647,19 +643,6 @@ const Billing: React.FC = () => {
                 )}
               </TableBody>
             </Table>
-          </Card>
-        </TabsContent>
-
-        {/* Invoices Tab */}
-        <TabsContent value="invoices" className="space-y-6">
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Download className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-              <h3 className="text-lg font-medium mb-2">No Invoices Available</h3>
-              <p className="text-muted-foreground">
-                Your invoices will appear here once you have subscription payments.
-              </p>
-            </CardContent>
           </Card>
         </TabsContent>
       </Tabs>

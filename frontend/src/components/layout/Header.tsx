@@ -17,6 +17,7 @@ import {
   Upload,
   Brain,
   Sparkles,
+  LayoutDashboard,
 } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -205,8 +206,14 @@ const Header: React.FC = () => {
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard" className="flex items-center">
-                          <Settings className="mr-2 h-4 w-4" />
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
                           Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/settings" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Settings
                         </Link>
                       </DropdownMenuItem>
                       {(user?.role?.toLowerCase() === 'creator') && (

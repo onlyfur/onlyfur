@@ -146,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   );
 
   return (
-    <aside className={cn('w-64 bg-background border-r h-full overflow-y-auto', className)}>
+    <aside className={cn('w-64 bg-background border-r h-[calc(100vh-4rem)] overflow-y-auto mt-16', className)}>
       <div className="p-4">
         {/* User Info */}
         <div className="mb-6 p-3 rounded-lg bg-muted">
