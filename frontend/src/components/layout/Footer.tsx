@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
               <img 
                 src="/images/branding/onlyfur-logo.png" 
                 alt="OnlyFur Logo" 
-                className="h-8 w-8 object-contain"
+                className="h-16 w-16 object-contain"
               />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">

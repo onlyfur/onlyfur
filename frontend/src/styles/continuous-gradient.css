@@ -20,62 +20,41 @@
     #0891b2 90%, 
     #2563eb 100%
   );
-  --gradient-width: 100vw;
 }
 
 /* Base continuous gradient class */
 .continuous-gradient {
   position: relative;
-  background: transparent !important;
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
   overflow: hidden;
   color: white !important;
   border: 0 !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.continuous-gradient::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--gradient-width);
-  height: 100%;
-  background: var(--page-gradient);
-  transform: translateX(-50%);
-  z-index: -1;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  opacity: 1;
   filter: saturate(1.2) brightness(1.1);
+  transition: all 0.3s ease;
 }
 
 /* Hover effect for continuous gradient */
-.continuous-gradient:hover::before {
-  background: var(--page-gradient-hover);
-  transform: translateX(-50%) scale(1.02);
+.continuous-gradient:hover {
+  background: var(--page-gradient-hover) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
   filter: saturate(1.4) brightness(1.2);
-}
-
-/* Ensure proper stacking and positioning */
-.continuous-gradient {
-  z-index: 1;
-}
-
-.continuous-gradient > * {
-  position: relative;
-  z-index: 2;
-}
-
-/* Active state styling */
-.continuous-gradient.active::before {
-  background: var(--page-gradient-hover);
+  transform: scale(1.02);
 }
 
 /* Override any conflicting Tailwind classes */
 .continuous-gradient.bg-gradient-to-r,
 .continuous-gradient[class*="bg-gradient"] {
-  background: transparent !important;
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
 }
 
 /* Remove any border styling that might conflict */
@@ -91,6 +70,15 @@
   color: white !important;
 }
 
+/* Active state styling */
+.continuous-gradient.active {
+  background: var(--page-gradient-hover) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  filter: saturate(1.4) brightness(1.2);
+}
+
 /* Specific adjustments for different button sizes */
 .continuous-gradient.btn-sm {
   font-size: 0.875rem;
@@ -104,15 +92,28 @@
   aspect-ratio: 1;
 }
 
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-  :root {
-    --gradient-width: 100vw;
-  }
-}
-
 /* Ensure the gradient doesn't interfere with other elements */
 .continuous-gradient:focus-visible {
   outline: 2px solid rgba(139, 92, 246, 0.5);
   outline-offset: 2px;
+}
+
+/* Support for mobile devices that may not support background-attachment: fixed */
+@media (max-width: 768px) {
+  .continuous-gradient {
+    background-attachment: scroll !important;
+  }
+  
+  .continuous-gradient:hover {
+    background-attachment: scroll !important;
+  }
+  
+  .continuous-gradient.bg-gradient-to-r,
+  .continuous-gradient[class*="bg-gradient"] {
+    background-attachment: scroll !important;
+  }
+  
+  .continuous-gradient.active {
+    background-attachment: scroll !important;
+  }
 }
