@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@/types';
-import { authService } from '@/services/authService';
-import onlineStatusAPI from '@/services/onlineStatusAPI';
-import { getRedirectPathAfterLogin } from '@/utils/userUtils';
+import { User } from '../types';
+import { authService } from '../services/authService';
+import onlineStatusAPI from '../services/onlineStatusAPI';
+import { getRedirectPathAfterLogin } from '../utils/userUtils';
 
 interface AuthContextType {
   user: User | null;
@@ -38,36 +38,66 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    // Check for stored authentication and attempt auto-login
+    // Enhanced authentication checking and auto-login
     const checkAuth = async () => {
       try {
+        // First, validate any stored session
+        const sessionValidation = authService.validateStoredSession();
+        
+        if (sessionValidation.isValid && sessionValidation.user) {
+          // We have a valid stored session
+          setUser(sessionValidation.user);
+          
+          // If session needs refresh, do it in background
+          if (sessionValidation.needsRefresh) {
+            try {
+              await authService.refreshAuthToken();
+              console.log('Token refreshed in background');
+            } catch (error) {
+              console.warn('Background token refresh failed:', error);
+            }
+          }
+          
+          // Start online status tracking
+          onlineStatusAPI.startTracking().catch(console.error);
+          
+          setIsLoading(false);
+          return;
+        }
+        
+        // If no valid session, try to get fresh user data if we have tokens
         const storedToken = authService.getSession();
         const storedUser = authService.getStoredUser();
         
         if (storedToken && storedUser) {
           // Try to verify the token and get fresh user data
-          const result = await authService.getProfile(storedToken);
-          if (result.success && result.user) {
-            setUser(result.user);
-            
-            // Start online status tracking
-            onlineStatusAPI.startTracking().catch(console.error);
-            
-            setIsLoading(false);
-            return;
-          } else {
-            // Token is invalid, clear storage
+          try {
+            const result = await authService.getProfile(storedToken);
+            if (result.success && result.user) {
+              setUser(result.user);
+              
+              // Start online status tracking
+              onlineStatusAPI.startTracking().catch(console.error);
+              
+              setIsLoading(false);
+              return;
+            } else {
+              // Token is invalid, clear storage
+              console.log('Stored token is invalid, clearing session');
+              authService.clearSession();
+            }
+          } catch (error) {
+            console.warn('Token validation failed:', error);
             authService.clearSession();
           }
         }
 
-        // If no valid session, try auto-login with saved credentials
+        // If still no valid session, try auto-login (only if valid session exists)
         if (authService.shouldAttemptAutoLogin()) {
           try {
             const autoLoginResult = await authService.tryAutoLogin();
-            if (autoLoginResult.success && autoLoginResult.user && autoLoginResult.token) {
+            if (autoLoginResult.success && autoLoginResult.user) {
               setUser(autoLoginResult.user);
-              authService.setSession(autoLoginResult.token, true, autoLoginResult.refreshToken, autoLoginResult.user);
               
               // Start online status tracking
               onlineStatusAPI.startTracking().catch(console.error);
@@ -88,7 +118,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     checkAuth();
-  }, []);  const login = async (email: string, password: string, rememberMe: boolean = false, onSuccess?: (user: User) => void): Promise<void> => {
+    
+    // Set up session monitoring
+    const sessionCheckInterval = setInterval(() => {
+      // Periodically validate session
+      const validation = authService.validateStoredSession();
+      if (!validation.isValid && user) {
+        console.log('Session expired, logging out user');
+        setUser(null);
+        authService.clearSession();
+      }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+    
+    return () => {
+      clearInterval(sessionCheckInterval);
+    };
+  }, [user]);  const login = async (email: string, password: string, rememberMe: boolean = false, onSuccess?: (user: User) => void): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
@@ -105,9 +150,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Start online status tracking
       onlineStatusAPI.startTracking().catch(console.error);
       
-      // Save credentials if remember me is checked
+      // Save user email preference for convenience (but not password)
       if (rememberMe) {
-        authService.saveCredentials(email, password);
+        authService.saveCredentials(email, 'placeholder'); // Only saves email and preference
       } else {
         authService.clearSavedCredentials();
       }
@@ -243,11 +288,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const getSavedCredentials = () => {
-    return authService.getSavedCredentials();
+    // Return saved email for convenience, but never return password
+    const savedEmail = authService.getSavedEmail();
+    return savedEmail ? { email: savedEmail, password: '' } : null;
   };
 
   const saveCredentials = (email: string, password: string) => {
-    authService.saveCredentials(email, password);
+    // Only save email for convenience, never save actual password
+    authService.saveCredentials(email, 'placeholder');
   };
 
   const value = {
