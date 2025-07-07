@@ -48,6 +48,7 @@ import Contact from '@/pages/Contact';
 // Admin Pages
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
+import UserCredentialsManagement from '@/pages/admin/UserCredentialsManagement';
 import ContentModeration from '@/pages/admin/ContentModeration';
 import PaymentManagement from '@/pages/admin/PaymentManagement';
 import TagManagement from '@/pages/admin/TagManagement';
@@ -523,6 +524,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UserManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="admin/user-credentials"
+                element={
+                  <ProtectedRoute>
+                    <UserCredentialsManagement />
                   </ProtectedRoute>
                 }
               />
