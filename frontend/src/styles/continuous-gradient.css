@@ -1,14 +1,17 @@
 /* Continuous Gradient System for Buttons */
 :root {
-  --page-gradient: linear-gradient(to right, #8b5cf6, #ec4899);
+  --page-gradient: linear-gradient(90deg, #8b5cf6 0%, #d946ef 25%, #ec4899 50%, #f97316 75%, #eab308 100%);
+  --page-gradient-hover: linear-gradient(90deg, #7c3aed 0%, #c026d3 25%, #db2777 50%, #ea580c 75%, #ca8a04 100%);
   --gradient-width: 100vw;
 }
 
 /* Base continuous gradient class */
 .continuous-gradient {
   position: relative;
-  background: transparent;
+  background: transparent !important;
   overflow: hidden;
+  color: white !important;
+  border: 0 !important;
 }
 
 .continuous-gradient::before {
@@ -22,21 +25,12 @@
   transform: translateX(-50%);
   z-index: -1;
   pointer-events: none;
+  transition: background 0.3s ease;
 }
 
 /* Hover effect for continuous gradient */
 .continuous-gradient:hover::before {
-  background: linear-gradient(to right, #7c3aed, #db2777);
-}
-
-/* Text color for continuous gradient buttons */
-.continuous-gradient {
-  color: white;
-  border: 0;
-}
-
-.continuous-gradient:hover {
-  color: white;
+  background: var(--page-gradient-hover);
 }
 
 /* Ensure proper stacking and positioning */
@@ -51,7 +45,26 @@
 
 /* Active state styling */
 .continuous-gradient.active::before {
-  background: linear-gradient(to right, #7c3aed, #db2777);
+  background: var(--page-gradient-hover);
+}
+
+/* Override any conflicting Tailwind classes */
+.continuous-gradient.bg-gradient-to-r,
+.continuous-gradient[class*="bg-gradient"] {
+  background: transparent !important;
+}
+
+/* Remove any border styling that might conflict */
+.continuous-gradient[class*="border"] {
+  border: 0 !important;
+}
+
+/* Ensure text is always white on the gradient */
+.continuous-gradient,
+.continuous-gradient:hover,
+.continuous-gradient:focus,
+.continuous-gradient:active {
+  color: white !important;
 }
 
 /* Specific adjustments for different button sizes */
@@ -78,9 +91,4 @@
 .continuous-gradient:focus-visible {
   outline: 2px solid rgba(139, 92, 246, 0.5);
   outline-offset: 2px;
-}
-
-/* Disable default button gradients when using continuous gradient */
-.continuous-gradient.bg-gradient-to-r {
-  background: transparent !important;
 }

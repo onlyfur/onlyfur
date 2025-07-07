@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Crown, Heart, Twitter, Instagram, Youtube, Mail } from 'lucide-react';
+import { Heart, Twitter, Instagram, Youtube, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -47,7 +47,11 @@ const Footer: React.FC = () => {
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <div className="relative">
-                <Crown className="h-8 w-8 text-primary" />
+                <img 
+                  src="/images/branding/onlyfur-logo.png" 
+                  alt="OnlyFur Logo" 
+                  className="h-8 w-8 object-contain"
+                />
                 <div className="absolute -top-1 -right-1 h-3 w-3 bg-linear-to-r from-pink-500 to-purple-500 rounded-full animate-pulse" />
               </div>
               <span className="text-xl font-bold bg-linear-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">

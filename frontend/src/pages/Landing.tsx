@@ -71,8 +71,9 @@ const Landing: React.FC = () => {
     <>
       <div className="min-h-screen">
         {/* Hero Section - Subscriber Focused */}
-        <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/branding/fox-mascot.webp')] bg-cover bg-center opacity-5"></div>
+        <section className="relative py-20 px-4 bg-gray-900 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/images/branding/fox-mascot.webp')] bg-cover bg-center opacity-20"></div>
+          <div className="absolute inset-0 bg-black/60"></div>
           <div className="relative container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
               {/* Subscriber Badge */}
@@ -82,10 +83,10 @@ const Landing: React.FC = () => {
                 <Heart className="h-4 w-4 text-pink-500" />
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
                 Discover Amazing OnlyFur Content
               </h1>
-              <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              <p className="text-xl sm:text-2xl text-gray-300 mb-8 leading-relaxed">
                 Access exclusive fursuit photos and videos from your favorite creators. 
                 Connect with the furry community in a safe, welcoming space designed just for you.
               </p>
@@ -113,16 +114,16 @@ const Landing: React.FC = () => {
               {/* Subscriber Stats */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">50+</div>
-                  <div className="text-muted-foreground">Active Creators</div>
+                  <div className="text-3xl font-bold text-white mb-2">50+</div>
+                  <div className="text-gray-300">Active Creators</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">1K+</div>
-                  <div className="text-muted-foreground">Posts & Videos</div>
+                  <div className="text-3xl font-bold text-white mb-2">1K+</div>
+                  <div className="text-gray-300">Posts & Videos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-muted-foreground">Support</div>
+                  <div className="text-3xl font-bold text-white mb-2">24/7</div>
+                  <div className="text-gray-300">Support</div>
                 </div>
               </div>
             </div>
