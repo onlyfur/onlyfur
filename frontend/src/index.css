@@ -355,3 +355,114 @@
   background: linear-gradient(90deg, #4A90E2 0%, #F5A623 100%);
 }
 
+/* Enhanced button interactions with higher specificity */
+button:not(:disabled), 
+.button-interactive:not(:disabled) {
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+button:disabled, 
+.button-interactive:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+/* Better button focus states */
+button:focus-visible,
+.button-interactive:focus-visible {
+  outline: 2px solid hsl(var(--ring)) !important;
+  outline-offset: 2px !important;
+  z-index: 1 !important;
+}
+
+/* Ensure buttons have proper interactive feedback */
+.button-interactive {
+  transition: all 0.2s ease-in-out !important;
+  transform: scale(1) !important;
+  position: relative;
+  will-change: transform, box-shadow, filter;
+}
+
+.button-interactive:hover:not(:disabled) {
+  transform: scale(1.02) !important;
+  filter: brightness(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.button-interactive:active:not(:disabled) {
+  transform: scale(0.98) !important;
+  transition: all 0.1s ease-in-out !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Add ripple effect for better feedback */
+.button-interactive::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.button-interactive:active:not(:disabled)::after {
+  width: 100%;
+  height: 100%;
+  transition: width 0.1s ease, height 0.1s ease;
+}
+
+/* Ensure all button variants get the interactive styles */
+button[class*="bg-gradient"],
+button[class*="bg-primary"],
+button[class*="bg-secondary"],
+button[class*="bg-destructive"],
+button[class*="border"] {
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+}
+
+button[class*="bg-gradient"]:hover:not(:disabled),
+button[class*="bg-primary"]:hover:not(:disabled),
+button[class*="bg-secondary"]:hover:not(:disabled),
+button[class*="bg-destructive"]:hover:not(:disabled),
+button[class*="border"]:hover:not(:disabled) {
+  transform: scale(1.02) !important;
+  filter: brightness(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Touch device optimizations for buttons */
+@media (hover: none) and (pointer: coarse) {
+  /* Override the general hover effect removal for buttons specifically */
+  button:not(:disabled),
+  .button-interactive:not(:disabled) {
+    transition: all 0.2s ease-in-out !important;
+  }
+  
+  button:active:not(:disabled),
+  .button-interactive:active:not(:disabled) {
+    transform: scale(0.95) !important;
+    filter: brightness(0.95) !important;
+    transition: all 0.1s ease-in-out !important;
+  }
+  
+  /* Add a subtle pulse effect for touch feedback */
+  @keyframes touchPulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+  }
+  
+  button:active:not(:disabled),
+  .button-interactive:active:not(:disabled) {
+    animation: touchPulse 0.3s ease-out !important;
+  }
+}
+

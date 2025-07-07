@@ -101,7 +101,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
     return (
       <Button 
         variant="outline" 
-        className="w-full"
+        className="w-full opacity-60 cursor-not-allowed"
         onClick={() => toast({
           title: "Google OAuth Not Configured",
           description: "Please configure Google OAuth client ID in environment variables",

@@ -276,13 +276,14 @@ const Register: React.FC = () => {
                 />
 
                 <div className="flex justify-between mt-8">
-                  <Button variant="outline" onClick={() => navigate('/')}>
+                  <Button variant="outline" onClick={() => navigate('/')} className="button-interactive">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Home
                   </Button>
                   <Button 
                     onClick={handleNextStep}
                     disabled={!canProceedToStep2}
+                    className="button-interactive"
                   >
                     Continue
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -388,7 +389,7 @@ const Register: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors duration-200 hover:scale-110"
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -416,7 +417,7 @@ const Register: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors duration-200 hover:scale-110"
                       >
                         {showConfirmPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -452,11 +453,11 @@ const Register: React.FC = () => {
                   )}
 
                   <div className="flex justify-between mt-8">
-                    <Button type="button" variant="outline" onClick={handlePrevStep}>
+                    <Button type="button" variant="outline" onClick={handlePrevStep} className="button-interactive">
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       Back
                     </Button>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button type="submit" disabled={isLoading} className="button-interactive">
                       {isLoading ? 'Creating Account...' : 'Create Account'}
                     </Button>
                   </div>
