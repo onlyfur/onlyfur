@@ -94,8 +94,9 @@ function corsHeaders() {
   ];
   
   // Use wildcard for development or specific origin in production
+  const allowedHosts = corsOrigins.map(origin => new URL(origin).host);
   const allowedOrigin = process.env.NODE_ENV === 'production' 
-    ? (corsOrigins.includes('https://onlyfur.net') ? 'https://onlyfur.net' : corsOrigins[0])
+    ? (allowedHosts.includes(new URL('https://onlyfur.net').host) ? 'https://onlyfur.net' : corsOrigins[0])
     : corsOrigins[0];
     
   return {
