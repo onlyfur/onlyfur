@@ -9,6 +9,28 @@ import { prisma } from '../services/database';
 import bcrypt from 'bcryptjs';
 import { asyncHandler } from '../middleware/errorHandler';
 
+/**
+ * Security utility: Validate that passwords are properly hashed
+ */
+const validatePasswordHash = (password: string): boolean => {
+  // bcrypt hashes start with $2a$, $2b$, or $2y$ and are 60 characters long
+  return /^\$2[aby]\$\d{2}\$.{53}$/.test(password);
+};
+
+/**
+ * Security utility: Ensure no plaintext passwords are logged or exposed
+ */
+const sanitizePasswordFromLogs = (data: any): any => {
+  if (typeof data === 'object' && data !== null) {
+    const sanitized = { ...data };
+    if (sanitized.password) {
+      sanitized.password = '[REDACTED]';
+    }
+    return sanitized;
+  }
+  return data;
+};
+
 const router = Router();
 const storage = multer.memoryStorage();
 
@@ -75,14 +97,16 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
   const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 
   if (email === ADMIN_EMAIL) {
-    let adminUser = await prisma.user.findUnique({
+    let adminUser = await prisma.users.findUnique({
       where: { email: ADMIN_EMAIL }
     });
 
     if (!adminUser) {
       const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
-      adminUser = await prisma.user.create({
+      const adminId = `admin_${Date.now()}`;
+      adminUser = await prisma.users.create({
         data: {
+          id: adminId,
           email: ADMIN_EMAIL,
           username: ADMIN_USERNAME,
           displayName: 'Platform Administrator',
@@ -98,10 +122,10 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
       });
       console.log(`✅ Default admin user created: ${ADMIN_EMAIL}`);
     } else {
-      const passwordMatches = await bcrypt.compare(ADMIN_PASSWORD, adminUser.password);
+      const passwordMatches = adminUser.password ? await bcrypt.compare(ADMIN_PASSWORD, adminUser.password) : false;
       if (!passwordMatches) {
         const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
-        adminUser = await prisma.user.update({
+        adminUser = await prisma.users.update({
           where: { email: ADMIN_EMAIL },
           data: {
             password: hashedPassword,
@@ -112,7 +136,7 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
       }
     }
 
-    const validPassword = await bcrypt.compare(password, adminUser.password);
+    const validPassword = adminUser.password ? await bcrypt.compare(password, adminUser.password) : false;
     if (!validPassword) {
       res.status(400).json({
         success: false,
@@ -167,14 +191,29 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {
   const validatedData = registerSchema.parse(req.body);
   
+  // Ensure password security before proceeding
+  if (validatedData.password && validatedData.password.length < 6) {
+    res.status(400).json({
+      success: false,
+      error: 'Password must be at least 6 characters long'
+    });
+    return;
+  }
+
   const result = await authenticationService.register({
     email: validatedData.email,
     username: validatedData.username,
     displayName: validatedData.displayName,
-    password: validatedData.password
+    password: validatedData.password,
+    authProvider: 'EMAIL' as any // Explicitly set for credential-based registration
   });
 
   if (result.success) {
+    // Send verification email for email-based registrations
+    if (result.user?.id && !result.user.isEmailVerified) {
+      await authenticationService.sendVerificationEmail(result.user.id);
+    }
+
     res.status(201).json({
       success: true,
       data: {
@@ -182,7 +221,7 @@ router.post('/register', asyncHandler(async (req: Request, res: Response) => {
         token: result.token,
         refreshToken: result.refreshToken
       },
-      message: 'User registered successfully'
+      message: 'User registered successfully. Please check your email for verification.'
     });
   } else {
     res.status(400).json({
@@ -201,7 +240,7 @@ router.get('/me', authenticateToken, asyncHandler(async (req: Request, res: Resp
     return;
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { id: req.user.userId },
     select: {
       id: true,

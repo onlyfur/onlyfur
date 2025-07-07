@@ -62,7 +62,7 @@ class PasswordHasher {
 
 async function testPassword() {
   console.log('Testing password hashing...');
-  console.log('Admin password from env:', ADMIN_PASSWORD);
+  console.log('Admin password from env: [REDACTED FOR SECURITY]');
   console.log('BCrypt rounds:', BCRYPT_ROUNDS);
   
   // Test hashing and comparison

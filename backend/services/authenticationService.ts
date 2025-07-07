@@ -6,6 +6,7 @@ import { logger } from '../middleware/logger';
 import { createAuditLog } from './auditLog';
 import { emailService } from './emailService';
 import { googleAuthService } from './googleAuth';
+import { AuthProvider } from '@prisma/client';
 
 export interface AuthUser {
   id: string;
@@ -28,7 +29,7 @@ export interface RegisterData {
   username: string;
   displayName: string;
   password?: string;
-  authProvider?: string;
+  authProvider?: AuthProvider;
   googleId?: string;
   avatar?: string;
 }
@@ -67,6 +68,17 @@ export class AuthenticationService {
   }
 
   /**
+   * Security validation: Ensure password is properly hashed
+   */
+  private validatePasswordSecurity(password: string): void {
+    // Ensure password doesn't look like plaintext (basic validation)
+    if (password && password.length < 50) {
+      // bcrypt hashes are typically 60+ characters
+      throw new Error('SECURITY ERROR: Attempted to store unhashed password');
+    }
+  }
+
+  /**
    * Register new user account
    */
   async register(data: RegisterData): Promise<AuthResponse> {
@@ -84,23 +96,29 @@ export class AuthenticationService {
       let hashedPassword: string | undefined;
       if (data.password) {
         hashedPassword = await bcrypt.hash(data.password, 12);
+        
+        // Security validation: Ensure password was properly hashed
+        this.validatePasswordSecurity(hashedPassword);
       }
 
       // Create user in PostgreSQL
-      const user = await prisma.user.create({
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const user = await prisma.users.create({
         data: {
+          id: userId,
           email: data.email,
           username: data.username,
           displayName: data.displayName,
           password: hashedPassword,
-          authProvider: data.authProvider || 'EMAIL',
+          authProvider: data.authProvider || AuthProvider.EMAIL,
           googleId: data.googleId,
           avatar: data.avatar,
           role: 'SUBSCRIBER',
           isActive: true,
-          isEmailVerified: data.authProvider === 'GOOGLE',
+          isEmailVerified: data.authProvider === AuthProvider.GOOGLE,
           subscriptionStatus: 'FREE',
-          lastLoginAt: new Date()
+          lastLoginAt: new Date(),
+          updatedAt: new Date()
         }
       });
 
@@ -224,12 +242,13 @@ export class AuthenticationService {
       }
 
       // Successful login - update user data
-      const updatedUser = await prisma.user.update({
+      const updatedUser = await prisma.users.update({
         where: { id: user.id },
         data: {
           lastLoginAt: new Date(),
           loginAttempts: 0,
-          lockedUntil: null
+          lockedUntil: null,
+          updatedAt: new Date()
         }
       });
 
@@ -290,25 +309,26 @@ export class AuthenticationService {
       }
 
       // Check if user exists with Google ID
-      let user = await prisma.user.findUnique({
+      let user = await prisma.users.findUnique({
         where: { googleId: googleUserInfo.id }
       });
 
       if (!user) {
         // Check if user exists with same email
-        user = await prisma.user.findUnique({
+        user = await prisma.users.findUnique({
           where: { email: googleUserInfo.email }
         });
 
         if (user) {
           // Link Google account to existing user
-          user = await prisma.user.update({
+          user = await prisma.users.update({
             where: { id: user.id },
             data: {
               googleId: googleUserInfo.id,
-              authProvider: 'GOOGLE',
+              authProvider: AuthProvider.GOOGLE,
               isEmailVerified: true,
-              lastLoginAt: new Date()
+              lastLoginAt: new Date(),
+              updatedAt: new Date()
             }
           });
         } else {
@@ -318,19 +338,22 @@ export class AuthenticationService {
             googleUserInfo.email
           );
           
-          user = await prisma.user.create({
+          const googleUserId = `google_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          user = await prisma.users.create({
             data: {
+              id: googleUserId,
               email: googleUserInfo.email,
               username,
               displayName: googleAuthService.getDisplayName(googleUserInfo),
               googleId: googleUserInfo.id,
-              authProvider: 'GOOGLE',
+              authProvider: AuthProvider.GOOGLE,
               avatar: googleUserInfo.picture,
               role: userType === 'creator' ? 'CREATOR' : 'SUBSCRIBER',
               isActive: true,
               isEmailVerified: true,
               subscriptionStatus: 'FREE',
-              lastLoginAt: new Date()
+              lastLoginAt: new Date(),
+              updatedAt: new Date()
             }
           });
 
@@ -339,12 +362,13 @@ export class AuthenticationService {
         }
       } else {
         // Update last login for existing Google user
-        user = await prisma.user.update({
+        user = await prisma.users.update({
           where: { id: user.id },
           data: {
             lastLoginAt: new Date(),
             loginAttempts: 0,
-            lockedUntil: null
+            lockedUntil: null,
+            updatedAt: new Date()
           }
         });
       }
@@ -394,7 +418,7 @@ export class AuthenticationService {
    */
   async sendPasswordResetEmail(email: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { email }
       });
 
@@ -411,7 +435,7 @@ export class AuthenticationService {
       const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
       // Save reset token to database
-      await prisma.user.update({
+      await prisma.users.update({
         where: { id: user.id },
         data: {
           passwordResetToken: resetToken,
@@ -473,7 +497,7 @@ export class AuthenticationService {
   async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
       // Find user with valid reset token
-      const user = await prisma.user.findFirst({
+      const user = await prisma.users.findFirst({
         where: {
           passwordResetToken: token,
           passwordResetExpires: {
@@ -493,7 +517,7 @@ export class AuthenticationService {
       const hashedPassword = await bcrypt.hash(newPassword, 12);
 
       // Update password and clear reset token
-      await prisma.user.update({
+      await prisma.users.update({
         where: { id: user.id },
         data: {
           password: hashedPassword,
@@ -543,7 +567,7 @@ export class AuthenticationService {
    */
   async sendVerificationEmail(userId: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: userId }
       });
 
@@ -566,7 +590,7 @@ export class AuthenticationService {
       const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       // Save verification token to database
-      await prisma.user.update({
+      await prisma.users.update({
         where: { id: userId },
         data: {
           emailVerificationToken: verificationToken,
@@ -617,7 +641,7 @@ export class AuthenticationService {
   async verifyEmail(token: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
       // Find user with valid verification token
-      const user = await prisma.user.findFirst({
+      const user = await prisma.users.findFirst({
         where: {
           emailVerificationToken: token,
           emailVerifiedAt: {
@@ -634,7 +658,7 @@ export class AuthenticationService {
       }
 
       // Update user as verified
-      await prisma.user.update({
+      await prisma.users.update({
         where: { id: user.id },
         data: {
           isEmailVerified: true,
@@ -689,7 +713,7 @@ export class AuthenticationService {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as any;
       
       // Get user from database
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: decoded.userId }
       });
 
@@ -745,7 +769,7 @@ export class AuthenticationService {
     try {
       // Invalidate specific session if provided
       if (sessionToken) {
-        await prisma.userSession.updateMany({
+        await prisma.user_sessions.updateMany({
           where: {
             userId,
             sessionToken
@@ -756,7 +780,7 @@ export class AuthenticationService {
         });
       } else {
         // Invalidate all sessions for user
-        await prisma.userSession.updateMany({
+        await prisma.user_sessions.updateMany({
           where: { userId },
           data: {
             isActive: false
@@ -817,7 +841,7 @@ export class AuthenticationService {
     }
   ): Promise<AuthResponse> {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: userId }
       });
 
@@ -829,7 +853,7 @@ export class AuthenticationService {
       }
 
       // Update user in PostgreSQL
-      const updatedUser = await prisma.user.update({
+      const updatedUser = await prisma.users.update({
         where: { id: userId },
         data: {
           ...updates,
@@ -876,7 +900,7 @@ export class AuthenticationService {
    */
   async deleteAccount(userId: string, password?: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: userId }
       });
 
@@ -898,7 +922,7 @@ export class AuthenticationService {
       }
 
       // Delete user from PostgreSQL (this will cascade delete related records)
-      await prisma.user.delete({
+      await prisma.users.delete({
         where: { id: userId }
       });
 
@@ -943,7 +967,7 @@ export class AuthenticationService {
    */
   async getUserById(userId: string): Promise<AuthUser | null> {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: userId }
       });
 
@@ -975,7 +999,7 @@ export class AuthenticationService {
   // Private helper methods
 
   private async findUserByEmailOrUsername(email: string, username: string): Promise<any | null> {
-    return await prisma.user.findFirst({
+    return await prisma.users.findFirst({
       where: {
         OR: [
           { email: email },
@@ -989,7 +1013,7 @@ export class AuthenticationService {
     const maxAttempts = 5;
     const lockDuration = 30 * 60 * 1000; // 30 minutes
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: userId }
     });
 
@@ -998,11 +1022,12 @@ export class AuthenticationService {
     const newAttempts = user.loginAttempts + 1;
     const shouldLock = newAttempts >= maxAttempts;
 
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: userId },
       data: {
         loginAttempts: newAttempts,
-        lockedUntil: shouldLock ? new Date(Date.now() + lockDuration) : null
+        lockedUntil: shouldLock ? new Date(Date.now() + lockDuration) : null,
+        updatedAt: new Date()
       }
     });
   }
@@ -1056,7 +1081,7 @@ export class AuthenticationService {
     let counter = 1;
 
     // Check if username exists and add number if needed
-    while (await prisma.user.findUnique({ where: { username } })) {
+    while (await prisma.users.findUnique({ where: { username } })) {
       username = `${baseUsername}${counter}`;
       counter++;
     }
