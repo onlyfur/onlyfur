@@ -132,7 +132,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleSelect 
               </div>
               <Button
                 variant="gradient"
-                className="w-full mt-4 font-semibold text-lg transition-all duration-200 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+                className="w-full mt-4 font-semibold text-lg transition-all duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRoleSelect(activeRole.id);

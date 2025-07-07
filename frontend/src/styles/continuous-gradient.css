@@ -1,0 +1,86 @@
+/* Continuous Gradient System for Buttons */
+:root {
+  --page-gradient: linear-gradient(to right, #8b5cf6, #ec4899);
+  --gradient-width: 100vw;
+}
+
+/* Base continuous gradient class */
+.continuous-gradient {
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+}
+
+.continuous-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--gradient-width);
+  height: 100%;
+  background: var(--page-gradient);
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Hover effect for continuous gradient */
+.continuous-gradient:hover::before {
+  background: linear-gradient(to right, #7c3aed, #db2777);
+}
+
+/* Text color for continuous gradient buttons */
+.continuous-gradient {
+  color: white;
+  border: 0;
+}
+
+.continuous-gradient:hover {
+  color: white;
+}
+
+/* Ensure proper stacking and positioning */
+.continuous-gradient {
+  z-index: 1;
+}
+
+.continuous-gradient > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Active state styling */
+.continuous-gradient.active::before {
+  background: linear-gradient(to right, #7c3aed, #db2777);
+}
+
+/* Specific adjustments for different button sizes */
+.continuous-gradient.btn-sm {
+  font-size: 0.875rem;
+}
+
+.continuous-gradient.btn-lg {
+  font-size: 1.125rem;
+}
+
+.continuous-gradient.btn-icon {
+  aspect-ratio: 1;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --gradient-width: 100vw;
+  }
+}
+
+/* Ensure the gradient doesn't interfere with other elements */
+.continuous-gradient:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Disable default button gradients when using continuous gradient */
+.continuous-gradient.bg-gradient-to-r {
+  background: transparent !important;
+}
