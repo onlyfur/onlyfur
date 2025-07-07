@@ -112,11 +112,9 @@ const Header: React.FC = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors 
-                      ${active
-                        ? 'continuous-gradient shadow-md'
-                        : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
-                    `}
+                    className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors continuous-gradient ${
+                      active ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                    }`}
                     style={{ minWidth: 90, justifyContent: 'center' }}
                   >
                     <item.icon className="h-4 w-4" />
@@ -262,11 +260,9 @@ const Header: React.FC = () => {
                     key={item.name}
                     to={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive(item.href)
-                      ? 'continuous-gradient'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  }`}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors continuous-gradient ${
+                      isActive(item.href) ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                    }`}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.name}</span>

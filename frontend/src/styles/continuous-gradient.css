@@ -8,14 +8,6 @@
     #6366f1 80%, 
     #3b82f6 100%
   );
-  --page-gradient-hover: linear-gradient(90deg, 
-    #db2777 0%, 
-    #ec4899 20%, 
-    #9333ea 40%, 
-    #7c3aed 60%, 
-    #4f46e5 80%, 
-    #2563eb 100%
-  );
 }
 
 /* Base continuous gradient class */
@@ -31,17 +23,17 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   filter: saturate(1.2) brightness(1.1);
-  transition: all 0.3s ease;
+  transition: filter 0.15s ease;
 }
 
-/* Hover effect for continuous gradient */
+/* Hover effect for continuous gradient - only darken, same gradient */
 .continuous-gradient:hover {
-  background: var(--page-gradient-hover) !important;
+  background: var(--page-gradient) !important;
   background-size: 100vw 100% !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
-  filter: saturate(1.4) brightness(1.2);
-  transform: scale(1.02);
+  filter: saturate(1.2) brightness(0.7);
+  transform: none;
 }
 
 /* Override any conflicting Tailwind classes */
@@ -51,6 +43,25 @@
   background-size: 100vw 100% !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
+}
+
+/* Override any hover background classes that might interfere */
+.continuous-gradient:hover.bg-accent,
+.continuous-gradient.hover\:bg-accent:hover,
+.continuous-gradient[class*="hover:bg-"]:hover {
+  background: var(--page-gradient) !important;
+  background-size: 100vw 100% !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Handle opacity transitions for inactive navigation items */
+.continuous-gradient.opacity-70 {
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.continuous-gradient.opacity-70:hover {
+  opacity: 1;
 }
 
 /* Remove any border styling that might conflict */
