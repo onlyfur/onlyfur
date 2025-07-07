@@ -496,6 +496,438 @@ function createRoutes(db) {
       }
     },
 
+    // Admin user credentials management routes
+    'GET /api/admin/users/credentials': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const page = parseInt(req.query?.page) || 1;
+        const limit = parseInt(req.query?.limit) || 20;
+        const skip = (page - 1) * limit;
+        
+        const search = req.query?.search;
+        const role = req.query?.role;
+        const isActive = req.query?.isActive;
+        const sortBy = req.query?.sortBy || 'createdAt';
+        const sortOrder = req.query?.sortOrder || 'desc';
+
+        // Build where clause for filters
+        const whereClause = {};
+        
+        if (search) {
+          whereClause.$or = [
+            { email: { $regex: search, $options: 'i' } },
+            { username: { $regex: search, $options: 'i' } },
+            { displayName: { $regex: search, $options: 'i' } }
+          ];
+        }
+        
+        if (role && role !== 'all') {
+          whereClause.role = role;
+        }
+        
+        if (isActive && isActive !== 'all') {
+          whereClause.isActive = isActive === 'true';
+        }
+
+        // Get users and statistics
+        const users = await db.users.find(whereClause)
+          .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+          .skip(skip)
+          .limit(limit)
+          .toArray();
+
+        const total = await db.users.countDocuments(whereClause);
+        const totalActive = await db.users.countDocuments({ isActive: true });
+        const totalVerified = await db.users.countDocuments({ isVerified: true });
+        const totalCreators = await db.users.countDocuments({ role: 'CREATOR' });
+        const totalAdmins = await db.users.countDocuments({ role: 'ADMIN' });
+
+        sendResponse(res, 200, {
+          success: true,
+          data: {
+            users: users.map(u => ({
+              ...normalizeUser(u),
+              failedLoginAttempts: u.failedLoginAttempts || 0,
+              lockedUntil: u.lockedUntil || null,
+              isTwoFactorEnabled: u.isTwoFactorEnabled || false,
+              lastActivityAt: u.lastActivityAt || u.updatedAt,
+              _count: {
+                content: 0, // TODO: implement content counting
+                subscriptions: 0, // TODO: implement subscription counting
+                payment_intents: 0 // TODO: implement payment counting
+              }
+            })),
+            pagination: {
+              page,
+              limit,
+              total,
+              pages: Math.ceil(total / limit)
+            },
+            metadata: {
+              totalActiveUsers: totalActive,
+              totalVerifiedUsers: totalVerified,
+              totalCreators,
+              totalSubscribers: total - totalCreators - totalAdmins,
+              totalAdmins
+            }
+          }
+        });
+      } catch (error) {
+        sendError(res, 500, 'Failed to fetch user credentials', error);
+      }
+    },
+
+    'GET /api/admin/users/:id/credentials': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const userId = req.params?.id;
+        if (!userId) {
+          return sendError(res, 400, 'User ID is required');
+        }
+
+        const targetUser = await db.users.findOne({ _id: userId });
+        if (!targetUser) {
+          return sendError(res, 404, 'User not found');
+        }
+
+        sendResponse(res, 200, {
+          success: true,
+          data: {
+            user: {
+              ...normalizeUser(targetUser),
+              failedLoginAttempts: targetUser.failedLoginAttempts || 0,
+              lockedUntil: targetUser.lockedUntil || null,
+              isTwoFactorEnabled: targetUser.isTwoFactorEnabled || false,
+              lastActivityAt: targetUser.lastActivityAt || targetUser.updatedAt,
+              _count: {
+                content: 0, // TODO: implement content counting
+                subscriptions: 0, // TODO: implement subscription counting
+                payment_intents: 0 // TODO: implement payment counting
+              }
+            }
+          }
+        });
+      } catch (error) {
+        sendError(res, 500, 'Failed to fetch user details', error);
+      }
+    },
+
+    'PUT /api/admin/users/:id/credentials': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const userId = req.params?.id;
+        if (!userId) {
+          return sendError(res, 400, 'User ID is required');
+        }
+
+        const targetUser = await db.users.findOne({ _id: userId });
+        if (!targetUser) {
+          return sendError(res, 404, 'User not found');
+        }
+
+        const updateData = await getRequestBody(req);
+        
+        // Validate update data
+        const allowedFields = ['email', 'username', 'displayName', 'role', 'isVerified', 'isActive', 'subscriptionStatus'];
+        const filteredData = {};
+        
+        for (const field of allowedFields) {
+          if (updateData[field] !== undefined) {
+            filteredData[field] = updateData[field];
+          }
+        }
+
+        if (Object.keys(filteredData).length === 0) {
+          return sendError(res, 400, 'No valid fields to update');
+        }
+
+        // Add updated timestamp
+        filteredData.updatedAt = new Date();
+
+        const result = await db.users.updateOne(
+          { _id: userId },
+          { $set: filteredData }
+        );
+
+        if (result.modifiedCount === 0) {
+          return sendError(res, 500, 'Failed to update user');
+        }
+
+        const updatedUser = await db.users.findOne({ _id: userId });
+
+        sendResponse(res, 200, {
+          success: true,
+          message: 'User credentials updated successfully',
+          data: {
+            user: normalizeUser(updatedUser)
+          }
+        });
+      } catch (error) {
+        sendError(res, 500, 'Failed to update user credentials', error);
+      }
+    },
+
+    'DELETE /api/admin/users/:id': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const userId = req.params?.id;
+        if (!userId) {
+          return sendError(res, 400, 'User ID is required');
+        }
+
+        const targetUser = await db.users.findOne({ _id: userId });
+        if (!targetUser) {
+          return sendError(res, 404, 'User not found');
+        }
+
+        // Prevent deletion of admin users
+        if (targetUser.role === 'ADMIN') {
+          return sendError(res, 403, 'Cannot delete admin users');
+        }
+
+        const result = await db.users.deleteOne({ _id: userId });
+
+        if (result.deletedCount === 0) {
+          return sendError(res, 500, 'Failed to delete user');
+        }
+
+        sendResponse(res, 200, {
+          success: true,
+          message: 'User deleted successfully'
+        });
+      } catch (error) {
+        sendError(res, 500, 'Failed to delete user', error);
+      }
+    },
+
+    'POST /api/admin/users/:id/reset-password': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const userId = req.params?.id;
+        if (!userId) {
+          return sendError(res, 400, 'User ID is required');
+        }
+
+        const targetUser = await db.users.findOne({ _id: userId });
+        if (!targetUser) {
+          return sendError(res, 404, 'User not found');
+        }
+
+        const { newPassword } = await getRequestBody(req);
+        
+        if (!newPassword || newPassword.length < 8) {
+          return sendError(res, 400, 'Password must be at least 8 characters long');
+        }
+
+        // Hash the new password
+        const hashedPassword = crypto.createHash('sha256').update(newPassword).digest('hex');
+
+        const result = await db.users.updateOne(
+          { _id: userId },
+          { 
+            $set: { 
+              password: hashedPassword,
+              updatedAt: new Date(),
+              passwordChangedAt: new Date()
+            }
+          }
+        );
+
+        if (result.modifiedCount === 0) {
+          return sendError(res, 500, 'Failed to reset password');
+        }
+
+        sendResponse(res, 200, {
+          success: true,
+          message: 'Password reset successfully'
+        });
+      } catch (error) {
+        sendError(res, 500, 'Failed to reset password', error);
+      }
+    },
+
+    'POST /api/admin/users/bulk-action': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const { userIds, action, reason } = await getRequestBody(req);
+        
+        if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+          return sendError(res, 400, 'User IDs array is required');
+        }
+
+        if (!action) {
+          return sendError(res, 400, 'Action is required');
+        }
+
+        const validActions = ['activate', 'deactivate', 'verify', 'unverify', 'delete'];
+        if (!validActions.includes(action)) {
+          return sendError(res, 400, 'Invalid action');
+        }
+
+        let updateData = {};
+        let deleteAction = false;
+
+        switch (action) {
+          case 'activate':
+            updateData = { isActive: true, updatedAt: new Date() };
+            break;
+          case 'deactivate':
+            updateData = { isActive: false, updatedAt: new Date() };
+            break;
+          case 'verify':
+            updateData = { isVerified: true, updatedAt: new Date() };
+            break;
+          case 'unverify':
+            updateData = { isVerified: false, updatedAt: new Date() };
+            break;
+          case 'delete':
+            deleteAction = true;
+            break;
+        }
+
+        let result;
+        if (deleteAction) {
+          // Prevent deletion of admin users
+          const adminCount = await db.users.countDocuments({ 
+            _id: { $in: userIds },
+            role: 'ADMIN'
+          });
+          
+          if (adminCount > 0) {
+            return sendError(res, 403, 'Cannot delete admin users');
+          }
+
+          result = await db.users.deleteMany({
+            _id: { $in: userIds }
+          });
+        } else {
+          result = await db.users.updateMany(
+            { _id: { $in: userIds } },
+            { $set: updateData }
+          );
+        }
+
+        const affectedCount = deleteAction ? result.deletedCount : result.modifiedCount;
+
+        sendResponse(res, 200, {
+          success: true,
+          message: `Bulk action '${action}' completed successfully. ${affectedCount} users affected.`,
+          data: {
+            affectedCount,
+            action,
+            reason
+          }
+        });
+      } catch (error) {
+        sendError(res, 500, 'Failed to perform bulk action', error);
+      }
+    },
+
+    'GET /api/admin/users/export': async (req, res) => {
+      try {
+        if (!db.isConnected) {
+          await db.connect();
+        }
+        const user = await authenticateToken(req, db);
+        
+        // Check if user is admin
+        if (user.role !== 'ADMIN') {
+          return sendError(res, 403, 'Access denied. Admin privileges required.');
+        }
+
+        const format = req.query?.format || 'json';
+        
+        if (!['csv', 'json'].includes(format)) {
+          return sendError(res, 400, 'Invalid format. Use csv or json');
+        }
+
+        const users = await db.users.find({}, {
+          password: 0, // Exclude password field
+          googleAccessToken: 0, // Exclude sensitive tokens
+          googleRefreshToken: 0
+        }).toArray();
+
+        if (format === 'csv') {
+          // Convert to CSV
+          const csvHeader = 'id,email,username,displayName,role,isActive,isVerified,createdAt,updatedAt\\n';
+          const csvRows = users.map(u => 
+            `${u._id},${u.email},${u.username},"${u.displayName}",${u.role},${u.isActive},${u.isVerified},${u.createdAt},${u.updatedAt}`
+          ).join('\\n');
+          
+          res.setHeader('Content-Type', 'text/csv');
+          res.setHeader('Content-Disposition', 'attachment; filename="users-export.csv"');
+          res.send(csvHeader + csvRows);
+        } else {
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Content-Disposition', 'attachment; filename="users-export.json"');
+          sendResponse(res, 200, {
+            success: true,
+            data: {
+              users: users.map(normalizeUser),
+              exportedAt: new Date().toISOString(),
+              totalCount: users.length
+            }
+          });
+        }
+      } catch (error) {
+        sendError(res, 500, 'Failed to export users', error);
+      }
+    },
+
     // Logout
     'POST /api/auth/logout': async (req, res) => {
       try {

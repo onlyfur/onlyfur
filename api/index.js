@@ -53,7 +53,7 @@ async function handler(req, res) {
   const { method } = req;
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
-  const origin = req.headers.origin;
+  const origin = req.headers?.origin || 'http://localhost:5174';
   
   // Add CORS headers to all responses
   addCorsHeaders(res, origin);

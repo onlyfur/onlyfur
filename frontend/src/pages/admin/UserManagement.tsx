@@ -20,6 +20,13 @@ import {
   Clock,
   Download,
   RefreshCw,
+  Database,
+  Key,
+  Settings,
+  Edit,
+  Trash2,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { AdminUser, UserVerificationRequest } from '@/types';
@@ -89,6 +96,7 @@ const UserManagement: React.FC = () => {
   const [actionNotes, setActionNotes] = useState('');
   const [bulkAction, setBulkAction] = useState('');
   const [showUserDetails, setShowUserDetails] = useState(false);
+  const [showCredentialsManager, setShowCredentialsManager] = useState(false);
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {

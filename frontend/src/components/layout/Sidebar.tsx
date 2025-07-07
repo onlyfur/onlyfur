@@ -63,6 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const adminNavigation: NavItem[] = [
     { title: 'Admin Dashboard', href: '/admin', icon: 'Shield' },
     { title: 'User Management', href: '/admin/users', icon: 'Users' },
+    { title: 'User Credentials', href: '/admin/user-credentials', icon: 'KeyRound' },
     { title: 'Content Moderation', href: '/admin/content', icon: 'Shield' },
     { title: 'Tag Management', href: '/admin/tags', icon: 'TagIcon' },
     { title: 'Payment Management', href: '/admin/payments', icon: 'CreditCard' },
