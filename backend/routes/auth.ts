@@ -8,6 +8,7 @@ import { authenticateToken } from '../middleware/auth';
 import { prisma } from '../services/database';
 import bcrypt from 'bcryptjs';
 import { asyncHandler } from '../middleware/errorHandler';
+import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
 const storage = multer.memoryStorage();
@@ -18,7 +19,10 @@ const registerSchema = z.object({
   username: z.string().min(3).max(30),
   displayName: z.string().min(1).max(100),
   password: z.string().min(6),
-  role: z.enum(['CREATOR', 'SUBSCRIBER']).optional()
+  role: z.enum(['creator', 'subscriber']),
+  selectedTier: z.string().optional(),
+  agreeToTerms: z.boolean().optional(),
+  newsletter: z.boolean().optional()
 });
 
 const loginSchema = z.object({
@@ -75,14 +79,15 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
   const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 
   if (email === ADMIN_EMAIL) {
-    let adminUser = await prisma.user.findUnique({
+    let adminUser = await prisma.users.findUnique({
       where: { email: ADMIN_EMAIL }
     });
 
     if (!adminUser) {
       const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
-      adminUser = await prisma.user.create({
+      adminUser = await prisma.users.create({
         data: {
+          id: uuidv4(),
           email: ADMIN_EMAIL,
           username: ADMIN_USERNAME,
           displayName: 'Platform Administrator',
@@ -98,47 +103,51 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
       });
       console.log(`✅ Default admin user created: ${ADMIN_EMAIL}`);
     } else {
-      const passwordMatches = await bcrypt.compare(ADMIN_PASSWORD, adminUser.password);
-      if (!passwordMatches) {
-        const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
-        adminUser = await prisma.user.update({
-          where: { email: ADMIN_EMAIL },
-          data: {
-            password: hashedPassword,
-            updatedAt: new Date()
-          }
-        });
-        console.log(`🔄 Admin password updated from environment variable for: ${ADMIN_EMAIL}`);
+      if (adminUser.password) {
+        const passwordMatches = await bcrypt.compare(ADMIN_PASSWORD, adminUser.password);
+        if (!passwordMatches) {
+          const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
+          adminUser = await prisma.users.update({
+            where: { email: ADMIN_EMAIL },
+            data: {
+              password: hashedPassword,
+              updatedAt: new Date()
+            }
+          });
+          console.log(`🔄 Admin password updated from environment variable for: ${ADMIN_EMAIL}`);
+        }
       }
     }
 
-    const validPassword = await bcrypt.compare(password, adminUser.password);
-    if (!validPassword) {
-      res.status(400).json({
-        success: false,
-        error: 'Invalid email or password'
+    if (adminUser?.password) {
+      const validPassword = await bcrypt.compare(password, adminUser.password);
+      if (!validPassword) {
+        res.status(400).json({
+          success: false,
+          error: 'Invalid email or password'
+        });
+        return;
+      }
+
+      const tokens = authenticationService['generateTokenPair'](adminUser);
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user: {
+            id: adminUser.id,
+            email: adminUser.email,
+            username: adminUser.username,
+            displayName: adminUser.displayName,
+            role: adminUser.role
+          },
+          token: tokens.accessToken,
+          refreshToken: tokens.refreshToken
+        }
       });
       return;
     }
-
-    const tokens = authenticationService['generateTokenPair'](adminUser);
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      data: {
-        user: {
-          id: adminUser.id,
-          email: adminUser.email,
-          username: adminUser.username,
-          displayName: adminUser.displayName,
-          role: adminUser.role
-        },
-        token: tokens.accessToken,
-        refreshToken: tokens.refreshToken
-      }
-    });
-    return;
   }
 
   const result = await authenticationService.login({
@@ -167,11 +176,23 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {
   const validatedData = registerSchema.parse(req.body);
   
+  // Map frontend role values to database enum values
+  const roleMapping = {
+    'creator': 'CREATOR',
+    'subscriber': 'SUBSCRIBER'
+  } as const;
+  
+  const dbRole = roleMapping[validatedData.role] || 'SUBSCRIBER';
+  
   const result = await authenticationService.register({
     email: validatedData.email,
     username: validatedData.username,
     displayName: validatedData.displayName,
-    password: validatedData.password
+    password: validatedData.password,
+    role: dbRole,
+    selectedTier: validatedData.selectedTier,
+    agreeToTerms: validatedData.agreeToTerms,
+    newsletter: validatedData.newsletter
   });
 
   if (result.success) {
@@ -201,7 +222,7 @@ router.get('/me', authenticateToken, asyncHandler(async (req: Request, res: Resp
     return;
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { id: req.user.userId },
     select: {
       id: true,

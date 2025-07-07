@@ -315,7 +315,9 @@ class DatabaseService {
         username,
         displayName,
         password,
-        role = 'SUBSCRIBER'
+        role = 'SUBSCRIBER',
+        subscriptionTier = null,
+        registrationData = {}
       } = userData;
       
       const hashedPassword = await PasswordHasher.hash(password);
@@ -324,9 +326,10 @@ class DatabaseService {
       const result = await this.client.query(`
         INSERT INTO users (
           id, email, username, "displayName", role, password,
+          "subscriptionTier", settings,
           "isVerified", "isActive", "isEmailVerified", "authProvider",
           "createdAt", "updatedAt"
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
         RETURNING *
       `, [
         userId,
@@ -335,11 +338,15 @@ class DatabaseService {
         displayName,
         role.toUpperCase(),
         hashedPassword,
+        subscriptionTier,
+        JSON.stringify(registrationData), // Store additional registration data in settings
         true, // isVerified
         true, // isActive
         true, // isEmailVerified
         'EMAIL' // authProvider
       ]);
+      
+      console.log(`✅ User created successfully: ${email} with role ${role.toUpperCase()}, tier: ${subscriptionTier || 'none'}`);
       
       return result.rows[0];
     } catch (error) {

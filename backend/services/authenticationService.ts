@@ -31,6 +31,10 @@ export interface RegisterData {
   authProvider?: string;
   googleId?: string;
   avatar?: string;
+  role?: string;
+  selectedTier?: string;
+  agreeToTerms?: boolean;
+  newsletter?: boolean;
 }
 
 export interface LoginData {
@@ -87,20 +91,23 @@ export class AuthenticationService {
       }
 
       // Create user in PostgreSQL
-      const user = await prisma.user.create({
+      const user = await prisma.users.create({
         data: {
+          id: crypto.randomUUID(),
           email: data.email,
           username: data.username,
           displayName: data.displayName,
           password: hashedPassword,
-          authProvider: data.authProvider || 'EMAIL',
+          authProvider: (data.authProvider as 'EMAIL' | 'GOOGLE') || 'EMAIL',
           googleId: data.googleId,
           avatar: data.avatar,
-          role: 'SUBSCRIBER',
+          role: (data.role as 'CREATOR' | 'SUBSCRIBER' | 'ADMIN') || 'SUBSCRIBER',
+          subscriptionTier: data.selectedTier || null,
           isActive: true,
           isEmailVerified: data.authProvider === 'GOOGLE',
           subscriptionStatus: 'FREE',
-          lastLoginAt: new Date()
+          lastLoginAt: new Date(),
+          updatedAt: new Date()
         }
       });
 
@@ -113,24 +120,30 @@ export class AuthenticationService {
         metadata: {
           email: data.email,
           username: data.username,
-          authProvider: data.authProvider
+          authProvider: data.authProvider,
+          role: data.role,
+          selectedTier: data.selectedTier,
+          registrationDate: new Date().toISOString()
         }
       });
 
-      // Generate JWT token
-      const token = this.generateToken(user);
+      // Generate JWT token pair
+      const tokens = this.generateTokenPair(user);
 
       logger.info('User registered successfully', {
         userId: user.id,
         email: user.email,
         username: user.username,
-        authProvider: user.authProvider
+        authProvider: user.authProvider,
+        role: user.role,
+        selectedTier: data.selectedTier
       });
 
       return {
         success: true,
         user: this.mapUserToAuthUser(user),
-        token
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken
       };
 
     } catch (error: any) {
@@ -224,7 +237,7 @@ export class AuthenticationService {
       }
 
       // Successful login - update user data
-      const updatedUser = await prisma.user.update({
+      const updatedUser = await prisma.users.update({
         where: { id: user.id },
         data: {
           lastLoginAt: new Date(),
@@ -233,8 +246,8 @@ export class AuthenticationService {
         }
       });
 
-      // Generate JWT token
-      const token = this.generateToken(updatedUser);
+      // Generate JWT token pair
+      const tokens = this.generateTokenPair(updatedUser);
 
       // Create audit log for successful login
       await createAuditLog({
@@ -257,7 +270,8 @@ export class AuthenticationService {
       return {
         success: true,
         user: this.mapUserToAuthUser(updatedUser),
-        token
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken
       };
 
     } catch (error: any) {
@@ -975,7 +989,7 @@ export class AuthenticationService {
   // Private helper methods
 
   private async findUserByEmailOrUsername(email: string, username: string): Promise<any | null> {
-    return await prisma.user.findFirst({
+    return await prisma.users.findFirst({
       where: {
         OR: [
           { email: email },

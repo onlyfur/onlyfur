@@ -185,7 +185,16 @@ function createRoutes(db) {
     // Register
     'POST /api/auth/register': async (req, res) => {
       try {
-        const { email, username, displayName, password, role = 'SUBSCRIBER' } = await getRequestBody(req);
+        const { 
+          email, 
+          username, 
+          displayName, 
+          password, 
+          role = 'SUBSCRIBER',
+          selectedTier,
+          agreeToTerms,
+          newsletter
+        } = await getRequestBody(req);
         
         // Validation
         if (!email || !username || !displayName || !password) {
@@ -195,6 +204,14 @@ function createRoutes(db) {
         if (password.length < 6) {
           return sendError(res, 400, 'Password must be at least 6 characters');
         }
+        
+        // Map frontend role values to database enum values
+        const roleMapping = {
+          'creator': 'CREATOR',
+          'subscriber': 'SUBSCRIBER'
+        };
+        
+        const dbRole = roleMapping[role.toLowerCase()] || 'SUBSCRIBER';
         
         // Ensure database is connected
         if (!db.isConnected) {
@@ -212,13 +229,21 @@ function createRoutes(db) {
           return sendError(res, 409, 'Username already taken');
         }
           
-        // Create user
+        // Create user with new fields
         const newUser = await db.createUser({
           email,
           username,
           displayName,
           password,
-          role: role.toUpperCase()
+          role: dbRole,
+          subscriptionTier: selectedTier || null,
+          registrationData: {
+            selectedTier: selectedTier,
+            agreeToTerms: agreeToTerms,
+            newsletter: newsletter,
+            registrationDate: new Date().toISOString(),
+            userPath: role // Store the original path choice
+          }
         });
 
         // Generate unique custom URL for the user
