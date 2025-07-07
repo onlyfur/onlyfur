@@ -114,7 +114,7 @@ const Header: React.FC = () => {
                     to={item.href}
                     className={`relative flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors 
                       ${active
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
+                        ? 'continuous-gradient shadow-md'
                         : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
                     `}
                     style={{ minWidth: 90, justifyContent: 'center' }}
@@ -264,7 +264,7 @@ const Header: React.FC = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive(item.href)
-                      ? 'bg-accent text-accent-foreground'
+                      ? 'continuous-gradient'
                       : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   }`}
                   >

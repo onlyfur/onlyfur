@@ -1,7 +1,25 @@
 /* Continuous Gradient System for Buttons */
 :root {
-  --page-gradient: linear-gradient(90deg, #8b5cf6 0%, #d946ef 25%, #ec4899 50%, #f97316 75%, #eab308 100%);
-  --page-gradient-hover: linear-gradient(90deg, #7c3aed 0%, #c026d3 25%, #db2777 50%, #ea580c 75%, #ca8a04 100%);
+  --page-gradient: linear-gradient(90deg, 
+    #7c3aed 0%, 
+    #c026d3 15%, 
+    #ec4899 30%, 
+    #f97316 45%, 
+    #eab308 60%, 
+    #10b981 75%, 
+    #06b6d4 90%, 
+    #3b82f6 100%
+  );
+  --page-gradient-hover: linear-gradient(90deg, 
+    #6d28d9 0%, 
+    #a21caf 15%, 
+    #db2777 30%, 
+    #ea580c 45%, 
+    #ca8a04 60%, 
+    #059669 75%, 
+    #0891b2 90%, 
+    #2563eb 100%
+  );
   --gradient-width: 100vw;
 }
 
@@ -12,6 +30,8 @@
   overflow: hidden;
   color: white !important;
   border: 0 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .continuous-gradient::before {
@@ -25,12 +45,16 @@
   transform: translateX(-50%);
   z-index: -1;
   pointer-events: none;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  opacity: 1;
+  filter: saturate(1.2) brightness(1.1);
 }
 
 /* Hover effect for continuous gradient */
 .continuous-gradient:hover::before {
   background: var(--page-gradient-hover);
+  transform: translateX(-50%) scale(1.02);
+  filter: saturate(1.4) brightness(1.2);
 }
 
 /* Ensure proper stacking and positioning */
