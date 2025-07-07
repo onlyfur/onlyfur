@@ -276,7 +276,7 @@ const Register: React.FC = () => {
                 />
 
                 <div className="flex justify-between mt-8">
-                  <Button variant="outline" onClick={() => navigate('/')} className="button-interactive">
+                  <Button variant="secondary" onClick={() => navigate('/')} className="button-interactive">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Home
                   </Button>
@@ -453,7 +453,7 @@ const Register: React.FC = () => {
                   )}
 
                   <div className="flex justify-between mt-8">
-                    <Button type="button" variant="outline" onClick={handlePrevStep} className="button-interactive">
+                    <Button type="button" variant="secondary" onClick={handlePrevStep} className="button-interactive">
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       Back
                     </Button>

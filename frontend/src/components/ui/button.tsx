@@ -14,11 +14,11 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-lg hover:scale-[1.02] cursor-pointer shadow-md hover:shadow-xl",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground hover:shadow-md hover:scale-[1.02] cursor-pointer hover:border-accent transition-all duration-200",
+          "border border-gradient bg-gradient-to-r from-pink-500/10 to-orange-400/10 text-pink-600 dark:text-pink-400 hover:from-pink-500 hover:to-orange-400 hover:text-white hover:border-pink-500 hover:shadow-lg hover:scale-[1.02] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-xl",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-md hover:scale-[1.02] cursor-pointer shadow-sm hover:shadow-lg",
-        ghost: "hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] cursor-pointer transition-all duration-200",
-        link: "text-primary underline-offset-4 hover:underline cursor-pointer hover:opacity-80 transition-all duration-200",
+          "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg hover:scale-[1.02] cursor-pointer shadow-md hover:shadow-xl",
+        ghost: "text-pink-600 dark:text-pink-400 hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-orange-400/10 hover:text-pink-700 dark:hover:text-pink-300 hover:scale-[1.02] cursor-pointer transition-all duration-200",
+        link: "text-pink-600 dark:text-pink-400 underline-offset-4 hover:underline cursor-pointer hover:text-pink-700 dark:hover:text-pink-300 transition-all duration-200",
       },
       size: {
         default: "h-10 px-4 py-2",

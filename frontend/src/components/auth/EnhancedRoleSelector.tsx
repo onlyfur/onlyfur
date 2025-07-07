@@ -248,7 +248,7 @@ const EnhancedRoleSelector: React.FC<EnhancedRoleSelectorProps> = ({
 
           <Button 
             variant={isSelected ? "default" : "outline"}
-            className="w-full mt-4"
+            className="w-full mt-4 button-interactive"
             onClick={() => onTierSelect(tier.id)}
           >
             {isSelected ? (
@@ -349,7 +349,7 @@ const EnhancedRoleSelector: React.FC<EnhancedRoleSelectorProps> = ({
 
                 <Button 
                   variant={isSelected ? "default" : "outline"}
-                  className="w-full mt-6"
+                  className="w-full mt-6 button-interactive"
                   onClick={() => onRoleSelect(role.id)}
                 >
                   {isSelected ? 'Selected' : `Choose ${role.id === 'creator' ? 'Creator' : 'Subscriber'}`}
