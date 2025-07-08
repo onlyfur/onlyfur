@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
@@ -10,146 +10,148 @@ import { CookieConsentProvider } from '@/contexts/CookieConsentContext';
 import MainLayout from '@/layouts/MainLayout';
 import CookieConsentManager from '@/components/legal/CookieConsentManager';
 
-// Pages
+// Core pages that should load immediately
 import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
-import AuthCallback from '@/pages/AuthCallback';
-import OAuthDebugger from '@/components/auth/OAuthDebugger';
-import Dashboard from '@/pages/Dashboard';
-import Profile from '@/pages/Profile';
-import UserProfile from '@/pages/UserProfilePage';
-import Explore from '@/pages/Explore';
-import EnhancedSearchInterface from '@/components/search/EnhancedSearchInterface';
-import MySubscriptions from '@/components/subscription/MySubscriptions';
-import EnhancedUserProfile from '@/components/profile/EnhancedUserProfile';
-import EnhancedContentUpload from '@/components/upload/EnhancedContentUpload';
 
-import ContentUpload from '@/pages/ContentUpload';
-import ContentManagement from '@/pages/ContentManagement';
-import ContentFeed from '@/pages/ContentFeed';
-import SubscriptionSettings from '@/pages/SubscriptionSettings';
-import Subscribe from '@/pages/Subscribe';
-import Billing from '@/pages/Billing';
-import Earnings from '@/pages/Earnings';
-import Messages from '@/pages/Messages';
-import CreatorDashboard from '@/pages/CreatorDashboard';
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+  </div>
+);
+
+// Lazy load all other pages for better code splitting
+const AuthCallback = React.lazy(() => import('@/pages/AuthCallback'));
+const OAuthDebugger = React.lazy(() => import('@/components/auth/OAuthDebugger'));
+const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
+const Profile = React.lazy(() => import('@/pages/Profile'));
+const UserProfile = React.lazy(() => import('@/pages/UserProfilePage'));
+const Explore = React.lazy(() => import('@/pages/Explore'));
+const EnhancedSearchInterface = React.lazy(() => import('@/components/search/EnhancedSearchInterface'));
+const MySubscriptions = React.lazy(() => import('@/components/subscription/MySubscriptions'));
+const EnhancedUserProfile = React.lazy(() => import('@/components/profile/EnhancedUserProfile'));
+const EnhancedContentUpload = React.lazy(() => import('@/components/upload/EnhancedContentUpload'));
+
+const ContentUpload = React.lazy(() => import('@/pages/ContentUpload'));
+const ContentManagement = React.lazy(() => import('@/pages/ContentManagement'));
+const ContentFeed = React.lazy(() => import('@/pages/ContentFeed'));
+const SubscriptionSettings = React.lazy(() => import('@/pages/SubscriptionSettings'));
+const Subscribe = React.lazy(() => import('@/pages/Subscribe'));
+const Billing = React.lazy(() => import('@/pages/Billing'));
+const Earnings = React.lazy(() => import('@/pages/Earnings'));
+const Messages = React.lazy(() => import('@/pages/Messages'));
+const CreatorDashboard = React.lazy(() => import('@/pages/CreatorDashboard'));
 
 // V3.9 Enhanced Pages with AI and Smooth Animations
-import HomeV3 from '@/pages/HomeV3';
-import ExploreV3 from '@/pages/ExploreV3';
-import ProfileV3 from '@/pages/ProfileV3';
-import MessagingV3 from '@/pages/MessagingV3';
-import CreatorDashboardV3 from '@/pages/CreatorDashboardV3';
+const HomeV3 = React.lazy(() => import('@/pages/HomeV3'));
+const ExploreV3 = React.lazy(() => import('@/pages/ExploreV3'));
+const ProfileV3 = React.lazy(() => import('@/pages/ProfileV3'));
+const MessagingV3 = React.lazy(() => import('@/pages/MessagingV3'));
+const CreatorDashboardV3 = React.lazy(() => import('@/pages/CreatorDashboardV3'));
 
 // Footer Pages
-import Contact from '@/pages/Contact';
+const Contact = React.lazy(() => import('@/pages/Contact'));
 
-// Admin Pages
-import AdminDashboard from '@/pages/admin/AdminDashboard';
-import UserManagement from '@/pages/admin/UserManagement';
-import UserCredentialsManagement from '@/pages/admin/UserCredentialsManagement';
-import ContentModeration from '@/pages/admin/ContentModeration';
-import PaymentManagement from '@/pages/admin/PaymentManagement';
-import TagManagement from '@/pages/admin/TagManagement';
+// Admin Pages - Group lazy loaded for better chunking
+const AdminDashboard = React.lazy(() => import('@/pages/admin/AdminDashboard'));
+const UserManagement = React.lazy(() => import('@/pages/admin/UserManagement'));
+const UserCredentialsManagement = React.lazy(() => import('@/pages/admin/UserCredentialsManagement'));
+const ContentModeration = React.lazy(() => import('@/pages/admin/ContentModeration'));
+const PaymentManagement = React.lazy(() => import('@/pages/admin/PaymentManagement'));
+const TagManagement = React.lazy(() => import('@/pages/admin/TagManagement'));
 
-// Footer Pages
-// Platform
-import About from '@/pages/platform/About';
-import HowItWorks from '@/pages/platform/HowItWorks';
-import CreatorProgram from '@/pages/platform/CreatorProgram';
-import SuccessStories from '@/pages/platform/SuccessStories';
+// Platform Pages
+const About = React.lazy(() => import('@/pages/platform/About'));
+const HowItWorks = React.lazy(() => import('@/pages/platform/HowItWorks'));
+const CreatorProgram = React.lazy(() => import('@/pages/platform/CreatorProgram'));
+const SuccessStories = React.lazy(() => import('@/pages/platform/SuccessStories'));
 
-// Support
-import HelpCenter from '@/pages/support/HelpCenter';
-import Safety from '@/pages/support/Safety';
-import CommunityGuidelinesPage from '@/pages/support/CommunityGuidelines';
-import ContactUs from '@/pages/support/ContactUs';
+// Support Pages
+const HelpCenter = React.lazy(() => import('@/pages/support/HelpCenter'));
+const Safety = React.lazy(() => import('@/pages/support/Safety'));
+const CommunityGuidelinesPage = React.lazy(() => import('@/pages/support/CommunityGuidelines'));
+const ContactUs = React.lazy(() => import('@/pages/support/ContactUs'));
 
-// Legal
-import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
-import TermsOfService from '@/pages/legal/TermsOfService';
-import CookiePolicy from '@/pages/legal/CookiePolicy';
-import DMCA from '@/pages/legal/DMCA';
+// Legal Pages
+const PrivacyPolicy = React.lazy(() => import('@/pages/legal/PrivacyPolicy'));
+const TermsOfService = React.lazy(() => import('@/pages/legal/TermsOfService'));
+const CookiePolicy = React.lazy(() => import('@/pages/legal/CookiePolicy'));
+const DMCA = React.lazy(() => import('@/pages/legal/DMCA'));
 
-// Creator Resources - Removed as requested
+// Help Articles - Lazy loaded for better chunking
+const HowToCreateAccount = React.lazy(() => import('@/pages/help/articles/how-to-create-account'));
+const SettingUpCreatorProfile = React.lazy(() => import('@/pages/help/articles/setting-up-creator-profile'));
+const UploadOrganizeContent = React.lazy(() => import('@/pages/help/articles/upload-organize-content'));
+const FindingCreators = React.lazy(() => import('@/pages/help/articles/finding-creators'));
+const FirstSubscription = React.lazy(() => import('@/pages/help/articles/first-subscription'));
+const ContentPrivacyLevels = React.lazy(() => import('@/pages/help/articles/content-privacy-levels'));
+const PricingStrategies = React.lazy(() => import('@/pages/help/articles/pricing-strategies'));
+const SchedulingFeatures = React.lazy(() => import('@/pages/help/articles/scheduling-features'));
+const UnderstandingAnalytics = React.lazy(() => import('@/pages/help/articles/understanding-analytics'));
+const CustomCommissions = React.lazy(() => import('@/pages/help/articles/custom-commissions'));
+const PaymentSystem = React.lazy(() => import('@/pages/help/articles/payment-system'));
+const MessagingCreators = React.lazy(() => import('@/pages/help/articles/messaging-creators'));
+const CommunityGuidelinesArticle = React.lazy(() => import('@/pages/help/articles/community-guidelines'));
+const SubscriptionManagement = React.lazy(() => import('@/pages/help/articles/subscription-management'));
+const AccountSecurity = React.lazy(() => import('@/pages/help/articles/account-security'));
+const ReportUserContent = React.lazy(() => import('@/pages/help/articles/report-user-content'));
+const MobileApp = React.lazy(() => import('@/pages/help/articles/mobile-app'));
+const MessagingTips = React.lazy(() => import('@/pages/help/articles/messaging-tips'));
+const MessageLimits = React.lazy(() => import('@/pages/help/articles/message-limits'));
+const PaymentMethods = React.lazy(() => import('@/pages/help/articles/payment-methods'));
+const CreatorEarnings = React.lazy(() => import('@/pages/help/articles/creator-earnings'));
+const SubscriptionTiersOverview = React.lazy(() => import('@/pages/help/articles/subscription-tiers-overview'));
 
-// Help Articles
-import HowToCreateAccount from '@/pages/help/articles/how-to-create-account';
-import SettingUpCreatorProfile from '@/pages/help/articles/setting-up-creator-profile';
-import UploadOrganizeContent from '@/pages/help/articles/upload-organize-content';
-import FindingCreators from '@/pages/help/articles/finding-creators';
-import FirstSubscription from '@/pages/help/articles/first-subscription';
-import ContentPrivacyLevels from '@/pages/help/articles/content-privacy-levels';
-import PricingStrategies from '@/pages/help/articles/pricing-strategies';
-import SchedulingFeatures from '@/pages/help/articles/scheduling-features';
-import UnderstandingAnalytics from '@/pages/help/articles/understanding-analytics';
-import CustomCommissions from '@/pages/help/articles/custom-commissions';
-import PaymentSystem from '@/pages/help/articles/payment-system';
-import MessagingCreators from '@/pages/help/articles/messaging-creators';
-import CommunityGuidelinesArticle from '@/pages/help/articles/community-guidelines';
-import SubscriptionManagement from '@/pages/help/articles/subscription-management';
-import AccountSecurity from '@/pages/help/articles/account-security';
-import ReportUserContent from '@/pages/help/articles/report-user-content';
-import MobileApp from '@/pages/help/articles/mobile-app';
-import MessagingTips from '@/pages/help/articles/messaging-tips';
-import MessageLimits from '@/pages/help/articles/message-limits';
-import PaymentMethods from '@/pages/help/articles/payment-methods';
-import CreatorEarnings from '@/pages/help/articles/creator-earnings';
-import SubscriptionTiersOverview from '@/pages/help/articles/subscription-tiers-overview';
-
-// Additional missing help articles
-import LoginTroubleshooting from '@/pages/help/articles/login-troubleshooting';
-import PasswordReset from '@/pages/help/articles/password-reset';
-import OAuthGuide from '@/pages/help/articles/oauth-guide';
-import SessionManagement from '@/pages/help/articles/session-management';
-import EmailVerification from '@/pages/help/articles/email-verification';
-import ProfileSetup from '@/pages/help/articles/profile-setup';
-import ContentProtection from '@/pages/help/articles/content-protection';
-import PrivacySettings from '@/pages/help/articles/privacy-settings';
-import TwoFactorAuthentication from '@/pages/help/articles/two-factor-authentication';
-import BrowserCompatibility from '@/pages/help/articles/browser-compatibility';
-import AgeVerification from '@/pages/help/articles/age-verification';
-import BulkMessaging from '@/pages/help/articles/bulk-messaging';
-import AdvancedSearchFeatures from '@/pages/help/articles/advanced-search-features';
-import NeuralSearch from '@/pages/help/articles/neural-search';
-import SupportedFormats from '@/pages/help/articles/supported-formats';
-import UploadTroubleshooting from '@/pages/help/articles/upload-troubleshooting';
-import VideoQuality from '@/pages/help/articles/video-quality';
-import RefundPolicy from '@/pages/help/articles/refund-policy';
-import TaxInformation from '@/pages/help/articles/tax-information';
+// Additional help articles
+const LoginTroubleshooting = React.lazy(() => import('@/pages/help/articles/login-troubleshooting'));
+const PasswordReset = React.lazy(() => import('@/pages/help/articles/password-reset'));
+const OAuthGuide = React.lazy(() => import('@/pages/help/articles/oauth-guide'));
+const SessionManagement = React.lazy(() => import('@/pages/help/articles/session-management'));
+const EmailVerification = React.lazy(() => import('@/pages/help/articles/email-verification'));
+const ProfileSetup = React.lazy(() => import('@/pages/help/articles/profile-setup'));
+const ContentProtection = React.lazy(() => import('@/pages/help/articles/content-protection'));
+const PrivacySettings = React.lazy(() => import('@/pages/help/articles/privacy-settings'));
+const TwoFactorAuthentication = React.lazy(() => import('@/pages/help/articles/two-factor-authentication'));
+const BrowserCompatibility = React.lazy(() => import('@/pages/help/articles/browser-compatibility'));
+const AgeVerification = React.lazy(() => import('@/pages/help/articles/age-verification'));
+const BulkMessaging = React.lazy(() => import('@/pages/help/articles/bulk-messaging'));
+const AdvancedSearchFeatures = React.lazy(() => import('@/pages/help/articles/advanced-search-features'));
+const NeuralSearch = React.lazy(() => import('@/pages/help/articles/neural-search'));
+const SupportedFormats = React.lazy(() => import('@/pages/help/articles/supported-formats'));
+const UploadTroubleshooting = React.lazy(() => import('@/pages/help/articles/upload-troubleshooting'));
+const VideoQuality = React.lazy(() => import('@/pages/help/articles/video-quality'));
+const RefundPolicy = React.lazy(() => import('@/pages/help/articles/refund-policy'));
+const TaxInformation = React.lazy(() => import('@/pages/help/articles/tax-information'));
 
 // Test Pages
-import TestProtectedPage from './pages/TestProtectedPage';
-import MessagingV3Simple from './pages/MessagingV3Simple';
+const TestProtectedPage = React.lazy(() => import('./pages/TestProtectedPage'));
+const MessagingV3Simple = React.lazy(() => import('./pages/MessagingV3Simple'));
 
 // V3.7 New Creator Components
-import LiveStreamingStudio from '@/pages/creator/LiveStreamingStudio';
-import AdvancedAnalyticsV2 from '@/pages/creator/AdvancedAnalyticsV2';
-import AIContentAssistant from '@/pages/creator/AIContentAssistant';
-import AIContentCreationStudio from '@/components/ai/AIContentCreationStudio';
+const LiveStreamingStudio = React.lazy(() => import('@/pages/creator/LiveStreamingStudio'));
+const AdvancedAnalyticsV2 = React.lazy(() => import('@/pages/creator/AdvancedAnalyticsV2'));
+const AIContentAssistant = React.lazy(() => import('@/pages/creator/AIContentAssistant'));
+const AIContentCreationStudio = React.lazy(() => import('@/components/ai/AIContentCreationStudio'));
 
 // AI Components
-import AISettingsManager from '@/components/ai/AISettingsManager';
+const AISettingsManager = React.lazy(() => import('@/components/ai/AISettingsManager'));
 
 // Account Setup Page
-import AccountSetup from '@/pages/AccountSetup';
+const AccountSetup = React.lazy(() => import('@/pages/AccountSetup'));
 
 // Footer Pages
-import BestPractices from './pages/BestPractices';
-import AnalyticsGuide from './pages/AnalyticsGuide';
-import TaxInfo from './pages/TaxInfo';
+const BestPractices = React.lazy(() => import('./pages/BestPractices'));
+const AnalyticsGuide = React.lazy(() => import('./pages/AnalyticsGuide'));
+const TaxInfo = React.lazy(() => import('./pages/TaxInfo'));
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
@@ -160,11 +162,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
@@ -199,511 +197,380 @@ function App() {
               <MessagingProvider>
                 <AdminProvider>
                   <Router>
-            <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Landing />} />
-              <Route path="home-v3" element={<HomeV3 />} />
-              <Route path="explore" element={<Explore />} />
-              <Route path="explore-v3" element={<ExploreV3 />} />
-              <Route path="search" element={<EnhancedSearchInterface />} />
-              
-              {/* Auth Routes */}
-              <Route
-                path="login"
-                element={
-                  <PublicRoute>
-                    <Login />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="register"
-                element={
-                  <PublicRoute>
-                    <Register />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="auth/callback"
-                element={<AuthCallback />}
-              />
-              <Route
-                path="auth/callback/google"
-                element={<AuthCallback />}
-              />
-              <Route
-                path="auth/debug"
-                element={<OAuthDebugger />}
-              />
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Routes>
+                        {/* Public routes */}
+                        <Route
+                          path="/"
+                          element={
+                            <PublicRoute>
+                              <Landing />
+                            </PublicRoute>
+                          }
+                        />
+                        <Route
+                          path="/login"
+                          element={
+                            <PublicRoute>
+                              <Login />
+                            </PublicRoute>
+                          }
+                        />
+                        <Route
+                          path="/register"
+                          element={
+                            <PublicRoute>
+                              <Register />
+                            </PublicRoute>
+                          }
+                        />
+                        <Route path="/auth/callback" element={<AuthCallback />} />
+                        <Route path="/oauth-debugger" element={<OAuthDebugger />} />
 
-              {/* Test Routes */}
-              <Route
-                path="test-protected"
-                element={
-                  <ProtectedRoute>
-                    <TestProtectedPage />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Protected routes with layout */}
+                        <Route
+                          path="/dashboard"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Dashboard />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Profile />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile/:userId"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <UserProfile />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/explore"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Explore />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/content/upload"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <ContentUpload />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/content/manage"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <ContentManagement />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/content/feed"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <ContentFeed />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/subscriptions"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <SubscriptionSettings />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/my-subscriptions"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <MySubscriptions />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/subscribe/:creatorId"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Subscribe />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/billing"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Billing />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/earnings"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Earnings />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/messages"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <Messages />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/creator-dashboard"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <CreatorDashboard />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
 
-              {/* Protected Routes */}
-              <Route
-                path="dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator-dashboard"
-                element={
-                  <ProtectedRoute>
-                    <CreatorDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator-dashboard-v3"
-                element={
-                  <ProtectedRoute>
-                    <CreatorDashboardV3 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="profile/:username"
-                element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="profile-v2/:userId"
-                element={<EnhancedUserProfile />}
-              />
-              <Route
-                path="profile-v3/:userId?"
-                element={<ProfileV3 />}
-              />
+                        {/* V3.9 Enhanced Routes */}
+                        <Route
+                          path="/home-v3"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <HomeV3 />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/explore-v3"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <ExploreV3 />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile-v3"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <ProfileV3 />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/messaging-v3"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <MessagingV3 />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/creator-dashboard-v3"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <CreatorDashboardV3 />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
 
-              {/* Content Management Routes */}
-              <Route
-                path="content"
-                element={
-                  <ProtectedRoute>
-                    <ContentManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="content/upload"
-                element={
-                  <ProtectedRoute>
-                    <ContentUpload />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="content-v2/upload"
-                element={
-                  <ProtectedRoute>
-                    <EnhancedContentUpload />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="content/edit/:id"
-                element={
-                  <ProtectedRoute>
-                    <ContentUpload />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="feed"
-                element={
-                  <ProtectedRoute>
-                    <ContentFeed />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Admin Routes */}
+                        <Route
+                          path="/admin"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <AdminDashboard />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/users"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <UserManagement />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/credentials"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <UserCredentialsManagement />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/content"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <ContentModeration />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/payments"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <PaymentManagement />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/tags"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout>
+                                <TagManagement />
+                              </MainLayout>
+                            </ProtectedRoute>
+                          }
+                        />
 
-              {/* Messaging Routes */}
-              <Route
-                path="messages"
-                element={
-                  <ProtectedRoute>
-                    <Messages />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="messages/:conversationId"
-                element={
-                  <ProtectedRoute>
-                    <Messages />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="messages-v3"
-                element={
-                  <ProtectedRoute>
-                    <MessagingV3 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="messages-v3/:conversationId"
-                element={
-                  <ProtectedRoute>
-                    <MessagingV3 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="messages-v3-simple"
-                element={
-                  <ProtectedRoute>
-                    <MessagingV3Simple />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="messages-v3-simple/:conversationId"
-                element={
-                  <ProtectedRoute>
-                    <MessagingV3Simple />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Public Footer Routes */}
+                        <Route path="/contact" element={<Contact />} />
+                        
+                        {/* Platform Pages */}
+                        <Route path="/about" element={<About />} />
+                        <Route path="/how-it-works" element={<HowItWorks />} />
+                        <Route path="/creator-program" element={<CreatorProgram />} />
+                        <Route path="/success-stories" element={<SuccessStories />} />
 
-              {/* Coming Soon Routes */}
-              <Route
-                path="notifications"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Notifications" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="favorites"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Favorites" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="bookmarks"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Bookmarks" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="settings"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Settings" />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Support Pages */}
+                        <Route path="/help" element={<HelpCenter />} />
+                        <Route path="/safety" element={<Safety />} />
+                        <Route path="/community-guidelines" element={<CommunityGuidelinesPage />} />
+                        <Route path="/contact-us" element={<ContactUs />} />
 
-              {/* Creator Routes */}
-              <Route
-                path="creator"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Creator Studio" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/upload"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Upload Content" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/analytics"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Analytics" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/analytics-v2"
-                element={
-                  <ProtectedRoute>
-                    <AdvancedAnalyticsV2 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/streaming"
-                element={
-                  <ProtectedRoute>
-                    <LiveStreamingStudio />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/ai-assistant"
-                element={
-                  <ProtectedRoute>
-                    <AIContentAssistant />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/ai-studio"
-                element={
-                  <ProtectedRoute>
-                    <AIContentCreationStudio />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/subscribers"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Subscribers" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="creator/earnings"
-                element={
-                  <ProtectedRoute>
-                    <Earnings />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Legal Pages */}
+                        <Route path="/privacy" element={<PrivacyPolicy />} />
+                        <Route path="/terms" element={<TermsOfService />} />
+                        <Route path="/cookies" element={<CookiePolicy />} />
+                        <Route path="/dmca" element={<DMCA />} />
 
-              {/* Payment & Subscription Routes */}
-              <Route
-                path="subscribe/:creatorId"
-                element={
-                  <ProtectedRoute>
-                    <Subscribe />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="subscription-settings"
-                element={
-                  <ProtectedRoute>
-                    <SubscriptionSettings />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="billing"
-                element={
-                  <ProtectedRoute>
-                    <Billing />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="earnings"
-                element={
-                  <ProtectedRoute>
-                    <Earnings />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="my-subscriptions"
-                element={
-                  <ProtectedRoute>
-                    <MySubscriptions />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Help Articles */}
+                        <Route path="/help/how-to-create-account" element={<HowToCreateAccount />} />
+                        <Route path="/help/setting-up-creator-profile" element={<SettingUpCreatorProfile />} />
+                        <Route path="/help/upload-organize-content" element={<UploadOrganizeContent />} />
+                        <Route path="/help/finding-creators" element={<FindingCreators />} />
+                        <Route path="/help/first-subscription" element={<FirstSubscription />} />
+                        <Route path="/help/content-privacy-levels" element={<ContentPrivacyLevels />} />
+                        <Route path="/help/pricing-strategies" element={<PricingStrategies />} />
+                        <Route path="/help/scheduling-features" element={<SchedulingFeatures />} />
+                        <Route path="/help/understanding-analytics" element={<UnderstandingAnalytics />} />
+                        <Route path="/help/custom-commissions" element={<CustomCommissions />} />
+                        <Route path="/help/payment-system" element={<PaymentSystem />} />
+                        <Route path="/help/messaging-creators" element={<MessagingCreators />} />
+                        <Route path="/help/community-guidelines-article" element={<CommunityGuidelinesArticle />} />
+                        <Route path="/help/subscription-management" element={<SubscriptionManagement />} />
+                        <Route path="/help/account-security" element={<AccountSecurity />} />
+                        <Route path="/help/report-user-content" element={<ReportUserContent />} />
+                        <Route path="/help/mobile-app" element={<MobileApp />} />
+                        <Route path="/help/messaging-tips" element={<MessagingTips />} />
+                        <Route path="/help/message-limits" element={<MessageLimits />} />
+                        <Route path="/help/payment-methods" element={<PaymentMethods />} />
+                        <Route path="/help/creator-earnings" element={<CreatorEarnings />} />
+                        <Route path="/help/subscription-tiers-overview" element={<SubscriptionTiersOverview />} />
 
-              {/* Admin Routes */}
-              <Route
-                path="admin"
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/users"
-                element={
-                  <ProtectedRoute>
-                    <UserManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/user-credentials"
-                element={
-                  <ProtectedRoute>
-                    <UserCredentialsManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/content"
-                element={
-                  <ProtectedRoute>
-                    <ContentModeration />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/tags"
-                element={
-                  <ProtectedRoute>
-                    <TagManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/payments"
-                element={
-                  <ProtectedRoute>
-                    <PaymentManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/analytics"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Advanced Analytics" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/support"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="Support Management" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/settings"
-                element={
-                  <ProtectedRoute>
-                    <AISettingsManager />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/system"
-                element={
-                  <ProtectedRoute>
-                    <ComingSoon title="System Monitoring" />
-                  </ProtectedRoute>
-                }
-              />
+                        {/* Additional Help Articles */}
+                        <Route path="/help/login-troubleshooting" element={<LoginTroubleshooting />} />
+                        <Route path="/help/password-reset" element={<PasswordReset />} />
+                        <Route path="/help/oauth-guide" element={<OAuthGuide />} />
+                        <Route path="/help/session-management" element={<SessionManagement />} />
+                        <Route path="/help/email-verification" element={<EmailVerification />} />
+                        <Route path="/help/profile-setup" element={<ProfileSetup />} />
+                        <Route path="/help/content-protection" element={<ContentProtection />} />
+                        <Route path="/help/privacy-settings" element={<PrivacySettings />} />
+                        <Route path="/help/two-factor-authentication" element={<TwoFactorAuthentication />} />
+                        <Route path="/help/browser-compatibility" element={<BrowserCompatibility />} />
+                        <Route path="/help/age-verification" element={<AgeVerification />} />
+                        <Route path="/help/bulk-messaging" element={<BulkMessaging />} />
+                        <Route path="/help/advanced-search-features" element={<AdvancedSearchFeatures />} />
+                        <Route path="/help/neural-search" element={<NeuralSearch />} />
+                        <Route path="/help/supported-formats" element={<SupportedFormats />} />
+                        <Route path="/help/upload-troubleshooting" element={<UploadTroubleshooting />} />
+                        <Route path="/help/video-quality" element={<VideoQuality />} />
+                        <Route path="/help/refund-policy" element={<RefundPolicy />} />
+                        <Route path="/help/tax-information" element={<TaxInformation />} />
 
-              {/* Platform Pages */}
-              <Route path="about" element={<About />} />
-              <Route path="how-it-works" element={<HowItWorks />} />
-              <Route path="creator-program" element={<CreatorProgram />} />
-              <Route path="success-stories" element={<SuccessStories />} />
+                        {/* Test Routes */}
+                        <Route path="/test-protected" element={<ProtectedRoute><TestProtectedPage /></ProtectedRoute>} />
+                        <Route path="/messaging-v3-simple" element={<ProtectedRoute><MessagingV3Simple /></ProtectedRoute>} />
 
-              {/* Support Pages */}
-              <Route path="help" element={<HelpCenter />} />              <Route path="help/articles/create-account" element={<HowToCreateAccount />} />
-              <Route path="help/articles/how-to-create-account" element={<HowToCreateAccount />} />
-              <Route path="help/articles/setting-up-creator-profile" element={<SettingUpCreatorProfile />} />
-              <Route path="help/articles/upload-organize-content" element={<UploadOrganizeContent />} />
-              <Route path="help/articles/finding-creators" element={<FindingCreators />} />
-              <Route path="help/articles/subscription-tiers-overview" element={<SubscriptionTiersOverview />} />
-              <Route path="help/articles/first-subscription" element={<FirstSubscription />} />
-              <Route path="help/articles/content-privacy-levels" element={<ContentPrivacyLevels />} />
-              <Route path="help/articles/pricing-strategies" element={<PricingStrategies />} />
-              <Route path="help/articles/scheduling-features" element={<SchedulingFeatures />} />
-              <Route path="help/articles/understanding-analytics" element={<UnderstandingAnalytics />} />
-              <Route path="help/articles/custom-commissions" element={<CustomCommissions />} />
-              <Route path="help/articles/payment-system" element={<PaymentSystem />} />
-              <Route path="help/articles/messaging-creators" element={<MessagingCreators />} />
-              <Route path="help/articles/community-guidelines" element={<CommunityGuidelinesArticle />} />
-              <Route path="help/articles/subscription-management" element={<SubscriptionManagement />} />
-              <Route path="help/articles/account-security" element={<AccountSecurity />} />
-              <Route path="help/articles/report-user-content" element={<ReportUserContent />} />
-              <Route path="help/articles/mobile-app" element={<MobileApp />} />
-              <Route path="help/articles/messaging-tips" element={<MessagingTips />} />
-              <Route path="help/articles/message-limits" element={<MessageLimits />} />
-              <Route path="help/articles/payment-methods" element={<PaymentMethods />} />
-              <Route path="help/articles/creator-earnings" element={<CreatorEarnings />} />
-              
-              {/* Account Settings */}
-              <Route path="help/articles/login-troubleshooting" element={<LoginTroubleshooting />} />
-              <Route path="help/articles/password-reset" element={<PasswordReset />} />
-              <Route path="help/articles/oauth-guide" element={<OAuthGuide />} />
-              <Route path="help/articles/session-management" element={<SessionManagement />} />
-              <Route path="help/articles/email-verification" element={<EmailVerification />} />
-              <Route path="help/articles/profile-setup" element={<ProfileSetup />} />
-              
-              {/* Safety & Privacy */}
-              <Route path="help/articles/content-protection" element={<ContentProtection />} />
-              <Route path="help/articles/privacy-settings" element={<PrivacySettings />} />
-              <Route path="help/articles/two-factor-authentication" element={<TwoFactorAuthentication />} />
-              <Route path="help/articles/browser-compatibility" element={<BrowserCompatibility />} />
-              <Route path="help/articles/age-verification" element={<AgeVerification />} />
-              
-              {/* Communication */}
-              <Route path="help/articles/bulk-messaging" element={<BulkMessaging />} />
-              
-              {/* Search Features */}
-              <Route path="help/articles/advanced-search-features" element={<AdvancedSearchFeatures />} />
-              <Route path="help/articles/neural-search" element={<NeuralSearch />} />
-              
-              {/* Creator Tools */}
-              <Route path="help/articles/supported-formats" element={<SupportedFormats />} />
-              <Route path="help/articles/upload-troubleshooting" element={<UploadTroubleshooting />} />
-              <Route path="help/articles/video-quality" element={<VideoQuality />} />
-              
-              {/* Billing */}
-              <Route path="help/articles/refund-policy" element={<RefundPolicy />} />
-              <Route path="help/articles/tax-information" element={<TaxInformation />} />
-              <Route path="safety" element={<Safety />} />
-              <Route path="guidelines" element={<CommunityGuidelinesPage />} />
-              <Route path="contact" element={<ContactUs />} />
+                        {/* Creator Routes */}
+                        <Route path="/creator/streaming" element={<ProtectedRoute><LiveStreamingStudio /></ProtectedRoute>} />
+                        <Route path="/creator/analytics" element={<ProtectedRoute><AdvancedAnalyticsV2 /></ProtectedRoute>} />
+                        <Route path="/creator/ai-assistant" element={<ProtectedRoute><AIContentAssistant /></ProtectedRoute>} />
+                        <Route path="/creator/ai-studio" element={<ProtectedRoute><AIContentCreationStudio /></ProtectedRoute>} />
 
-              {/* Legal Pages */}
-              <Route path="privacy" element={<PrivacyPolicy />} />
-              <Route path="terms" element={<TermsOfService />} />
-              <Route path="cookies" element={<CookiePolicy />} />
-              <Route path="dmca" element={<DMCA />} />
+                        {/* Account Setup */}
+                        <Route path="/account-setup" element={<ProtectedRoute><AccountSetup /></ProtectedRoute>} />
 
-              {/* Footer Pages */}
-              <Route path="best-practices" element={<BestPractices />} />
-              <Route path="analytics-guide" element={<AnalyticsGuide />} />
-              <Route path="tax-info" element={<TaxInfo />} />
+                        {/* Other Routes */}
+                        <Route path="/best-practices" element={<BestPractices />} />
+                        <Route path="/analytics-guide" element={<AnalyticsGuide />} />
+                        <Route path="/tax-info" element={<TaxInfo />} />
 
-              {/* Creator Resources - Removed as requested */}
-
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
+                        {/* 404 route */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
                     <CookieConsentManager />
                   </Router>
                 </AdminProvider>

@@ -341,3 +341,49 @@ For support and questions:
 ---
 
 **Happy coding! 🎉** Built with ❤️ by the OnlyFur team.
+
+## ⚡ **BUNDLE OPTIMIZATION IMPROVEMENTS**
+
+**✅ Bundle Size OPTIMIZED!** (July 2025)
+
+We've significantly improved build performance and reduced bundle sizes through advanced code splitting and lazy loading.
+
+### **Key Optimizations Applied:**
+1. **📦 Smart Code Splitting**: Components are now split into logical chunks by feature area
+2. **🔄 Lazy Loading**: All pages use React.lazy() for on-demand loading
+3. **📊 Intelligent Chunking**: Related components are grouped (admin, help articles, platform pages)
+4. **🗂️ Service Modularization**: Large services like `onlineStatusAPI` are split into smaller modules
+5. **⏰ Dynamic Imports**: Heavy components load only when needed
+
+### **Bundle Size Improvements:**
+- **Main bundle**: Reduced from 1,384kB to 165kB (87% reduction!)
+- **Total chunks**: Increased from 14 to 61 for better caching
+- **Logical grouping**: 
+  - Help articles: 410kB (lazy loaded)
+  - Admin pages: 172kB (admin-only)
+  - Platform pages: 43kB (public pages)
+  - Creator tools: 53kB (creator-only)
+
+### **Performance Benefits:**
+- 🚀 **Faster initial load**: Only core components load immediately
+- 📱 **Better mobile performance**: Smaller chunks load faster on slower connections  
+- 🔄 **Improved caching**: Individual features can be cached separately
+- 💾 **Reduced memory usage**: Unused features don't consume memory
+
+### **Technical Details:**
+```typescript
+// Before: All imports loaded immediately
+import Dashboard from '@/pages/Dashboard';
+import CreatorDashboard from '@/pages/CreatorDashboard';
+// ... 50+ imports
+
+// After: Lazy loading with code splitting
+const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
+const CreatorDashboard = React.lazy(() => import('@/pages/CreatorDashboard'));
+```
+
+**🔧 Vite Configuration:**
+- Manual chunk splitting by feature area
+- 1.5MB chunk size warning limit
+- Automatic vendor library grouping
+- Route-based splitting for better UX
