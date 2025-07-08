@@ -758,6 +758,14 @@
     "category": "page"
   },
   {
+    "id": "MessagingV3Simple",
+    "url": "/MessagingV3Simple",
+    "title": "MessagingV3Simple",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
     "id": "PrivacyPolicy",
     "url": "/PrivacyPolicy",
     "title": "PrivacyPolicy",
@@ -817,6 +825,14 @@
     "id": "TermsOfService",
     "url": "/TermsOfService",
     "title": "TermsOfService",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "TestProtectedPage",
+    "url": "/TestProtectedPage",
+    "title": "TestProtectedPage",
     "description": "",
     "tags": [],
     "category": "page"

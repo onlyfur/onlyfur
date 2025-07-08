@@ -25,21 +25,33 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
   useEffect(() => {
     let isMounted = true;
     let fetchInterval: NodeJS.Timeout | null = null;
+    let errorCount = 0;
+    const maxErrors = 3;
 
     const fetchStatus = async () => {
       // Skip fetch if component is unmounted or not visible
       if (!isMounted || !isVisible) return;
       
+      // Skip if too many consecutive errors
+      if (errorCount >= maxErrors) {
+        console.warn('Too many errors fetching user status, stopping requests');
+        return;
+      }
+      
       try {
         const userStatus = await onlineStatusAPI.getUserOnlineStatus(userId);
         if (isMounted) {
           setStatus(userStatus);
+          errorCount = 0; // Reset error count on success
         }
       } catch (error) {
+        errorCount++;
+        
         // Only log errors in development to prevent console spam
-        if (import.meta.env.DEV) {
+        if ((import.meta as any).env?.DEV && errorCount <= 2) {
           console.error('Failed to fetch user status:', error);
         }
+        
         // Set offline status on error to prevent continuous retries
         if (isMounted) {
           setStatus({
@@ -47,6 +59,12 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
             activityStatus: ActivityStatus.OFFLINE,
             lastSeen: new Date()
           });
+        }
+        
+        // If too many errors, clear the interval
+        if (errorCount >= maxErrors && fetchInterval) {
+          clearInterval(fetchInterval);
+          fetchInterval = null;
         }
       } finally {
         if (isMounted) {
@@ -67,7 +85,7 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
 
     // Only set up polling if in development or for own profile
     const isOwnProfile = userId === localStorage.getItem('onlyfur_user_id');
-    if (import.meta.env.DEV || isOwnProfile) {
+    if ((import.meta as any).env?.DEV || isOwnProfile) {
       // Refresh status every 60 seconds (reduced from 30 to limit API calls)
       fetchInterval = setInterval(fetchStatus, 60 * 1000);
     }

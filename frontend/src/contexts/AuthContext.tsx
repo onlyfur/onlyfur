@@ -58,8 +58,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
           }
           
-          // Start online status tracking
-          onlineStatusAPI.startTracking().catch(console.error);
+          // Start online status tracking with better error handling
+          onlineStatusAPI.startTracking().catch((error) => {
+            // Don't let online status errors affect authentication
+            console.warn('Online status tracking failed, continuing without it:', error.message);
+          });
           
           setIsLoading(false);
           return;
@@ -76,8 +79,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (result.success && result.user) {
               setUser(result.user);
               
-              // Start online status tracking
-              onlineStatusAPI.startTracking().catch(console.error);
+              // Start online status tracking with better error handling
+              onlineStatusAPI.startTracking().catch((error) => {
+                console.warn('Online status tracking failed, continuing without it:', error.message);
+              });
               
               setIsLoading(false);
               return;
@@ -99,8 +104,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (autoLoginResult.success && autoLoginResult.user) {
               setUser(autoLoginResult.user);
               
-              // Start online status tracking
-              onlineStatusAPI.startTracking().catch(console.error);
+              // Start online status tracking with better error handling
+              onlineStatusAPI.startTracking().catch((error) => {
+                console.warn('Online status tracking failed, continuing without it:', error.message);
+              });
               
               console.log('Auto-login successful');
             }
@@ -147,8 +154,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(result.user);
       authService.setSession(result.token, rememberMe, result.refreshToken, result.user);
       
-      // Start online status tracking
-      onlineStatusAPI.startTracking().catch(console.error);
+      // Start online status tracking with better error handling
+      onlineStatusAPI.startTracking().catch((error) => {
+        console.warn('Online status tracking failed, continuing without it:', error.message);
+      });
       
       // Save user email preference for convenience (but not password)
       if (rememberMe) {
@@ -192,8 +201,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(result.user);
       authService.setSession(result.token, true, result.refreshToken, result.user); // Auto-remember for new registrations
       
-      // Start online status tracking
-      onlineStatusAPI.startTracking().catch(console.error);
+      // Start online status tracking with better error handling
+      onlineStatusAPI.startTracking().catch((error) => {
+        console.warn('Online status tracking failed, continuing without it:', error.message);
+      });
 
       // Call success callback with user data
       if (onSuccess) {
@@ -221,8 +232,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(result.user);
       authService.setSession(result.token, true, result.refreshToken, result.user); // Auto-remember for Google login
       
-      // Start online status tracking
-      onlineStatusAPI.startTracking().catch(console.error);
+      // Start online status tracking with better error handling
+      onlineStatusAPI.startTracking().catch((error) => {
+        console.warn('Online status tracking failed, continuing without it:', error.message);
+      });
 
       // Call success callback with user data
       if (onSuccess) {

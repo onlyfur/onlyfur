@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+                     (import.meta as any).env?.VITE_API_BASE_URL || 
+                     'http://localhost:3001/api';
 
 export enum ActivityStatus {
   ONLINE = 'ONLINE',
@@ -34,6 +36,15 @@ class OnlineStatusAPI {
 
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private isActive = false;
+  private retryAttempts = 0;
+  private maxRetries = 3;
+  private retryDelay = 1000; // Start with 1 second
+  private rateLimitWindowStart = 0;
+  private requestCount = 0;
+  private maxRequestsPerWindow = 10;
+  private windowDuration = 60000; // 1 minute
+  private heartbeatFrequency = 2 * 60 * 1000; // Default 2 minutes
+  private maxHeartbeatFrequency = 10 * 60 * 1000; // Max 10 minutes
 
   constructor() {
     this.setupAuthInterceptor();
@@ -54,8 +65,10 @@ class OnlineStatusAPI {
    */
   async startTracking(socketId?: string): Promise<void> {
     try {
-      // Set user as online
-      await this.client.post('/set-online', { socketId });
+      // Use retry logic for setting user online
+      await this.retryWithBackoff(async () => {
+        return this.client.post('/set-online', { socketId });
+      }, 'Start tracking');
       
       // Start heartbeat
       this.startHeartbeat();
@@ -67,6 +80,19 @@ class OnlineStatusAPI {
       console.log('Online status tracking started');
     } catch (error) {
       console.error('Failed to start online status tracking:', error);
+      
+      // Don't throw error if it's just a tracking issue
+      // Continue with the app functionality
+      if (error instanceof Error && (
+        error.message.includes('ERR_INSUFFICIENT_RESOURCES') ||
+        error.message.includes('ERR_NETWORK') ||
+        error.message.includes('Rate limit exceeded')
+      )) {
+        console.warn('Online status tracking disabled due to resource constraints');
+        return;
+      }
+      
+      throw error;
     }
   }
 
@@ -93,10 +119,20 @@ class OnlineStatusAPI {
    */
   async sendHeartbeat(): Promise<void> {
     try {
-      await this.client.post('/heartbeat');
+      await this.retryWithBackoff(async () => {
+        return this.client.post('/heartbeat');
+      }, 'Heartbeat');
     } catch (error) {
       console.error('Heartbeat failed:', error);
-      // If heartbeat fails repeatedly, might need to re-authenticate
+      
+      // If heartbeat fails due to resource exhaustion, reduce frequency
+      if (error instanceof Error && (
+        error.message.includes('ERR_INSUFFICIENT_RESOURCES') ||
+        error.message.includes('Rate limit exceeded')
+      )) {
+        console.warn('Reducing heartbeat frequency due to resource constraints');
+        this.adjustHeartbeatFrequency();
+      }
     }
   }
 
@@ -208,12 +244,12 @@ class OnlineStatusAPI {
       clearInterval(this.heartbeatInterval);
     }
 
-    // Send heartbeat every 2 minutes
+    // Send heartbeat based on current frequency
     this.heartbeatInterval = setInterval(() => {
       if (this.isActive) {
         this.sendHeartbeat();
       }
-    }, 2 * 60 * 1000);
+    }, this.heartbeatFrequency);
   }
 
   /**
@@ -331,6 +367,92 @@ class OnlineStatusAPI {
           text: 'Offline',
           icon: '⚫'
         };
+    }
+  }
+
+  private isRateLimited(): boolean {
+    const now = Date.now();
+    
+    // Reset window if it has passed
+    if (now - this.rateLimitWindowStart > this.windowDuration) {
+      this.rateLimitWindowStart = now;
+      this.requestCount = 0;
+    }
+    
+    return this.requestCount >= this.maxRequestsPerWindow;
+  }
+
+  private incrementRequestCount(): void {
+    const now = Date.now();
+    
+    // Reset window if it has passed
+    if (now - this.rateLimitWindowStart > this.windowDuration) {
+      this.rateLimitWindowStart = now;
+      this.requestCount = 0;
+    }
+    
+    this.requestCount++;
+  }
+
+  private async retryWithBackoff<T>(operation: () => Promise<T>, context: string): Promise<T> {
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        // Check rate limit before making request
+        if (this.isRateLimited()) {
+          console.warn(`Rate limit reached for ${context}, skipping request`);
+          throw new Error('Rate limit exceeded');
+        }
+
+        this.incrementRequestCount();
+        const result = await operation();
+        
+        // Reset retry attempts on success
+        this.retryAttempts = 0;
+        return result;
+      } catch (error: any) {
+        const isLastAttempt = attempt === this.maxRetries;
+        
+        // Don't retry on certain error types
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          throw error;
+        }
+        
+        // Don't retry on network exhaustion errors unless it's not the last attempt
+        if (error?.code === 'ERR_NETWORK' || error?.code === 'ERR_INSUFFICIENT_RESOURCES') {
+          if (isLastAttempt) {
+            console.warn(`${context} failed after ${this.maxRetries} attempts:`, error.message);
+            throw error;
+          }
+          
+          // Wait longer for resource exhaustion errors
+          const delay = this.retryDelay * Math.pow(2, attempt) * (error?.code === 'ERR_INSUFFICIENT_RESOURCES' ? 3 : 1);
+          console.warn(`${context} failed (attempt ${attempt + 1}), retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+        
+        if (isLastAttempt) {
+          throw error;
+        }
+        
+        // Exponential backoff
+        const delay = this.retryDelay * Math.pow(2, attempt);
+        console.warn(`${context} failed (attempt ${attempt + 1}), retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    throw new Error(`Failed after ${this.maxRetries} attempts`);
+  }
+
+  private adjustHeartbeatFrequency(): void {
+    // Double the frequency up to maximum
+    this.heartbeatFrequency = Math.min(this.heartbeatFrequency * 2, this.maxHeartbeatFrequency);
+    
+    // Restart heartbeat with new frequency
+    if (this.isActive && this.heartbeatInterval) {
+      this.stopHeartbeat();
+      this.startHeartbeat();
     }
   }
 }
