@@ -47,18 +47,31 @@ class OnlineStatusAPI {
   private baseURL = `${API_BASE_URL}/online-status`;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private isActive = false;
+  private isStarting = false; // Prevent multiple simultaneous starts
   private retryAttempts = 0;
   private maxRetries = 3;
   private retryDelay = 1000; // Start with 1 second
   private rateLimitWindowStart = 0;
   private requestCount = 0;
-  private maxRequestsPerWindow = 10;
+  private maxRequestsPerWindow = 5; // Reduced from 10 to 5
   private windowDuration = 60000; // 1 minute
-  private heartbeatFrequency = 2 * 60 * 1000; // Default 2 minutes
-  private maxHeartbeatFrequency = 10 * 60 * 1000; // Max 10 minutes
+  private heartbeatFrequency = 5 * 60 * 1000; // Increased from 2 to 5 minutes
+  private maxHeartbeatFrequency = 15 * 60 * 1000; // Increased from 10 to 15 minutes
+  private trackingDisabled = false; // Flag to disable tracking completely
 
   constructor() {
     // No need for axios interceptors - we'll handle auth in each request
+    
+    // Reset tracking disabled flag after 10 minutes
+    setInterval(() => {
+      if (this.trackingDisabled) {
+        console.log('Attempting to re-enable online status tracking...');
+        this.trackingDisabled = false;
+        // Reset rate limiting as well
+        this.rateLimitWindowStart = 0;
+        this.requestCount = 0;
+      }
+    }, 10 * 60 * 1000); // 10 minutes
   }
 
   private getAuthHeaders(): HeadersInit {
@@ -126,6 +139,20 @@ class OnlineStatusAPI {
    * Start online status tracking (call when user logs in)
    */
   async startTracking(socketId?: string): Promise<void> {
+    // Check if tracking is disabled
+    if (this.trackingDisabled) {
+      console.warn('Online status tracking is disabled due to previous errors');
+      return;
+    }
+
+    // Prevent multiple simultaneous start attempts
+    if (this.isStarting || this.isActive) {
+      console.log('Online status tracking already starting or active');
+      return;
+    }
+
+    this.isStarting = true;
+
     try {
       // Use retry logic for setting user online
       const result = await this.retryWithBackoff(async () => {
@@ -136,10 +163,17 @@ class OnlineStatusAPI {
       }, 'Start tracking');
       
       if (!result.success) {
+        // Don't throw error for rate limiting or network issues
+        if (result.error?.includes('Rate limit exceeded') || 
+            result.error?.includes('Unable to connect')) {
+          console.warn('Online status tracking disabled:', result.error);
+          this.trackingDisabled = true;
+          return;
+        }
         throw new Error(result.error || 'Failed to start tracking');
       }
       
-      // Start heartbeat
+      // Start heartbeat only if we're not rate limited
       this.startHeartbeat();
       this.isActive = true;
 
@@ -150,18 +184,21 @@ class OnlineStatusAPI {
     } catch (error) {
       console.error('Failed to start online status tracking:', error);
       
-      // Don't throw error if it's just a tracking issue
-      // Continue with the app functionality
+      // Disable tracking to prevent repeated attempts
       if (error instanceof Error && (
         error.message.includes('insufficient resources') ||
         error.message.includes('Unable to connect') ||
         error.message.includes('Rate limit exceeded')
       )) {
         console.warn('Online status tracking disabled due to resource constraints');
+        this.trackingDisabled = true;
         return;
       }
       
-      throw error;
+      // For other errors, still disable to prevent loops
+      this.trackingDisabled = true;
+    } finally {
+      this.isStarting = false;
     }
   }
 
@@ -173,12 +210,15 @@ class OnlineStatusAPI {
       // Stop heartbeat
       this.stopHeartbeat();
       
-      // Set user as offline
-      await this.makeRequest('/set-offline', {
-        method: 'POST',
-      });
+      // Only try to set offline if tracking is not disabled
+      if (!this.trackingDisabled) {
+        await this.makeRequest('/set-offline', {
+          method: 'POST',
+        });
+      }
       
       this.isActive = false;
+      this.isStarting = false;
       console.log('Online status tracking stopped');
     } catch (error) {
       console.error('Failed to stop online status tracking:', error);
@@ -186,9 +226,25 @@ class OnlineStatusAPI {
   }
 
   /**
+   * Manually re-enable tracking (for debugging or user action)
+   */
+  enableTracking(): void {
+    console.log('Manually re-enabling online status tracking');
+    this.trackingDisabled = false;
+    this.rateLimitWindowStart = 0;
+    this.requestCount = 0;
+    this.heartbeatFrequency = 5 * 60 * 1000; // Reset to 5 minutes
+  }
+
+  /**
    * Send heartbeat to maintain online status
    */
   async sendHeartbeat(): Promise<void> {
+    // Skip if tracking is disabled
+    if (this.trackingDisabled || !this.isActive) {
+      return;
+    }
+
     try {
       const result = await this.retryWithBackoff(async () => {
         return this.makeRequest('/heartbeat', {
@@ -197,6 +253,13 @@ class OnlineStatusAPI {
       }, 'Heartbeat');
       
       if (!result.success) {
+        // Don't throw for rate limiting or connection issues
+        if (result.error?.includes('Rate limit exceeded') || 
+            result.error?.includes('Unable to connect')) {
+          console.warn('Heartbeat disabled:', result.error);
+          this.adjustHeartbeatFrequency();
+          return;
+        }
         throw new Error(result.error || 'Heartbeat failed');
       }
     } catch (error) {
@@ -218,6 +281,11 @@ class OnlineStatusAPI {
    * Set user activity status
    */
   async setActivityStatus(status: ActivityStatus): Promise<void> {
+    // Skip if tracking is disabled
+    if (this.trackingDisabled || !this.isActive) {
+      return;
+    }
+
     try {
       const result = await this.makeRequest('/set-status', {
         method: 'POST',
@@ -225,11 +293,17 @@ class OnlineStatusAPI {
       });
       
       if (!result.success) {
+        // Don't throw for rate limiting or connection issues
+        if (result.error?.includes('Rate limit exceeded') || 
+            result.error?.includes('Unable to connect')) {
+          console.warn('Activity status update disabled:', result.error);
+          return;
+        }
         throw new Error(result.error || 'Failed to set activity status');
       }
     } catch (error) {
       console.error('Failed to set activity status:', error);
-      throw error;
+      // Don't throw to prevent breaking the app
     }
   }
 
@@ -467,7 +541,13 @@ class OnlineStatusAPI {
       this.requestCount = 0;
     }
     
-    return this.requestCount >= this.maxRequestsPerWindow;
+    const isLimited = this.requestCount >= this.maxRequestsPerWindow;
+    
+    if (isLimited) {
+      console.warn(`Rate limit exceeded: ${this.requestCount}/${this.maxRequestsPerWindow} requests in ${this.windowDuration}ms window`);
+    }
+    
+    return isLimited;
   }
 
   private incrementRequestCount(): void {
@@ -483,6 +563,11 @@ class OnlineStatusAPI {
   }
 
   private async retryWithBackoff<T>(operation: () => Promise<{ success: boolean; data?: T; error?: string }>, context: string): Promise<{ success: boolean; data?: T; error?: string }> {
+    // If tracking is disabled, don't even try
+    if (this.trackingDisabled) {
+      return { success: false, error: 'Tracking disabled' };
+    }
+
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
         // Check rate limit before making request
@@ -499,6 +584,10 @@ class OnlineStatusAPI {
           this.retryAttempts = 0;
           return result;
         } else {
+          // Don't retry on rate limit or certain errors
+          if (result.error?.includes('Rate limit') || result.error?.includes('Unauthorized') || result.error?.includes('Forbidden')) {
+            return result;
+          }
           throw new Error(result.error || 'Request failed');
         }
       } catch (error: any) {
@@ -517,7 +606,7 @@ class OnlineStatusAPI {
           }
           
           // Wait longer for resource exhaustion errors
-          const delay = this.retryDelay * Math.pow(2, attempt) * (error?.message?.includes('insufficient resources') ? 3 : 1);
+          const delay = this.retryDelay * Math.pow(2, attempt) * 2; // Increased delay
           console.warn(`${context} failed (attempt ${attempt + 1}), retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
@@ -527,8 +616,8 @@ class OnlineStatusAPI {
           return { success: false, error: error.message };
         }
         
-        // Exponential backoff
-        const delay = this.retryDelay * Math.pow(2, attempt);
+        // Exponential backoff with longer delays
+        const delay = this.retryDelay * Math.pow(2, attempt + 1);
         console.warn(`${context} failed (attempt ${attempt + 1}), retrying in ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
