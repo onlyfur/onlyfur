@@ -36,7 +36,8 @@ OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and 
 4. **You're ready!** 🎉
    - Frontend: http://localhost:5173
    - Backend: http://localhost:3001
-   - Login with: `admin@onlyfur.net` / `admin123`
+   - Login with: `demo@example.com` / `password123` (Test User)
+
 
 ### **📚 Required Reading for New Developers**
 
@@ -151,16 +152,16 @@ npm run test:api              # Test API endpoints
 npm run test:coverage         # Test with coverage
 ```
 
-## 👥 **Default Test Users**
+## 👥 **Test User Credentials**
 
-After running `npm run dev:backend`, these accounts are available:
+**⚠️ IMPORTANT:** The app uses a real PostgreSQL database. Use these working credentials:
 
 | Role | Email | Password | Access Level |
 |------|-------|----------|-------------|
-| **Admin** | admin@onlyfur.net | admin123 | Full platform access |
-| **Creator** | creator@onlyfur.net | creator123 | Content creation |
-| **Subscriber** | subscriber@onlyfur.net | subscriber123 | Content access |
-| **Test User** | user@example.com | test123 | Basic access |
+| **Test User** | demo@example.com | password123 | Basic subscriber access |
+
+
+**🔥 Having login issues?** See [AUTHENTICATION_FIX.md](AUTHENTICATION_FIX.md) for troubleshooting.
 
 ## 🌐 **Development URLs**
 
@@ -234,6 +235,13 @@ See [Deployment Guide](docs/deployment/VERCEL_DEPLOYMENT.md) for detailed produc
 ## 🔧 **Troubleshooting**
 
 ### **🐛 Common Issues**
+
+**🖤 Black page on protected routes?**
+- ✅ **FIXED!** Use real credentials: `demo@example.com` / `password123`
+- ❌ Don't use mock credentials like `test@example.com` 
+- 📋 See [AUTHENTICATION_FIX.md](AUTHENTICATION_FIX.md) for full details
+
+**Other issues:**
 - **Database connection failed**: Check PostgreSQL is running
 - **Port already in use**: Change PORT in environment file
 - **NPM install errors**: Delete `node_modules` and reinstall

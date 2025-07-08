@@ -119,6 +119,10 @@ import VideoQuality from '@/pages/help/articles/video-quality';
 import RefundPolicy from '@/pages/help/articles/refund-policy';
 import TaxInformation from '@/pages/help/articles/tax-information';
 
+// Test Pages
+import TestProtectedPage from './pages/TestProtectedPage';
+import MessagingV3Simple from './pages/MessagingV3Simple';
+
 // V3.7 New Creator Components
 import LiveStreamingStudio from '@/pages/creator/LiveStreamingStudio';
 import AdvancedAnalyticsV2 from '@/pages/creator/AdvancedAnalyticsV2';
@@ -232,6 +236,16 @@ function App() {
               <Route
                 path="auth/debug"
                 element={<OAuthDebugger />}
+              />
+
+              {/* Test Routes */}
+              <Route
+                path="test-protected"
+                element={
+                  <ProtectedRoute>
+                    <TestProtectedPage />
+                  </ProtectedRoute>
+                }
               />
 
               {/* Protected Routes */}
@@ -356,6 +370,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MessagingV3 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="messages-v3-simple"
+                element={
+                  <ProtectedRoute>
+                    <MessagingV3Simple />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="messages-v3-simple/:conversationId"
+                element={
+                  <ProtectedRoute>
+                    <MessagingV3Simple />
                   </ProtectedRoute>
                 }
               />
