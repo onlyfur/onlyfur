@@ -2,7 +2,16 @@
 
 **The complete creator platform with real-time content, subscriptions, and authentication.**
 
-OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and Prisma. It features real authentication, content management, subscription tiers, and a complete admin system.
+OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and Prisma. It features real authentication, c**🌐 CORS errors from Vercel deployments?**
+- ✅ **FIXED!** API now automatically allows new development branches and preview URLs
+- 🚀 **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
+- 🔧 **Smart Pattern Matching**: 
+  - Any `*.vercel.app` domain containing project keywords (`onlyfur`, `k3noxs-projects`, `creatorplattform`)
+  - Git branch URLs: `projectname-git-branchname-username.vercel.app`
+  - Local development: Any `localhost:*` or `127.0.0.1:*` port
+- 📝 **No Manual Updates Needed**: New development branches work immediately without code changes
+- 🔇 **Error Throttling**: CORS errors are limited to one per origin per minute to prevent console spam and browser crashes
+- 🔍 **Logging**: Console logs show when new origins are auto-allowed for debuggingnagement, subscription tiers, and a complete admin system.
 
 ## 🚀 **Quick Start for New Developers**
 
@@ -240,6 +249,16 @@ See [Deployment Guide](docs/deployment/VERCEL_DEPLOYMENT.md) for detailed produc
 - ✅ **FIXED!** Use real credentials: `demo@example.com` / `password123`
 - ❌ Don't use mock credentials like `test@example.com` 
 - 📋 See [AUTHENTICATION_FIX.md](AUTHENTICATION_FIX.md) for full details
+
+**🌐 CORS errors from Vercel deployments?**
+- ✅ **FIXED!** API now automatically allows new development branches and preview URLs
+- � **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
+- 🔧 **Smart Pattern Matching**: 
+  - Any `*.vercel.app` domain containing project keywords (`onlyfur`, `k3noxs-projects`, `creatorplattform`)
+  - Git branch URLs: `projectname-git-branchname-username.vercel.app`
+  - Local development: Any `localhost:*` or `127.0.0.1:*` port
+- 📝 **No Manual Updates Needed**: New development branches work immediately without code changes
+- � **Logging**: Console logs show when new origins are auto-allowed for debugging
 
 **Other issues:**
 - **Database connection failed**: Check PostgreSQL is running

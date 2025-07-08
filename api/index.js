@@ -7,6 +7,32 @@ const url = require('url');
 let dbInstance = null;
 let routeHandlers = null;
 
+// CORS error tracking to prevent console spam
+const corsErrorTracker = {
+  reportedOrigins: new Set(),
+  lastReportTime: 0,
+  reportCooldown: 60000, // 1 minute cooldown between reports for same origin
+  
+  shouldReport(origin) {
+    const now = Date.now();
+    const key = `${origin}_${Math.floor(now / this.reportCooldown)}`;
+    
+    if (this.reportedOrigins.has(key)) {
+      return false; // Already reported this origin in current time window
+    }
+    
+    this.reportedOrigins.add(key);
+    
+    // Clean up old entries every 10 minutes
+    if (now - this.lastReportTime > 600000) {
+      this.reportedOrigins.clear();
+      this.lastReportTime = now;
+    }
+    
+    return true;
+  }
+};
+
 // Initialize database and routes if needed
 async function initializeBackend() {
   if (!dbInstance) {
@@ -32,8 +58,36 @@ function addCorsHeaders(res, origin = null) {
   // Determine the appropriate origin
   let allowedOrigin = 'https://onlyfur.net'; // Default to production
   
-  if (origin && allowedOrigins.includes(origin)) {
-    allowedOrigin = origin;
+  if (origin) {
+    // Check exact matches first
+    if (allowedOrigins.includes(origin)) {
+      allowedOrigin = origin;
+    } 
+    // Auto-allow any Vercel deployment URLs for development branches
+    else if (origin.includes('vercel.app') && (
+      origin.includes('onlyfur') || 
+      origin.includes('k3noxs-projects') ||
+      origin.includes('creatorplattform') ||
+      // Allow any git branch pattern: projectname-git-branchname-username.vercel.app
+      /^https:\/\/[a-zA-Z0-9-]+-git-[a-zA-Z0-9-]+-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)
+    )) {
+      allowedOrigin = origin;
+      console.log(`🌐 Auto-allowing new Vercel deployment: ${origin}`);
+    }
+    // Allow localhost with any port for local development
+    else if (/^https?:\/\/localhost:\d+$/.test(origin) || /^https?:\/\/127\.0\.0\.1:\d+$/.test(origin)) {
+      allowedOrigin = origin;
+      console.log(`🏠 Auto-allowing localhost development: ${origin}`);
+    }
+    // Handle blocked origin with throttled error reporting
+    else {
+      if (corsErrorTracker.shouldReport(origin)) {
+        console.warn(`🚫 CORS: Blocked origin "${origin}" - Add to allowlist or check domain pattern`);
+        console.warn(`🔧 To fix: Verify origin matches expected patterns or add to allowedOrigins array`);
+      }
+      // Use default origin for blocked requests to prevent complete failure
+      allowedOrigin = 'https://onlyfur.net';
+    }
   }
   
   const headers = {

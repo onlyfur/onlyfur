@@ -1063,10 +1063,12 @@ function createRoutes(db) {
           ]
         };
         
-        sendResponse(res, 200, { success: true, stats });
+        const origin = req.headers?.origin;
+        sendResponse(res, 200, { success: true, stats }, origin);
       } catch (error) {
         console.error('Error fetching platform stats:', error);
-        sendError(res, 500, 'Failed to fetch platform stats');
+        const origin = req.headers?.origin;
+        sendError(res, 500, 'Failed to fetch platform stats', error, origin);
       }
     },
 

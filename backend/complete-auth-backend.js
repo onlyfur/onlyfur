@@ -4,6 +4,32 @@ const querystring = require('querystring');
 const crypto = require('crypto');
 const { Client } = require('pg');
 
+// CORS error tracking to prevent console spam
+const corsErrorTracker = {
+  reportedOrigins: new Set(),
+  lastReportTime: 0,
+  reportCooldown: 60000, // 1 minute cooldown between reports for same origin
+  
+  shouldReport(origin) {
+    const now = Date.now();
+    const key = `${origin}_${Math.floor(now / this.reportCooldown)}`;
+    
+    if (this.reportedOrigins.has(key)) {
+      return false; // Already reported this origin in current time window
+    }
+    
+    this.reportedOrigins.add(key);
+    
+    // Clean up old entries every 10 minutes
+    if (now - this.lastReportTime > 600000) {
+      this.reportedOrigins.clear();
+      this.lastReportTime = now;
+    }
+    
+    return true;
+  }
+};
+
 // Load environment variables from .env file
 const fs = require('fs');
 const path = require('path');
@@ -1162,9 +1188,55 @@ class DatabaseService {
 const db = new DatabaseService();
 
 // Helper functions
-function corsHeaders() {
+function corsHeaders(requestOrigin = null) {
+  // Get allowed origins
+  const allowedOrigins = [
+    'https://onlyfur.net',
+    'https://onlyfur.vercel.app', 
+    'https://creatorplattform.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://onlyfur.net:5173',
+    FRONTEND_URL
+  ];
+  
+  // Determine the appropriate origin
+  let allowedOrigin = FRONTEND_URL; // Default to configured frontend URL
+  
+  if (requestOrigin) {
+    // Check exact matches first
+    if (allowedOrigins.includes(requestOrigin)) {
+      allowedOrigin = requestOrigin;
+    } 
+    // Auto-allow any Vercel deployment URLs for development branches
+    else if (requestOrigin.includes('vercel.app') && (
+      requestOrigin.includes('onlyfur') || 
+      requestOrigin.includes('k3noxs-projects') ||
+      requestOrigin.includes('creatorplattform') ||
+      // Allow any git branch pattern: projectname-git-branchname-username.vercel.app
+      /^https:\/\/[a-zA-Z0-9-]+-git-[a-zA-Z0-9-]+-[a-zA-Z0-9-]+\.vercel\.app$/.test(requestOrigin)
+    )) {
+      allowedOrigin = requestOrigin;
+      console.log(`🌐 Auto-allowing new Vercel deployment: ${requestOrigin}`);
+    }
+    // Allow localhost with any port for local development
+    else if (/^https?:\/\/localhost:\d+$/.test(requestOrigin) || /^https?:\/\/127\.0\.0\.1:\d+$/.test(requestOrigin)) {
+      allowedOrigin = requestOrigin;
+      console.log(`🏠 Auto-allowing localhost development: ${requestOrigin}`);
+    }
+    // Handle blocked origin with throttled error reporting
+    else {
+      if (corsErrorTracker.shouldReport(requestOrigin)) {
+        console.warn(`🚫 CORS: Blocked origin "${requestOrigin}" - Add to allowlist or check domain pattern`);
+        console.warn(`🔧 To fix: Verify origin matches expected patterns or add to allowedOrigins array`);
+      }
+      // Use default origin for blocked requests to prevent complete failure
+      allowedOrigin = FRONTEND_URL;
+    }
+  }
+  
   return {
-    'Access-Control-Allow-Origin': FRONTEND_URL,
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Credentials': 'true',
@@ -1172,14 +1244,14 @@ function corsHeaders() {
   };
 }
 
-function sendResponse(res, status, data) {
-  const headers = corsHeaders();
+function sendResponse(res, status, data, requestOrigin = null) {
+  const headers = corsHeaders(requestOrigin);
   res.writeHead(status, headers);
   res.end(JSON.stringify(data));
 }
 
-function sendError(res, status, message, error = null) {
-  const headers = corsHeaders();
+function sendError(res, status, message, error = null, requestOrigin = null) {
+  const headers = corsHeaders(requestOrigin);
   res.writeHead(status, headers);
   res.end(JSON.stringify({
     success: false,
