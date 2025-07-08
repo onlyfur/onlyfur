@@ -1,8 +1,23 @@
-import axios from 'axios';
-
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-                     (import.meta as any).env?.VITE_API_BASE_URL || 
-                     'http://localhost:3001/api';
+// Use fetch instead of axios for better CORS compatibility
+const API_BASE_URL = (() => {
+  if ((import.meta as any).env?.VITE_API_BASE_URL) {
+    return (import.meta as any).env.VITE_API_BASE_URL;
+  } else if (typeof window !== 'undefined') {
+    const currentHost = window.location.hostname;
+    
+    if (currentHost === 'onlyfur.net' || currentHost === 'www.onlyfur.net') {
+      return '/api';
+    } else if (currentHost === 'creatorplattform.vercel.app') {
+      return '/api';
+    } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+      return 'http://localhost:3001/api';
+    } else {
+      return '/api';
+    }
+  } else {
+    return '/api';
+  }
+})();
 
 export enum ActivityStatus {
   ONLINE = 'ONLINE',
@@ -29,11 +44,7 @@ export interface OnlineUser {
 }
 
 class OnlineStatusAPI {
-  private client = axios.create({
-    baseURL: `${API_BASE_URL}/online-status`,
-    timeout: 10000
-  });
-
+  private baseURL = `${API_BASE_URL}/online-status`;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private isActive = false;
   private retryAttempts = 0;
@@ -47,17 +58,68 @@ class OnlineStatusAPI {
   private maxHeartbeatFrequency = 10 * 60 * 1000; // Max 10 minutes
 
   constructor() {
-    this.setupAuthInterceptor();
+    // No need for axios interceptors - we'll handle auth in each request
   }
 
-  private setupAuthInterceptor() {
-    this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+  private getAuthHeaders(): HeadersInit {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+  }
+
+  private async makeRequest<T = any>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<{ success: boolean; data?: T; error?: string }> {
+    try {
+      const url = `${this.baseURL}${endpoint}`;
+      
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...this.getAuthHeaders(),
+          ...options.headers,
+        },
+        credentials: 'include', // Important for CORS with cookies
+      });
+
+      let data: any;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = { message: await response.text() };
       }
-      return config;
-    });
+
+      if (!response.ok) {
+        return { 
+          success: false, 
+          error: data.error || data.message || `Request failed with status ${response.status}` 
+        };
+      }
+
+      return {
+        success: true,
+        data: data.data || data,
+      };
+    } catch (error) {
+      console.error('Online status API request failed:', error);
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return {
+          success: false,
+          error: 'Unable to connect to server. Please check your internet connection and try again.',
+        };
+      }
+      
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'An unexpected error occurred',
+      };
+    }
   }
 
   /**
@@ -66,9 +128,16 @@ class OnlineStatusAPI {
   async startTracking(socketId?: string): Promise<void> {
     try {
       // Use retry logic for setting user online
-      await this.retryWithBackoff(async () => {
-        return this.client.post('/set-online', { socketId });
+      const result = await this.retryWithBackoff(async () => {
+        return this.makeRequest('/set-online', {
+          method: 'POST',
+          body: JSON.stringify({ socketId }),
+        });
       }, 'Start tracking');
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to start tracking');
+      }
       
       // Start heartbeat
       this.startHeartbeat();
@@ -84,8 +153,8 @@ class OnlineStatusAPI {
       // Don't throw error if it's just a tracking issue
       // Continue with the app functionality
       if (error instanceof Error && (
-        error.message.includes('ERR_INSUFFICIENT_RESOURCES') ||
-        error.message.includes('ERR_NETWORK') ||
+        error.message.includes('insufficient resources') ||
+        error.message.includes('Unable to connect') ||
         error.message.includes('Rate limit exceeded')
       )) {
         console.warn('Online status tracking disabled due to resource constraints');
@@ -105,7 +174,9 @@ class OnlineStatusAPI {
       this.stopHeartbeat();
       
       // Set user as offline
-      await this.client.post('/set-offline');
+      await this.makeRequest('/set-offline', {
+        method: 'POST',
+      });
       
       this.isActive = false;
       console.log('Online status tracking stopped');
@@ -119,16 +190,23 @@ class OnlineStatusAPI {
    */
   async sendHeartbeat(): Promise<void> {
     try {
-      await this.retryWithBackoff(async () => {
-        return this.client.post('/heartbeat');
+      const result = await this.retryWithBackoff(async () => {
+        return this.makeRequest('/heartbeat', {
+          method: 'POST',
+        });
       }, 'Heartbeat');
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Heartbeat failed');
+      }
     } catch (error) {
       console.error('Heartbeat failed:', error);
       
       // If heartbeat fails due to resource exhaustion, reduce frequency
       if (error instanceof Error && (
-        error.message.includes('ERR_INSUFFICIENT_RESOURCES') ||
-        error.message.includes('Rate limit exceeded')
+        error.message.includes('insufficient resources') ||
+        error.message.includes('Rate limit exceeded') ||
+        error.message.includes('Unable to connect')
       )) {
         console.warn('Reducing heartbeat frequency due to resource constraints');
         this.adjustHeartbeatFrequency();
@@ -141,7 +219,14 @@ class OnlineStatusAPI {
    */
   async setActivityStatus(status: ActivityStatus): Promise<void> {
     try {
-      await this.client.post('/set-status', { status });
+      const result = await this.makeRequest('/set-status', {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to set activity status');
+      }
     } catch (error) {
       console.error('Failed to set activity status:', error);
       throw error;
@@ -153,14 +238,15 @@ class OnlineStatusAPI {
    */
   async getUserOnlineStatus(userId: string): Promise<UserOnlineStatus | null> {
     try {
-      const response = await this.client.get(`/status/${userId}`);
-      const data = response.data;
+      const response = await this.makeRequest(`/status/${userId}`, {
+        method: 'GET',
+      });
       
-      if (data.success) {
+      if (response.success && response.data) {
         return {
-          ...data.status,
-          lastSeen: data.status.lastSeen ? new Date(data.status.lastSeen) : undefined,
-          lastActivity: data.status.lastActivity ? new Date(data.status.lastActivity) : undefined
+          ...response.data.status,
+          lastSeen: response.data.status.lastSeen ? new Date(response.data.status.lastSeen) : undefined,
+          lastActivity: response.data.status.lastActivity ? new Date(response.data.status.lastActivity) : undefined
         };
       }
       return null;
@@ -175,13 +261,15 @@ class OnlineStatusAPI {
    */
   async getBulkOnlineStatus(userIds: string[]): Promise<Map<string, UserOnlineStatus>> {
     try {
-      const response = await this.client.post('/bulk-status', { userIds });
-      const data = response.data;
+      const response = await this.makeRequest('/bulk-status', {
+        method: 'POST',
+        body: JSON.stringify({ userIds }),
+      });
       
-      if (data.success) {
+      if (response.success && response.data) {
         const statusMap = new Map<string, UserOnlineStatus>();
         
-        for (const [userId, status] of Object.entries(data.statuses)) {
+        for (const [userId, status] of Object.entries(response.data.statuses)) {
           statusMap.set(userId, {
             ...(status as any),
             lastSeen: (status as any).lastSeen ? new Date((status as any).lastSeen) : undefined,
@@ -203,10 +291,11 @@ class OnlineStatusAPI {
    */
   async getOnlineCount(): Promise<number> {
     try {
-      const response = await this.client.get('/online-count');
-      const data = response.data;
+      const response = await this.makeRequest('/online-count', {
+        method: 'GET',
+      });
       
-      return data.success ? data.onlineCount : 0;
+      return response.success ? response.data.onlineCount : 0;
     } catch (error) {
       console.error('Failed to get online count:', error);
       return 0;
@@ -218,13 +307,12 @@ class OnlineStatusAPI {
    */
   async getOnlineUsers(limit: number = 50): Promise<OnlineUser[]> {
     try {
-      const response = await this.client.get('/online-users', {
-        params: { limit }
+      const response = await this.makeRequest(`/online-users?limit=${limit}`, {
+        method: 'GET',
       });
-      const data = response.data;
       
-      if (data.success) {
-        return data.users.map((user: any) => ({
+      if (response.success && response.data) {
+        return response.data.users.map((user: any) => ({
           ...user,
           lastActivityAt: user.lastActivityAt ? new Date(user.lastActivityAt) : undefined
         }));
@@ -285,7 +373,7 @@ class OnlineStatusAPI {
       }
     });
 
-    window.addEventListener('blur-sm', () => {
+    window.addEventListener('blur', () => {
       if (this.isActive) {
         this.setActivityStatus(ActivityStatus.AWAY).catch(console.error);
       }
@@ -300,7 +388,7 @@ class OnlineStatusAPI {
         
         if (token && navigator.sendBeacon) {
           const blob = new Blob([data], { type: 'application/json' });
-          navigator.sendBeacon(`${API_BASE_URL}/online-status/set-offline`, blob);
+          navigator.sendBeacon(`${this.baseURL}/set-offline`, blob);
         }
       }
     });
@@ -394,45 +482,49 @@ class OnlineStatusAPI {
     this.requestCount++;
   }
 
-  private async retryWithBackoff<T>(operation: () => Promise<T>, context: string): Promise<T> {
+  private async retryWithBackoff<T>(operation: () => Promise<{ success: boolean; data?: T; error?: string }>, context: string): Promise<{ success: boolean; data?: T; error?: string }> {
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
         // Check rate limit before making request
         if (this.isRateLimited()) {
           console.warn(`Rate limit reached for ${context}, skipping request`);
-          throw new Error('Rate limit exceeded');
+          return { success: false, error: 'Rate limit exceeded' };
         }
 
         this.incrementRequestCount();
         const result = await operation();
         
         // Reset retry attempts on success
-        this.retryAttempts = 0;
-        return result;
+        if (result.success) {
+          this.retryAttempts = 0;
+          return result;
+        } else {
+          throw new Error(result.error || 'Request failed');
+        }
       } catch (error: any) {
         const isLastAttempt = attempt === this.maxRetries;
         
         // Don't retry on certain error types
-        if (error?.response?.status === 401 || error?.response?.status === 403) {
-          throw error;
+        if (error?.message?.includes('Unauthorized') || error?.message?.includes('Forbidden')) {
+          return { success: false, error: error.message };
         }
         
         // Don't retry on network exhaustion errors unless it's not the last attempt
-        if (error?.code === 'ERR_NETWORK' || error?.code === 'ERR_INSUFFICIENT_RESOURCES') {
+        if (error?.message?.includes('Unable to connect') || error?.message?.includes('insufficient resources')) {
           if (isLastAttempt) {
             console.warn(`${context} failed after ${this.maxRetries} attempts:`, error.message);
-            throw error;
+            return { success: false, error: error.message };
           }
           
           // Wait longer for resource exhaustion errors
-          const delay = this.retryDelay * Math.pow(2, attempt) * (error?.code === 'ERR_INSUFFICIENT_RESOURCES' ? 3 : 1);
+          const delay = this.retryDelay * Math.pow(2, attempt) * (error?.message?.includes('insufficient resources') ? 3 : 1);
           console.warn(`${context} failed (attempt ${attempt + 1}), retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
         
         if (isLastAttempt) {
-          throw error;
+          return { success: false, error: error.message };
         }
         
         // Exponential backoff
@@ -442,7 +534,7 @@ class OnlineStatusAPI {
       }
     }
     
-    throw new Error(`Failed after ${this.maxRetries} attempts`);
+    return { success: false, error: `Failed after ${this.maxRetries} attempts` };
   }
 
   private adjustHeartbeatFrequency(): void {
