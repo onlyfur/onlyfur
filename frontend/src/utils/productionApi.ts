@@ -7,7 +7,7 @@
 const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
 
 export const API_CONFIG = {
-  baseUrl: isProduction ? '' : (import.meta.env?.VITE_API_URL || 'http://localhost:3001'),
+  baseUrl: isProduction ? '' : ((import.meta as any).env?.VITE_API_URL || 'http://localhost:3001'),
   isDevelopment: !isProduction,
   isProduction: isProduction,
 };
@@ -81,6 +81,13 @@ export async function fetchJson<T = any>(endpoint: string, options: RequestInit 
   return response.json();
 }
 
+// Create a production-safe API call function
+export function createProductionApiCall<T = any>(endpoint: string, options: RequestInit = {}) {
+  return async (): Promise<T> => {
+    return await fetchJson<T>(endpoint, options);
+  };
+}
+
 // Debounced API calls to prevent spam
 class ApiDebouncer {
   private timers = new Map<string, NodeJS.Timeout>();
@@ -124,5 +131,5 @@ export const getEnvironmentInfo = () => ({
   isDevelopment: API_CONFIG.isDevelopment,
   baseUrl: API_CONFIG.baseUrl,
   hostname: typeof window !== 'undefined' ? window.location.hostname : 'unknown',
-  mode: import.meta.env?.MODE || 'unknown'
+  mode: (import.meta as any).env?.MODE || 'unknown'
 });
