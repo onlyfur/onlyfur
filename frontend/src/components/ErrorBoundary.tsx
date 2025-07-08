@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface Props {
   children: ReactNode;
@@ -87,7 +88,7 @@ export class ErrorBoundary extends Component<Props, State> {
     try {
       // In production, send to error reporting service
       if (process.env.NODE_ENV === 'production') {
-        await fetch('/api/errors/report', {
+        const apiCall = createProductionApiCall('/api/errors/report', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -95,6 +96,7 @@ export class ErrorBoundary extends Component<Props, State> {
           },
           body: JSON.stringify(errorData)
         });
+        await apiCall();
       }
     } catch (reportingError) {
       console.error('Failed to report error:', reportingError);
@@ -103,7 +105,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private sendUserReport = async () => {
     try {
-      await fetch('/api/errors/user-report', {
+      const apiCall = createProductionApiCall('/api/errors/user-report', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,6 +117,7 @@ export class ErrorBoundary extends Component<Props, State> {
           reproduction: 'User provided feedback'
         })
       });
+      await apiCall();
       
       this.setState({ reportSent: true });
     } catch (error) {

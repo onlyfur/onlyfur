@@ -2,7 +2,56 @@
 
 **The complete creator platform with real-time content, subscriptions, and authentication.**
 
-OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and Prisma. It features real authentication, c**🌐 CORS errors from Vercel deployments?**
+OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and Prisma. It features real authentication, content management, subscription tiers, and a complete admin system.
+
+## 🔧 **RECENT CORS & API FIXES**
+
+**✅ CORS Error Spam RESOLVED!** (July 2025)
+
+We fixed the severe CORS error issue causing thousands of console errors and browser crashes. Here's what was changed:
+
+### **Key Fixes Applied:**
+1. **🛡️ Centralized API Utility**: All API calls now use `createProductionApiCall()` from `/utils/productionApi.ts`
+2. **🔄 Environment-Aware Requests**: API calls automatically adapt between development and production
+3. **⏰ Reduced Polling**: Components now poll less frequently and only when visible
+4. **🎯 Smart Rate Limiting**: Built-in debouncing and request throttling
+5. **📡 Improved CORS Headers**: Backend allows all Vercel deployments with proper headers
+6. **🔕 Error Throttling**: Prevents CORS error spam in console
+
+### **Environment Variables Required:**
+```bash
+# Production (.env.production)
+VITE_API_URL="/api"
+
+# Development (.env.development)  
+VITE_API_URL="http://localhost:3001/api"
+```
+
+### **Updated Components:**
+- ✅ `HomeV3.tsx` - Feed and content loading
+- ✅ `ExploreV3.tsx` - Search and discovery
+- ✅ `MessagingV3.tsx` - Real-time messaging
+- ✅ `CreatorDashboardV3.tsx` - Analytics and stats
+- ✅ `ModerationDashboard.tsx` - Admin moderation
+- ✅ `ProfileV3.tsx` - User profiles
+- ✅ `NotificationCenter.tsx` - Notifications
+- ✅ `ErrorBoundary.tsx` - Error reporting
+- ✅ `OnlineStatusIndicator.tsx` - Reduced polling
+- ✅ `AuthDebugger.tsx` - Development-only polling
+
+### **API Usage Pattern:**
+```typescript
+// OLD (caused CORS spam):
+const response = await fetch('/api/endpoint', options);
+const data = await response.json();
+
+// NEW (production-safe):
+import { createProductionApiCall } from '@/utils/productionApi';
+const apiCall = createProductionApiCall('/api/endpoint', options);
+const data = await apiCall();
+```
+
+**🌐 CORS errors from Vercel deployments?**
 - ✅ **FIXED!** API now automatically allows new development branches and preview URLs
 - 🚀 **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
 - 🔧 **Smart Pattern Matching**: 
@@ -252,13 +301,14 @@ See [Deployment Guide](docs/deployment/VERCEL_DEPLOYMENT.md) for detailed produc
 
 **🌐 CORS errors from Vercel deployments?**
 - ✅ **FIXED!** API now automatically allows new development branches and preview URLs
-- � **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
+- 🚀 **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
 - 🔧 **Smart Pattern Matching**: 
   - Any `*.vercel.app` domain containing project keywords (`onlyfur`, `k3noxs-projects`, `creatorplattform`)
   - Git branch URLs: `projectname-git-branchname-username.vercel.app`
   - Local development: Any `localhost:*` or `127.0.0.1:*` port
 - 📝 **No Manual Updates Needed**: New development branches work immediately without code changes
-- � **Logging**: Console logs show when new origins are auto-allowed for debugging
+- 🔇 **Error Throttling**: CORS errors are limited to one per origin per minute to prevent console spam and browser crashes
+- 🔍 **Logging**: Console logs show when new origins are auto-allowed for debugging
 
 **Other issues:**
 - **Database connection failed**: Check PostgreSQL is running

@@ -40,6 +40,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { format, isToday, isYesterday } from 'date-fns';
 import AnimatedLoader from '@/components/ui/AnimatedLoader';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface Message {
   id: string;
@@ -130,12 +131,13 @@ const MessagingV3: React.FC = () => {
   const loadConversations = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/messages/conversations', {
+      const apiCall = createProductionApiCall('/api/messages/conversations', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setConversations(data.conversations);
         if (data.conversations.length > 0) {
@@ -157,12 +159,13 @@ const MessagingV3: React.FC = () => {
 
   const loadMessages = async (conversationId: string) => {
     try {
-      const response = await fetch(`/api/messages/${conversationId}`, {
+      const apiCall = createProductionApiCall(`/api/messages/${conversationId}`, {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setMessages(data.messages);
       } else {
@@ -176,12 +179,13 @@ const MessagingV3: React.FC = () => {
 
   const initializeAIAssistant = async () => {
     try {
-      const response = await fetch('/api/ai/messaging/assistant', {
+      const apiCall = createProductionApiCall('/api/ai/messaging/assistant', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setAiAssistant({
           suggestions: data.suggestions,
@@ -319,7 +323,7 @@ const MessagingV3: React.FC = () => {
     setNewMessage('');
 
     try {
-      const response = await fetch('/api/messages/send', {
+      const apiCall = createProductionApiCall('/api/messages/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -332,7 +336,7 @@ const MessagingV3: React.FC = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setMessages(prev => prev.map(msg => 
           msg.id === message.id ? { ...msg, status: 'sent', id: data.messageId } : msg

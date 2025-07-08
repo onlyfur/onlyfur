@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface Notification {
   id: string;
@@ -61,14 +62,15 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
   const fetchUnreadCount = async () => {
     try {
-      const response = await fetch('/api/notifications/count', {
+      const apiCall = createProductionApiCall('/api/notifications/count', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      const data = await apiCall();
+      if (data) {
         setUnreadCount(data.unreadCount || 0);
       }
     } catch (error) {
@@ -100,14 +102,15 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
   const markAllAsRead = async () => {
     try {
-      const response = await fetch('/api/notifications/read-all', {
+      const apiCall = createProductionApiCall('/api/notifications/read-all', {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
-      if (response.ok) {
+      const data = await apiCall();
+      if (data) {
         setNotifications(prev => 
           prev.map(n => ({ ...n, isRead: true }))
         );

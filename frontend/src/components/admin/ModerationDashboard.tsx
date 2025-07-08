@@ -31,6 +31,7 @@ import { Separator } from '@/components/ui/separator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface ContentReport {
   id: string;
@@ -91,13 +92,41 @@ const ModerationDashboard: React.FC = () => {
     fetchModerationData();
     fetchStats();
     
-    // Set up real-time updates
-    const interval = setInterval(() => {
-      fetchModerationData();
-      fetchStats();
-    }, 30000); // Refresh every 30 seconds
+    // Set up real-time updates only in development or when page is visible
+    let interval: NodeJS.Timeout | null = null;
+    
+    const setupPolling = () => {
+      if (!document.hidden && (import.meta.env.DEV || window.location.pathname.includes('/admin'))) {
+        // Reduced frequency: refresh every 2 minutes instead of 30 seconds
+        interval = setInterval(() => {
+          if (!document.hidden) {
+            fetchModerationData();
+            fetchStats();
+          }
+        }, 120000); // 2 minutes
+      }
+    };
 
-    return () => clearInterval(interval);
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+      } else {
+        setupPolling();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    setupPolling();
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, []);
 
   const fetchModerationData = async () => {
@@ -143,7 +172,7 @@ const ModerationDashboard: React.FC = () => {
 
   const handleReportAction = async (reportId: string, actionType: 'approve' | 'remove' | 'warn' | 'dismiss') => {
     try {
-      const response = await fetch(`/api/moderation/reports/${reportId}/action`, {
+      const apiCall = createProductionApiCall(`/api/moderation/reports/${reportId}/action`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +184,8 @@ const ModerationDashboard: React.FC = () => {
         })
       });
 
-      if (response.ok) {
+      const data = await apiCall();
+      if (data) {
         await fetchModerationData();
         await fetchStats();
         setReviewDialogOpen(false);

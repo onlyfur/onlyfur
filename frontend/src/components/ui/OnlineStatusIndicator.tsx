@@ -20,22 +20,235 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
 }) => {
   const [status, setStatus] = useState<UserOnlineStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    let fetchInterval: NodeJS.Timeout | null = null;
+
     const fetchStatus = async () => {
+      // Skip fetch if component is unmounted or not visible
+      if (!isMounted || !isVisible) return;
+      
       try {
         const userStatus = await onlineStatusAPI.getUserOnlineStatus(userId);
-        setStatus(userStatus);
+        if (isMounted) {
+          setStatus(userStatus);
+        }
       } catch (error) {
-        console.error('Failed to fetch user status:', error);
+        // Only log errors in development to prevent console spam
+        if (import.meta.env.DEV) {
+          console.error('Failed to fetch user status:', error);
+        }
+        // Set offline status on error to prevent continuous retries
+        if (isMounted) {
+          setStatus({
+            isOnline: false,
+            activityStatus: ActivityStatus.OFFLINE,
+            lastSeen: new Date()
+          });
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
+    // Check page visibility to pause requests when tab is not active
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Initial fetch
     fetchStatus();
 
-    // Refresh status every 30 seconds
+    // Only set up polling if in development or for own profile
+    const isOwnProfile = userId === localStorage.getItem('onlyfur_user_id');
+    if (import.meta.env.DEV || isOwnProfile) {
+      // Refresh status every 60 seconds (reduced from 30 to limit API calls)
+      fetchInterval = setInterval(fetchStatus, 60 * 1000);
+    }
+
+    return () => {
+      isMounted = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (fetchInterval) {
+        clearInterval(fetchInterval);
+      }
+    };
+  }, [userId, isVisible]);
+
+  if (loading || !status) {
+    return null;
+  }
+
+  const indicator = onlineStatusAPI.getStatusIndicator(status.activityStatus, status.isOnline);
+  
+  const sizeClasses = {
+    sm: 'w-2 h-2',
+    md: 'w-3 h-3',
+    lg: 'w-4 h-4'
+  };
+
+  const positionClasses = {
+    'top-right': 'absolute -top-0.5 -right-0.5',
+    'bottom-right': 'absolute -bottom-0.5 -right-0.5',
+    'top-left': 'absolute -top-0.5 -left-0.5',
+    'bottom-left': 'absolute -bottom-0.5 -left-0.5',
+    'inline': 'inline-block'
+  };
+
+  const statusDot = (
+    <div
+      className={`
+        ${sizeClasses[size]} 
+        ${indicator.color} 
+        rounded-full 
+        ${position !== 'inline' ? positionClasses[position] : positionClasses[position]}
+        ${className}
+        border-2 border-white dark:border-gray-900
+      `}
+      title={indicator.text}
+    />
+  );
+
+  const lastSeenText = status.lastSeen ? onlineStatusAPI.formatLastSeen(status.lastSeen) : '';
+
+  if (showText) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className={`gap-2 ${className}`}>
+              <div className={`${sizeClasses[size]} ${indicator.color} rounded-full`} />
+              {indicator.text}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{lastSeenText}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  if (position === 'inline') {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {statusDot}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{indicator.text}</p>
+            {lastSeenText && <p className="text-xs opacity-75">{lastSeenText}</p>}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {statusDot}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{indicator.text}</p>
+          {lastSeenText && <p className="text-xs opacity-75">{lastSeenText}</p>}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
+export default OnlineStatusIndicator;
+
+interface OnlineStatusIndicatorProps {
+  userId: string;
+  className?: string;
+  showText?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  position?: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left' | 'inline';
+}
+
+const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
+  userId,
+  className = '',
+  showText = false,
+  size = 'md',
+  position = 'bottom-right'
+}) => {
+  const [status, setStatus] = useState<UserOnlineStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    let fetchInterval: NodeJS.Timeout | null = null;
+
+    const fetchStatus = async () => {
+      // Skip fetch if component is unmounted or not visible
+      if (!isMounted || !isVisible) return;
+      
+      try {
+        const userStatus = await onlineStatusAPI.getUserOnlineStatus(userId);
+        if (isMounted) {
+          setStatus(userStatus);
+        }
+      } catch (error) {
+        // Only log errors in development to prevent console spam
+        if (import.meta.env.DEV) {
+          console.error('Failed to fetch user status:', error);
+        }
+        // Set offline status on error to prevent continuous retries
+        if (isMounted) {
+          setStatus({
+            isOnline: false,
+            activityStatus: ActivityStatus.OFFLINE,
+            lastSeen: new Date()
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Check page visibility to pause requests when tab is not active
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Initial fetch
+    fetchStatus();
+
+    // Only set up polling if in development or for own profile
+    const isOwnProfile = userId === localStorage.getItem('onlyfur_user_id');
+    if (import.meta.env.DEV || isOwnProfile) {
+      // Refresh status every 60 seconds (reduced from 30 to limit API calls)
+      fetchInterval = setInterval(fetchStatus, 60 * 1000);
+    }
+
+    return () => {
+      isMounted = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (fetchInterval) {
+        clearInterval(fetchInterval);
+      }
+    };
+  }, [userId, isVisible]);
+
+  if (loading || !status) {
+    return null;
+  }
     const interval = setInterval(fetchStatus, 30 * 1000);
 
     return () => clearInterval(interval);

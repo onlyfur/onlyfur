@@ -59,6 +59,7 @@ import { format, startOfWeek, endOfWeek, subDays, subWeeks, subMonths } from 'da
 import AIAnalyticsDashboard from '@/components/ai/AIAnalyticsDashboard';
 import AIContentModerator from '@/components/ai/AIContentModerator';
 import { FullScreenLoader } from '@/components/ui/AnimatedLoader';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface DashboardStats {
   revenue: {
@@ -165,13 +166,14 @@ const CreatorDashboardV3: React.FC = () => {
 
   const loadStats = async () => {
     try {
-      const response = await fetch(`/api/creator/stats?timeRange=${timeRange}`, {
+      const apiCall = createProductionApiCall(`/api/creator/stats?timeRange=${timeRange}`, {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
       
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setStats(data.stats);
       } else {
@@ -185,13 +187,14 @@ const CreatorDashboardV3: React.FC = () => {
 
   const loadRecentContent = async () => {
     try {
-      const response = await fetch('/api/content-v3/creator/recent', {
+      const apiCall = createProductionApiCall('/api/content-v3/creator/recent', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
       
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setRecentContent(data.content);
       } else {
@@ -205,13 +208,14 @@ const CreatorDashboardV3: React.FC = () => {
 
   const loadStreamingSessions = async () => {
     try {
-      const response = await fetch('/api/streaming/sessions', {
+      const apiCall = createProductionApiCall('/api/streaming/sessions', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
       
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setStreamingSessions(data.sessions);
       } else {

@@ -48,11 +48,37 @@ const SessionMonitor: React.FC<SessionMonitorProps> = ({
     // Initial check
     checkSessionStatus();
 
-    // Set up periodic checking
-    const interval = setInterval(checkSessionStatus, 60000); // Check every minute
+    // Set up periodic checking only when needed and with reduced frequency
+    let interval: NodeJS.Timeout | null = null;
+    
+    const setupPolling = () => {
+      // Only poll if session is active and page is visible
+      if (sessionStatus.isValid && !document.hidden) {
+        // Increased interval to 2 minutes to reduce API calls
+        interval = setInterval(checkSessionStatus, 120000);
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, []);
+    const handleVisibilityChange = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+      if (!document.hidden) {
+        setupPolling();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    setupPolling();
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [sessionStatus.isValid]);
 
   if (!showIndicator || !sessionStatus.isValid) {
     return null;

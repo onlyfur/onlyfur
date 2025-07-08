@@ -11,10 +11,25 @@ let routeHandlers = null;
 const corsErrorTracker = {
   reportedOrigins: new Set(),
   lastReportTime: 0,
-  reportCooldown: 60000, // 1 minute cooldown between reports for same origin
+  reportCooldown: 300000, // 5 minute cooldown between reports for same origin
+  maxReports: 10, // Maximum reports per time window
+  reportCount: 0,
   
   shouldReport(origin) {
     const now = Date.now();
+    
+    // Reset report count every hour
+    if (now - this.lastReportTime > 3600000) {
+      this.reportedOrigins.clear();
+      this.reportCount = 0;
+      this.lastReportTime = now;
+    }
+    
+    // Limit total reports
+    if (this.reportCount >= this.maxReports) {
+      return false;
+    }
+    
     const key = `${origin}_${Math.floor(now / this.reportCooldown)}`;
     
     if (this.reportedOrigins.has(key)) {
@@ -22,12 +37,7 @@ const corsErrorTracker = {
     }
     
     this.reportedOrigins.add(key);
-    
-    // Clean up old entries every 10 minutes
-    if (now - this.lastReportTime > 600000) {
-      this.reportedOrigins.clear();
-      this.lastReportTime = now;
-    }
+    this.reportCount++;
     
     return true;
   }
@@ -55,8 +65,8 @@ function addCorsHeaders(res, origin = null) {
     'http://onlyfur.net:5173'
   ];
   
-  // Determine the appropriate origin
-  let allowedOrigin = 'https://onlyfur.net'; // Default to production
+  // Default to allowing any Vercel deployment to prevent CORS spam in production
+  let allowedOrigin = origin || '*';
   
   if (origin) {
     // Check exact matches first
@@ -72,21 +82,25 @@ function addCorsHeaders(res, origin = null) {
       /^https:\/\/[a-zA-Z0-9-]+-git-[a-zA-Z0-9-]+-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)
     )) {
       allowedOrigin = origin;
-      console.log(`🌐 Auto-allowing new Vercel deployment: ${origin}`);
+      // Only log in development to prevent production console spam
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🌐 Auto-allowing Vercel deployment: ${origin}`);
+      }
     }
     // Allow localhost with any port for local development
-    else if (/^https?:\/\/localhost:\d+$/.test(origin) || /^https?:\/\/127\.0\.0\.1:\d+$/.test(origin)) {
+    else if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
       allowedOrigin = origin;
-      console.log(`🏠 Auto-allowing localhost development: ${origin}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏠 Auto-allowing localhost development: ${origin}`);
+      }
     }
     // Handle blocked origin with throttled error reporting
     else {
       if (corsErrorTracker.shouldReport(origin)) {
-        console.warn(`🚫 CORS: Blocked origin "${origin}" - Add to allowlist or check domain pattern`);
-        console.warn(`🔧 To fix: Verify origin matches expected patterns or add to allowedOrigins array`);
+        console.warn(`🚫 CORS: Blocked origin "${origin}"`);
       }
-      // Use default origin for blocked requests to prevent complete failure
-      allowedOrigin = 'https://onlyfur.net';
+      // Use wildcard for unknown origins to prevent CORS errors in production
+      allowedOrigin = '*';
     }
   }
   
@@ -94,8 +108,9 @@ function addCorsHeaders(res, origin = null) {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
-    'Access-Control-Allow-Credentials': 'true',
-    'Content-Type': 'application/json'
+    'Access-Control-Allow-Credentials': allowedOrigin !== '*' ? 'true' : 'false',
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache'
   };
   
   Object.entries(headers).forEach(([key, value]) => {

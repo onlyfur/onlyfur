@@ -37,8 +37,18 @@ const AuthDebugger: React.FC = () => {
 
   useEffect(() => {
     refreshDebugInfo();
-    const interval = setInterval(refreshDebugInfo, 2000);
-    return () => clearInterval(interval);
+    
+    // Only enable debug polling in development and reduce frequency
+    let interval: NodeJS.Timeout | null = null;
+    if (import.meta.env.DEV) {
+      interval = setInterval(refreshDebugInfo, 10000); // Reduced from 2 seconds to 10 seconds
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [user, isAuthenticated, isLoading]);
 
   return (
