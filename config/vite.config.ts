@@ -32,100 +32,51 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500, // Increase limit to 1.5MB
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // React ecosystem
-          if (id.includes('react') || id.includes('react-dom')) {
-            return 'react-vendor';
-          }
-          
-          // Radix UI components - split into logical groups
-          if (id.includes('@radix-ui')) {
-            if (id.includes('dialog') || id.includes('popover') || id.includes('dropdown') || id.includes('context-menu')) {
-              return 'radix-overlays';
-            }
-            if (id.includes('form') || id.includes('input') || id.includes('select') || id.includes('checkbox') || id.includes('radio')) {
-              return 'radix-forms';
-            }
-            if (id.includes('navigation') || id.includes('tabs') || id.includes('accordion') || id.includes('collapsible')) {
-              return 'radix-navigation';
-            }
-            return 'radix-ui';
-          }
-          
-          // Form and validation libraries
-          if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
-            return 'form-libs';
-          }
-          
-          // Payment libraries
-          if (id.includes('stripe') || id.includes('paypal')) {
-            return 'payment-libs';
-          }
-          
-          // Animation and UI libraries
-          if (id.includes('framer-motion') || id.includes('embla-carousel') || id.includes('lucide-react')) {
-            return 'animation-ui';
-          }
-          
-          // Charts and data visualization
-          if (id.includes('recharts') || id.includes('date-fns')) {
-            return 'charts-data';
-          }
-          
-          // Router
-          if (id.includes('react-router')) {
-            return 'router';
-          }
-          
-          // Socket.io
-          if (/(^|\/)socket\.io(\/|$)/.test(id)) {
-            return 'socket';
-          }
-          
-          // Utility libraries
-          if (id.includes('clsx') || id.includes('class-variance-authority') || id.includes('tailwind-merge') || id.includes('cmdk')) {
-            return 'utils';
-          }
-          
-          // API related libraries (axios, etc.)
-          if (id.includes('axios')) {
-            return 'api-libs';
-          }
-          
-          // Help articles - group them together
-          if (id.includes('/help/articles/')) {
-            return 'help-articles';
-          }
-          
-          // Admin pages - group them together
-          if (id.includes('/admin/')) {
-            return 'admin-pages';
-          }
-          
-          // Platform pages
-          if (id.includes('/platform/')) {
-            return 'platform-pages';
-          }
-          
-          // Legal pages
-          if (id.includes('/legal/')) {
-            return 'legal-pages';
-          }
-          
-          // Support pages
-          if (id.includes('/support/')) {
-            return 'support-pages';
-          }
-          
-          // Creator pages
-          if (id.includes('/creator/')) {
-            return 'creator-pages';
-          }
-          
-          // Large vendor libraries
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        // Ensure React is loaded before everything else
+        manualChunks: {
+          'react-core': ['react', 'react-dom'],
+          'react-libs': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog', 
+            '@radix-ui/react-aspect-ratio',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-collapsible',
+            '@radix-ui/react-context-menu',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-hover-card',
+            '@radix-ui/react-label',
+            '@radix-ui/react-menubar',
+            '@radix-ui/react-navigation-menu',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-radio-group',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-toggle-group',
+            '@radix-ui/react-tooltip',
+            'react-hook-form',
+            'react-router-dom',
+            'framer-motion',
+            'lucide-react',
+            'next-themes',
+            'recharts',
+            'cmdk',
+            'sonner',
+            'vaul',
+            'embla-carousel-react',
+            'input-otp',
+            'react-day-picker',
+            'react-resizable-panels'
+          ]
         }
       }
     }
