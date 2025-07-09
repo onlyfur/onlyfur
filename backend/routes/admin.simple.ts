@@ -4,8 +4,15 @@ import { prisma } from '../services/database';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 import { asyncHandler, ValidationError, NotFoundError } from '../middleware/errorHandler';
 import { logger } from '../middleware/logger';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { success: false, message: 'Too many requests, please try again later.' }
+});
 
 // All admin routes require authentication and admin role
 router.use(authenticateToken);
@@ -19,7 +26,7 @@ const updateUserSchema = z.object({
 });
 
 // GET /api/admin/dashboard - Get dashboard analytics
-router.get('/dashboard', asyncHandler(async (req: Request, res: Response) => {
+router.get('/dashboard', limiter, asyncHandler(async (req: Request, res: Response) => {
   try {
     const [
       totalUsers,
@@ -57,7 +64,7 @@ router.get('/dashboard', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // GET /api/admin/users - Get all users with pagination
-router.get('/users', asyncHandler(async (req: Request, res: Response) => {
+router.get('/users', limiter, asyncHandler(async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
