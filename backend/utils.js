@@ -119,8 +119,8 @@ function corsHeaders(requestOrigin = null) {
     'http://onlyfur.net:5173'
   ];
   
-  // Determine allowed origin
-  let allowedOrigin = 'https://onlyfur.net'; // Default to production
+  // Determine allowed origin - default to localhost:5173 for development
+  let allowedOrigin = process.env.NODE_ENV === 'production' ? 'https://onlyfur.net' : 'http://localhost:5173';
   
   if (requestOrigin) {
     // Check exact matches first
@@ -136,12 +136,18 @@ function corsHeaders(requestOrigin = null) {
       /^https:\/\/[a-zA-Z0-9-]+-git-[a-zA-Z0-9-]+-[a-zA-Z0-9-]+\.vercel\.app$/.test(requestOrigin)
     )) {
       allowedOrigin = requestOrigin;
-      console.log(`🌐 Auto-allowing new Vercel deployment: ${requestOrigin}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🌐 Auto-allowing new Vercel deployment: ${requestOrigin}`);
+      }
     }
     // Allow localhost with any port for local development
     else if (/^https?:\/\/localhost:\d+$/.test(requestOrigin) || /^https?:\/\/127\.0\.0\.1:\d+$/.test(requestOrigin)) {
       allowedOrigin = requestOrigin;
-      console.log(`🏠 Auto-allowing localhost development: ${requestOrigin}`);
+      // Only log once per session to prevent spam
+      if (!process.env.LOCALHOST_LOGGED && process.env.NODE_ENV === 'development') {
+        console.log(`🏠 Auto-allowing localhost development: ${requestOrigin}`);
+        process.env.LOCALHOST_LOGGED = 'true';
+      }
     }
     // Handle blocked origin with throttled error reporting
     else {
@@ -150,7 +156,7 @@ function corsHeaders(requestOrigin = null) {
         console.warn(`🔧 To fix: Verify origin matches expected patterns or add to corsOrigins array`);
       }
       // Use default origin for blocked requests to prevent complete failure
-      allowedOrigin = 'https://onlyfur.net';
+      allowedOrigin = process.env.NODE_ENV === 'production' ? 'https://onlyfur.net' : 'http://localhost:5173';
     }
   }
     

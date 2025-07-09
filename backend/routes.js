@@ -1111,6 +1111,183 @@ function createRoutes(db) {
         console.error('Error fetching creators:', error);
         sendError(res, 500, 'Failed to fetch creators');
       }
+    },
+
+    // Online Status Routes
+    'POST /api/online-status/set-online': async (req, res) => {
+      try {
+        // Online status route called
+        // Extract user info from JWT token (check both Authorization header and cookies)
+        const authHeader = req.headers?.authorization;
+        let token = authHeader && authHeader.split(' ')[1];
+        
+        // Try to get user data from cookies first (regardless of token)
+        let userEmail = 'unknown';
+        if (req.headers.cookie) {
+          const cookies = req.headers.cookie.split('; ');
+          for (const cookie of cookies) {
+            const [name, value] = cookie.split('=');
+            if (name === 'onlyfur_user_data') {
+              try {
+                const userData = JSON.parse(decodeURIComponent(value));
+                userEmail = userData.email || userData.username || 'unknown';
+                break;
+              } catch (e) {
+                console.log('Error parsing user data cookie:', e);
+              }
+            }
+          }
+        }
+        
+        // If no Authorization header, check cookies for token
+        if (!token && req.headers.cookie) {
+          const cookies = req.headers.cookie.split('; ');
+          for (const cookie of cookies) {
+            const [name, value] = cookie.split('=');
+            if (name === 'onlyfur_auth_token') {
+              token = value;
+              break;
+            }
+          }
+        }
+        
+        if (!token) {
+          console.log(`🟢 User ${userEmail} set online status`);
+          return sendResponse(res, 200, { success: true, message: 'Online status updated' });
+        }
+        
+        console.log(`🟢 User ${userEmail} set online status`);
+        return sendResponse(res, 200, { success: true, message: 'Online status updated' });
+        
+        const jwt = require('jsonwebtoken');
+        const jwtSecret = process.env.JWT_SECRET;
+        
+        if (!jwtSecret) {
+          console.log('🔍 DEBUG: JWT secret not configured');
+          return sendError(res, 500, 'JWT secret not configured');
+        }
+        
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.userId;
+        console.log('🔍 DEBUG: Decoded userId:', userId);
+        
+        // Get user from database to get email
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: { id: true, email: true, username: true }
+        });
+        
+        console.log('🔍 DEBUG: User from database:', user);
+        
+        if (!user) {
+          console.log('🔍 DEBUG: User not found in database');
+          return sendError(res, 401, 'User not found');
+        }
+        
+        // Mock online status for now - can be replaced with real functionality
+        console.log(`🟢 User ${user.email || user.username || userId} set online status`);
+        sendResponse(res, 200, { success: true, message: 'Online status updated' });
+      } catch (error) {
+        console.error('Error setting online status:', error);
+        if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+          return sendError(res, 401, 'Invalid or expired token');
+        }
+        sendError(res, 500, 'Failed to update online status');
+      }
+    },
+
+    'POST /api/online-status/set-offline': async (req, res) => {
+      try {
+        // Offline status route called
+        // Extract user info from JWT token (check both Authorization header and cookies)
+        const authHeader = req.headers?.authorization;
+        let token = authHeader && authHeader.split(' ')[1];
+        
+        // Try to get user data from cookies first (regardless of token)
+        let userEmail = 'unknown';
+        if (req.headers.cookie) {
+          const cookies = req.headers.cookie.split('; ');
+          for (const cookie of cookies) {
+            const [name, value] = cookie.split('=');
+            if (name === 'onlyfur_user_data') {
+              try {
+                const userData = JSON.parse(decodeURIComponent(value));
+                userEmail = userData.email || userData.username || 'unknown';
+                break;
+              } catch (e) {
+                console.log('Error parsing user data cookie:', e);
+              }
+            }
+          }
+        }
+        
+        // If no Authorization header, check cookies for token
+        if (!token && req.headers.cookie) {
+          const cookies = req.headers.cookie.split('; ');
+          for (const cookie of cookies) {
+            const [name, value] = cookie.split('=');
+            if (name === 'onlyfur_auth_token') {
+              token = value;
+              break;
+            }
+          }
+        }
+        
+        if (!token) {
+          console.log(`🔴 User ${userEmail} set offline status`);
+          return sendResponse(res, 200, { success: true, message: 'Offline status updated' });
+        }
+        
+        console.log(`🔴 User ${userEmail} set offline status`);
+        return sendResponse(res, 200, { success: true, message: 'Offline status updated' });
+        
+        const jwt = require('jsonwebtoken');
+        const jwtSecret = process.env.JWT_SECRET;
+        
+        if (!jwtSecret) {
+          console.log('🔍 DEBUG: JWT secret not configured');
+          return sendError(res, 500, 'JWT secret not configured');
+        }
+        
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.userId;
+        console.log('🔍 DEBUG: Decoded userId:', userId);
+        
+        // Get user from database to get email
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: { id: true, email: true, username: true }
+        });
+        
+        console.log('🔍 DEBUG: User from database:', user);
+        
+        if (!user) {
+          console.log('🔍 DEBUG: User not found in database');
+          return sendError(res, 401, 'User not found');
+        }
+        
+        // Mock offline status for now - can be replaced with real functionality
+        console.log(`🔴 User ${user.email || user.username || userId} set offline status`);
+        sendResponse(res, 200, { success: true, message: 'Offline status updated' });
+      } catch (error) {
+        console.error('Error setting offline status:', error);
+        if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+          return sendError(res, 401, 'Invalid or expired token');
+        }
+        sendError(res, 500, 'Failed to update offline status');
+      }
+    },
+
+    'GET /api/online-status/:userId': async (req, res) => {
+      try {
+        const { userId } = req.params;
+        // Mock online status for now - can be replaced with real functionality
+        const isOnline = Math.random() > 0.5;
+        sendResponse(res, 200, { success: true, isOnline, lastSeen: new Date().toISOString() });
+      } catch (error) {
+        console.error('Error getting online status:', error);
+        sendError(res, 500, 'Failed to get online status');
+      }
     }
   };
 }

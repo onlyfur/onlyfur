@@ -693,17 +693,17 @@ class AuthService {
 
   clearSession(): void {
     clearAuthCookies();
-    localStorage.removeItem(CREDENTIALS_KEY);
+    // Don't clear saved credentials on logout - they should persist for "remember me"
+    // localStorage.removeItem(CREDENTIALS_KEY);
     this.tokenRefreshPromise = null;
   }
 
   // Auto-login functionality with enhanced security
   saveCredentials(email: string, password: string): void {
-    // Only save email and a flag that credentials exist
+    // Only save email for "remember me" functionality
     // Never save the actual password in plaintext
     const credentials = { 
       email, 
-      hasPassword: true, // Just indicate that a password was provided
       lastUsed: new Date().toISOString() 
     };
     

@@ -66,11 +66,14 @@ const Header: React.FC = () => {
     }
   };
 
+  // Navigation items - conditionally include based on authentication
   const navigation: Array<{ name: string; href: string; icon: any; badge?: string | number }> = [
     { name: 'Home', href: '/', icon: Home },
-    { name: 'Feed', href: '/feed', icon: Heart },
-    { name: 'Explore', href: '/explore', icon: Search },
-    { name: 'Messages', href: '/messages', icon: MessageCircle },
+    ...(isAuthenticated ? [
+      { name: 'Feed', href: '/feed', icon: Heart },
+      { name: 'Explore', href: '/explore', icon: Search },
+      { name: 'Messages', href: '/messages', icon: MessageCircle },
+    ] : [])
   ];
 
   // Helper for matching root and subroutes

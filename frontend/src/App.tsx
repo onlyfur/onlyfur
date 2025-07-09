@@ -199,12 +199,14 @@ function App() {
                   <Router>
                     <Suspense fallback={<LoadingSpinner />}>
                       <Routes>
-                        {/* Public routes */}
+                        {/* Public routes with layout */}
                         <Route
                           path="/"
                           element={
                             <PublicRoute>
-                              <Landing />
+                              <MainLayout>
+                                <Landing />
+                              </MainLayout>
                             </PublicRoute>
                           }
                         />
@@ -212,7 +214,9 @@ function App() {
                           path="/login"
                           element={
                             <PublicRoute>
-                              <Login />
+                              <MainLayout>
+                                <Login />
+                              </MainLayout>
                             </PublicRoute>
                           }
                         />
@@ -220,12 +224,22 @@ function App() {
                           path="/register"
                           element={
                             <PublicRoute>
-                              <Register />
+                              <MainLayout>
+                                <Register />
+                              </MainLayout>
                             </PublicRoute>
                           }
                         />
-                        <Route path="/auth/callback" element={<AuthCallback />} />
-                        <Route path="/oauth-debugger" element={<OAuthDebugger />} />
+                        <Route path="/auth/callback" element={
+                          <MainLayout>
+                            <AuthCallback />
+                          </MainLayout>
+                        } />
+                        <Route path="/oauth-debugger" element={
+                          <MainLayout>
+                            <OAuthDebugger />
+                          </MainLayout>
+                        } />
 
                         {/* Protected routes with layout */}
                         <Route
@@ -484,25 +498,25 @@ function App() {
                         />
 
                         {/* Public Footer Routes */}
-                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
                         
                         {/* Platform Pages */}
-                        <Route path="/about" element={<About />} />
-                        <Route path="/how-it-works" element={<HowItWorks />} />
-                        <Route path="/creator-program" element={<CreatorProgram />} />
-                        <Route path="/success-stories" element={<SuccessStories />} />
+                        <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+                        <Route path="/how-it-works" element={<MainLayout><HowItWorks /></MainLayout>} />
+                        <Route path="/creator-program" element={<MainLayout><CreatorProgram /></MainLayout>} />
+                        <Route path="/success-stories" element={<MainLayout><SuccessStories /></MainLayout>} />
 
                         {/* Support Pages */}
-                        <Route path="/help" element={<HelpCenter />} />
-                        <Route path="/safety" element={<Safety />} />
-                        <Route path="/community-guidelines" element={<CommunityGuidelinesPage />} />
-                        <Route path="/contact-us" element={<ContactUs />} />
+                        <Route path="/help" element={<MainLayout><HelpCenter /></MainLayout>} />
+                        <Route path="/safety" element={<MainLayout><Safety /></MainLayout>} />
+                        <Route path="/community-guidelines" element={<MainLayout><CommunityGuidelinesPage /></MainLayout>} />
+                        <Route path="/contact-us" element={<MainLayout><ContactUs /></MainLayout>} />
 
                         {/* Legal Pages */}
-                        <Route path="/privacy" element={<PrivacyPolicy />} />
-                        <Route path="/terms" element={<TermsOfService />} />
-                        <Route path="/cookies" element={<CookiePolicy />} />
-                        <Route path="/dmca" element={<DMCA />} />
+                        <Route path="/privacy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
+                        <Route path="/terms" element={<MainLayout><TermsOfService /></MainLayout>} />
+                        <Route path="/cookies" element={<MainLayout><CookiePolicy /></MainLayout>} />
+                        <Route path="/dmca" element={<MainLayout><DMCA /></MainLayout>} />
 
                         {/* Help Articles */}
                         <Route path="/help/how-to-create-account" element={<HowToCreateAccount />} />

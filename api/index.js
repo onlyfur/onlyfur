@@ -6,6 +6,7 @@ const url = require('url');
 // Global database instance for serverless functions
 let dbInstance = null;
 let routeHandlers = null;
+let initializationPromise = null;
 
 // CORS error tracking to prevent console spam
 const corsErrorTracker = {
@@ -45,12 +46,65 @@ const corsErrorTracker = {
 
 // Initialize database and routes if needed
 async function initializeBackend() {
-  if (!dbInstance) {
-    dbInstance = getDatabase();
-    await dbInstance.connect();
-    routeHandlers = createRoutes(dbInstance);
+  // If already initialized, return immediately
+  if (dbInstance && routeHandlers && dbInstance.isConnected) {
+    return { db: dbInstance, routes: routeHandlers };
   }
-  return { db: dbInstance, routes: routeHandlers };
+  
+  // If initialization is already in progress, wait for it
+  if (initializationPromise) {
+    console.log('🔄 Waiting for ongoing initialization...');
+    return await initializationPromise;
+  }
+  
+  // Start initialization process
+  initializationPromise = performInitialization();
+  
+  try {
+    const result = await initializationPromise;
+    return result;
+  } catch (error) {
+    // Reset promise on error so it can be retried
+    initializationPromise = null;
+    throw error;
+  }
+}
+
+// Actual initialization logic
+async function performInitialization() {
+  try {
+    console.log('🔧 Initializing backend...');
+    
+    // Initialize database
+    if (!dbInstance) {
+      console.log('🔧 Creating database instance...');
+      dbInstance = getDatabase();
+    }
+    
+    // Ensure database is connected
+    if (!dbInstance.isConnected) {
+      console.log('🔧 Connecting to database...');
+      await dbInstance.connect();
+    }
+    
+    // Create routes only after database is connected
+    if (!routeHandlers) {
+      console.log('🔧 Creating routes...');
+      routeHandlers = createRoutes(dbInstance);
+      
+      if (routeHandlers) {
+        console.log('🔧 Routes created successfully:', Object.keys(routeHandlers).length, 'routes');
+      } else {
+        throw new Error('Failed to create routes');
+      }
+    }
+    
+    console.log('✅ Backend initialization complete');
+    return { db: dbInstance, routes: routeHandlers };
+  } catch (error) {
+    console.error('❌ Error in performInitialization:', error);
+    throw error;
+  }
 }
 
 // Add CORS headers
@@ -122,7 +176,8 @@ async function handler(req, res) {
   const { method } = req;
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
-  const origin = req.headers?.origin || 'http://localhost:5174';
+  const origin = req.headers?.origin || 'http://localhost:5173';
+  
   
   // Add CORS headers to all responses
   addCorsHeaders(res, origin);
@@ -137,9 +192,15 @@ async function handler(req, res) {
     // Initialize backend
     const { routes } = await initializeBackend();
     
+    if (!routes) {
+      console.error('❌ Routes object is null or undefined');
+      return res.status(500).json({ success: false, error: 'Routes not initialized' });
+    }
+    
     // Find route handler
     let routeKey = `${method} ${pathname}`;
     let handler = routes[routeKey];
+    
     
     // Handle dynamic routes
     if (!handler) {
@@ -151,6 +212,10 @@ async function handler(req, res) {
       else if (pathname.startsWith('/api/user/check-url/') && method === 'GET') {
         handler = routes['GET /api/user/check-url/:url'];
       }
+      // Handle /api/online-status/:userId route
+      else if (pathname.startsWith('/api/online-status/') && method === 'GET') {
+        handler = routes['GET /api/online-status/:userId'];
+      }
     }
     
     if (handler) {
@@ -159,8 +224,10 @@ async function handler(req, res) {
         ...req,
         url: req.url,
         method: req.method,
-        headers: req.headers
+        headers: req.headers || {},
+        params: req.params || {}
       };
+      
       
       const nodeRes = {
         writeHead: (status, headers) => {
@@ -229,7 +296,8 @@ if (require.main === module) {
     const vercelReq = {
       ...req,
       query: url.parse(req.url, true).query,
-      body: body
+      body: body,
+      headers: req.headers // Ensure headers are properly preserved
     };
     
     const vercelRes = {

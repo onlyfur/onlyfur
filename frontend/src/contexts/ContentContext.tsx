@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   Content,
   ContentFile,
@@ -75,6 +75,10 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
   const [stats, setStats] = useState<ContentStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Ref to prevent multiple simultaneous loads
+  const isLoadingRef = useRef(false);
+  const hasInitializedRef = useRef(false);
 
   // File validation configuration
   const fileValidation: FileValidation = {
@@ -93,15 +97,38 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     { id: '5', name: 'Behind the Scenes', description: 'BTS content', color: '#8B5CF6', icon: 'Eye', contentCount: 0 },
   ];
 
+  // Reset state when user changes
+  useEffect(() => {
+    // Reset refs when user changes
+    hasInitializedRef.current = false;
+    isLoadingRef.current = false;
+    
+    // Clear state
+    setContents([]);
+    setFolders([]);
+    setStats(null);
+    setError(null);
+  }, [user?.id]);
+
   // Load content from localStorage and real data
   useEffect(() => {
-    if (user) {
-      loadContentFromStorage();
+    if (user?.id && !hasInitializedRef.current && !isLoadingRef.current) {
+      hasInitializedRef.current = true;
       setCategories(defaultCategories);
+      loadContentFromStorage();
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user ID to prevent unnecessary re-renders
 
   const loadContentFromStorage = async () => {
+    // Prevent multiple simultaneous loads
+    if (isLoadingRef.current) {
+      return;
+    }
+    
+    isLoadingRef.current = true;
+    setIsLoading(true);
+    setError(null);
+    
     try {
       const storedContent = localStorage.getItem(`creator-content-${user?.id}`);
       const storedFolders = localStorage.getItem(`creator-folders-${user?.id}`);
@@ -136,8 +163,14 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       }
     } catch (error) {
       console.error('Failed to load content from storage:', error);
-      await loadRealContent();
+      setError('Failed to load content');
+      // Set empty state on error instead of trying to load real content
+      // to prevent infinite loops
+      setContents([]);
       generateMockStats();
+    } finally {
+      setIsLoading(false);
+      isLoadingRef.current = false;
     }
   };
 
@@ -151,16 +184,32 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
 
   const loadRealContent = async () => {
     try {
-      if (!user?.id) return;
+      if (!user?.id) {
+        setContents([]);
+        return;
+      }
 
-      const hasData = await realDataAPI.hasRealData();
+      // Use a timeout to prevent infinite loops on network errors
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 5000)
+      );
+
+      const hasData = await Promise.race([
+        realDataAPI.hasRealData(),
+        timeoutPromise
+      ]);
+      
       if (!hasData) {
         setContents([]);
         return;
       }
 
       // Load real content from database
-      const contentResponse = await realDataAPI.getRealContent(50, 0, true);
+      const contentResponse = await Promise.race([
+        realDataAPI.getRealContent(50, 0, true),
+        timeoutPromise
+      ]);
+      
       if (contentResponse.success && contentResponse.content) {
         const transformedContent: Content[] = contentResponse.content
           .filter((item: any) => item.creatorId === user.id)
@@ -195,6 +244,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     } catch (error) {
       console.error('Error loading real content:', error);
       setContents([]);
+      // Don't retry on error to prevent infinite loops
     }
   };
 

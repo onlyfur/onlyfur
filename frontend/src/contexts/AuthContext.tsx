@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { User } from '../types';
 import { authService } from '../services/authService';
 import onlineStatusAPI from '../services/onlineStatusAPI';
@@ -37,7 +37,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Ref to track if we've initialized to prevent infinite loops
+  const hasInitializedRef = useRef(false);
+  const sessionCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Initial authentication check - only runs once
   useEffect(() => {
+    if (hasInitializedRef.current) return;
+    
+    hasInitializedRef.current = true;
     // Enhanced authentication checking and auto-login
     const checkAuth = async () => {
       try {
@@ -125,12 +134,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     checkAuth();
+  }, []);
+  
+  // Separate effect for session monitoring - only starts after user is set
+  useEffect(() => {
+    if (!user) {
+      // Clear any existing interval when user logs out
+      if (sessionCheckIntervalRef.current) {
+        clearInterval(sessionCheckIntervalRef.current);
+        sessionCheckIntervalRef.current = null;
+      }
+      return;
+    }
     
-    // Set up session monitoring
-    const sessionCheckInterval = setInterval(() => {
+    // Set up session monitoring only when user is authenticated
+    if (sessionCheckIntervalRef.current) {
+      clearInterval(sessionCheckIntervalRef.current);
+    }
+    
+    sessionCheckIntervalRef.current = setInterval(() => {
       // Periodically validate session
       const validation = authService.validateStoredSession();
-      if (!validation.isValid && user) {
+      if (!validation.isValid) {
         console.log('Session expired, logging out user');
         setUser(null);
         authService.clearSession();
@@ -138,9 +163,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, 5 * 60 * 1000); // Check every 5 minutes
     
     return () => {
-      clearInterval(sessionCheckInterval);
+      if (sessionCheckIntervalRef.current) {
+        clearInterval(sessionCheckIntervalRef.current);
+        sessionCheckIntervalRef.current = null;
+      }
     };
-  }, [user]);  const login = async (email: string, password: string, rememberMe: boolean = false, onSuccess?: (user: User) => void): Promise<void> => {
+  }, [user?.id]); // Only depend on user ID to prevent unnecessary re-runs
+
+  const login = async (email: string, password: string, rememberMe: boolean = false, onSuccess?: (user: User) => void): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
@@ -253,18 +283,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async (redirectPath: string = '/') => {
     try {
+      // Stop online status tracking BEFORE clearing session data
+      onlineStatusAPI.stopTracking().catch(console.error);
+      
       const token = authService.getSession();
       if (token) {
         await authService.logout();
       }
       
-      // Stop online status tracking
-      onlineStatusAPI.stopTracking().catch(console.error);
-      
       // Clear user state immediately
       setUser(null);
       
-      // Clear all session data
+      // Clear all session data (already done by authService.logout(), but keeping for safety)
       authService.clearSession();
       
       // Clear any saved credentials if user chooses to logout
@@ -277,7 +307,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
     } catch (error) {
       console.error('Logout error:', error);
-      // Even if logout fails on server, clear local state
+      // Even if logout fails on server, stop tracking and clear local state
+      onlineStatusAPI.stopTracking().catch(console.error);
       setUser(null);
       authService.clearSession();
       
