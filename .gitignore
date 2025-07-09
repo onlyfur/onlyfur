@@ -4,6 +4,7 @@ coverage
 *.log
 .idea
 creatorplattform.iml
+copilot-instructions.md
 
 # Environment files (exclude local configurations)
 .env
