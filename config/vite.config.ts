@@ -78,7 +78,7 @@ export default defineConfig({
           }
           
           // Socket.io
-          if (id.includes('socket.io')) {
+          if (/(^|\/)socket\.io(\/|$)/.test(id)) {
             return 'socket';
           }
           
