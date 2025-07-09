@@ -133,7 +133,8 @@
     "vaul": "^1.1.2",
     "vercel": "^44.2.12",
     "vite": "^6.3.5",
-    "zod": "^3.25.63"
+    "zod": "^3.25.63",
+    "bcrypt": "^6.0.0"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",

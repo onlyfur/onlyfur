@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const { 
   JWTHandler, 
   sendResponse, 
@@ -764,8 +764,9 @@ function createRoutes(db) {
           return sendError(res, 400, 'Password must be at least 8 characters long');
         }
 
-        // Hash the new password
-        const hashedPassword = crypto.createHash('sha256').update(newPassword).digest('hex');
+        // Hash the new password securely using bcrypt
+        const saltRounds = 10; // Adjust computational cost as needed
+        const hashedPassword = bcrypt.hashSync(newPassword, saltRounds);
 
         const result = await db.users.updateOne(
           { _id: userId },
