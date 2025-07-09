@@ -15,8 +15,8 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   clearError: () => void;
-  getSavedCredentials: () => { email: string; password: string } | null;
-  saveCredentials: (email: string, password: string) => void;
+  getSavedEmail: () => { email: string; lastUsed: string } | null;
+  saveEmail: (email: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -191,9 +191,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Save user email preference for convenience (but not password)
       if (rememberMe) {
-        authService.saveCredentials(email, 'placeholder'); // Only saves email and preference
+        authService.saveEmail(email);
       } else {
-        authService.clearSavedCredentials();
+        authService.clearSavedEmail();
       }
 
       // Call success callback with user data
@@ -331,15 +331,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
   };
 
-  const getSavedCredentials = () => {
-    // Return saved email for convenience, but never return password
-    const savedEmail = authService.getSavedEmail();
-    return savedEmail ? { email: savedEmail, password: '' } : null;
+  const getSavedEmail = () => {
+    return authService.getSavedEmail();
   };
 
-  const saveCredentials = (email: string, password: string) => {
-    // Only save email for convenience, never save actual password
-    authService.saveCredentials(email, 'placeholder');
+  const saveEmail = (email: string) => {
+    authService.saveEmail(email);
   };
 
   const value = {
@@ -353,8 +350,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     updateUser,
     clearError,
-    getSavedCredentials,
-    saveCredentials,
+    getSavedEmail,
+    saveEmail,
   };
 
   return (

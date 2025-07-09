@@ -1,5 +1,4 @@
 import { User } from '@/types';
-const ENCRYPTION_KEY = 'your-secure-encryption-key';
 import { apiClient, AuthResponse } from './apiClient';
 import {
   setAuthToken,
@@ -66,8 +65,8 @@ const MOCK_USERS: (User & { setupComplete: boolean })[] = [
 // Development mode flag
 const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
 
-// Session storage keys (now using cookies)
-const CREDENTIALS_KEY = 'onlyfur_saved_credentials';
+// Session storage key for saving email
+const SAVED_EMAIL_KEY = 'onlyfur_saved_email';
 
 class AuthService {
   private isOfflineMode = false;
@@ -586,29 +585,20 @@ class AuthService {
 
   clearSession(): void {
     clearAuthCookies();
-    localStorage.removeItem(CREDENTIALS_KEY);
+    // Note: We don't clear saved email on logout to preserve "Remember Me" functionality
   }
 
-  // Auto-login functionality
-  saveCredentials(email: string, password: string): void {
-    const encryptedPassword = this.encryptPassword(password);
-    const credentials = { email, password: encryptedPassword };
-    localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+  // Remember Me functionality - store only email, not passwords
+  saveEmail(email: string): void {
+    const data = { email, lastUsed: new Date().toISOString() };
+    localStorage.setItem(SAVED_EMAIL_KEY, JSON.stringify(data));
   }
 
-  private encryptPassword(password: string): string {
-    const crypto = require('crypto');
-    const cipher = crypto.createCipher('aes-256-ctr', ENCRYPTION_KEY);
-    return cipher.update(password, 'utf8', 'hex') + cipher.final('hex');
-  }
-
-  getSavedCredentials(): { email: string; password: string } | null {
+  getSavedEmail(): { email: string; lastUsed: string } | null {
     try {
-      const credentials = localStorage.getItem(CREDENTIALS_KEY);
-      if (credentials) {
-        const parsedCredentials = JSON.parse(credentials);
-        parsedCredentials.password = this.decryptPassword(parsedCredentials.password);
-        return parsedCredentials;
+      const data = localStorage.getItem(SAVED_EMAIL_KEY);
+      if (data) {
+        return JSON.parse(data);
       }
       return null;
     } catch {
@@ -616,38 +606,32 @@ class AuthService {
     }
   }
 
-  private decryptPassword(encryptedPassword: string): string {
-    const crypto = require('crypto');
-    const decipher = crypto.createDecipher('aes-256-ctr', ENCRYPTION_KEY);
-    return decipher.update(encryptedPassword, 'hex', 'utf8') + decipher.final('utf8');
-  }
-
-  clearSavedCredentials(): void {
-    localStorage.removeItem(CREDENTIALS_KEY);
+  clearSavedEmail(): void {
+    localStorage.removeItem(SAVED_EMAIL_KEY);
   }
 
   shouldAttemptAutoLogin(): boolean {
-    return !!this.getSavedCredentials() && this.isRememberMeEnabled();
+    return !!getRefreshToken() && this.isRememberMeEnabled();
   }
 
   async tryAutoLogin(): Promise<AuthResult> {
-    const credentials = this.getSavedCredentials();
+    const refreshToken = getRefreshToken();
     
-    if (!credentials) {
-      return { success: false, error: 'No saved credentials' };
+    if (!refreshToken) {
+      return { success: false, error: 'No valid refresh token' };
     }
 
     try {
-      const result = await this.login(credentials);
+      const result = await this.refreshAuthToken();
       
       if (!result.success) {
-        // Clear invalid credentials
-        this.clearSavedCredentials();
+        // Clear invalid session
+        this.clearSession();
       }
       
       return result;
     } catch (error) {
-      this.clearSavedCredentials();
+      this.clearSession();
       return { success: false, error: 'Auto-login failed' };
     }
   }
