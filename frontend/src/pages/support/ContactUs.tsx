@@ -8,8 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Mail, 
-  MessageCircle, 
-  Phone, 
   Clock,
   CheckCircle,
   AlertCircle,
@@ -38,24 +36,8 @@ const ContactUs: React.FC = () => {
       icon: Mail,
       title: 'Email Support',
       description: 'Get help via email with detailed responses',
-      contact: 'support@onlyfur.com',
+      contact: 'support@onlyfur.net',
       responseTime: '24-48 hours',
-      availability: '24/7'
-    },
-    {
-      icon: MessageCircle,
-      title: 'Live Chat',
-      description: 'Chat with our support team in real-time',
-      contact: 'Available in-app',
-      responseTime: '5-15 minutes',
-      availability: 'Mon-Fri 9AM-6PM PST'
-    },
-    {
-      icon: Phone,
-      title: 'Emergency Line',
-      description: 'For urgent safety concerns only',
-      contact: '+1 (555) 123-4567',
-      responseTime: 'Immediate',
       availability: '24/7'
     }
   ];
@@ -168,7 +150,7 @@ const ContactUs: React.FC = () => {
       {/* Hero Section */}
       <div className="text-center mb-16">
         <div className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-100 to-green-100 dark:from-blue-900/20 dark:to-green-900/20 px-4 py-2 rounded-full mb-6">
-          <MessageCircle className="h-5 w-5 text-primary" />
+          <Mail className="h-5 w-5 text-primary" />
           <span className="text-sm font-medium">Contact Support</span>
         </div>
         
@@ -185,24 +167,26 @@ const ContactUs: React.FC = () => {
       {/* Contact Methods */}
       <div className="mb-16">
         <h2 className="text-3xl font-bold text-center mb-8">Get in Touch</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {contactMethods.map((method, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 text-center">
-                <method.icon className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <h3 className="text-lg font-semibold mb-2">{method.title}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{method.description}</p>
-                <div className="space-y-2 text-sm">
-                  <p><strong>Contact:</strong> {method.contact}</p>
-                  <p><strong>Response:</strong> {method.responseTime}</p>
-                  <div className="flex items-center justify-center space-x-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{method.availability}</span>
+        <div className="flex justify-center">
+          <div className="max-w-md">
+            {contactMethods.map((method, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 text-center">
+                  <method.icon className="w-12 h-12 mx-auto mb-4 text-primary" />
+                  <h3 className="text-lg font-semibold mb-2">{method.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4">{method.description}</p>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Contact:</strong> {method.contact}</p>
+                    <p><strong>Response:</strong> {method.responseTime}</p>
+                    <div className="flex items-center justify-center space-x-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{method.availability}</span>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -272,7 +256,6 @@ const ContactUs: React.FC = () => {
                       <SelectItem value="low">Low - General question</SelectItem>
                       <SelectItem value="normal">Normal - Standard issue</SelectItem>
                       <SelectItem value="high">High - Urgent issue</SelectItem>
-                      <SelectItem value="emergency">Emergency - Safety concern</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -301,17 +284,6 @@ const ContactUs: React.FC = () => {
                     required
                   />
                 </div>
-
-                {/* Emergency Notice */}
-                {formData.priority === 'emergency' && (
-                  <Alert className="border-red-200 bg-red-50 dark:bg-red-900/10">
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                    <AlertDescription className="text-red-800 dark:text-red-200">
-                      For immediate safety concerns, please also call our emergency line at +1 (555) 123-4567 
-                      or contact local emergency services if needed.
-                    </AlertDescription>
-                  </Alert>
-                )}
 
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? 'Sending...' : 'Send Message'}
@@ -381,14 +353,10 @@ const ContactUs: React.FC = () => {
         <Card className="bg-blue-50 dark:bg-blue-900/10 border-blue-200">
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold mb-4 text-center">Expected Response Times</h3>
-            <div className="grid md:grid-cols-4 gap-4 text-center">
-              <div>
-                <div className="text-sm font-medium">Emergency</div>
-                <div className="text-xs text-muted-foreground">Immediate</div>
-              </div>
+            <div className="grid md:grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-sm font-medium">High Priority</div>
-                <div className="text-xs text-muted-foreground">Within 4 hours</div>
+                <div className="text-xs text-muted-foreground">Within 24 hours</div>
               </div>
               <div>
                 <div className="text-sm font-medium">Normal</div>

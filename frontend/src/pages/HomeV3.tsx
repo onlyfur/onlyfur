@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface Creator {
   id: string;
@@ -93,12 +94,13 @@ const HomeV3: React.FC = () => {
   const loadHomeFeed = async () => {
     setIsLoading(!refreshing);
     try {
-      const response = await fetch('/api/home-v2/feed?limit=20', {
+      const apiCall = createProductionApiCall('/api/home-v2/feed?limit=20', {
+        method: 'GET',
         headers: user ? {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         } : {},
       });
-      const data = await response.json();
+      const data = await apiCall();
       
       if (data.success) {
         setFeedSections(data.feedSections);
@@ -121,14 +123,15 @@ const HomeV3: React.FC = () => {
 
     try {
       if (action === 'like') {
-        const response = await fetch(`/api/content-v3/${contentId}/like`, {
+        const apiCall = createProductionApiCall(`/api/content-v3/${contentId}/like`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         });
+        const data = await apiCall();
         
-        if (response.ok) {
+        if (data) {
           // Update local state to reflect the like
           loadHomeFeed();
         }

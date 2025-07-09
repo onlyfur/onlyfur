@@ -1,5 +1,31 @@
 const crypto = require('crypto');
 
+// CORS error tracking to prevent console spam
+const corsErrorTracker = {
+  reportedOrigins: new Set(),
+  lastReportTime: 0,
+  reportCooldown: 60000, // 1 minute cooldown between reports for same origin
+  
+  shouldReport(origin) {
+    const now = Date.now();
+    const key = `${origin}_${Math.floor(now / this.reportCooldown)}`;
+    
+    if (this.reportedOrigins.has(key)) {
+      return false; // Already reported this origin in current time window
+    }
+    
+    this.reportedOrigins.add(key);
+    
+    // Clean up old entries every 10 minutes
+    if (now - this.lastReportTime > 600000) {
+      this.reportedOrigins.clear();
+      this.lastReportTime = now;
+    }
+    
+    return true;
+  }
+};
+
 // JWT utilities using Node.js crypto
 class JWTHandler {
   static base64UrlEncode(str) {
@@ -82,25 +108,75 @@ class JWTHandler {
 }
 
 // Helper functions
-function corsHeaders() {
-  const FRONTEND_URL = process.env.CLIENT_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:5174';
+function corsHeaders(requestOrigin = null) {
+  // Get allowed origins from environment variable or use defaults
+  const corsOrigins = process.env.CORS_ORIGIN?.split(',') || [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://onlyfur.net',
+    'https://onlyfur.vercel.app',
+    'https://creatorplattform.vercel.app',
+    'http://onlyfur.net:5173'
+  ];
+  
+  // Determine allowed origin - default to localhost:5173 for development
+  let allowedOrigin = process.env.NODE_ENV === 'production' ? 'https://onlyfur.net' : 'http://localhost:5173';
+  
+  if (requestOrigin) {
+    // Check exact matches first
+    if (corsOrigins.includes(requestOrigin)) {
+      allowedOrigin = requestOrigin;
+    }
+    // Auto-allow any Vercel deployment URLs for development branches
+    else if (requestOrigin.includes('vercel.app') && (
+      requestOrigin.includes('onlyfur') || 
+      requestOrigin.includes('k3noxs-projects') ||
+      requestOrigin.includes('creatorplattform') ||
+      // Allow any git branch pattern: projectname-git-branchname-username.vercel.app
+      /^https:\/\/[a-zA-Z0-9-]+-git-[a-zA-Z0-9-]+-[a-zA-Z0-9-]+\.vercel\.app$/.test(requestOrigin)
+    )) {
+      allowedOrigin = requestOrigin;
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🌐 Auto-allowing new Vercel deployment: ${requestOrigin}`);
+      }
+    }
+    // Allow localhost with any port for local development
+    else if (/^https?:\/\/localhost:\d+$/.test(requestOrigin) || /^https?:\/\/127\.0\.0\.1:\d+$/.test(requestOrigin)) {
+      allowedOrigin = requestOrigin;
+      // Only log once per session to prevent spam
+      if (!process.env.LOCALHOST_LOGGED && process.env.NODE_ENV === 'development') {
+        console.log(`🏠 Auto-allowing localhost development: ${requestOrigin}`);
+        process.env.LOCALHOST_LOGGED = 'true';
+      }
+    }
+    // Handle blocked origin with throttled error reporting
+    else {
+      if (corsErrorTracker.shouldReport(requestOrigin)) {
+        console.warn(`🚫 CORS: Blocked origin "${requestOrigin}" - Add to allowlist or check domain pattern`);
+        console.warn(`🔧 To fix: Verify origin matches expected patterns or add to corsOrigins array`);
+      }
+      // Use default origin for blocked requests to prevent complete failure
+      allowedOrigin = process.env.NODE_ENV === 'production' ? 'https://onlyfur.net' : 'http://localhost:5173';
+    }
+  }
+    
   return {
-    'Access-Control-Allow-Origin': FRONTEND_URL,
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
     'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };
 }
 
-function sendResponse(res, status, data) {
-  const headers = corsHeaders();
+function sendResponse(res, status, data, requestOrigin = null) {
+  const headers = corsHeaders(requestOrigin);
   res.writeHead(status, headers);
   res.end(JSON.stringify(data));
 }
 
-function sendError(res, status, message, error = null) {
-  const headers = corsHeaders();
+function sendError(res, status, message, error = null, requestOrigin = null) {
+  const headers = corsHeaders(requestOrigin);
   res.writeHead(status, headers);
   res.end(JSON.stringify({
     success: false,

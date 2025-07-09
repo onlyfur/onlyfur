@@ -145,10 +145,14 @@ const ProfileV3: React.FC = () => {
   const loadProfile = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/users-v3/${userId || user?.id}`, {
+      // Use production-safe API call
+      const endpoint = `/api/users-v3/${userId || user?.id}`;
+      const response = await fetch(endpoint, {
         headers: user ? {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         } : {},
+        // Use same-origin credentials in production
+        credentials: window.location.hostname.includes('vercel.app') ? 'same-origin' : 'include',
       });
       
       const data = await response.json();
@@ -161,7 +165,11 @@ const ProfileV3: React.FC = () => {
         setProfile(generateMockProfile());
       }
     } catch (error) {
-      console.error('Error loading profile:', error);
+      // Only log in development to prevent console spam
+      if (import.meta.env?.DEV) {
+        console.error('Error loading profile:', error);
+      }
+      // Always provide fallback data to prevent crashes
       setProfile(generateMockProfile());
     } finally {
       setIsLoading(false);

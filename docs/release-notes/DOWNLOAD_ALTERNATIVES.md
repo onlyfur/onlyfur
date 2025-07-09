@@ -165,7 +165,7 @@ VITE_API_URL="https://your-domain.vercel.app"
 
 # Platform Configuration
 PLATFORM_NAME="OnlyFur Platform"
-SUPPORT_EMAIL="support@onlyfur.com"
+SUPPORT_EMAIL="support@onlyfur.net"
 NODE_ENV="production"
 
 # CORS & Security

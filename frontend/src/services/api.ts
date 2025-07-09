@@ -317,6 +317,22 @@ export const apiService = {
   },
 };
 
+// Contact API
+export const contactAPI = {
+  submitContactForm: async (formData: {
+    name: string;
+    email: string;
+    subject?: string;
+    category?: string;
+    message: string;
+  }) => {
+    return apiRequest('/contact', {
+      method: 'POST',
+      body: JSON.stringify(formData),
+    });
+  },
+};
+
 export default {
   auth: authAPI,
   subscription: subscriptionAPI,
@@ -325,6 +341,7 @@ export default {
   user: userAPI,
   upload: uploadAPI,
   messaging: messagingAPI,
+  contact: contactAPI,
   healthCheck,
   // Add apiService to default export as well
   api: apiService,

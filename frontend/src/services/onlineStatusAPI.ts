@@ -1,72 +1,112 @@
-import axios from 'axios';
+// Main Online Status API - Refactored for better bundle splitting
+import { 
+  ActivityStatus, 
+  UserOnlineStatus, 
+  OnlineUser, 
+  OnlineStatusConfig 
+} from './types/onlineStatus.types';
+import { OnlineStatusAPIClient } from './core/apiClient';
+import { formatLastSeen, getStatusIndicator } from './utils/onlineStatus.utils';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-
-export enum ActivityStatus {
-  ONLINE = 'ONLINE',
-  AWAY = 'AWAY', 
-  BUSY = 'BUSY',
-  OFFLINE = 'OFFLINE'
-}
-
-export interface UserOnlineStatus {
-  isOnline: boolean;
-  activityStatus: ActivityStatus;
-  lastSeen?: Date;
-  lastActivity?: Date;
-}
-
-export interface OnlineUser {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar?: string;
-  isOnline: boolean;
-  activityStatus: ActivityStatus;
-  lastActivityAt?: Date;
-}
+// Lazy load heavy modules
+const loadHeartbeatManager = () => import('./modules/heartbeatManager').then(m => m.HeartbeatManager);
+const loadRateLimiter = () => import('./modules/rateLimiter').then(m => m.RateLimiter);
 
 class OnlineStatusAPI {
-  private client = axios.create({
-    baseURL: `${API_BASE_URL}/online-status`,
-    timeout: 10000
-  });
-
-  private heartbeatInterval: NodeJS.Timeout | null = null;
+  private apiClient = new OnlineStatusAPIClient();
+  private heartbeatManager: any = null;
+  private rateLimiter: any = null;
   private isActive = false;
+  private isStarting = false;
+  private trackingDisabled = false;
+  
+  private config: OnlineStatusConfig = {
+    heartbeatFrequency: 5 * 60 * 1000, // 5 minutes
+    maxHeartbeatFrequency: 15 * 60 * 1000, // 15 minutes
+    maxRetries: 3,
+    retryDelay: 1000,
+    maxRequestsPerWindow: 5,
+    windowDuration: 60000 // 1 minute
+  };
 
   constructor() {
-    this.setupAuthInterceptor();
+    // Initialize heavy components lazily
+    this.initializeComponents();
+    
+    // Reset tracking disabled flag after 10 minutes
+    setInterval(() => {
+      if (this.trackingDisabled) {
+        console.log('Attempting to re-enable online status tracking...');
+        this.trackingDisabled = false;
+        if (this.rateLimiter) {
+          this.rateLimiter.reset();
+        }
+      }
+    }, 10 * 60 * 1000);
   }
 
-  private setupAuthInterceptor() {
-    this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
+  private async initializeComponents(): Promise<void> {
+    try {
+      const [HeartbeatManager, RateLimiter] = await Promise.all([
+        loadHeartbeatManager(),
+        loadRateLimiter()
+      ]);
+
+      this.rateLimiter = new RateLimiter(
+        this.config.maxRequestsPerWindow,
+        this.config.windowDuration
+      );
+
+      this.heartbeatManager = new HeartbeatManager(
+        this.config,
+        this.apiClient,
+        this.retryWithBackoff.bind(this)
+      );
+    } catch (error) {
+      console.error('Failed to initialize components:', error);
+    }
   }
 
   /**
    * Start online status tracking (call when user logs in)
    */
   async startTracking(socketId?: string): Promise<void> {
+    if (this.trackingDisabled || this.isStarting || this.isActive) {
+      return;
+    }
+
+    this.isStarting = true;
+
     try {
-      // Set user as online
-      await this.client.post('/set-online', { socketId });
+      await this.ensureComponentsLoaded();
       
-      // Start heartbeat
-      this.startHeartbeat();
+      const result = await this.retryWithBackoff(async () => {
+        return this.apiClient.makeRequest('/set-online', {
+          method: 'POST',
+          body: JSON.stringify({ socketId }),
+        });
+      }, 'Start tracking');
+      
+      if (!result.success) {
+        if (result.error?.includes('Rate limit exceeded') || 
+            result.error?.includes('Unable to connect')) {
+          console.warn('Online status tracking disabled:', result.error);
+          this.trackingDisabled = true;
+          return;
+        }
+        throw new Error(result.error || 'Failed to start tracking');
+      }
+      
+      this.heartbeatManager?.start();
+      this.heartbeatManager?.setupVisibilityTracking(this.setActivityStatus.bind(this));
       this.isActive = true;
 
-      // Set up visibility change listeners
-      this.setupVisibilityTracking();
-      
       console.log('Online status tracking started');
     } catch (error) {
       console.error('Failed to start online status tracking:', error);
+      this.trackingDisabled = true;
+    } finally {
+      this.isStarting = false;
     }
   }
 
@@ -75,13 +115,16 @@ class OnlineStatusAPI {
    */
   async stopTracking(): Promise<void> {
     try {
-      // Stop heartbeat
-      this.stopHeartbeat();
+      this.heartbeatManager?.stop();
       
-      // Set user as offline
-      await this.client.post('/set-offline');
+      if (!this.trackingDisabled) {
+        await this.apiClient.makeRequest('/set-offline', {
+          method: 'POST',
+        });
+      }
       
       this.isActive = false;
+      this.isStarting = false;
       console.log('Online status tracking stopped');
     } catch (error) {
       console.error('Failed to stop online status tracking:', error);
@@ -89,26 +132,38 @@ class OnlineStatusAPI {
   }
 
   /**
-   * Send heartbeat to maintain online status
+   * Manually re-enable tracking
    */
-  async sendHeartbeat(): Promise<void> {
-    try {
-      await this.client.post('/heartbeat');
-    } catch (error) {
-      console.error('Heartbeat failed:', error);
-      // If heartbeat fails repeatedly, might need to re-authenticate
-    }
+  enableTracking(): void {
+    console.log('Manually re-enabling online status tracking');
+    this.trackingDisabled = false;
+    this.rateLimiter?.reset();
   }
 
   /**
    * Set user activity status
    */
   async setActivityStatus(status: ActivityStatus): Promise<void> {
+    if (this.trackingDisabled || !this.isActive) {
+      return;
+    }
+
     try {
-      await this.client.post('/set-status', { status });
+      const result = await this.apiClient.makeRequest('/set-status', {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!result.success) {
+        if (result.error?.includes('Rate limit exceeded') || 
+            result.error?.includes('Unable to connect')) {
+          console.warn('Activity status update disabled:', result.error);
+          return;
+        }
+        throw new Error(result.error || 'Failed to set activity status');
+      }
     } catch (error) {
       console.error('Failed to set activity status:', error);
-      throw error;
     }
   }
 
@@ -117,14 +172,15 @@ class OnlineStatusAPI {
    */
   async getUserOnlineStatus(userId: string): Promise<UserOnlineStatus | null> {
     try {
-      const response = await this.client.get(`/status/${userId}`);
-      const data = response.data;
+      const response = await this.apiClient.makeRequest(`/status/${userId}`, {
+        method: 'GET',
+      });
       
-      if (data.success) {
+      if (response.success && response.data) {
         return {
-          ...data.status,
-          lastSeen: data.status.lastSeen ? new Date(data.status.lastSeen) : undefined,
-          lastActivity: data.status.lastActivity ? new Date(data.status.lastActivity) : undefined
+          ...response.data.status,
+          lastSeen: response.data.status.lastSeen ? new Date(response.data.status.lastSeen) : undefined,
+          lastActivity: response.data.status.lastActivity ? new Date(response.data.status.lastActivity) : undefined
         };
       }
       return null;
@@ -139,13 +195,15 @@ class OnlineStatusAPI {
    */
   async getBulkOnlineStatus(userIds: string[]): Promise<Map<string, UserOnlineStatus>> {
     try {
-      const response = await this.client.post('/bulk-status', { userIds });
-      const data = response.data;
+      const response = await this.apiClient.makeRequest('/bulk-status', {
+        method: 'POST',
+        body: JSON.stringify({ userIds }),
+      });
       
-      if (data.success) {
+      if (response.success && response.data) {
         const statusMap = new Map<string, UserOnlineStatus>();
         
-        for (const [userId, status] of Object.entries(data.statuses)) {
+        for (const [userId, status] of Object.entries(response.data.statuses)) {
           statusMap.set(userId, {
             ...(status as any),
             lastSeen: (status as any).lastSeen ? new Date((status as any).lastSeen) : undefined,
@@ -167,10 +225,11 @@ class OnlineStatusAPI {
    */
   async getOnlineCount(): Promise<number> {
     try {
-      const response = await this.client.get('/online-count');
-      const data = response.data;
+      const response = await this.apiClient.makeRequest('/online-count', {
+        method: 'GET',
+      });
       
-      return data.success ? data.onlineCount : 0;
+      return response.success ? response.data.onlineCount : 0;
     } catch (error) {
       console.error('Failed to get online count:', error);
       return 0;
@@ -182,13 +241,12 @@ class OnlineStatusAPI {
    */
   async getOnlineUsers(limit: number = 50): Promise<OnlineUser[]> {
     try {
-      const response = await this.client.get('/online-users', {
-        params: { limit }
+      const response = await this.apiClient.makeRequest(`/online-users?limit=${limit}`, {
+        method: 'GET',
       });
-      const data = response.data;
       
-      if (data.success) {
-        return data.users.map((user: any) => ({
+      if (response.success && response.data) {
+        return response.data.users.map((user: any) => ({
           ...user,
           lastActivityAt: user.lastActivityAt ? new Date(user.lastActivityAt) : undefined
         }));
@@ -200,140 +258,40 @@ class OnlineStatusAPI {
     }
   }
 
-  /**
-   * Start periodic heartbeat
-   */
-  private startHeartbeat(): void {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-    }
+  // Utility methods - delegate to utils
+  formatLastSeen = formatLastSeen;
+  getStatusIndicator = getStatusIndicator;
 
-    // Send heartbeat every 2 minutes
-    this.heartbeatInterval = setInterval(() => {
-      if (this.isActive) {
-        this.sendHeartbeat();
-      }
-    }, 2 * 60 * 1000);
-  }
-
-  /**
-   * Stop periodic heartbeat
-   */
-  private stopHeartbeat(): void {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-      this.heartbeatInterval = null;
+  private async ensureComponentsLoaded(): Promise<void> {
+    if (!this.heartbeatManager || !this.rateLimiter) {
+      await this.initializeComponents();
     }
   }
 
-  /**
-   * Setup page visibility tracking to handle away status
-   */
-  private setupVisibilityTracking(): void {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page is hidden, set as away
-        this.setActivityStatus(ActivityStatus.AWAY).catch(console.error);
-      } else {
-        // Page is visible, set as online
-        this.setActivityStatus(ActivityStatus.ONLINE).catch(console.error);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Handle window focus/blur
-    window.addEventListener('focus', () => {
-      if (this.isActive) {
-        this.setActivityStatus(ActivityStatus.ONLINE).catch(console.error);
-      }
-    });
-
-    window.addEventListener('blur-sm', () => {
-      if (this.isActive) {
-        this.setActivityStatus(ActivityStatus.AWAY).catch(console.error);
-      }
-    });
-
-    // Handle beforeunload to set offline
-    window.addEventListener('beforeunload', () => {
-      if (this.isActive) {
-        // Use sendBeacon for better reliability during page unload
-        const data = JSON.stringify({});
-        const token = localStorage.getItem('token');
-        
-        if (token && navigator.sendBeacon) {
-          const blob = new Blob([data], { type: 'application/json' });
-          navigator.sendBeacon(`${API_BASE_URL}/online-status/set-offline`, blob);
-        }
-      }
-    });
-  }
-
-  /**
-   * Format last seen time for display
-   */
-  formatLastSeen(lastSeen?: Date): string {
-    if (!lastSeen) return 'Never';
+  private async retryWithBackoff<T>(
+    operation: () => Promise<{ success: boolean; data?: T; error?: string }>,
+    context: string
+  ): Promise<{ success: boolean; data?: T; error?: string }> {
+    await this.ensureComponentsLoaded();
     
-    const now = new Date();
-    const diffMs = now.getTime() - lastSeen.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (this.rateLimiter) {
+      return this.rateLimiter.retryWithBackoff(
+        operation,
+        context,
+        this.trackingDisabled,
+        this.config.maxRetries,
+        this.config.retryDelay
+      );
+    }
     
-    return lastSeen.toLocaleDateString();
-  }
-
-  /**
-   * Get status indicator info for UI
-   */
-  getStatusIndicator(status: ActivityStatus, isOnline: boolean): {
-    color: string;
-    text: string;
-    icon: string;
-  } {
-    if (!isOnline || status === ActivityStatus.OFFLINE) {
-      return {
-        color: 'bg-gray-400',
-        text: 'Offline',
-        icon: '⚫'
-      };
-    }
-
-    switch (status) {
-      case ActivityStatus.ONLINE:
-        return {
-          color: 'bg-green-500',
-          text: 'Online',
-          icon: '🟢'
-        };
-      case ActivityStatus.AWAY:
-        return {
-          color: 'bg-yellow-500',
-          text: 'Away',
-          icon: '🟡'
-        };
-      case ActivityStatus.BUSY:
-        return {
-          color: 'bg-red-500',
-          text: 'Busy',
-          icon: '🔴'
-        };
-      default:
-        return {
-          color: 'bg-gray-400',
-          text: 'Offline',
-          icon: '⚫'
-        };
-    }
+    // Fallback if rateLimiter isn't loaded
+    return operation();
   }
 }
 
 export const onlineStatusAPI = new OnlineStatusAPI();
 export default onlineStatusAPI;
+
+// Re-export types and enums for convenience
+export { ActivityStatus } from './types/onlineStatus.types';
+export type { UserOnlineStatus, OnlineUser } from './types/onlineStatus.types';

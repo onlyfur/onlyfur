@@ -20,26 +20,84 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
 }) => {
   const [status, setStatus] = useState<UserOnlineStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    let fetchInterval: NodeJS.Timeout | null = null;
+    let errorCount = 0;
+    const maxErrors = 3;
+
     const fetchStatus = async () => {
+      // Skip fetch if component is unmounted or not visible
+      if (!isMounted || !isVisible) return;
+      
+      // Skip if too many consecutive errors
+      if (errorCount >= maxErrors) {
+        console.warn('Too many errors fetching user status, stopping requests');
+        return;
+      }
+      
       try {
         const userStatus = await onlineStatusAPI.getUserOnlineStatus(userId);
-        setStatus(userStatus);
+        if (isMounted) {
+          setStatus(userStatus);
+          errorCount = 0; // Reset error count on success
+        }
       } catch (error) {
-        console.error('Failed to fetch user status:', error);
+        errorCount++;
+        
+        // Only log errors in development to prevent console spam
+        if ((import.meta as any).env?.DEV && errorCount <= 2) {
+          console.error('Failed to fetch user status:', error);
+        }
+        
+        // Set offline status on error to prevent continuous retries
+        if (isMounted) {
+          setStatus({
+            isOnline: false,
+            activityStatus: ActivityStatus.OFFLINE,
+            lastSeen: new Date()
+          });
+        }
+        
+        // If too many errors, clear the interval
+        if (errorCount >= maxErrors && fetchInterval) {
+          clearInterval(fetchInterval);
+          fetchInterval = null;
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
+    // Check page visibility to pause requests when tab is not active
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Initial fetch
     fetchStatus();
 
-    // Refresh status every 30 seconds
-    const interval = setInterval(fetchStatus, 30 * 1000);
+    // Only set up polling if in development or for own profile
+    const isOwnProfile = userId === localStorage.getItem('onlyfur_user_id');
+    if ((import.meta as any).env?.DEV || isOwnProfile) {
+      // Refresh status every 60 seconds (reduced from 30 to limit API calls)
+      fetchInterval = setInterval(fetchStatus, 60 * 1000);
+    }
 
-    return () => clearInterval(interval);
-  }, [userId]);
+    return () => {
+      isMounted = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (fetchInterval) {
+        clearInterval(fetchInterval);
+      }
+    };
+  }, [userId, isVisible]);
 
   if (loading || !status) {
     return null;
@@ -67,10 +125,9 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
         ${sizeClasses[size]} 
         ${indicator.color} 
         rounded-full 
-        border-2 
-        border-white 
         ${positionClasses[position]}
         ${className}
+        border-2 border-white dark:border-gray-900
       `}
       title={indicator.text}
     />
@@ -85,10 +142,30 @@ const OnlineStatusIndicator: React.FC<OnlineStatusIndicatorProps> = ({
           <TooltipTrigger asChild>
             <div className="flex items-center space-x-2">
               <div className={`${sizeClasses[size]} ${indicator.color} rounded-full`} />
-              <Badge variant={status.isOnline ? 'default' : 'secondary'} className="text-xs">
+              <Badge variant={status.isOnline ? 'default' : 'secondary'} className={`text-xs ${className}`}>
                 {indicator.text}
               </Badge>
             </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="text-sm">
+              <div className="font-medium">{indicator.text}</div>
+              {lastSeenText && (
+                <div className="text-muted-foreground">Last seen: {lastSeenText}</div>
+              )}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  if (position === 'inline') {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {statusDot}
           </TooltipTrigger>
           <TooltipContent>
             <div className="text-sm">

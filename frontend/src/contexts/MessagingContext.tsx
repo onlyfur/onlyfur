@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import {
   Conversation,
   Message,
@@ -31,6 +31,10 @@ interface MessagingProviderProps {
 
 export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }) => {
   const { user } = useAuth();
+  
+  // Refs to prevent multiple initializations
+  const hasInitializedRef = useRef(false);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // State
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -69,14 +73,46 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
   const [isConnected, setIsConnected] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Reset state when user changes
+  useEffect(() => {
+    hasInitializedRef.current = false;
+    
+    // Clear interval if it exists
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    
+    // Clear state
+    setConversations([]);
+    setActiveConversation(null);
+    setMessages({});
+    setUserPresence({});
+    setBroadcasts([]);
+    setNotifications([]);
+    setDrafts({});
+    setIsConnected(false);
+    setError(null);
+  }, [user?.id]);
+
   // Load data when user changes
   useEffect(() => {
-    if (user) {
+    if (user?.id && !hasInitializedRef.current) {
+      hasInitializedRef.current = true;
       loadUserData();
       initializeMockData();
       simulateWebSocketConnection();
     }
-  }, [user]);
+  }, [user?.id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+      }
+    };
+  }, []);
 
   const loadUserData = () => {
     try {
@@ -409,8 +445,13 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
     // Simulate WebSocket connection
     setIsConnected(true);
     
+    // Clear any existing interval
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+    }
+    
     // Simulate typing indicators
-    const typingInterval = setInterval(() => {
+    typingIntervalRef.current = setInterval(() => {
       setUserPresence(prev => {
         const updated = { ...prev };
         Object.keys(updated).forEach(userId => {
@@ -422,8 +463,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         return updated;
       });
     }, 1000);
-
-    return () => clearInterval(typingInterval);
   };
 
   // Conversation methods

@@ -153,10 +153,10 @@ describe('Backend Unit Tests', () => {
   });
 
   describe('CORS Headers', () => {
-    const originalEnv = process.env.CLIENT_BASE_URL;
+    const originalEnv = process.env.CORS_ORIGIN;
 
     afterEach(() => {
-      process.env.CLIENT_BASE_URL = originalEnv;
+      process.env.CORS_ORIGIN = originalEnv;
     });
 
     test('should return default CORS headers', () => {
@@ -172,20 +172,20 @@ describe('Backend Unit Tests', () => {
     });
 
     test('should use custom frontend URL from environment', () => {
-      process.env.CLIENT_BASE_URL = 'https://custom-frontend.com';
+      process.env.CORS_ORIGIN = 'https://custom-frontend.com';
       
-      const headers = corsHeaders();
+      const headers = corsHeaders('https://custom-frontend.com');
       
       expect(headers['Access-Control-Allow-Origin']).toBe('https://custom-frontend.com');
     });
 
     test('should fallback to default localhost URL', () => {
-      delete process.env.CLIENT_BASE_URL;
-      delete process.env.NEXTAUTH_URL;
+      delete process.env.CORS_ORIGIN;
+      delete process.env.NODE_ENV;
       
       const headers = corsHeaders();
       
-      expect(headers['Access-Control-Allow-Origin']).toBe('http://localhost:5174');
+      expect(headers['Access-Control-Allow-Origin']).toBe('http://localhost:5173');
     });
   });
 

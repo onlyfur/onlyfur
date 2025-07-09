@@ -8,6 +8,13 @@ class RealDataAPI {
     timeout: 10000
   });
 
+  // Cache for hasRealData to prevent repeated API calls
+  private hasRealDataCache: { result: boolean | null; timestamp: number } = {
+    result: null,
+    timestamp: 0
+  };
+  private readonly CACHE_DURATION = 5000; // 5 seconds cache
+
   /**
    * Get platform statistics
    */
@@ -165,9 +172,26 @@ class RealDataAPI {
    */
   async hasRealData() {
     try {
+      const now = Date.now();
+      
+      // Check cache first
+      if (this.hasRealDataCache.result !== null && 
+          (now - this.hasRealDataCache.timestamp) < this.CACHE_DURATION) {
+        return this.hasRealDataCache.result;
+      }
+      
       const stats = await this.getPlatformStats();
-      return stats.success && (stats.stats.totalUsers > 0 || stats.stats.totalCreators > 0);
+      const result = stats.success && (stats.stats.totalUsers > 0 || stats.stats.totalCreators > 0);
+      
+      // Cache the result
+      this.hasRealDataCache = {
+        result,
+        timestamp: now
+      };
+      
+      return result;
     } catch (error) {
+      console.error('❌ hasRealData error:', error);
       return false;
     }
   }

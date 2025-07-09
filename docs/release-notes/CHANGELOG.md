@@ -590,4 +590,4 @@
 
 ---
 
-For detailed upgrade instructions and API documentation, visit our [Developer Portal](https://developers.onlyfur.com).
+For detailed upgrade instructions and API documentation, visit our [Developer Portal](https://developers.onlyfur.net).

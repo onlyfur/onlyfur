@@ -49,7 +49,7 @@ const RefundPolicy: React.FC = () => {
         </CardHeader>
         <CardContent>
           <ol className="list-decimal ml-6 space-y-2">
-            <li>Contact support at <a href="mailto:support@onlyfur.com" className="text-blue-600 underline">support@onlyfur.com</a> with your account details and transaction ID.</li>
+            <li>Contact support at <a href="mailto:support@onlyfur.net" className="text-blue-600 underline">support@onlyfur.net</a> with your account details and transaction ID.</li>
             <li>Explain the reason for your refund request.</li>
             <li>Our team will review your request and respond within 3 business days.</li>
           </ol>

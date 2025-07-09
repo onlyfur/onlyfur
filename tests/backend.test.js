@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-// Simple test script to verify the new backend structure works
-const { getDatabase } = require('./database');
-const { createRoutes } = require('./routes');
+// Simple test script to verify the backend structure works
+const path = require('path');
+const { getDatabase } = require('../backend/database');
+const { createRoutes } = require('../backend/routes');
 
 async function testBackend() {
   console.log('🧪 Testing refactored backend...');

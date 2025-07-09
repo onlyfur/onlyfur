@@ -44,6 +44,10 @@
     "test:backend": "jest --config config/jest.config.js tests/backend-unit.test.js tests/backend-simple.test.js",
     "test:backend:unit": "jest --config config/jest.config.js tests/backend-unit.test.js",
     "test:backend:integration": "jest --config config/jest.config.js tests/backend-simple.test.js",
+    "test:cors": "node tests/cors.test.js",
+    "test:backend:manual": "node tests/backend.test.js",
+    "test:all": "node tests/run-all-tests.js",
+    "test:index": "node tests/index.js",
     "test:ci": "jest --config config/jest.config.js --ci --coverage --watchAll=false",
     "prebuild": "node scripts/generateNeuralIndex.js",
     "prestart:prod": "node scripts/generateNeuralIndex.js",
@@ -129,7 +133,8 @@
     "vaul": "^1.1.2",
     "vercel": "^44.2.12",
     "vite": "^6.3.5",
-    "zod": "^3.25.63"
+    "zod": "^3.25.63",
+    "bcrypt": "^6.0.0"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",
@@ -139,6 +144,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.1",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@types/supertest": "^6.0.3",

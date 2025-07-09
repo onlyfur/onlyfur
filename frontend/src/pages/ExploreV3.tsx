@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import AISearchAndDiscovery from '@/components/ai/AISearchAndDiscovery';
+import { createProductionApiCall } from '@/utils/productionApi';
 
 interface Creator {
   id: string;
@@ -117,12 +118,13 @@ const ExploreV3: React.FC = () => {
 
   const loadCategories = useCallback(async () => {
     try {
-      const response = await fetch('/api/home-v2/categories', {
+      const apiCall = createProductionApiCall('/api/home-v2/categories', {
+        method: 'GET',
         headers: {
           'Authorization': user ? `Bearer ${localStorage.getItem('token')}` : '',
         },
       });
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setCategories(data.categories);
       }
@@ -133,12 +135,13 @@ const ExploreV3: React.FC = () => {
 
   const loadTrendingData = useCallback(async () => {
     try {
-      const response = await fetch('/api/home-v2/trending?timeframe=week&limit=20', {
+      const apiCall = createProductionApiCall('/api/home-v2/trending?timeframe=week&limit=20', {
+        method: 'GET',
         headers: {
           'Authorization': user ? `Bearer ${localStorage.getItem('token')}` : '',
         },
       });
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setTrendingCreators(data.trending.creators || []);
         setTrendingContent(data.trending.content || []);
@@ -150,12 +153,13 @@ const ExploreV3: React.FC = () => {
 
   const loadRecommendations = useCallback(async () => {
     try {
-      const response = await fetch('/api/home-v2/recommendations?limit=12', {
+      const apiCall = createProductionApiCall('/api/home-v2/recommendations?limit=12', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      const data = await response.json();
+      const data = await apiCall();
       if (data.success) {
         setRecommendations(data.recommendations || []);
       }
@@ -180,24 +184,26 @@ const ExploreV3: React.FC = () => {
 
       if (searchQuery) {
         // Use search endpoint for queries
-        const response = await fetch(`/api/users-v3/search?${params.toString()}&q=${encodeURIComponent(searchQuery)}`, {
+        const apiCall = createProductionApiCall(`/api/users-v3/search?${params.toString()}&q=${encodeURIComponent(searchQuery)}`, {
+          method: 'GET',
           headers: {
             'Authorization': user ? `Bearer ${localStorage.getItem('token')}` : '',
           },
         });
-        const data = await response.json();
+        const data = await apiCall();
         if (data.success) {
           setCreators(data.users || []);
           setTotalPages(data.pagination.pages);
         }
       } else {
         // Use explore endpoint
-        const response = await fetch(`/api/home-v2/explore?${params.toString()}`, {
+        const apiCall = createProductionApiCall(`/api/home-v2/explore?${params.toString()}`, {
+          method: 'GET',
           headers: {
             'Authorization': user ? `Bearer ${localStorage.getItem('token')}` : '',
           },
         });
-        const data = await response.json();
+        const data = await apiCall();
         if (data.success) {
           setCreators(data.results.creators || []);
           setContent(data.results.content || []);

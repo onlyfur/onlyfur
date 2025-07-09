@@ -696,7 +696,7 @@ class SearchAPIService {
   getAPIDocumentation(): any {
     return {
       version: '2.7.0',
-      base_url: 'https://api.onlyfur.com/v2.7',
+      base_url: 'https://api.onlyfur.net/v2.7',
       authentication: {
         type: 'API Key',
         header: 'X-API-Key',

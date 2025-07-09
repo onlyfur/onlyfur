@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { contactAPI } from '@/services/api';
 
 const Contact: React.FC = () => {
   const { toast } = useToast();
@@ -24,7 +25,7 @@ const Contact: React.FC = () => {
       icon: Mail,
       title: 'Email Support',
       description: 'Get help via email',
-      contact: 'support@onlyfur.com',
+      contact: 'support@onlyfur.net',
       responseTime: 'Response within 24 hours',
       color: 'text-blue-500'
     },
@@ -32,7 +33,7 @@ const Contact: React.FC = () => {
       icon: MessageCircle,
       title: 'Creator Support',
       description: 'Specialized help for creators',
-      contact: 'creators@onlyfur.com',
+      contact: 'creators@onlyfur.net',
       responseTime: 'Response within 12 hours',
       color: 'text-green-500'
     },
@@ -40,7 +41,7 @@ const Contact: React.FC = () => {
       icon: User,
       title: 'Business Inquiries',
       description: 'Partnerships and business',
-      contact: 'business@onlyfur.com',
+      contact: 'business@onlyfur.net',
       responseTime: 'Response within 48 hours',
       color: 'text-purple-500'
     },
@@ -48,7 +49,7 @@ const Contact: React.FC = () => {
       icon: FileText,
       title: 'Legal & Safety',
       description: 'Legal and safety concerns',
-      contact: 'legal@onlyfur.com',
+      contact: 'legal@onlyfur.net',
       responseTime: 'Response within 24 hours',
       color: 'text-red-500'
     }
@@ -89,23 +90,31 @@ const Contact: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast({
-        title: "Message Sent!",
-        description: "We've received your message and will get back to you soon.",
-      });
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        category: '',
-        message: ''
-      });
+      const result = await contactAPI.submitContactForm(formData);
+
+      if (result.success) {
+        toast({
+          title: "Message Sent!",
+          description: result.message,
+        });
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          category: '',
+          message: ''
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error('Contact form error:', error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -302,9 +311,9 @@ const Contact: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-1">Is there phone support available?</h4>
+                  <h4 className="font-medium mb-1">How can I get support?</h4>
                   <p className="text-sm text-muted-foreground">
-                    Currently, we provide support primarily through email. For urgent issues, please mark your message as "Urgent" in the subject line.
+                    We provide support primarily through email and our contact form. For urgent issues, please mark your message as "Urgent" in the subject line.
                   </p>
                 </div>
                 <div>

@@ -470,6 +470,14 @@
     "category": "help"
   },
   {
+    "id": "AIDashboardV3",
+    "url": "/AIDashboardV3",
+    "title": "AIDashboardV3",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
     "id": "About",
     "url": "/About",
     "title": "About",
@@ -486,9 +494,9 @@
     "category": "page"
   },
   {
-    "id": "AIDashboardV3",
-    "url": "/AIDashboardV3",
-    "title": "AIDashboardV3",
+    "id": "AnalyticsGuide",
+    "url": "/AnalyticsGuide",
+    "title": "AnalyticsGuide",
     "description": "",
     "tags": [],
     "category": "page"
@@ -497,6 +505,14 @@
     "id": "AuthCallback",
     "url": "/AuthCallback",
     "title": "AuthCallback",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "BestPractices",
+    "url": "/BestPractices",
+    "title": "BestPractices",
     "description": "",
     "tags": [],
     "category": "page"
@@ -622,46 +638,6 @@
     "category": "page"
   },
   {
-    "id": "help-BillingAndSubscriptions",
-    "url": "/help/BillingAndSubscriptions",
-    "title": "BillingAndSubscriptions",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-CreatorFeatures",
-    "url": "/help/CreatorFeatures",
-    "title": "CreatorFeatures",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-GettingStarted",
-    "url": "/help/GettingStarted",
-    "title": "GettingStarted",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-SafetyAndPrivacy",
-    "url": "/help/SafetyAndPrivacy",
-    "title": "SafetyAndPrivacy",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
-    "id": "help-SearchFeatures",
-    "url": "/help/SearchFeatures",
-    "title": "SearchFeatures",
-    "description": "",
-    "tags": [],
-    "category": "page"
-  },
-  {
     "id": "HelpCenter-deprecated",
     "url": "/HelpCenter.deprecated",
     "title": "HelpCenter.Deprecated",
@@ -742,6 +718,14 @@
     "category": "page"
   },
   {
+    "id": "MessagingV3Simple",
+    "url": "/MessagingV3Simple",
+    "title": "MessagingV3Simple",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
     "id": "PrivacyPolicy",
     "url": "/PrivacyPolicy",
     "title": "PrivacyPolicy",
@@ -790,9 +774,25 @@
     "category": "page"
   },
   {
+    "id": "TaxInfo",
+    "url": "/TaxInfo",
+    "title": "TaxInfo",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
     "id": "TermsOfService",
     "url": "/TermsOfService",
     "title": "TermsOfService",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "TestProtectedPage",
+    "url": "/TestProtectedPage",
+    "title": "TestProtectedPage",
     "description": "",
     "tags": [],
     "category": "page"
@@ -809,6 +809,46 @@
     "id": "UserProfilePage",
     "url": "/UserProfilePage",
     "title": "UserProfilePage",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-BillingAndSubscriptions",
+    "url": "/help/BillingAndSubscriptions",
+    "title": "BillingAndSubscriptions",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-CreatorFeatures",
+    "url": "/help/CreatorFeatures",
+    "title": "CreatorFeatures",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-GettingStarted",
+    "url": "/help/GettingStarted",
+    "title": "GettingStarted",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-SafetyAndPrivacy",
+    "url": "/help/SafetyAndPrivacy",
+    "title": "SafetyAndPrivacy",
+    "description": "",
+    "tags": [],
+    "category": "page"
+  },
+  {
+    "id": "help-SearchFeatures",
+    "url": "/help/SearchFeatures",
+    "title": "SearchFeatures",
     "description": "",
     "tags": [],
     "category": "page"

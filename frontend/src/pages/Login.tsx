@@ -30,7 +30,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login, user, error: authError, clearError, getSavedCredentials } = useAuth();
+  const { login, user, error: authError, clearError, getSavedEmail } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -39,18 +39,17 @@ const Login: React.FC = () => {
   const oauthError = searchParams.get('error');
   const isOAuthError = oauthError === 'oauth_failed';
 
-  // Load saved credentials and clear errors when component mounts
+  // Load saved email and clear errors when component mounts
   React.useEffect(() => {
     clearError();
     
-    // Load saved credentials if available
-    const savedCredentials = getSavedCredentials();
-    if (savedCredentials) {
-      setValue('email', savedCredentials.email);
-      setValue('password', savedCredentials.password);
+    // Load saved email if available
+    const savedEmail = getSavedEmail();
+    if (savedEmail) {
+      setValue('email', savedEmail.email);
       setValue('rememberMe', true);
     }
-  }, [clearError, getSavedCredentials]);
+  }, [clearError, getSavedEmail]);
 
   const {
     register,
@@ -163,6 +162,7 @@ const Login: React.FC = () => {
                     type="email"
                     placeholder="Enter your email"
                     className="pl-10"
+                    autoComplete="email"
                     {...register('email')}
                   />
                 </div>
@@ -180,6 +180,7 @@ const Login: React.FC = () => {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     className="pl-10 pr-10"
+                    autoComplete="current-password"
                     {...register('password')}
                   />
                   <button

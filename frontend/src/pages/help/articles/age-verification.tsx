@@ -247,7 +247,7 @@ const AgeVerification: React.FC = () => {
               <Link to="/support/contact">Contact Support</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:verification@onlyfur.com">verification@onlyfur.com</a>
+              <a href="mailto:verification@onlyfur.net">verification@onlyfur.net</a>
             </Button>
           </div>
         </CardContent>

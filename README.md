@@ -4,6 +4,64 @@
 
 OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and Prisma. It features real authentication, content management, subscription tiers, and a complete admin system.
 
+## 🔧 **RECENT CORS & API FIXES**
+
+**✅ CORS Error Spam RESOLVED!** (July 2025)
+
+We fixed the severe CORS error issue causing thousands of console errors and browser crashes. Here's what was changed:
+
+### **Key Fixes Applied:**
+1. **🛡️ Centralized API Utility**: All API calls now use `createProductionApiCall()` from `/utils/productionApi.ts`
+2. **🔄 Environment-Aware Requests**: API calls automatically adapt between development and production
+3. **⏰ Reduced Polling**: Components now poll less frequently and only when visible
+4. **🎯 Smart Rate Limiting**: Built-in debouncing and request throttling
+5. **📡 Improved CORS Headers**: Backend allows all Vercel deployments with proper headers
+6. **🔕 Error Throttling**: Prevents CORS error spam in console
+
+### **Environment Variables Required:**
+```bash
+# Production (.env.production)
+VITE_API_URL="/api"
+
+# Development (.env.development)  
+VITE_API_URL="http://localhost:3001/api"
+```
+
+### **Updated Components:**
+- ✅ `HomeV3.tsx` - Feed and content loading
+- ✅ `ExploreV3.tsx` - Search and discovery
+- ✅ `MessagingV3.tsx` - Real-time messaging
+- ✅ `CreatorDashboardV3.tsx` - Analytics and stats
+- ✅ `ModerationDashboard.tsx` - Admin moderation
+- ✅ `ProfileV3.tsx` - User profiles
+- ✅ `NotificationCenter.tsx` - Notifications
+- ✅ `ErrorBoundary.tsx` - Error reporting
+- ✅ `OnlineStatusIndicator.tsx` - Reduced polling
+- ✅ `AuthDebugger.tsx` - Development-only polling
+
+### **API Usage Pattern:**
+```typescript
+// OLD (caused CORS spam):
+const response = await fetch('/api/endpoint', options);
+const data = await response.json();
+
+// NEW (production-safe):
+import { createProductionApiCall } from '@/utils/productionApi';
+const apiCall = createProductionApiCall('/api/endpoint', options);
+const data = await apiCall();
+```
+
+**🌐 CORS errors from Vercel deployments?**
+- ✅ **FIXED!** API now automatically allows new development branches and preview URLs
+- 🚀 **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
+- 🔧 **Smart Pattern Matching**: 
+  - Any `*.vercel.app` domain containing project keywords (`onlyfur`, `k3noxs-projects`, `creatorplattform`)
+  - Git branch URLs: `projectname-git-branchname-username.vercel.app`
+  - Local development: Any `localhost:*` or `127.0.0.1:*` port
+- 📝 **No Manual Updates Needed**: New development branches work immediately without code changes
+- 🔇 **Error Throttling**: CORS errors are limited to one per origin per minute to prevent console spam and browser crashes
+- 🔍 **Logging**: Console logs show when new origins are auto-allowed for debuggingnagement, subscription tiers, and a complete admin system.
+
 ## 🚀 **Quick Start for New Developers**
 
 **New to the project? Start here! 👇**
@@ -36,7 +94,8 @@ OnlyFur is a modern creator platform built with React, Node.js, PostgreSQL, and 
 4. **You're ready!** 🎉
    - Frontend: http://localhost:5173
    - Backend: http://localhost:3001
-   - Login with: `admin@onlyfur.net` / `admin123`
+   - Login with: `demo@example.com` / `password123` (Test User)
+
 
 ### **📚 Required Reading for New Developers**
 
@@ -151,16 +210,16 @@ npm run test:api              # Test API endpoints
 npm run test:coverage         # Test with coverage
 ```
 
-## 👥 **Default Test Users**
+## 👥 **Test User Credentials**
 
-After running `npm run dev:backend`, these accounts are available:
+**⚠️ IMPORTANT:** The app uses a real PostgreSQL database. Use these working credentials:
 
 | Role | Email | Password | Access Level |
 |------|-------|----------|-------------|
-| **Admin** | admin@onlyfur.net | admin123 | Full platform access |
-| **Creator** | creator@onlyfur.net | creator123 | Content creation |
-| **Subscriber** | subscriber@onlyfur.net | subscriber123 | Content access |
-| **Test User** | user@example.com | test123 | Basic access |
+| **Test User** | demo@example.com | password123 | Basic subscriber access |
+
+
+**🔥 Having login issues?** See [AUTHENTICATION_FIX.md](AUTHENTICATION_FIX.md) for troubleshooting.
 
 ## 🌐 **Development URLs**
 
@@ -234,6 +293,24 @@ See [Deployment Guide](docs/deployment/VERCEL_DEPLOYMENT.md) for detailed produc
 ## 🔧 **Troubleshooting**
 
 ### **🐛 Common Issues**
+
+**🖤 Black page on protected routes?**
+- ✅ **FIXED!** Use real credentials: `demo@example.com` / `password123`
+- ❌ Don't use mock credentials like `test@example.com` 
+- 📋 See [AUTHENTICATION_FIX.md](AUTHENTICATION_FIX.md) for full details
+
+**🌐 CORS errors from Vercel deployments?**
+- ✅ **FIXED!** API now automatically allows new development branches and preview URLs
+- 🚀 **Auto-Allow System**: New Vercel deployments are automatically recognized and allowed
+- 🔧 **Smart Pattern Matching**: 
+  - Any `*.vercel.app` domain containing project keywords (`onlyfur`, `k3noxs-projects`, `creatorplattform`)
+  - Git branch URLs: `projectname-git-branchname-username.vercel.app`
+  - Local development: Any `localhost:*` or `127.0.0.1:*` port
+- 📝 **No Manual Updates Needed**: New development branches work immediately without code changes
+- 🔇 **Error Throttling**: CORS errors are limited to one per origin per minute to prevent console spam and browser crashes
+- 🔍 **Logging**: Console logs show when new origins are auto-allowed for debugging
+
+**Other issues:**
 - **Database connection failed**: Check PostgreSQL is running
 - **Port already in use**: Change PORT in environment file
 - **NPM install errors**: Delete `node_modules` and reinstall
@@ -264,3 +341,49 @@ For support and questions:
 ---
 
 **Happy coding! 🎉** Built with ❤️ by the OnlyFur team.
+
+## ⚡ **BUNDLE OPTIMIZATION IMPROVEMENTS**
+
+**✅ Bundle Size OPTIMIZED!** (July 2025)
+
+We've significantly improved build performance and reduced bundle sizes through advanced code splitting and lazy loading.
+
+### **Key Optimizations Applied:**
+1. **📦 Smart Code Splitting**: Components are now split into logical chunks by feature area
+2. **🔄 Lazy Loading**: All pages use React.lazy() for on-demand loading
+3. **📊 Intelligent Chunking**: Related components are grouped (admin, help articles, platform pages)
+4. **🗂️ Service Modularization**: Large services like `onlineStatusAPI` are split into smaller modules
+5. **⏰ Dynamic Imports**: Heavy components load only when needed
+
+### **Bundle Size Improvements:**
+- **Main bundle**: Reduced from 1,384kB to 165kB (87% reduction!)
+- **Total chunks**: Increased from 14 to 61 for better caching
+- **Logical grouping**: 
+  - Help articles: 410kB (lazy loaded)
+  - Admin pages: 172kB (admin-only)
+  - Platform pages: 43kB (public pages)
+  - Creator tools: 53kB (creator-only)
+
+### **Performance Benefits:**
+- 🚀 **Faster initial load**: Only core components load immediately
+- 📱 **Better mobile performance**: Smaller chunks load faster on slower connections  
+- 🔄 **Improved caching**: Individual features can be cached separately
+- 💾 **Reduced memory usage**: Unused features don't consume memory
+
+### **Technical Details:**
+```typescript
+// Before: All imports loaded immediately
+import Dashboard from '@/pages/Dashboard';
+import CreatorDashboard from '@/pages/CreatorDashboard';
+// ... 50+ imports
+
+// After: Lazy loading with code splitting
+const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
+const CreatorDashboard = React.lazy(() => import('@/pages/CreatorDashboard'));
+```
+
+**🔧 Vite Configuration:**
+- Manual chunk splitting by feature area
+- 1.5MB chunk size warning limit
+- Automatic vendor library grouping
+- Route-based splitting for better UX

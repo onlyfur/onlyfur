@@ -180,19 +180,19 @@ const About: React.FC = () => {
           <Card className="p-6">
             <div className="text-center">
               <h3 className="font-semibold mb-2">General Inquiries</h3>
-              <p className="text-muted-foreground">hello@onlyfur.com</p>
+              <p className="text-muted-foreground">hello@onlyfur.net</p>
             </div>
           </Card>
           <Card className="p-6">
             <div className="text-center">
               <h3 className="font-semibold mb-2">Creator Support</h3>
-              <p className="text-muted-foreground">creators@onlyfur.com</p>
+              <p className="text-muted-foreground">creators@onlyfur.net</p>
             </div>
           </Card>
           <Card className="p-6">
             <div className="text-center">
               <h3 className="font-semibold mb-2">Technical Support</h3>
-              <p className="text-muted-foreground">support@onlyfur.com</p>
+              <p className="text-muted-foreground">support@onlyfur.net</p>
             </div>
           </Card>
         </div>

@@ -287,14 +287,14 @@ const TermsOfService: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              For questions about these terms, contact us at legal@onlyfur.com or through our support channels.
+              For questions about these terms, contact us at legal@onlyfur.net or through our support channels.
             </p>
             <div className="flex gap-4">
               <Button variant="outline" asChild>
                 <Link to="/contact">Contact Support</Link>
               </Button>
               <Button variant="outline" asChild>
-                <a href="mailto:legal@onlyfur.com">Legal Email</a>
+                <a href="mailto:legal@onlyfur.net">Legal Email</a>
               </Button>
             </div>
           </CardContent>

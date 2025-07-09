@@ -83,10 +83,10 @@ const SubscriptionManagement: React.FC = () => {
             <li>
               For payment issues, contact{' '}
               <a
-                href="mailto:support@onlyfur.com"
+                href="mailto:support@onlyfur.net"
                 className="text-blue-600 underline"
               >
-                support@onlyfur.com
+                support@onlyfur.net
               </a>
               .
             </li>

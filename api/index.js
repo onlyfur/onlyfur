@@ -6,20 +6,167 @@ const url = require('url');
 // Global database instance for serverless functions
 let dbInstance = null;
 let routeHandlers = null;
+let initializationPromise = null;
+
+// CORS error tracking to prevent console spam
+const corsErrorTracker = {
+  reportedOrigins: new Set(),
+  lastReportTime: 0,
+  reportCooldown: 300000, // 5 minute cooldown between reports for same origin
+  maxReports: 10, // Maximum reports per time window
+  reportCount: 0,
+  
+  shouldReport(origin) {
+    const now = Date.now();
+    
+    // Reset report count every hour
+    if (now - this.lastReportTime > 3600000) {
+      this.reportedOrigins.clear();
+      this.reportCount = 0;
+      this.lastReportTime = now;
+    }
+    
+    // Limit total reports
+    if (this.reportCount >= this.maxReports) {
+      return false;
+    }
+    
+    const key = `${origin}_${Math.floor(now / this.reportCooldown)}`;
+    
+    if (this.reportedOrigins.has(key)) {
+      return false; // Already reported this origin in current time window
+    }
+    
+    this.reportedOrigins.add(key);
+    this.reportCount++;
+    
+    return true;
+  }
+};
 
 // Initialize database and routes if needed
 async function initializeBackend() {
-  if (!dbInstance) {
-    dbInstance = getDatabase();
-    await dbInstance.connect();
-    routeHandlers = createRoutes(dbInstance);
+  // If already initialized, return immediately
+  if (dbInstance && routeHandlers && dbInstance.isConnected) {
+    return { db: dbInstance, routes: routeHandlers };
   }
-  return { db: dbInstance, routes: routeHandlers };
+  
+  // If initialization is already in progress, wait for it
+  if (initializationPromise) {
+    console.log('🔄 Waiting for ongoing initialization...');
+    return await initializationPromise;
+  }
+  
+  // Start initialization process
+  initializationPromise = performInitialization();
+  
+  try {
+    const result = await initializationPromise;
+    return result;
+  } catch (error) {
+    // Reset promise on error so it can be retried
+    initializationPromise = null;
+    throw error;
+  }
+}
+
+// Actual initialization logic
+async function performInitialization() {
+  try {
+    console.log('🔧 Initializing backend...');
+    
+    // Initialize database
+    if (!dbInstance) {
+      console.log('🔧 Creating database instance...');
+      dbInstance = getDatabase();
+    }
+    
+    // Ensure database is connected
+    if (!dbInstance.isConnected) {
+      console.log('🔧 Connecting to database...');
+      await dbInstance.connect();
+    }
+    
+    // Create routes only after database is connected
+    if (!routeHandlers) {
+      console.log('🔧 Creating routes...');
+      routeHandlers = createRoutes(dbInstance);
+      
+      if (routeHandlers) {
+        console.log('🔧 Routes created successfully:', Object.keys(routeHandlers).length, 'routes');
+      } else {
+        throw new Error('Failed to create routes');
+      }
+    }
+    
+    console.log('✅ Backend initialization complete');
+    return { db: dbInstance, routes: routeHandlers };
+  } catch (error) {
+    console.error('❌ Error in performInitialization:', error);
+    throw error;
+  }
 }
 
 // Add CORS headers
-function addCorsHeaders(res) {
-  const headers = corsHeaders();
+function addCorsHeaders(res, origin = null) {
+  // Get allowed origins
+  const allowedOrigins = [
+    'https://onlyfur.net',
+    'https://onlyfur.vercel.app', 
+    'https://creatorplattform.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://onlyfur.net:5173'
+  ];
+  
+  // Default to allowing any Vercel deployment to prevent CORS spam in production
+  let allowedOrigin = origin || '*';
+  
+  if (origin) {
+    // Check exact matches first
+    if (allowedOrigins.includes(origin)) {
+      allowedOrigin = origin;
+    } 
+    // Auto-allow any Vercel deployment URLs for development branches
+    else if (origin.includes('vercel.app') && (
+      origin.includes('onlyfur') || 
+      origin.includes('k3noxs-projects') ||
+      origin.includes('creatorplattform') ||
+      // Allow any git branch pattern: projectname-git-branchname-username.vercel.app
+      /^https:\/\/[a-zA-Z0-9-]+-git-[a-zA-Z0-9-]+-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)
+    )) {
+      allowedOrigin = origin;
+      // Only log in development to prevent production console spam
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🌐 Auto-allowing Vercel deployment: ${origin}`);
+      }
+    }
+    // Allow localhost with any port for local development
+    else if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      allowedOrigin = origin;
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏠 Auto-allowing localhost development: ${origin}`);
+      }
+    }
+    // Handle blocked origin with throttled error reporting
+    else {
+      if (corsErrorTracker.shouldReport(origin)) {
+        console.warn(`🚫 CORS: Blocked origin "${origin}"`);
+      }
+      // Use wildcard for unknown origins to prevent CORS errors in production
+      allowedOrigin = '*';
+    }
+  }
+  
+  const headers = {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
+    'Access-Control-Allow-Credentials': allowedOrigin !== '*' ? 'true' : 'false',
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache'
+  };
+  
   Object.entries(headers).forEach(([key, value]) => {
     res.setHeader(key, value);
   });
@@ -29,9 +176,11 @@ async function handler(req, res) {
   const { method } = req;
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
+  const origin = req.headers?.origin || 'http://localhost:5173';
+  
   
   // Add CORS headers to all responses
-  addCorsHeaders(res);
+  addCorsHeaders(res, origin);
   
   // Handle preflight OPTIONS requests
   if (method === 'OPTIONS') {
@@ -43,9 +192,15 @@ async function handler(req, res) {
     // Initialize backend
     const { routes } = await initializeBackend();
     
+    if (!routes) {
+      console.error('❌ Routes object is null or undefined');
+      return res.status(500).json({ success: false, error: 'Routes not initialized' });
+    }
+    
     // Find route handler
     let routeKey = `${method} ${pathname}`;
     let handler = routes[routeKey];
+    
     
     // Handle dynamic routes
     if (!handler) {
@@ -57,6 +212,10 @@ async function handler(req, res) {
       else if (pathname.startsWith('/api/user/check-url/') && method === 'GET') {
         handler = routes['GET /api/user/check-url/:url'];
       }
+      // Handle /api/online-status/:userId route
+      else if (pathname.startsWith('/api/online-status/') && method === 'GET') {
+        handler = routes['GET /api/online-status/:userId'];
+      }
     }
     
     if (handler) {
@@ -65,8 +224,10 @@ async function handler(req, res) {
         ...req,
         url: req.url,
         method: req.method,
-        headers: req.headers
+        headers: req.headers || {},
+        params: req.params || {}
       };
+      
       
       const nodeRes = {
         writeHead: (status, headers) => {
@@ -135,7 +296,8 @@ if (require.main === module) {
     const vercelReq = {
       ...req,
       query: url.parse(req.url, true).query,
-      body: body
+      body: body,
+      headers: req.headers // Ensure headers are properly preserved
     };
     
     const vercelRes = {

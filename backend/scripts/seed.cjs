@@ -288,10 +288,10 @@ async function main() {
     // Sample Creator
     const creatorPassword = await bcrypt.hash('creator123', 12);
     await prisma.user.upsert({
-      where: { email: 'creator@onlyfur.com' },
+      where: { email: 'creator@onlyfur.net' },
       update: {},
       create: {
-        email: 'creator@onlyfur.com',
+        email: 'creator@onlyfur.net',
         username: 'samplecreator',
         displayName: 'Furry Artist',
         role: 'CREATOR',
@@ -315,10 +315,10 @@ async function main() {
     // Sample Subscriber
     const subscriberPassword = await bcrypt.hash('subscriber123', 12);
     await prisma.user.upsert({
-      where: { email: 'subscriber@onlyfur.com' },
+      where: { email: 'subscriber@onlyfur.net' },
       update: {},
       create: {
-        email: 'subscriber@onlyfur.com',
+        email: 'subscriber@onlyfur.net',
         username: 'furryfan',
         displayName: 'Furry Fan',
         role: 'SUBSCRIBER',
@@ -336,7 +336,7 @@ async function main() {
     // Create sample content
     console.log('📝 Creating sample content...');
     const creator = await prisma.user.findUnique({
-      where: { email: 'creator@onlyfur.com' }
+      where: { email: 'creator@onlyfur.net' }
     });
 
     if (creator) {
@@ -399,8 +399,8 @@ async function main() {
     console.log('');
     console.log('🔐 Login credentials:');
     console.log('  Admin: admin@onlyfur.net / admin123');
-    console.log('  Creator: creator@onlyfur.com / creator123');
-    console.log('  Subscriber: subscriber@onlyfur.com / subscriber123');
+    console.log('  Creator: creator@onlyfur.net / creator123');
+    console.log('  Subscriber: subscriber@onlyfur.net / subscriber123');
 
   } catch (error) {
     console.error('❌ Error during seeding:', error);

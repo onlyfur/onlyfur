@@ -9,7 +9,7 @@ const options: swaggerJsdoc.Options = {
       description: 'API documentation for OnlyFur - Premium furry content platform',
       contact: {
         name: 'OnlyFur Platform',
-        email: 'api@onlyfur.com',
+        email: 'api@onlyfur.net',
       },
       license: {
         name: 'MIT',
@@ -22,7 +22,7 @@ const options: swaggerJsdoc.Options = {
         description: 'Development server',
       },
       {
-        url: 'https://api.onlyfur.com',
+        url: 'https://api.onlyfur.net',
         description: 'Production server',
       },
     ],

@@ -1,6 +1,7 @@
 import { prisma } from './database';
 import { logger } from '../middleware/logger';
 import { Request } from 'express';
+import * as crypto from 'crypto';
 
 export enum AuditActions {
   CREATE = 'CREATE',
@@ -16,7 +17,18 @@ export enum AuditActions {
   USER_BAN = 'USER_BAN',
   USER_UNBAN = 'USER_UNBAN',
   ADMIN_ACTION = 'ADMIN_ACTION',
-  MODERATION_ACTION = 'MODERATION_ACTION'
+  MODERATION_ACTION = 'MODERATION_ACTION',
+  // New admin user management actions
+  VIEW_USER_CREDENTIALS = 'VIEW_USER_CREDENTIALS',
+  VIEW_USER_DETAILS = 'VIEW_USER_DETAILS',
+  UPDATE_USER = 'UPDATE_USER',
+  RESET_USER_PASSWORD = 'RESET_USER_PASSWORD',
+  DELETE_USER = 'DELETE_USER',
+  ACTIVATE_USER = 'ACTIVATE_USER',
+  DEACTIVATE_USER = 'DEACTIVATE_USER',
+  VERIFY_USER = 'VERIFY_USER',
+  UNVERIFY_USER = 'UNVERIFY_USER',
+  EXPORT_USER_DATA = 'EXPORT_USER_DATA'
 }
 
 interface AuditLogData {
@@ -41,18 +53,19 @@ export function extractRequestInfo(req: Request) {
 
 export async function createAuditLog(data: AuditLogData): Promise<void> {
   try {
-    await prisma.auditLog.create({
+    await prisma.audit_logs.create({
       data: {
-        userId: data.userId,
-        adminId: data.adminId,
+        id: crypto.randomUUID(),
+        userId: data.userId || null,
+        adminId: data.adminId || null,
         action: data.action as any, // Cast to enum
         resource: data.resource,
-        resourceId: data.resourceId,
-        oldValues: data.oldValues,
-        newValues: data.newValues,
-        ipAddress: data.ipAddress,
-        userAgent: data.userAgent,
-        metadata: data.metadata
+        resourceId: data.resourceId || null,
+        oldValues: data.oldValues || null,
+        newValues: data.newValues || null,
+        ipAddress: data.ipAddress || null,
+        userAgent: data.userAgent || null,
+        metadata: data.metadata || null
       }
     });
   } catch (error) {
@@ -92,17 +105,17 @@ export async function getAuditLogs(
   }
 
   const [logs, total] = await Promise.all([
-    prisma.auditLog.findMany({
+    prisma.audit_logs.findMany({
       where: whereClause,
       include: {
-        user: {
+        users_audit_logs_userIdTousers: {
           select: {
             id: true,
             email: true,
             displayName: true
           }
         },
-        admin: {
+        users_audit_logs_adminIdTousers: {
           select: {
             id: true,
             email: true,
@@ -116,7 +129,7 @@ export async function getAuditLogs(
       skip: offset,
       take: limit
     }),
-    prisma.auditLog.count({
+    prisma.audit_logs.count({
       where: whereClause
     })
   ]);

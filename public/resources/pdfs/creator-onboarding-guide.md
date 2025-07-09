@@ -90,7 +90,7 @@ Set up your subscription levels:
 ## Support Resources
 
 ### Getting Help
-- Creator Support: support@onlyfur.com
+- Creator Support: support@onlyfur.net
 - Community Guidelines: /guidelines
 - FAQ Section: /help
 - Creator Discord: discord.gg/onlyfur-creators

@@ -1,31 +1,61 @@
-# OnlyFur Backend Test Suite
+# OnlyFur Platform Test Suite
 
-This directory contains comprehensive tests for the OnlyFur backend authentication system.
+This directory contains comprehensive tests for the OnlyFur platform including backend, API, frontend integration, and deployment validation tests.
 
-## ✅ **Test Coverage: 44 Tests Passing**
+## ✅ **Test Coverage Overview**
 
-- **26 Unit Tests** - Testing individual components and utilities
-- **18 Integration Tests** - Testing database operations and complete workflows
+- **Jest Unit Tests** - Testing individual components and utilities
+- **Jest Integration Tests** - Testing database operations and complete workflows
+- **Manual Backend Tests** - Direct backend functionality validation
+- **CORS Configuration Tests** - Cross-origin request validation
+- **Contact Form Tests** - HTML form testing
+- **API Integration Tests** - End-to-end API testing
 
 ## Test Structure
 
 ```
 tests/
-├── api/
-│   ├── index.test.js       # Core API endpoint tests (mock endpoints)
-│   ├── helpers.test.js     # Middleware and helper function tests
-│   ├── integration.test.js # End-to-end integration tests
-│   └── auth.test.js        # Real authentication validation tests
-├── setup.js               # Jest configuration and test environment setup
-└── README.md              # This file
+├── api/                          # API-specific tests
+│   ├── index.test.js            # Core API endpoint tests
+│   ├── helpers.test.js          # Middleware and helper function tests
+│   ├── integration.test.js      # End-to-end integration tests
+│   └── auth.test.js             # Authentication validation tests
+├── backend-unit.test.js         # Backend unit tests (Jest)
+├── backend-simple.test.js       # Backend integration tests (Jest)
+├── backend-integration.test.js  # Backend integration tests (Jest)
+├── backend.test.js              # Manual backend validation (Node.js)
+├── cors.test.js                 # CORS configuration testing (Node.js)
+├── contact-form*.test.js        # Contact form testing (Jest)
+├── contact-form-test.html       # Contact form HTML testing
+├── test-auth.js                 # Authentication testing utilities
+├── test-password.js             # Password testing utilities
+├── run-all-tests.js             # Comprehensive test runner
+├── setup.js                     # Jest configuration and test environment
+└── README.md                    # This documentation
 ```
 
 ## Running Tests
 
-### Basic Test Commands
-
+### Quick Start - Run All Tests
 ```bash
-# Run all tests
+# Run comprehensive test suite (recommended)
+npm run test:all
+
+# This will run all tests in sequence:
+# - Jest unit tests
+# - Jest integration tests  
+# - Manual backend validation
+# - CORS configuration testing
+# - API endpoint testing
+# - Environment validation
+# - Health monitoring
+```
+
+### Individual Test Commands
+
+#### Jest-based Tests (Unit & Integration)
+```bash
+# Run all Jest tests
 npm test
 
 # Run tests in watch mode (automatically re-run on file changes)
@@ -37,45 +67,90 @@ npm run test:coverage
 # Run only API tests
 npm run test:api
 
+# Run backend unit tests only
+npm run test:backend:unit
+
+# Run backend integration tests only
+npm run test:backend:integration
+
 # Run tests for CI/CD (no watch mode, with coverage)
 npm run test:ci
 ```
 
-### Test Categories
+#### Manual Tests (Node.js Scripts)
+```bash
+# Test backend functionality manually
+npm run test:backend:manual
 
-#### 1. Core API Tests (`index.test.js`)
-- **Health Check Endpoints**: Tests `/health` and `/api/health` endpoints
-- **Status Endpoints**: Tests `/status` and `/api/status` endpoints  
-- **Authentication Endpoints**: Tests login and registration endpoints
-- **Subscription Endpoints**: Tests subscription tier retrieval
-- **Error Handling**: Tests 404 responses and error formatting
-- **CORS and Content-Type**: Tests cross-origin and content handling
+# Test CORS configuration
+npm run test:cors
+```
 
-#### 2. Helper and Middleware Tests (`helpers.test.js`)
-- **Request Logging**: Tests request logging middleware
-- **CORS Middleware**: Tests CORS configuration
-- **JSON Body Parsing**: Tests request body parsing
-- **Error Handling Middleware**: Tests error response formatting
-- **Response Validation**: Tests response structure consistency
-- **Performance**: Tests response times and status codes
+#### Utility Tests
+```bash
+# Check environment configuration
+npm run env-check
 
-#### 3. Integration Tests (`integration.test.js`)
-- **User Journey Simulation**: Tests complete registration/login flows
-- **API Discovery**: Tests endpoint discovery via error responses
-- **Performance and Stress**: Tests concurrent requests and load handling
-- **Error Recovery**: Tests resilience to malformed requests
-- **Security**: Tests various headers and content types
-- **Consistency**: Tests response structure consistency across endpoints
+# Run health monitoring
+npm run health-check
+```
 
-#### 4. Authentication Tests (`auth.test.js`) - **REAL CREDENTIAL VALIDATION**
-- **Valid Credentials**: Tests successful login with correct email/username and password
-- **Invalid Credentials**: Tests rejection of wrong passwords, non-existent users
-- **Account Status**: Tests inactive account handling
-- **Security Features**: Tests password hashing, JWT token validation, no password exposure
-- **Registration**: Tests user creation with validation
-- **Token Management**: Tests JWT creation, verification, expiration
-- **Database Simulation**: Tests user lookup and credential validation
-- **Edge Cases**: Tests SQL injection protection, case-insensitive login, long passwords
+## Test Categories
+
+### Jest-based Tests
+
+#### 1. Backend Unit Tests (`backend-unit.test.js`)
+- **Component Testing**: Individual function and class testing
+- **Utility Testing**: Helper functions, formatters, validators
+- **CORS Testing**: Cross-origin request configuration
+- **JWT Testing**: Token generation and validation
+- **Environment Testing**: Configuration validation
+
+#### 2. Backend Integration Tests (`backend-integration.test.js` & `backend-simple.test.js`)
+- **Database Operations**: CRUD operations, connections
+- **Authentication Flow**: Complete login/register workflows  
+- **Route Integration**: End-to-end route testing
+- **Error Handling**: Error scenarios and edge cases
+
+#### 3. API Tests (`api/`)
+- **Endpoint Testing**: All API routes and responses
+- **Authentication Testing**: Login, registration, tokens
+- **Middleware Testing**: CORS, rate limiting, validation
+- **Integration Testing**: Complete user workflows
+
+#### 4. Contact Form Tests (`contact-form*.test.js`)
+- **Form Validation**: Input validation and sanitization
+- **Email Integration**: Email sending functionality
+- **Error Handling**: Form submission error scenarios
+
+### Manual Tests (Node.js Scripts)
+
+#### 5. Backend Validation (`backend.test.js`)
+- **Database Connection**: Real database connectivity testing
+- **Route Creation**: Dynamic route generation validation
+- **Environment Setup**: Required environment variables check
+- **Service Health**: Overall backend health validation
+
+#### 6. CORS Configuration (`cors.test.js`)
+- **Origin Testing**: Tests multiple allowed origins
+- **Header Validation**: CORS header correctness
+- **Endpoint Testing**: CORS on different API endpoints
+- **Production Testing**: Tests against live Vercel deployment
+
+### HTML Tests
+
+#### 7. Contact Form HTML (`contact-form-test.html`)
+- **Visual Testing**: Manual form testing in browser
+- **JavaScript Testing**: Frontend form validation
+- **Integration Testing**: Form submission to backend
+- **UI/UX Testing**: User experience validation
+
+### Utility Scripts
+
+#### 8. Authentication Utilities (`test-auth.js`, `test-password.js`)
+- **Password Testing**: Password hashing and validation
+- **Token Testing**: JWT token utilities
+- **Session Testing**: Session management validation
 
 ## Test Environment
 
