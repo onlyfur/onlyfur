@@ -102,7 +102,8 @@ export class AuthenticationService {
       }
 
       // Create user in PostgreSQL
-      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const randomSuffix = crypto.randomBytes(6).toString('hex'); // Generate a secure random suffix
+      const userId = `user_${Date.now()}_${randomSuffix}`;
       const user = await prisma.users.create({
         data: {
           id: userId,
