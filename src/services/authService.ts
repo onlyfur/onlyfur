@@ -1,4 +1,5 @@
 import { User } from '@/types';
+const ENCRYPTION_KEY = 'your-secure-encryption-key';
 import { apiClient, AuthResponse } from './apiClient';
 import {
   setAuthToken,
@@ -590,17 +591,35 @@ class AuthService {
 
   // Auto-login functionality
   saveCredentials(email: string, password: string): void {
-    const credentials = { email, password };
+    const encryptedPassword = this.encryptPassword(password);
+    const credentials = { email, password: encryptedPassword };
     localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+  }
+
+  private encryptPassword(password: string): string {
+    const crypto = require('crypto');
+    const cipher = crypto.createCipher('aes-256-ctr', ENCRYPTION_KEY);
+    return cipher.update(password, 'utf8', 'hex') + cipher.final('hex');
   }
 
   getSavedCredentials(): { email: string; password: string } | null {
     try {
       const credentials = localStorage.getItem(CREDENTIALS_KEY);
-      return credentials ? JSON.parse(credentials) : null;
+      if (credentials) {
+        const parsedCredentials = JSON.parse(credentials);
+        parsedCredentials.password = this.decryptPassword(parsedCredentials.password);
+        return parsedCredentials;
+      }
+      return null;
     } catch {
       return null;
     }
+  }
+
+  private decryptPassword(encryptedPassword: string): string {
+    const crypto = require('crypto');
+    const decipher = crypto.createDecipher('aes-256-ctr', ENCRYPTION_KEY);
+    return decipher.update(encryptedPassword, 'hex', 'utf8') + decipher.final('utf8');
   }
 
   clearSavedCredentials(): void {
