@@ -17,7 +17,7 @@ jobs:
 
       - name: Import Issues
         uses: dsanchezcr/issue-importer-action@v1.0.0
-        with:
-          file-path: ${{ github.event.inputs.file_path }}
-          file-format: csv
-          github-token: ${{ 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 }}
+        
+with:
+  github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
