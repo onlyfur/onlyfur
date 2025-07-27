@@ -20,4 +20,4 @@ jobs:
         with:
           file-path: ${{ github.event.inputs.file_path }}
           file-format: csv
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ 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 }}
